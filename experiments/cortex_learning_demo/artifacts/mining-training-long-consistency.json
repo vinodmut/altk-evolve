@@ -1,0 +1,16 @@
+{
+  "training_label": "training-long",
+  "mode": "consistency",
+  "method": "fast",
+  "result": {
+    "session_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+    "status": "processed",
+    "new_turns": 10,
+    "first_seq": 3,
+    "last_seq": 27,
+    "guidelines": [
+      "3"
+    ],
+    "trajectory": null
+  }
+}

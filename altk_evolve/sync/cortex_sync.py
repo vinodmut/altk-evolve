@@ -26,7 +26,7 @@ import threading
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -93,7 +93,7 @@ class CortexSessionClient:
         return [events[seq] for seq in sorted(events)]
 
     def event(self, session_id: str, seq: int) -> dict:
-        return self._get(f"/v1/sessions/{session_id}/events/{seq}")
+        return cast(dict, self._get(f"/v1/sessions/{session_id}/events/{seq}"))
 
 
 def is_main_turn(event: dict) -> bool:
@@ -179,7 +179,7 @@ class CortexCursorStore:
 
     def _load(self) -> dict[str, dict]:
         try:
-            return json.loads(self.path.read_text())
+            return cast(dict[str, dict], json.loads(self.path.read_text()))
         except FileNotFoundError:
             return {}
 

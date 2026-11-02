@@ -1,0 +1,20 @@
+[
+  {
+    "id": "note-archive",
+    "title": "My bucket list \u2014 old",
+    "archived": true,
+    "content": "Old bucket list\n- [x] Archived activity 0\n- [x] Archived activity 1\n- [x] Archived activity 2\n- [x] Archived activity 3\n- [x] Archived activity 4\n- [x] Archived activity 5\n- [x] Archived activity 6\n- [x] Archived activity 7"
+  },
+  {
+    "id": "note-204",
+    "title": "My bucket list \u2014 [x] / [ ]",
+    "archived": false,
+    "content": "My bucket list \u2014 [x] / [ ]\nLegend: [x] means done; [ ] means planned.\n\n- [x] Activity 1\n- [ ] Activity 2\n- [x] Activity 3\n- [x] Activity 4\n- [ ] Activity 5\n- [ ] Activity 6"
+  },
+  {
+    "id": "note-shopping",
+    "title": "Shopping list",
+    "archived": false,
+    "content": "- [x] Bread\n- [ ] Milk"
+  }
+]

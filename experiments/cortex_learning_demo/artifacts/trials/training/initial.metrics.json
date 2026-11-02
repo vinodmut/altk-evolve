@@ -1,0 +1,139 @@
+{
+  "label": "training",
+  "case": "train",
+  "arm": "training",
+  "feedback": false,
+  "session_id": "294446c5-4292-43b2-855c-5e7e41f6c520",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "note_id": "note-204",
+    "completed": 3
+  },
+  "expected": {
+    "note_id": "note-204",
+    "completed": 3
+  },
+  "passed": true,
+  "duration_seconds": 21.69,
+  "cost_usd": 0.012400000000000001,
+  "usage": {
+    "input_tokens": 2505,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 119,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 2505,
+      "outputTokens": 119,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.012400000000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 notes.py --help",
+    "python3 notes.py search \"bucket list\"",
+    "python3 notes.py read note-204"
+  ],
+  "num_turns": 4,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T09:37:06.466084-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:37:06.466084-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:37:06.466084-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:37:06.466084-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": []
+}

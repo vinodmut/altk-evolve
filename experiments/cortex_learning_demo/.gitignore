@@ -1,0 +1,9 @@
+# Process state and Claude's environment/configuration are local to a run.
+artifacts/runtime/
+artifacts/state.json
+artifacts/**/claude-config/
+artifacts/trials/*/settings.json
+artifacts/trials/*/notes.py
+artifacts/trials/*/*.stderr.log
+artifacts/trials/*/note-*.json
+__pycache__/

@@ -1,0 +1,172 @@
+{
+  "label": "training-long",
+  "case": "long_train",
+  "arm": "training",
+  "feedback": true,
+  "session_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "note_id": "note-938",
+    "completed": 29
+  },
+  "expected": {
+    "note_id": "note-938",
+    "completed": 29
+  },
+  "passed": true,
+  "duration_seconds": 11.58,
+  "cost_usd": 0.0367224,
+  "usage": {
+    "input_tokens": 109,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1152,
+    "output_tokens": 952,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 3558,
+      "outputTokens": 1113,
+      "thinkingTokens": 0,
+      "cacheReadInputTokens": 1152,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0367224,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [],
+  "failed_bash_commands": [],
+  "num_turns": 1,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T09:47:25.830594-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:47:25.830594-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:47:25.830594-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:47:25.830594-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:47:25.830594-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T09:49:26.123044-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": []
+}

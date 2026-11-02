@@ -1,0 +1,528 @@
+{
+  "model": "Azure/gpt-4.1",
+  "source": "https://huggingface.co/blog/ibm-research/altk-evolve-consistency",
+  "arms": {
+    "baseline": {
+      "passed": 3,
+      "trials": 6,
+      "cost_usd": 0.096448,
+      "bash_calls": 22,
+      "failed_bash_calls": 4,
+      "agent_turns": 28,
+      "input_tokens": 19252,
+      "output_tokens": 972,
+      "injection_verified": true
+    },
+    "evolve": {
+      "passed": 3,
+      "trials": 6,
+      "cost_usd": 0.128308,
+      "bash_calls": 27,
+      "failed_bash_calls": 10,
+      "agent_turns": 33,
+      "input_tokens": 26472,
+      "output_tokens": 1121,
+      "injection_verified": true
+    },
+    "evolve-consistency": {
+      "passed": 3,
+      "trials": 6,
+      "cost_usd": 0.137832,
+      "bash_calls": 28,
+      "failed_bash_calls": 12,
+      "agent_turns": 34,
+      "input_tokens": 28669,
+      "output_tokens": 1145,
+      "injection_verified": true
+    }
+  },
+  "promoted": [
+    {
+      "id": "1",
+      "content": "When counting formatted items within a note, retrieve the note content using the official service API (e.g., 'notes.py read <note_id>') to avoid relying on local file state.",
+      "candidate_id": "1"
+    },
+    {
+      "id": "2",
+      "content": "To count the number of completed checklist items, iterate only over lines in the note content that strictly match the checklist format (e.g., lines starting with '- [x] ').",
+      "candidate_id": "2"
+    },
+    {
+      "id": "3",
+      "content": "When extracting specific structured data (such as completed checklist items) from a note using an API, always read the note content in its entirety via the appropriate API call and process the content programmatically rather than relying on contextual clues or partial outputs.",
+      "candidate_id": "3"
+    }
+  ],
+  "promotion_history": [
+    {
+      "at": null,
+      "guidelines": [
+        {
+          "id": "1",
+          "content": "When counting formatted items within a note, retrieve the note content using the official service API (e.g., 'notes.py read <note_id>') to avoid relying on local file state.",
+          "candidate_id": "1"
+        },
+        {
+          "id": "2",
+          "content": "To count the number of completed checklist items, iterate only over lines in the note content that strictly match the checklist format (e.g., lines starting with '- [x] ').",
+          "candidate_id": "2"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T15:57:38.448017+00:00",
+      "guidelines": [
+        {
+          "id": "3",
+          "content": "When extracting specific structured data (such as completed checklist items) from a note using an API, always read the note content in its entirety via the appropriate API call and process the content programmatically rather than relying on contextual clues or partial outputs.",
+          "candidate_id": "3"
+        }
+      ]
+    }
+  ],
+  "by_case": [
+    {
+      "case": "a",
+      "expected": {
+        "note_id": "note-517",
+        "completed": 5
+      },
+      "baseline": [
+        {
+          "label": "baseline-a",
+          "answer": {
+            "note_id": "note-517",
+            "completed": 5
+          },
+          "passed": true,
+          "injected_ids": [],
+          "bash_commands": [
+            "python3 notes.py --help",
+            "python3 notes.py search bucket list",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-517"
+          ]
+        }
+      ],
+      "evolve": [
+        {
+          "label": "evolve-a",
+          "answer": {
+            "note_id": "note-517",
+            "completed": 5
+          },
+          "passed": true,
+          "injected_ids": [
+            "1",
+            "2"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --bucket-list",
+            "python3 notes.py search --tag bucket-list",
+            "python3 notes.py search bucket-list",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-517"
+          ]
+        }
+      ],
+      "evolve-consistency": [
+        {
+          "label": "consistency-a",
+          "answer": {
+            "note_id": "note-517",
+            "completed": 5
+          },
+          "passed": true,
+          "injected_ids": [
+            "1",
+            "2",
+            "3"
+          ],
+          "bash_commands": [
+            "python3 notes.py ls --format json",
+            "python3 notes.py search --format json --query \"bucket list\"",
+            "python3 notes.py search \"bucket list\"",
+            "python3 notes.py read note-517"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "b",
+      "expected": {
+        "note_id": "note-831",
+        "completed": 3
+      },
+      "baseline": [
+        {
+          "label": "baseline-b",
+          "answer": {
+            "note_id": "note-831",
+            "completed": 3
+          },
+          "passed": true,
+          "injected_ids": [],
+          "bash_commands": [
+            "python3 notes.py --help",
+            "python3 notes.py search 'bucket list'",
+            "python3 notes.py read note-831"
+          ]
+        }
+      ],
+      "evolve": [
+        {
+          "label": "evolve-b",
+          "answer": {
+            "note_id": "note-831",
+            "completed": 3
+          },
+          "passed": true,
+          "injected_ids": [
+            "1",
+            "2"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --bucket-list --quiet",
+            "python3 notes.py search --bucket-list --limit 1 --json",
+            "python3 notes.py search bucket OR list",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-831"
+          ]
+        }
+      ],
+      "evolve-consistency": [
+        {
+          "label": "consistency-b",
+          "answer": {
+            "note_id": "note-831",
+            "completed": 3
+          },
+          "passed": true,
+          "injected_ids": [
+            "1",
+            "2",
+            "3"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --fields id,title --filter current-bucket-list --json",
+            "python3 notes.py search --title 'bucket' --json",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-831"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "c",
+      "expected": {
+        "note_id": "note-692",
+        "completed": 6
+      },
+      "baseline": [
+        {
+          "label": "baseline-c",
+          "answer": {
+            "note_id": "note-692",
+            "completed": 6
+          },
+          "passed": true,
+          "injected_ids": [],
+          "bash_commands": [
+            "python3 notes.py --help",
+            "python3 notes.py search 'bucket list'",
+            "python3 notes.py read note-692"
+          ]
+        }
+      ],
+      "evolve": [
+        {
+          "label": "evolve-c",
+          "answer": {
+            "note_id": "note-692",
+            "completed": 6
+          },
+          "passed": true,
+          "injected_ids": [
+            "1",
+            "2"
+          ],
+          "bash_commands": [
+            "python3 notes.py ls --format=json",
+            "python3 notes.py search --tag bucketlist --format=json",
+            "python3 notes.py search --help",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-692"
+          ]
+        }
+      ],
+      "evolve-consistency": [
+        {
+          "label": "consistency-c",
+          "answer": {
+            "note_id": "note-692",
+            "completed": 6
+          },
+          "passed": true,
+          "injected_ids": [
+            "1",
+            "2",
+            "3"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --json",
+            "python3 notes.py search bucket --json",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-692"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "long_a",
+      "expected": {
+        "note_id": "note-173",
+        "completed": 24
+      },
+      "baseline": [
+        {
+          "label": "baseline-long-a",
+          "answer": {
+            "note_id": "note-173",
+            "completed": 19
+          },
+          "passed": false,
+          "injected_ids": [],
+          "bash_commands": [
+            "python3 notes.py --help",
+            "python3 notes.py search \"bucket list\"",
+            "python3 notes.py read note-173"
+          ]
+        }
+      ],
+      "evolve": [
+        {
+          "label": "evolve-long-a",
+          "answer": {
+            "note_id": "note-173",
+            "completed": 20
+          },
+          "passed": false,
+          "injected_ids": [
+            "1",
+            "2"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --filter=bucket | grep -m1 -Eo '^[a-zA-Z0-9_-]+'",
+            "python3 notes.py search --query='bucket' | grep -m1 -Eo '^[a-zA-Z0-9_-]+'",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-173"
+          ]
+        }
+      ],
+      "evolve-consistency": [
+        {
+          "label": "consistency-long-a",
+          "answer": {
+            "note_id": "note-173",
+            "completed": 22
+          },
+          "passed": false,
+          "injected_ids": [
+            "1",
+            "2",
+            "3"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --bucket current --format json",
+            "python3 notes.py search --bucket current --format json",
+            "python3 notes.py search current",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-173",
+            "python3 notes.py read note-173"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "long_b",
+      "expected": {
+        "note_id": "note-465",
+        "completed": 38
+      },
+      "baseline": [
+        {
+          "label": "baseline-long-b",
+          "answer": {
+            "note_id": "note-465",
+            "completed": 36
+          },
+          "passed": false,
+          "injected_ids": [],
+          "bash_commands": [
+            "python3 notes.py --help",
+            "python3 notes.py search bucket list",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-465"
+          ]
+        }
+      ],
+      "evolve": [
+        {
+          "label": "evolve-long-b",
+          "answer": {
+            "note_id": "note-465",
+            "completed": 35
+          },
+          "passed": false,
+          "injected_ids": [
+            "1",
+            "2"
+          ],
+          "bash_commands": [
+            "python3 notes.py ls | grep 'bucket' | awk '{print $1}'",
+            "python3 notes.py search --query 'bucket'",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-465"
+          ]
+        }
+      ],
+      "evolve-consistency": [
+        {
+          "label": "consistency-long-b",
+          "answer": {
+            "note_id": "note-465",
+            "completed": 36
+          },
+          "passed": false,
+          "injected_ids": [
+            "1",
+            "2",
+            "3"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --bucket current --format json",
+            "python3 notes.py search --bucket current --limit 1 --format json",
+            "python3 notes.py search current",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-465"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "long_c",
+      "expected": {
+        "note_id": "note-726",
+        "completed": 30
+      },
+      "baseline": [
+        {
+          "label": "baseline-long-c",
+          "answer": {
+            "note_id": "note-726",
+            "completed": 25
+          },
+          "passed": false,
+          "injected_ids": [],
+          "bash_commands": [
+            "python3 notes.py list --output json",
+            "python3 notes.py search --title \"bucket list\" --output json",
+            "python3 notes.py search --help",
+            "python3 notes.py search \"bucket list\"",
+            "python3 notes.py read note-726"
+          ]
+        }
+      ],
+      "evolve": [
+        {
+          "label": "evolve-long-c",
+          "answer": {
+            "note_id": "note-726",
+            "completed": 26
+          },
+          "passed": false,
+          "injected_ids": [
+            "1",
+            "2"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --bucket-list",
+            "python3 notes.py search bucket --bucket-list",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-726"
+          ]
+        }
+      ],
+      "evolve-consistency": [
+        {
+          "label": "consistency-long-c",
+          "answer": {
+            "note_id": "note-726",
+            "completed": 27
+          },
+          "passed": false,
+          "injected_ids": [
+            "1",
+            "2",
+            "3"
+          ],
+          "bash_commands": [
+            "python3 notes.py list --all --json",
+            "python3 notes.py search --bucket current --json",
+            "python3 notes.py search current",
+            "python3 notes.py search bucket",
+            "python3 notes.py read note-726"
+          ]
+        }
+      ]
+    }
+  ],
+  "training": [
+    {
+      "label": "training",
+      "phase": null,
+      "passed": true,
+      "answer": {
+        "note_id": "note-204",
+        "completed": 3
+      },
+      "num_turns": 4,
+      "cost_usd": 0.012400000000000001
+    },
+    {
+      "label": "training-long",
+      "phase": null,
+      "passed": false,
+      "answer": {
+        "note_id": "note-938",
+        "completed": 26
+      },
+      "num_turns": 5,
+      "cost_usd": 0.017016
+    },
+    {
+      "label": "training-long",
+      "phase": null,
+      "passed": true,
+      "answer": {
+        "note_id": "note-938",
+        "completed": 29
+      },
+      "num_turns": 1,
+      "cost_usd": 0.0367224
+    },
+    {
+      "label": "training-long",
+      "phase": "verification",
+      "passed": true,
+      "answer": {
+        "note_id": "note-938",
+        "completed": 29
+      },
+      "num_turns": 4,
+      "cost_usd": 0.0469424
+    }
+  ],
+  "cost_caveat": "CLI cost basis is unknown. Training-session cost fields are cumulative; generator calls are not included. Do not infer billing savings from these fields.",
+  "scope": "Small synthetic recreation of the published SimpleNote task, run with real Claude Code, Cortex, Evolve and model calls; not an AppWorld benchmark rerun."
+}

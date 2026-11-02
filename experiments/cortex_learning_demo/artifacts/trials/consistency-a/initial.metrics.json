@@ -1,0 +1,242 @@
+{
+  "label": "consistency-a",
+  "case": "a",
+  "arm": "evolve-consistency",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "f6c9a7e0-03a6-4a8f-8554-ac5681b61338",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "note_id": "note-517",
+    "completed": 5
+  },
+  "expected": {
+    "note_id": "note-517",
+    "completed": 5
+  },
+  "passed": true,
+  "duration_seconds": 28.1,
+  "cost_usd": 0.019632,
+  "usage": {
+    "input_tokens": 4063,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 169,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 4063,
+      "outputTokens": 169,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.019632,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 notes.py ls --format json",
+    "python3 notes.py search --format json --query \"bucket list\"",
+    "python3 notes.py search \"bucket list\"",
+    "python3 notes.py read note-517"
+  ],
+  "failed_bash_commands": [
+    "python3 notes.py ls --format json",
+    "python3 notes.py search --format json --query \"bucket list\""
+  ],
+  "num_turns": 5,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T09:59:58.363978-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:59:58.363978-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:59:58.363978-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:59:58.363978-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:59:58.363978-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1",
+    "2",
+    "3"
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "label": "evolve-a",
+  "case": "a",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "94ded4f7-5593-4218-9286-d4a20a613949",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "note_id": "note-517",
+    "completed": 5
+  },
+  "expected": {
+    "note_id": "note-517",
+    "completed": 5
+  },
+  "passed": true,
+  "duration_seconds": 17.54,
+  "cost_usd": 0.021868000000000002,
+  "usage": {
+    "input_tokens": 4567,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 180,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 4567,
+      "outputTokens": 180,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.021868000000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 notes.py list --bucket-list",
+    "python3 notes.py search --tag bucket-list",
+    "python3 notes.py search bucket-list",
+    "python3 notes.py search bucket",
+    "python3 notes.py read note-517"
+  ],
+  "failed_bash_commands": [
+    "python3 notes.py list --bucket-list",
+    "python3 notes.py search --tag bucket-list"
+  ],
+  "num_turns": 6,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T09:54:31.144861-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:54:31.144861-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:54:31.144861-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:54:31.144861-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:54:31.144861-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T09:54:31.144861-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1",
+    "2"
+  ]
+}

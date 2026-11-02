@@ -1,0 +1,226 @@
+[
+  {
+    "id": "1",
+    "content": "When counting formatted items within a note, retrieve the note content using the official service API (e.g., 'notes.py read <note_id>') to avoid relying on local file state.",
+    "metadata": {
+      "agent_id": "claude-code",
+      "creation_mode": "auto-cortex",
+      "session_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+      "source_task_id": "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+      "task_description": "How many activities are done in my current bucket list note? Use the local notes service via `python3 notes.py` (its --help describes the API). Return the result as JSON with note_id and completed.",
+      "support": 1,
+      "rationale": "This ensures you are working with the authoritative and most up-to-date version of the note, preventing discrepancies caused by local file changes or direct file reads.",
+      "category": "strategy",
+      "trigger": "Whenever an AI agent needs to process or analyze note content for structured information (e.g., counting checklist items) and the service provides an official API to access the content.",
+      "implementation_steps": [
+        "Use the service API to fetch the latest version of the note in a structured format (such as JSON).",
+        "Parse the content field of the API response for further processing."
+      ],
+      "generation_method": "standard",
+      "processing": {
+        "operation_id": "6ac192b6-58e2-4991-b010-028c4e13c4ba",
+        "profile_id": "bucket-list-demo",
+        "revision": 1,
+        "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+        "manifest": {
+          "conflict_resolution": {
+            "conflict_resolution_model": "Azure/gpt-4.1",
+            "custom_llm_provider": "openai"
+          },
+          "processors": [
+            {
+              "api_version": 1,
+              "config": {
+                "analysis_config": null,
+                "consistency_method": "fast",
+                "custom_llm_provider": "openai",
+                "guidelines_mode": "standard",
+                "guidelines_model": "Azure/gpt-4.1",
+                "segmentation_enabled": false,
+                "trajectory_max_step_chars": 2000,
+                "trajectory_max_steps": 50,
+                "trajectory_tail_steps": 0
+              },
+              "id": "guidelines",
+              "plugin": "evolve.guidelines",
+              "version": "1"
+            }
+          ],
+          "schema_version": 1
+        },
+        "source_batch": {
+          "source": "cortex",
+          "conversation_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+          "batch_id": "1793634425-2",
+          "revision": "1",
+          "scope": "cortex",
+          "aliases": [],
+          "alias_revisions": {}
+        },
+        "processor_id": "guidelines"
+      },
+      "sources": [
+        {
+          "conversation_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+          "task_id": "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "user_id": null,
+          "agent_id": "claude-code",
+          "status": "supporting",
+          "associated_at": "2026-11-02T15:52:11.302535+00:00"
+        }
+      ],
+      "provenance_incomplete": false,
+      "memory_revision": 1
+    }
+  },
+  {
+    "id": "2",
+    "content": "To count the number of completed checklist items, iterate only over lines in the note content that strictly match the checklist format (e.g., lines starting with '- [x] ').",
+    "metadata": {
+      "agent_id": "claude-code",
+      "creation_mode": "auto-cortex",
+      "session_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+      "source_task_id": "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+      "task_description": "How many activities are done in my current bucket list note? Use the local notes service via `python3 notes.py` (its --help describes the API). Return the result as JSON with note_id and completed.",
+      "support": 1,
+      "rationale": "This approach excludes irrelevant lines such as titles or legends and ensures accurate counts by targeting only the valid activity entries.",
+      "category": "strategy",
+      "trigger": "Whenever extracting quantitative data from a structured checklist within a note.",
+      "implementation_steps": [
+        "Split the note content into lines.",
+        "For each line, trim whitespace and check if it starts with the checklist completed marker (e.g., '- [x] ').",
+        "Increment the count for every such line."
+      ],
+      "generation_method": "standard",
+      "processing": {
+        "operation_id": "6ac192b6-58e2-4991-b010-028c4e13c4ba",
+        "profile_id": "bucket-list-demo",
+        "revision": 1,
+        "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+        "manifest": {
+          "conflict_resolution": {
+            "conflict_resolution_model": "Azure/gpt-4.1",
+            "custom_llm_provider": "openai"
+          },
+          "processors": [
+            {
+              "api_version": 1,
+              "config": {
+                "analysis_config": null,
+                "consistency_method": "fast",
+                "custom_llm_provider": "openai",
+                "guidelines_mode": "standard",
+                "guidelines_model": "Azure/gpt-4.1",
+                "segmentation_enabled": false,
+                "trajectory_max_step_chars": 2000,
+                "trajectory_max_steps": 50,
+                "trajectory_tail_steps": 0
+              },
+              "id": "guidelines",
+              "plugin": "evolve.guidelines",
+              "version": "1"
+            }
+          ],
+          "schema_version": 1
+        },
+        "source_batch": {
+          "source": "cortex",
+          "conversation_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+          "batch_id": "1793634425-2",
+          "revision": "1",
+          "scope": "cortex",
+          "aliases": [],
+          "alias_revisions": {}
+        },
+        "processor_id": "guidelines"
+      },
+      "sources": [
+        {
+          "conversation_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+          "task_id": "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:1793634425-2",
+          "user_id": null,
+          "agent_id": "claude-code",
+          "status": "supporting",
+          "associated_at": "2026-11-02T15:52:11.302535+00:00"
+        }
+      ],
+      "provenance_incomplete": false,
+      "memory_revision": 1
+    }
+  },
+  {
+    "id": "3",
+    "content": "When extracting specific structured data (such as completed checklist items) from a note using an API, always read the note content in its entirety via the appropriate API call and process the content programmatically rather than relying on contextual clues or partial outputs.",
+    "metadata": {
+      "status": "candidate",
+      "creation_mode": "auto-cortex",
+      "agent_id": "claude-code",
+      "session_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+      "source_task_id": "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27",
+      "task_description": "How many activities are done in my current bucket list note? Use the local notes service via `python3 notes.py` (its --help describes the API). Return the result as JSON with note_id and completed.",
+      "support": 1,
+      "rationale": "This ensures that all activity lines are accounted for accurately and avoids errors from manual counting or assumptions about content structure. It also generalizes to cases where note structure or item ordering might differ.",
+      "category": "strategy",
+      "trigger": "When needing to compute metrics or extract structured data from notes based on their content.",
+      "implementation_steps": [
+        "Use the API method to retrieve the complete note content in a predictable format (e.g., JSON).",
+        "Parse the content programmatically to identify and count target elements (such as lines matching a checklist pattern), ignoring titles and legends."
+      ],
+      "generation_method": "consistency-fast",
+      "processing": {
+        "operation_id": "dbf7aea5-167f-477f-9f5f-f7a09b899c92",
+        "profile_id": null,
+        "revision": null,
+        "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+        "manifest": {
+          "conflict_resolution": {
+            "conflict_resolution_model": "Azure/gpt-4.1",
+            "custom_llm_provider": "openai"
+          },
+          "processors": [
+            {
+              "api_version": 1,
+              "config": {
+                "analysis_config": null,
+                "consistency_method": "fast",
+                "custom_llm_provider": "openai",
+                "guidelines_mode": "consistency",
+                "guidelines_model": "Azure/gpt-4.1",
+                "segmentation_enabled": false,
+                "trajectory_max_step_chars": 2000,
+                "trajectory_max_steps": 50,
+                "trajectory_tail_steps": 0
+              },
+              "id": "guidelines",
+              "plugin": "evolve.guidelines",
+              "version": "1"
+            }
+          ],
+          "schema_version": 1
+        },
+        "source_batch": {
+          "source": "cortex",
+          "conversation_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+          "batch_id": "3-27",
+          "revision": "1",
+          "scope": "cortex",
+          "aliases": [],
+          "alias_revisions": {}
+        },
+        "processor_id": "guidelines"
+      },
+      "sources": [
+        {
+          "conversation_id": "385ef687-fdee-4967-82a5-7c033ebb8009",
+          "task_id": "cortex:385ef687-fdee-4967-82a5-7c033ebb8009:27",
+          "user_id": null,
+          "agent_id": "claude-code",
+          "status": "supporting",
+          "associated_at": "2026-11-02T15:57:09.450066+00:00"
+        }
+      ],
+      "provenance_incomplete": false,
+      "memory_revision": 1
+    }
+  }
+]

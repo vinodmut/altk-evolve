@@ -1,0 +1,20 @@
+[
+  {
+    "id": "note-archive",
+    "title": "My bucket list \u2014 old",
+    "archived": true,
+    "content": "Old bucket list\n- [x] Archived activity 0\n- [x] Archived activity 1\n- [x] Archived activity 2\n- [x] Archived activity 3\n- [x] Archived activity 4\n- [x] Archived activity 5\n- [x] Archived activity 6\n- [x] Archived activity 7"
+  },
+  {
+    "id": "note-173",
+    "title": "My bucket list \u2014 [x] / [ ]",
+    "archived": false,
+    "content": "My bucket list \u2014 [x] / [ ]\nLegend: [x] means completed; [ ] means pending. The symbol [x] here explains the notation.\n\n- [ ] Activity 1\n- [ ] Activity 2\n- [x] Activity 3\n- [ ] Activity 4\n- [ ] Activity 5\n- [x] Activity 6\n- [ ] Activity 7\n- [ ] Activity 8\n- [ ] Activity 9\n- [x] Activity 10\n- [x] Activity 11\n- [ ] Activity 12\n- [ ] Activity 13\n- [x] Activity 14\n- [ ] Activity 15\n- [x] Activity 16\n- [x] Activity 17\n- [x] Activity 18\n- [x] Activity 19\n- [x] Activity 20\n- [x] Activity 21\n- [ ] Activity 22\n- [x] Activity 23\n- [ ] Activity 24\n- [ ] Activity 25\n- [x] Activity 26\n- [x] Activity 27\n- [x] Activity 28\n- [ ] Activity 29\n- [x] Activity 30\n- [x] Activity 31\n- [x] Activity 32\n- [ ] Activity 33\n- [ ] Activity 34\n- [x] Activity 35\n- [ ] Activity 36\n- [x] Activity 37\n- [x] Activity 38\n- [ ] Activity 39\n- [x] Activity 40\n- [x] Activity 41\n- [x] Activity 42\n- [ ] Activity 43"
+  },
+  {
+    "id": "note-shopping",
+    "title": "Shopping list",
+    "archived": false,
+    "content": "- [x] Bread\n- [ ] Milk"
+  }
+]
