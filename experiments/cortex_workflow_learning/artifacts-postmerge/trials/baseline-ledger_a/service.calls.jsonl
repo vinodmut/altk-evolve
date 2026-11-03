@@ -1,0 +1,11 @@
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --env --name Maple Workshop"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: Workshop production"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: Workshop"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: account-202"}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: --account_id account-202"}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: account-202 production"}
+{"action": "revenue-contract", "ok": true, "detail": null}
+{"action": "ledger-export", "ok": true, "detail": null}
+{"action": "ledger-export", "ok": false, "detail": "unrecognized arguments: --month 2026-05"}
+{"action": "revenue-contract", "ok": true, "detail": null}

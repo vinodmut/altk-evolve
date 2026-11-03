@@ -1,0 +1,196 @@
+{
+  "label": "baseline-ledger_e",
+  "case": "ledger_e",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "e6f2d5d5-8664-48e7-8af5-97fcc7f08fbf",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 13806,
+      "EUR": 4844
+    },
+    "included_event_ids": [
+      "evt-6-corrected",
+      "evt-6-eur",
+      "evt-6-eur-refund",
+      "evt-6-refund",
+      "evt-6-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 13806,
+      "EUR": 4844
+    },
+    "included_event_ids": [
+      "evt-6-corrected",
+      "evt-6-eur",
+      "evt-6-eur-refund",
+      "evt-6-refund",
+      "evt-6-utc-in"
+    ]
+  },
+  "passed": true,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": true
+  },
+  "duration_seconds": 75.21,
+  "cost_usd": 0.057508800000000006,
+  "usage": {
+    "input_tokens": 8726,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 13824,
+    "output_tokens": 992,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 8726,
+      "outputTokens": 992,
+      "cacheReadInputTokens": 13824,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.057508800000000006,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name \"Summit Labs\" --env production",
+    "python3 ops.py find-customer Summit Labs production",
+    "python3 ops.py find-customer Summit",
+    "python3 ops.py revenue-contract --account account-206",
+    "python3 ops.py revenue-contract account-206",
+    "python3 ops.py revenue-contract",
+    "python3 ops.py ledger-export --customer account-206 --output ledger.json",
+    "cat ledger.json",
+    "python3 ops.py revenue-contract > contract.txt",
+    "python3 -c '\nimport json\nfrom datetime import datetime, timezone\nimport pytz\n\nwith open(\"ledger.json\") as f:\n    rows = json.load(f)\n\n# Revenue contract logic\n# 1. Collapse rows by event_id using the greatest numeric revision across the entire export\nlatest_by_event = {}\nfor row in rows:\n    eid = row[\"event_id\"]\n    rev = row[\"revision\"]\n    if eid not in latest_by_event or rev > latest_by_event[eid][\"revision\"]:\n        latest_by_event[eid] = row\n\n# 2. Only Summit Labs production, only settled\n# 3. Select month boundaries in UTC\n#   2026-09: occurred_at >= 2026-09-01T00:00:00Z and occurred_at < 2026-10-01T00:00:00Z\nSTART = datetime(2026, 9, 1, 0, 0, 0, tzinfo=timezone.utc)\nEND = datetime(2026, 10, 1, 0, 0, 0, tzinfo=timezone.utc)\n\ndef in_range(dt_str):\n    dt = datetime.fromisoformat(dt_str.replace(\"Z\", \"+00:00\"))\n    return START <= dt and dt < END\n\nfiltered = [\n    row for row in latest_by_event.values()\n    if row[\"customer_id\"] == \"account-206\"\n    and row[\"status\"] == \"settled\"\n    and in_range(row[\"occurred_at\"])\n]\n\n# 4. Sum by currency, add captures, subtract refunds\nfrom collections import defaultdict\n\ntotals_minor = defaultdict(int)\nfor row in filtered:\n    sign = 1 if row[\"kind\"] == \"capture\" else -1\n    totals_minor[row[\"currency\"]] += sign * row[\"amount_minor\"]\n\nincluded_event_ids = sorted(set(row[\"event_id\"] for row in filtered))\n\nout = {\n    \"totals_minor\": dict(totals_minor),\n    \"included_event_ids\": included_event_ids\n}\n\nwith open(\"report.json\", \"w\") as f:\n    json.dump(out, f, indent=2)\n'",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py find-customer --name \"Summit Labs\" --env production",
+    "python3 ops.py find-customer Summit Labs production",
+    "python3 ops.py revenue-contract --account account-206",
+    "python3 ops.py revenue-contract account-206"
+  ],
+  "num_turns": 13,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 22,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 8,
+  "service_errors": 4
+}

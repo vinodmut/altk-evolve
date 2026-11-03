@@ -1,4 +1,4 @@
-from altk_evolve.llm.guidelines.context import render_supporting_context
+from altk_evolve.llm.guidelines.context import render_action_with_result, render_supporting_context, tool_results_by_call_id
 import json
 import logging
 from collections.abc import Callable
@@ -357,6 +357,7 @@ def format_trajectory_data(
         elevated_uncertainty_steps = {step_num: score for step_num, score in ranked_steps[:1] if score > 0}
 
     steps_text: list[str] = []
+    tool_results = tool_results_by_call_id(messages)
     step_num = 0
     for step in messages:
         if step.get("role") != "assistant":
@@ -389,7 +390,9 @@ def format_trajectory_data(
                     except (json.JSONDecodeError, TypeError):
                         # Args aren't valid JSON — keep function name and emit raw args string
                         args_string = str(args_raw)
-                    this_step_text += f"- {func['name']}({args_string})"
+                    this_step_text += render_action_with_result(
+                        f"- {func['name']}({args_string})", tool_results.get(call.get("id"), ""), max_chars=2000
+                    )
                 except KeyError:
                     this_step_text += f"- {call.get('id', 'unknown_call')}"
         else:

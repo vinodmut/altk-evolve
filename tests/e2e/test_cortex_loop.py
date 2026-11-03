@@ -24,6 +24,12 @@ TOKEN = "e2e-token"
 AUTH = {"Authorization": f"Bearer {TOKEN}"}
 
 
+@pytest.fixture(scope="module")
+def phoenix_server():
+    """This hermetic HTTP/CLI loop does not use the global live-Phoenix fixture."""
+    return None
+
+
 def _turn(seq, history, completion, calls=()):
     return {
         "seq": seq,
@@ -45,6 +51,7 @@ def _fake_cortex():
         2: _turn(2, task, "Running.", calls=["t1"]),
         4: _turn(4, task + [{"role": "assistant", "content": "Running."}, {"role": "user", "content": ""}], "All tests pass."),
     }
+    events[4]["inference"]["toolResults"] = [{"toolUseId": "t1", "content": "TOOL_OBSERVATION: 24 tests passed"}]
 
     def handler(request):
         path = request.url.path
@@ -73,15 +80,20 @@ def loop(tmp_path, monkeypatch):
     from altk_evolve.config.guidelines import guidelines_settings
 
     monkeypatch.setattr(guidelines_settings, "guidelines_mode", "standard")
-    monkeypatch.setattr(
-        "altk_evolve.llm.guidelines.guidelines.generate_guidelines",
-        lambda messages, *, context_messages=None, options, outcome=None: [
+
+    def generate(messages, *, context_messages=None, options, outcome=None):
+        from altk_evolve.llm.guidelines.guidelines import parse_openai_agents_trajectory
+
+        rendered = parse_openai_agents_trajectory(messages, options=options)
+        assert "TOOL_OBSERVATION: 24 tests passed" in rendered["trajectory_summary"]
+        return [
             GuidelineGenerationResult(
                 task_description="run the tests",
                 guidelines=[Guideline(content="Run tests with uv run pytest -v", rationale="r", category="strategy", trigger="t")],
             )
-        ],
-    )
+        ]
+
+    monkeypatch.setattr("altk_evolve.llm.guidelines.guidelines.generate_guidelines", generate)
     monkeypatch.setattr(
         "altk_evolve.llm.conflict_resolution.conflict_resolution.resolve_conflicts",
         lambda candidates, incoming, settings=None: [EntityUpdate(id=e.id, type=e.type, content=e.content, event="ADD") for e in incoming],

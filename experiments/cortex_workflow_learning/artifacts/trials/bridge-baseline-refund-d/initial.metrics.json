@@ -1,0 +1,172 @@
+{
+  "label": "bridge-baseline-refund-d",
+  "case": "refund_d",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "c98444ff-3ddc-481d-9a01-80e66230dca3",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "refunded_charge_ids": [
+      "charge-5-02",
+      "charge-5-06"
+    ],
+    "total_refunded_minor": 23500
+  },
+  "expected": {
+    "refunded_charge_ids": [
+      "charge-5-02",
+      "charge-5-06"
+    ],
+    "total_refunded_minor": 23500
+  },
+  "passed": true,
+  "checks": {
+    "exact_refund_operations": true,
+    "reported_refunds": true,
+    "all_charge_balances": true
+  },
+  "duration_seconds": 45.26,
+  "cost_usd": 0.0424528,
+  "usage": {
+    "input_tokens": 6276,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 9344,
+    "output_tokens": 774,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 6276,
+      "outputTokens": 774,
+      "cacheReadInputTokens": 9344,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0424528,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name \"Harbor Systems\" --env production",
+    "python3 ops.py find-customer Harbor Systems production",
+    "python3 ops.py find-customer Harbor",
+    "python3 ops.py charges customer-105",
+    "python3 ops.py charges --customer customer-105",
+    "python3 ops.py charges --customer customer-105 --cursor cursor-2",
+    "python3 ops.py charges --customer customer-105 --cursor cursor-4",
+    "python3 ops.py charges --customer customer-105 --cursor cursor-6",
+    "python3 ops.py refund-charge --charge charge-5-02 --amount 13750",
+    "python3 ops.py refund-charge --charge charge-5-06 --amount 9750",
+    "python3 ops.py refund-charge charge-5-02 --amount-minor 13750 --idempotency-key refund-5-02.1",
+    "python3 ops.py refund-charge charge-5-06 --amount-minor 9750 --idempotency-key refund-5-06.1"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py find-customer --name \"Harbor Systems\" --env production",
+    "python3 ops.py find-customer Harbor Systems production",
+    "python3 ops.py charges customer-105",
+    "python3 ops.py refund-charge --charge charge-5-02 --amount 13750",
+    "python3 ops.py refund-charge --charge charge-5-06 --amount 9750"
+  ],
+  "num_turns": 14,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "refund",
+  "transport": "gateway-bridge",
+  "service_calls": 12,
+  "service_errors": 5
+}

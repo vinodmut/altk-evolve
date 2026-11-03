@@ -1,0 +1,969 @@
+{
+  "model": "Azure/gpt-4.1",
+  "scope": "Synthetic billing workflows: CSV exports, duplicate-charge refunds, and revenue reconciliation",
+  "learning": [
+    {
+      "label": "train-ledger",
+      "mode": "standard",
+      "objective": "correctness",
+      "task_correctness_passed": false,
+      "quality_passed": false,
+      "updates": [
+        {
+          "id": "1",
+          "type": "guideline",
+          "content": "Explicitly perform the required data reconciliation and report creation in code when no single-tool command exists to generate the final output in the expected format.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+            "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+            "support": 1,
+            "rationale": "When a CLI does not provide an all-in-one reconciliation/report command, the agent must synthesize the process using individual outputs to fulfill task requirements, including generating and saving the required report file.",
+            "category": "strategy",
+            "trigger": "When the available tooling lacks an integrated command to directly produce the required report or output artifact.",
+            "implementation_steps": [
+              "Extract the relevant data from all necessary source files (e.g., ledger, contract).",
+              "Apply the reconciliation rules step by step in code (such as Python), following all contract instructions.",
+              "Assemble the output into the required structure (e.g., report.json with all required keys and values).",
+              "Save the output to the specified file, ensuring it matches both content and naming requirements."
+            ],
+            "generation_method": "standard",
+            "evidence": "failure",
+            "processing": {
+              "operation_id": "248681dc-2266-4095-afe0-cd2bc0541cb1",
+              "profile_id": null,
+              "revision": null,
+              "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "standard",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "batch_id": "2-36",
+                "revision": "1",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T18:28:53.145652+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [],
+          "supersedes": false
+        }
+      ],
+      "skipped_processors": [],
+      "recording": {
+        "tool_calls": 17,
+        "tool_results": 17,
+        "paired_results": 17,
+        "rendered_observations": 17
+      }
+    },
+    {
+      "label": "train-ledger",
+      "mode": "consistency",
+      "objective": "correctness",
+      "task_correctness_passed": true,
+      "quality_passed": true,
+      "updates": [
+        {
+          "id": "2",
+          "type": "guideline",
+          "content": "Always reference command-specific --help output to determine required argument patterns and avoid misusing positional or named arguments.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+            "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+            "support": 1,
+            "rationale": "The agent initially guessed argument forms (e.g., '--name', '--environment') for commands, leading to repeated errors before consulting --help for the correct usage. Reviewing --help immediately can prevent wasted steps and errors.",
+            "category": "recovery",
+            "trigger": "When interacting with a command-line tool or API, especially after encountering argument or usage errors.",
+            "implementation_steps": [
+              "Upon encountering an error regarding command usage or invalid arguments, immediately invoke the tool's --help or the specific subcommand's --help.",
+              "Use the presented argument and usage structure as the basis for constructing further commands."
+            ],
+            "generation_method": "consistency-fast",
+            "evidence": "success",
+            "processing": {
+              "operation_id": "8be436ef-6231-4ce4-bdd2-cec85a829167",
+              "profile_id": null,
+              "revision": null,
+              "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "consistency",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "batch_id": "2-44",
+                "revision": "3",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T18:30:16.402084+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [],
+          "supersedes": false
+        },
+        {
+          "id": "3",
+          "type": "guideline",
+          "content": "When a filtering or search command returns insufficient results, broaden the query by using partial or fuzzy terms to discover possible candidates.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+            "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+            "support": 1,
+            "rationale": "The agent successfully found the intended account by searching for a partial term ('Studio') after direct queries for the exact account name did not yield results. This approach increases robustness in uncertain data naming environments.",
+            "category": "strategy",
+            "trigger": "When searches or lookups for identifiers return empty or incomplete results.",
+            "implementation_steps": [
+              "If a direct or exact name query yields no results, try partial substrings or case-insensitive variants relevant to the target.",
+              "Evaluate the returned list to identify the required entity, refining the filter as needed."
+            ],
+            "generation_method": "consistency-fast",
+            "evidence": "success",
+            "processing": {
+              "operation_id": "8be436ef-6231-4ce4-bdd2-cec85a829167",
+              "profile_id": null,
+              "revision": null,
+              "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "consistency",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "batch_id": "2-44",
+                "revision": "3",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T18:30:16.402084+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [],
+          "supersedes": false
+        },
+        {
+          "id": "4",
+          "type": "guideline",
+          "content": "Apply instructions from domain contracts or specifications in strict sequential order, resolving each clause before proceeding to downstream filters or computations.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+            "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+            "support": 1,
+            "rationale": "The agent followed the detailed contract protocol, especially collapsing events by revision before filtering by date and status, corresponding to the mandated order of operations and ensuring both corrections and voids are handled correctly.",
+            "category": "strategy",
+            "trigger": "When implementing a business or data processing workflow governed by an explicit procedural contract or specification.",
+            "implementation_steps": [
+              "Carefully read and extract each procedural step from the contract or ruleset.",
+              "Implement each filter or transformation step only after all mandated previous steps are resolved \u2014 for example, collapse by event revision before status/date filtering."
+            ],
+            "generation_method": "consistency-fast",
+            "evidence": "success",
+            "processing": {
+              "operation_id": "8be436ef-6231-4ce4-bdd2-cec85a829167",
+              "profile_id": null,
+              "revision": null,
+              "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "consistency",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "batch_id": "2-44",
+                "revision": "3",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+                "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T18:30:16.402084+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [],
+          "supersedes": false
+        }
+      ],
+      "skipped_processors": [],
+      "recording": {
+        "tool_calls": 20,
+        "tool_results": 20,
+        "paired_results": 20,
+        "rendered_observations": 20
+      }
+    }
+  ],
+  "promoted": [
+    {
+      "id": "1",
+      "content": "Explicitly perform the required data reconciliation and report creation in code when no single-tool command exists to generate the final output in the expected format.",
+      "candidate_id": "1"
+    },
+    {
+      "id": "2",
+      "content": "Always reference command-specific --help output to determine required argument patterns and avoid misusing positional or named arguments.",
+      "candidate_id": "2"
+    },
+    {
+      "id": "3",
+      "content": "Apply instructions from domain contracts or specifications in strict sequential order, resolving each clause before proceeding to downstream filters or computations.",
+      "candidate_id": "4"
+    }
+  ],
+  "transports": {
+    "direct-gateway": {
+      "export": {
+        "baseline": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        },
+        "evolve": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        }
+      },
+      "refund": {
+        "baseline": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        },
+        "evolve": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        }
+      },
+      "ledger": {
+        "baseline": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        },
+        "evolve": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        }
+      }
+    },
+    "gateway-bridge": {
+      "export": {
+        "baseline": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        },
+        "evolve": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        }
+      },
+      "refund": {
+        "baseline": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        },
+        "evolve": {
+          "passed": 0,
+          "trials": 0,
+          "agent_turns": 0,
+          "service_calls": 0,
+          "service_errors": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "trials_with_token_usage": 0,
+          "injection_matches_arm": false,
+          "details": []
+        }
+      },
+      "ledger": {
+        "baseline": {
+          "passed": 2,
+          "trials": 6,
+          "agent_turns": 124,
+          "service_calls": 45,
+          "service_errors": 23,
+          "input_tokens": 47879,
+          "output_tokens": 6452,
+          "trials_with_token_usage": 5,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "baseline-ledger_a",
+              "case": "ledger_a",
+              "passed": false,
+              "checks": {
+                "currency_totals": false,
+                "exact_event_ids": false,
+                "saved_report": false
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 121079,
+                  "EUR": 4348
+                },
+                "included_event_ids": [
+                  "evt-2-corrected",
+                  "evt-2-eur",
+                  "evt-2-eur-refund",
+                  "evt-2-moved",
+                  "evt-2-refund",
+                  "evt-2-utc-out"
+                ]
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 7,
+              "num_turns": 16
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "baseline-ledger_b",
+              "case": "ledger_b",
+              "passed": false,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": false
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 12828,
+                  "EUR": 4472
+                },
+                "included_event_ids": [
+                  "evt-3-corrected",
+                  "evt-3-eur",
+                  "evt-3-eur-refund",
+                  "evt-3-refund",
+                  "evt-3-utc-in"
+                ]
+              },
+              "injected_ids": [],
+              "service_calls": 6,
+              "service_errors": 3,
+              "num_turns": 9
+            },
+            {
+              "timed_out": true,
+              "turn_count_source": "partial_transcript",
+              "label": "baseline-ledger_c",
+              "case": "ledger_c",
+              "passed": false,
+              "checks": {
+                "currency_totals": false,
+                "exact_event_ids": false,
+                "saved_report": false
+              },
+              "answer": null,
+              "injected_ids": [],
+              "service_calls": 7,
+              "service_errors": 3,
+              "num_turns": 45
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "baseline-ledger_d",
+              "case": "ledger_d",
+              "passed": false,
+              "checks": {
+                "currency_totals": false,
+                "exact_event_ids": false,
+                "saved_report": false
+              },
+              "answer": null,
+              "injected_ids": [],
+              "service_calls": 4,
+              "service_errors": 1,
+              "num_turns": 21
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "baseline-ledger_e",
+              "case": "ledger_e",
+              "passed": true,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": true
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 13806,
+                  "EUR": 4844
+                },
+                "included_event_ids": [
+                  "evt-6-corrected",
+                  "evt-6-eur",
+                  "evt-6-eur-refund",
+                  "evt-6-refund",
+                  "evt-6-utc-in"
+                ]
+              },
+              "injected_ids": [],
+              "service_calls": 8,
+              "service_errors": 4,
+              "num_turns": 13
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "baseline-ledger_f",
+              "case": "ledger_f",
+              "passed": true,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": true
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 14132,
+                  "EUR": 4968
+                },
+                "included_event_ids": [
+                  "evt-7-corrected",
+                  "evt-7-eur",
+                  "evt-7-eur-refund",
+                  "evt-7-refund",
+                  "evt-7-utc-in"
+                ]
+              },
+              "injected_ids": [],
+              "service_calls": 9,
+              "service_errors": 5,
+              "num_turns": 20
+            }
+          ]
+        },
+        "evolve": {
+          "passed": 4,
+          "trials": 6,
+          "agent_turns": 85,
+          "service_calls": 34,
+          "service_errors": 15,
+          "input_tokens": 44507,
+          "output_tokens": 8284,
+          "trials_with_token_usage": 6,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "evolve-ledger_a",
+              "case": "ledger_a",
+              "passed": true,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": true
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 12502,
+                  "EUR": 4348
+                },
+                "included_event_ids": [
+                  "evt-2-corrected",
+                  "evt-2-eur",
+                  "evt-2-eur-refund",
+                  "evt-2-refund",
+                  "evt-2-utc-in"
+                ]
+              },
+              "injected_ids": [
+                "1",
+                "2",
+                "3"
+              ],
+              "service_calls": 5,
+              "service_errors": 1,
+              "num_turns": 12
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "evolve-ledger_b",
+              "case": "ledger_b",
+              "passed": true,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": true
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 12828,
+                  "EUR": 4472
+                },
+                "included_event_ids": [
+                  "evt-3-corrected",
+                  "evt-3-eur",
+                  "evt-3-eur-refund",
+                  "evt-3-refund",
+                  "evt-3-utc-in"
+                ]
+              },
+              "injected_ids": [
+                "1",
+                "2",
+                "3"
+              ],
+              "service_calls": 5,
+              "service_errors": 2,
+              "num_turns": 13
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "evolve-ledger_c",
+              "case": "ledger_c",
+              "passed": true,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": true
+              },
+              "answer": {
+                "totals_minor": {
+                  "EUR": 4596,
+                  "USD": 13154
+                },
+                "included_event_ids": [
+                  "evt-4-corrected",
+                  "evt-4-eur",
+                  "evt-4-eur-refund",
+                  "evt-4-refund",
+                  "evt-4-utc-in"
+                ]
+              },
+              "injected_ids": [
+                "1",
+                "2",
+                "3"
+              ],
+              "service_calls": 5,
+              "service_errors": 2,
+              "num_turns": 15
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "evolve-ledger_d",
+              "case": "ledger_d",
+              "passed": false,
+              "checks": {
+                "currency_totals": false,
+                "exact_event_ids": false,
+                "saved_report": false
+              },
+              "answer": null,
+              "injected_ids": [
+                "1",
+                "2",
+                "3"
+              ],
+              "service_calls": 5,
+              "service_errors": 2,
+              "num_turns": 11
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "evolve-ledger_e",
+              "case": "ledger_e",
+              "passed": false,
+              "checks": {
+                "currency_totals": false,
+                "exact_event_ids": false,
+                "saved_report": false
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 119281,
+                  "EUR": 4844
+                },
+                "included_event_ids": [
+                  "evt-6-corrected",
+                  "evt-6-eur",
+                  "evt-6-eur-refund",
+                  "evt-6-moved",
+                  "evt-6-refund",
+                  "evt-6-utc-out",
+                  "evt-6-void"
+                ]
+              },
+              "injected_ids": [
+                "1",
+                "2",
+                "3"
+              ],
+              "service_calls": 5,
+              "service_errors": 2,
+              "num_turns": 14
+            },
+            {
+              "timed_out": false,
+              "turn_count_source": "claude_result",
+              "label": "evolve-ledger_f",
+              "case": "ledger_f",
+              "passed": true,
+              "checks": {
+                "currency_totals": true,
+                "exact_event_ids": true,
+                "saved_report": true
+              },
+              "answer": {
+                "totals_minor": {
+                  "USD": 14132,
+                  "EUR": 4968
+                },
+                "included_event_ids": [
+                  "evt-7-corrected",
+                  "evt-7-eur",
+                  "evt-7-eur-refund",
+                  "evt-7-refund",
+                  "evt-7-utc-in"
+                ]
+              },
+              "injected_ids": [
+                "1",
+                "2",
+                "3"
+              ],
+              "service_calls": 9,
+              "service_errors": 6,
+              "num_turns": 20
+            }
+          ]
+        }
+      }
+    }
+  },
+  "recording_audit": {
+    "source": "recorded Cortex training session",
+    "original_rendered_observations": 0,
+    "fixed_rendered_observations": 17,
+    "original_includes_accounting_contract": false,
+    "fixed_includes_accounting_contract": true,
+    "cortex_merge": "4262d0a8",
+    "public_upstream": "8b0facd5",
+    "merge_tree": "028acc2ce16edc2b50254e3f62756d3d7e3e3479",
+    "binary_sha256": "75f77ac0e9022d2c3805fb2a5ad2e78cb5fc53f9957eb223257c65072dce6762"
+  },
+  "comparison_plan": {
+    "cases": [
+      "ledger_a",
+      "ledger_b",
+      "ledger_c",
+      "ledger_d",
+      "ledger_e",
+      "ledger_f"
+    ],
+    "guidelines": [
+      {
+        "id": "1",
+        "content": "Explicitly perform the required data reconciliation and report creation in code when no single-tool command exists to generate the final output in the expected format.",
+        "candidate_id": "1"
+      },
+      {
+        "id": "2",
+        "content": "Always reference command-specific --help output to determine required argument patterns and avoid misusing positional or named arguments.",
+        "candidate_id": "2"
+      },
+      {
+        "id": "3",
+        "content": "Apply instructions from domain contracts or specifications in strict sequential order, resolving each clause before proceeding to downstream filters or computations.",
+        "candidate_id": "4"
+      }
+    ],
+    "selection": "Reviewed from training only, before any held-out evaluation",
+    "primary": "Independent exact report correctness",
+    "secondary": "Agent turns and rejected service calls; report both even if worse",
+    "order": [
+      {
+        "case": "ledger_a",
+        "arms": [
+          "baseline",
+          "evolve"
+        ]
+      },
+      {
+        "case": "ledger_b",
+        "arms": [
+          "evolve",
+          "baseline"
+        ]
+      },
+      {
+        "case": "ledger_c",
+        "arms": [
+          "baseline",
+          "evolve"
+        ]
+      },
+      {
+        "case": "ledger_d",
+        "arms": [
+          "evolve",
+          "baseline"
+        ]
+      },
+      {
+        "case": "ledger_e",
+        "arms": [
+          "baseline",
+          "evolve"
+        ]
+      },
+      {
+        "case": "ledger_f",
+        "arms": [
+          "evolve",
+          "baseline"
+        ]
+      }
+    ]
+  }
+}

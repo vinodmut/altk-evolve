@@ -1,0 +1,15 @@
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --name --environment production"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: Workshop production"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: Workshop"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "charges", "ok": false, "detail": "the following arguments are required: --customer"}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": false, "detail": "unrecognized arguments: --charge"}
+{"action": "refund-charge", "ok": false, "detail": "unrecognized arguments: --charge"}
+{"action": "refund-charge", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": true, "detail": null}

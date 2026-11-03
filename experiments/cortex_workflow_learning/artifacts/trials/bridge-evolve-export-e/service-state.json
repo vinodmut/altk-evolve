@@ -1,0 +1,104 @@
+{
+  "family": "export",
+  "customers": [
+    {
+      "id": "sandbox-6",
+      "name": "Summit Labs",
+      "environment": "sandbox"
+    },
+    {
+      "id": "customer-106",
+      "name": "Summit Labs",
+      "environment": "production"
+    }
+  ],
+  "jobs": {},
+  "refunds": [],
+  "idempotency": {},
+  "invoices": [
+    {
+      "invoice_id": "invoice-6-1",
+      "customer_id": "customer-106",
+      "amount_minor": 1425,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-2",
+      "customer_id": "customer-106",
+      "amount_minor": 1600,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-3",
+      "customer_id": "customer-106",
+      "amount_minor": 1775,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-6-4",
+      "customer_id": "customer-106",
+      "amount_minor": 1950,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-5",
+      "customer_id": "customer-106",
+      "amount_minor": 2125,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-6",
+      "customer_id": "customer-106",
+      "amount_minor": 2300,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-6-7",
+      "customer_id": "customer-106",
+      "amount_minor": 2475,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-8",
+      "customer_id": "customer-106",
+      "amount_minor": 2650,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-9",
+      "customer_id": "customer-106",
+      "amount_minor": 2825,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-6-10",
+      "customer_id": "customer-106",
+      "amount_minor": 3000,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-11",
+      "customer_id": "customer-106",
+      "amount_minor": 3175,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-6-12",
+      "customer_id": "customer-106",
+      "amount_minor": 3350,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-6-13",
+      "customer_id": "customer-106",
+      "amount_minor": 3525,
+      "status": "open"
+    },
+    {
+      "invoice_id": "sandbox-invoice",
+      "customer_id": "sandbox-6",
+      "amount_minor": 999,
+      "status": "open"
+    }
+  ]
+}

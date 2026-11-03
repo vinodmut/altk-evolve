@@ -1,0 +1,259 @@
+{
+  "label": "train-ledger",
+  "mode": "consistency",
+  "objective": "correctness",
+  "task_correctness_passed": true,
+  "quality_passed": true,
+  "updates": [
+    {
+      "id": "2",
+      "type": "guideline",
+      "content": "Always reference command-specific --help output to determine required argument patterns and avoid misusing positional or named arguments.",
+      "event": "ADD",
+      "old_entity": null,
+      "metadata": {
+        "status": "candidate",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+        "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+        "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+        "support": 1,
+        "rationale": "The agent initially guessed argument forms (e.g., '--name', '--environment') for commands, leading to repeated errors before consulting --help for the correct usage. Reviewing --help immediately can prevent wasted steps and errors.",
+        "category": "recovery",
+        "trigger": "When interacting with a command-line tool or API, especially after encountering argument or usage errors.",
+        "implementation_steps": [
+          "Upon encountering an error regarding command usage or invalid arguments, immediately invoke the tool's --help or the specific subcommand's --help.",
+          "Use the presented argument and usage structure as the basis for constructing further commands."
+        ],
+        "generation_method": "consistency-fast",
+        "evidence": "success",
+        "processing": {
+          "operation_id": "8be436ef-6231-4ce4-bdd2-cec85a829167",
+          "profile_id": null,
+          "revision": null,
+          "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "Azure/gpt-4.1",
+              "custom_llm_provider": "openai"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "openai",
+                  "guidelines_mode": "consistency",
+                  "guidelines_model": "Azure/gpt-4.1",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "batch_id": "2-44",
+            "revision": "3",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-02T18:30:16.402084+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      },
+      "incoming_ids": [],
+      "supersedes": false
+    },
+    {
+      "id": "3",
+      "type": "guideline",
+      "content": "When a filtering or search command returns insufficient results, broaden the query by using partial or fuzzy terms to discover possible candidates.",
+      "event": "ADD",
+      "old_entity": null,
+      "metadata": {
+        "status": "candidate",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+        "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+        "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+        "support": 1,
+        "rationale": "The agent successfully found the intended account by searching for a partial term ('Studio') after direct queries for the exact account name did not yield results. This approach increases robustness in uncertain data naming environments.",
+        "category": "strategy",
+        "trigger": "When searches or lookups for identifiers return empty or incomplete results.",
+        "implementation_steps": [
+          "If a direct or exact name query yields no results, try partial substrings or case-insensitive variants relevant to the target.",
+          "Evaluate the returned list to identify the required entity, refining the filter as needed."
+        ],
+        "generation_method": "consistency-fast",
+        "evidence": "success",
+        "processing": {
+          "operation_id": "8be436ef-6231-4ce4-bdd2-cec85a829167",
+          "profile_id": null,
+          "revision": null,
+          "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "Azure/gpt-4.1",
+              "custom_llm_provider": "openai"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "openai",
+                  "guidelines_mode": "consistency",
+                  "guidelines_model": "Azure/gpt-4.1",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "batch_id": "2-44",
+            "revision": "3",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-02T18:30:16.402084+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      },
+      "incoming_ids": [],
+      "supersedes": false
+    },
+    {
+      "id": "4",
+      "type": "guideline",
+      "content": "Apply instructions from domain contracts or specifications in strict sequential order, resolving each clause before proceeding to downstream filters or computations.",
+      "event": "ADD",
+      "old_entity": null,
+      "metadata": {
+        "status": "candidate",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+        "source_task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+        "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+        "support": 1,
+        "rationale": "The agent followed the detailed contract protocol, especially collapsing events by revision before filtering by date and status, corresponding to the mandated order of operations and ensuring both corrections and voids are handled correctly.",
+        "category": "strategy",
+        "trigger": "When implementing a business or data processing workflow governed by an explicit procedural contract or specification.",
+        "implementation_steps": [
+          "Carefully read and extract each procedural step from the contract or ruleset.",
+          "Implement each filter or transformation step only after all mandated previous steps are resolved \u2014 for example, collapse by event revision before status/date filtering."
+        ],
+        "generation_method": "consistency-fast",
+        "evidence": "success",
+        "processing": {
+          "operation_id": "8be436ef-6231-4ce4-bdd2-cec85a829167",
+          "profile_id": null,
+          "revision": null,
+          "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "Azure/gpt-4.1",
+              "custom_llm_provider": "openai"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "openai",
+                  "guidelines_mode": "consistency",
+                  "guidelines_model": "Azure/gpt-4.1",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "batch_id": "2-44",
+            "revision": "3",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+            "task_id": "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-02T18:30:16.402084+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      },
+      "incoming_ids": [],
+      "supersedes": false
+    }
+  ],
+  "skipped_processors": [],
+  "recording": {
+    "tool_calls": 20,
+    "tool_results": 20,
+    "paired_results": 20,
+    "rendered_observations": 20
+  }
+}

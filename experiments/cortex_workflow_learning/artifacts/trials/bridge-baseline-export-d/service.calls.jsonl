@@ -1,0 +1,10 @@
+{"action": "export-invoices", "ok": false, "detail": "argument command: invalid choice: 'export-invoices' (choose from find-customer, begin-export, export-status, fetch-artifact, charges, refund-charge)"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --name --env production"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "begin-export", "ok": false, "detail": "the following arguments are required: --customer, --dataset"}
+{"action": "begin-export", "ok": true, "detail": null}
+{"action": "export-status", "ok": false, "detail": "unrecognized arguments: --job"}
+{"action": "export-status", "ok": true, "detail": null}
+{"action": "export-status", "ok": true, "detail": null}
+{"action": "fetch-artifact", "ok": false, "detail": "the following arguments are required: --output"}
+{"action": "fetch-artifact", "ok": true, "detail": null}

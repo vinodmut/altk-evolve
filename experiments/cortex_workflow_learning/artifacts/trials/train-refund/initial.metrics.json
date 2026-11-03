@@ -1,0 +1,336 @@
+{
+  "label": "train-refund",
+  "case": "refund_train",
+  "arm": "training",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "refunded_charge_ids": [
+      "charge-1-02",
+      "charge-1-06"
+    ],
+    "total_refunded_minor": 15500
+  },
+  "expected": {
+    "refunded_charge_ids": [
+      "charge-1-02",
+      "charge-1-06"
+    ],
+    "total_refunded_minor": 15500
+  },
+  "passed": true,
+  "checks": {
+    "exact_refund_operations": true,
+    "reported_refunds": true,
+    "all_charge_balances": true
+  },
+  "duration_seconds": 50.74,
+  "cost_usd": 0.047852799999999994,
+  "usage": {
+    "input_tokens": 7096,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 9344,
+    "output_tokens": 880,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7096,
+      "outputTokens": 880,
+      "cacheReadInputTokens": 9344,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.047852799999999994,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py list-charges --org 'Northwind Studio' --env production --json",
+    "python3 ops.py charges --org 'Northwind Studio' --env production --json",
+    "python3 ops.py find-customer --org 'Northwind Studio' --env production --json",
+    "python3 ops.py find-customer --org 'Northwind Studio'",
+    "python3 ops.py find-customer 'Northwind Studio'",
+    "python3 ops.py charges --customer customer-101 --json",
+    "python3 ops.py charges --customer customer-101",
+    "python3 ops.py charges --customer customer-101 --cursor cursor-2",
+    "python3 ops.py charges --customer customer-101 --cursor cursor-4",
+    "python3 ops.py charges --customer customer-101 --cursor cursor-6",
+    "python3 ops.py refund-charge charge-1-02 --amount 8750",
+    "python3 ops.py refund-charge charge-1-06 --amount 6750",
+    "python3 ops.py refund-charge charge-1-02 --amount-minor 8750 --idempotency-key charge-1-02-dup-refund",
+    "python3 ops.py refund-charge charge-1-06 --amount-minor 6750 --idempotency-key charge-1-06-dup-refund"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py list-charges --org 'Northwind Studio' --env production --json",
+    "python3 ops.py charges --org 'Northwind Studio' --env production --json",
+    "python3 ops.py find-customer --org 'Northwind Studio' --env production --json",
+    "python3 ops.py find-customer --org 'Northwind Studio'",
+    "python3 ops.py charges --customer customer-101 --json",
+    "python3 ops.py refund-charge charge-1-02 --amount 8750",
+    "python3 ops.py refund-charge charge-1-06 --amount 6750"
+  ],
+  "num_turns": 15,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 14,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:25.436143-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 16,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T10:54:55.640631-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 18,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:55.640631-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:55.640631-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 22,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:55.640631-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 24,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:55.640631-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 26,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:54:55.640631-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [],
+  "family": "refund",
+  "service_calls": 14,
+  "service_errors": 7
+}

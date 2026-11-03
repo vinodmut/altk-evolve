@@ -1,0 +1,276 @@
+{
+  "label": "evolve-refund-c",
+  "case": "refund_c",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "fe2e7218-e65d-4fc6-888b-e751eff83094",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": null,
+  "expected": {
+    "refunded_charge_ids": [
+      "charge-4-02",
+      "charge-4-06"
+    ],
+    "total_refunded_minor": 21500
+  },
+  "passed": false,
+  "checks": {
+    "exact_refund_operations": false,
+    "reported_refunds": false,
+    "all_charge_balances": false
+  },
+  "duration_seconds": 28.89,
+  "cost_usd": 0.030932,
+  "usage": {
+    "input_tokens": 5898,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 367,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 5898,
+      "outputTokens": 367,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.030932,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py refund-duplicate-captures --account production --org cedar_design --output json",
+    "python3 ops.py charges --account production --org cedar_design --output json",
+    "python3 ops.py find-customer --org cedar_design --output json",
+    "python3 ops.py find-customer --org cedar_design",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer cedar_design"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py refund-duplicate-captures --account production --org cedar_design --output json",
+    "python3 ops.py charges --account production --org cedar_design --output json",
+    "python3 ops.py find-customer --org cedar_design --output json",
+    "python3 ops.py find-customer --org cedar_design"
+  ],
+  "num_turns": 7,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 14,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:10:26.856589-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1"
+  ],
+  "family": "refund",
+  "service_calls": 5,
+  "service_errors": 4
+}

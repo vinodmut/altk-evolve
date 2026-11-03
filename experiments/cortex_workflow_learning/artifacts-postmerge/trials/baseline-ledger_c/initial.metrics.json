@@ -1,0 +1,369 @@
+{
+  "label": "baseline-ledger_c",
+  "case": "ledger_c",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "e7d0e290-d3c9-4886-a4fc-a43692c49e3a",
+  "exit_code": 124,
+  "subtype": "timeout",
+  "timed_out": true,
+  "turn_count_source": "partial_transcript",
+  "answer": null,
+  "expected": {
+    "totals_minor": {
+      "USD": 13154,
+      "EUR": 4596
+    },
+    "included_event_ids": [
+      "evt-4-corrected",
+      "evt-4-eur",
+      "evt-4-eur-refund",
+      "evt-4-refund",
+      "evt-4-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 240,
+  "cost_usd": null,
+  "usage": null,
+  "model_usage": null,
+  "bash_commands": [
+    "python3 ops.py reconcile --org CedarDesign --acct production --mo 2026-07 --output report.json",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --query CedarDesign",
+    "python3 ops.py find-customer -h",
+    "python3 ops.py find-customer CedarDesign",
+    "python3 ops.py find-customer 'Cedar Design'",
+    "python3 ops.py revenue-contract --org account-204 --env production",
+    "python3 ops.py revenue-contract -h",
+    "python3 ops.py ledger-export -h",
+    "python3 ops.py ledger-export --customer account-204 --output cedar_ledger.json",
+    "python3 ops.py revenue-contract > cedar_contract.json",
+    "head -40 cedar_ledger.json",
+    "head -60 cedar_ledger.json",
+    "jq '.[] | select(.occurred_at | startswith(\"2026-07\"))' cedar_ledger.json > cedar_july.json",
+    "jq -s '.' cedar_july.json > cedar_july_array.json",
+    "jq '.[].currency' cedar_july_array.json | sort | uniq -c",
+    "jq '[ .[] | {event_id, revision, kind, amount_minor, currency, status} ]' cedar_july_array.json > july_minified.json",
+    "jq '[ .[] | select(.status==\"settled\") ]' july_minified.json > july_settled.json",
+    "jq '[ .[] | select(.kind==\"capture\") ]' july_settled.json > july_captures.json",
+    "jq '[ .[] | select(.kind==\"refund\") ]' july_settled.json > july_refunds.json",
+    "jq '[.[].currency] | sort | uniq -c' july_captures.json",
+    "jq '.[].currency' july_captures.json | sort | uniq -c",
+    "jq '[.[].event_id] | sort | uniq' july_captures.json",
+    "jq '.[].event_id' july_captures.json | sort | uniq",
+    "jq '.[] | select(.event_id == \"evt-4-corrected\")' july_captures.json",
+    "jq '.[] | select(.event_id == \"evt-4-eur\")' july_captures.json",
+    "jq '.[] | select(.event_id == \"evt-4-moved\")' july_captures.json",
+    "jq '.[] | select(.event_id == \"evt-4-test\")' july_captures.json",
+    "jq '.[] | select(.event_id == \"evt-4-utc-out\")' july_captures.json",
+    "jq '.[] | select(.event_id == \"evt-4-void\")' july_captures.json",
+    "jq '.[].event_id' july_refunds.json | sort | uniq",
+    "jq '.[] | select(.event_id == \"evt-4-eur-refund\")' july_refunds.json",
+    "jq '.[] | select(.event_id == \"evt-4-refund\")' july_refunds.json",
+    "jq . cedar_contract.json",
+    "jq '[group_by(.event_id)[] | max_by(.revision)]' july_settled.json > july_deduped.json",
+    "jq '[ .[] | select(.kind==\"capture\") ]' july_deduped.json > july_captures_final.json",
+    "jq '[ .[] | select(.kind==\"refund\") ]' july_deduped.json > july_refunds_final.json",
+    "jq '[.[].event_id] | sort' july_deduped.json",
+    "jq '[map(select(.currency==\"USD\")) | map(.amount_minor * (if .kind==\"capture\" then 1 else -1 end)) | add]' july_deduped.json",
+    "jq '[map(select(.currency==\"EUR\")) | map(.amount_minor * (if .kind==\"capture\" then 1 else -1 end)) | add]' july_deduped.json",
+    "jq '[.[] | {event_id}]' july_deduped.json",
+    "jq '[.[] | .event_id] | sort' july_deduped.json > included_event_ids.json",
+    "jq '.' included_event_ids.json",
+    "jq -n '{totals_minor: {USD: 37254, EUR: 4596}, included_event_ids: [\"evt-4-corrected\", \"evt-4-eur\", \"evt-4-eur-refund\", \"evt-4-moved\", \"evt-4-refund\", \"evt-4-test\", \"evt-4-utc-out\", \"evt-4-void\"]}' > report.json",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --org CedarDesign --acct production --mo 2026-07 --output report.json",
+    "python3 ops.py find-customer --query CedarDesign",
+    "python3 ops.py revenue-contract --org account-204 --env production",
+    "jq '[.[].currency] | sort | uniq -c' july_captures.json",
+    "jq '[.[].event_id] | sort | uniq' july_captures.json"
+  ],
+  "num_turns": 45,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 37,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 43,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 45,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 47,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 49,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 51,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 53,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 55,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 57,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 59,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 61,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 63,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 65,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 67,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 69,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 71,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 73,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 75,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 77,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 79,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 81,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 83,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 85,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 87,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 89,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 7,
+  "service_errors": 3,
+  "recovered_from": "Claude project transcript; original driver did not save partial stdout on timeout"
+}

@@ -1,0 +1,186 @@
+{
+  "label": "bridge-baseline-export-e",
+  "case": "export_e",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "993d03fe-acc4-4fd4-9e8a-4ec52a11d701",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "file": "summitlabs_open_invoices.csv",
+    "rows": 9
+  },
+  "expected": {
+    "rows": 9,
+    "customer_id": "customer-106"
+  },
+  "passed": true,
+  "checks": {
+    "relative_output_file": true,
+    "exact_exported_rows": true,
+    "reported_row_count": true
+  },
+  "duration_seconds": 43.37,
+  "cost_usd": 0.04296559999999999,
+  "usage": {
+    "input_tokens": 7234,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8448,
+    "output_tokens": 617,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7234,
+      "outputTokens": 617,
+      "cacheReadInputTokens": 8448,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.04296559999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py export-invoices --status open --account SummitLabs --output summitlabs_open_invoices.csv --format csv",
+    "python3 ops.py find-customer --name SummitLabs",
+    "python3 ops.py find-customer SummitLabs",
+    "python3 ops.py find-customer summit labs",
+    "python3 ops.py find-customer SummitLabs",
+    "python3 ops.py find-customer summitlabs",
+    "python3 ops.py find-customer summit",
+    "python3 ops.py begin-export --customer customer-106 --type invoices --status open --format csv",
+    "python3 ops.py begin-export --customer customer-106 --dataset open-invoices",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 summitlabs_open_invoices.csv",
+    "python3 ops.py fetch-artifact artifact-1 --output summitlabs_open_invoices.csv"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py export-invoices --status open --account SummitLabs --output summitlabs_open_invoices.csv --format csv",
+    "python3 ops.py find-customer --name SummitLabs",
+    "python3 ops.py find-customer summit labs",
+    "python3 ops.py begin-export --customer customer-106 --type invoices --status open --format csv",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 summitlabs_open_invoices.csv"
+  ],
+  "num_turns": 15,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "export",
+  "transport": "gateway-bridge",
+  "service_calls": 14,
+  "service_errors": 6
+}

@@ -1,0 +1,308 @@
+{
+  "label": "baseline-export-b",
+  "case": "export_b",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "5fab6dd8-928f-4cdd-83a6-b8ffdf872efa",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "file": "orchid_open_invoices.csv",
+    "rows": 7
+  },
+  "expected": {
+    "rows": 7,
+    "customer_id": "customer-103"
+  },
+  "passed": true,
+  "checks": {
+    "relative_output_file": true,
+    "exact_exported_rows": true,
+    "reported_row_count": true
+  },
+  "duration_seconds": 28.38,
+  "cost_usd": 0.03987120000000001,
+  "usage": {
+    "input_tokens": 7141,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 4736,
+    "output_tokens": 518,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7141,
+      "outputTokens": 518,
+      "cacheReadInputTokens": 4736,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.03987120000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py export-invoices --account orchid-analytics --status open --format csv --output orchid_open_invoices.csv",
+    "python3 ops.py find-customer --name \"Orchid Analytics\"",
+    "python3 ops.py find-customer \"Orchid Analytics\"",
+    "python3 ops.py begin-export invoices --customer customer-103 --status open",
+    "python3 ops.py begin-export --customer customer-103 --dataset open-invoices",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 --format csv --output orchid_open_invoices.csv",
+    "python3 ops.py fetch-artifact artifact-1 orchid_open_invoices.csv",
+    "python3 ops.py fetch-artifact artifact-1 --output orchid_open_invoices.csv"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py export-invoices --account orchid-analytics --status open --format csv --output orchid_open_invoices.csv",
+    "python3 ops.py find-customer --name \"Orchid Analytics\"",
+    "python3 ops.py begin-export invoices --customer customer-103 --status open",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 --format csv --output orchid_open_invoices.csv",
+    "python3 ops.py fetch-artifact artifact-1 orchid_open_invoices.csv"
+  ],
+  "num_turns": 12,
+  "evidence": [
+    {
+      "seq": 2,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 14,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 16,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 18,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 22,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 24,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T10:58:06.457175-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [],
+  "family": "export",
+  "service_calls": 11,
+  "service_errors": 6
+}

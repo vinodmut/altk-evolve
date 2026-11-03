@@ -1,0 +1,103 @@
+**Step 1 - Action:**
+Bash(command="python3 ops.py reconcile --account NorthwindStudio-production --month 2026-04 --output report.json", description="Reconcile April 2026 revenue for Northwind Studio production account and save report as report.json")
+
+**Step 2 - Action:**
+Bash(command="python3 ops.py --help", description="Show usage information for the ops.py local billing workflow service")
+
+**Step 3 - Action:**
+Bash(command="python3 ops.py find-customer --name NorthwindStudio --environment production", description="Find Northwind Studio production account details")
+
+**Step 4 - Action:**
+Bash(command="python3 ops.py find-customer NorthwindStudio production", description="Find NorthwindStudio account in production environment")
+
+**Step 5 - Action:**
+Bash(command="python3 ops.py find-customer NorthwindStudio", description="Search for NorthwindStudio customer account")
+
+**Step 6 - Action:**
+Bash(command="python3 ops.py find-customer --help", description="Show help for the find-customer command")
+
+**Step 7 - Action:**
+Bash(command="python3 ops.py find-customer NorthwindStudio-production", description="Find customer account for NorthwindStudio-production")
+
+**Step 8 - Action:**
+Bash(command="python3 ops.py find-customer Studio", description="Find customer accounts containing 'Studio'")
+
+**Step 9 - Action:**
+Bash(command="python3 ops.py revenue-contract --account account-201", description="Show accounting contract for Northwind Studio production account")
+
+**Step 10 - Action:**
+Bash(command="python3 ops.py revenue-contract account-201", description="Show revenue contract for Northwind Studio production account")
+
+**Step 11 - Action:**
+Bash(command="python3 ops.py revenue-contract --help", description="Show help for revenue-contract command")
+
+**Step 12 - Action:**
+Bash(command="python3 ops.py ledger-export --help", description="Show help for the ledger-export command")
+
+**Step 13 - Action:**
+Bash(command="python3 ops.py ledger-export --customer account-201 --output ledger.json", description="Export ledger for Northwind Studio production account to ledger.json")
+
+**Step 14 - Action:**
+Bash(command="python3 ops.py revenue-contract > contract.json", description="Save the canonical revenue accounting contract to contract.json")
+
+**Step 15 - Action:**
+Bash(command="cat ledger.json", description="Show contents of ledger.json to examine April 2026 entries")
+
+**Step 16 - Action:**
+Bash(command="cat contract.json", description="Show canonical revenue accounting contract to understand reconciliation rules")
+
+**Step 17 - Action:**
+Bash(command="python3 ops.py revenue-contract", description="Print revenue contract for reference as required for reconciliation")
+
+**Step 18 - Reasoning:**
+To reconcile Northwind Studio's 2026-04 revenue using the billing contract, I will use the provided rules and ledger data:
+
+### Steps (according to the contract):
+
+1. **Collapse by event_id and greatest revision** across the ledger.
+2. **Use only the production account** (`account-201`).
+3. **Include only status=settled**; ignore pending or voided.
+4. **Filter events that happened in April 2026 (UTC boundaries):**  
+   - Include: `2026-04-01T00:00:00Z` ≤ occurred_at < `2026-05-01T00:00:00Z` (after offsets applied).
+5. **Sum captures, subtract refunds** per currency.  
+6. **Report totals_minor and included_event_ids.**
+
+---
+
+### 1. Collapse rows by event_id (pick greatest revision):
+
+- **evt-1-corrected:** Pick revision 2.  
+  Amount: 12875 USD  
+  Status: settled  
+  Date: 2026-04-15  
+- **evt-1-refund:** revision 1, 950 USD, settled, 2026-04-15  
+- **evt-1-eur:** revision 1, 4325 EUR, settled, 2026-04-15
+- **evt-1-void:** revision 2 is voided (ignore, per contract), so nothing for this event.
+- **evt-1-pending:** status pending ⇒ ignore.
+- **evt-1-test:** wrong customer_id ⇒ ignore.
+- **evt-1-utc-in:** 2026-03-31T23:30:00-02:00 = 2026-04-01T01:30:00Z ⇒ included.
+- **evt-1-utc-out:** 2026-04-01T00:30:00+02:00 = 2026-03-31T22:30:00Z ⇒ excluded, outside April.
+- **evt-1-upper-bound:** 2026-05-01T00:00:00Z ⇒ excluded.
+- **evt-1-moved:** greatest revision is 2, occurred_at 2026-05-02; so this event moves out of April (contract: "move it out"). So exclude.
+- **evt-1-eur-refund:** revision 1, 101 EUR, settled, 2026-04-15
+
+---
+
+### 2. Filter per contract & sum:
+
+#### Now filter by:
+- customer_id = `account-201`
+- status = `settled`
+- event_id used only once (revision collapse)
+- date in UTC:  
+  - `evt-1-corrected` (2026-04-15)
+  - `evt-1-refund` (2026-04-15)
+  - `evt-1-eur` (2026-04-15)
+  - `evt-1-eur-refund` (2026-04-15)
+  - `evt-1-utc-in` (2026-04-01T01:30:00Z, included)
+
+---
+
+#### Distinct valid events in April 2026:
+
+- evt-1-corrected: capture, 12875 USD, settled, 202...

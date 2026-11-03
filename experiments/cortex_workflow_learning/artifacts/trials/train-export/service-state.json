@@ -1,0 +1,80 @@
+{
+  "family": "export",
+  "customers": [
+    {
+      "id": "sandbox-1",
+      "name": "Northwind Studio",
+      "environment": "sandbox"
+    },
+    {
+      "id": "customer-101",
+      "name": "Northwind Studio",
+      "environment": "production"
+    }
+  ],
+  "jobs": {
+    "export-job-1": {
+      "customer_id": "customer-101",
+      "polls": 2,
+      "artifact_id": "artifact-1"
+    }
+  },
+  "refunds": [],
+  "idempotency": {},
+  "invoices": [
+    {
+      "invoice_id": "invoice-1-1",
+      "customer_id": "customer-101",
+      "amount_minor": 1425,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-1-2",
+      "customer_id": "customer-101",
+      "amount_minor": 1600,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-1-3",
+      "customer_id": "customer-101",
+      "amount_minor": 1775,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-1-4",
+      "customer_id": "customer-101",
+      "amount_minor": 1950,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-1-5",
+      "customer_id": "customer-101",
+      "amount_minor": 2125,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-1-6",
+      "customer_id": "customer-101",
+      "amount_minor": 2300,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-1-7",
+      "customer_id": "customer-101",
+      "amount_minor": 2475,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-1-8",
+      "customer_id": "customer-101",
+      "amount_minor": 2650,
+      "status": "open"
+    },
+    {
+      "invoice_id": "sandbox-invoice",
+      "customer_id": "sandbox-1",
+      "amount_minor": 999,
+      "status": "open"
+    }
+  ]
+}

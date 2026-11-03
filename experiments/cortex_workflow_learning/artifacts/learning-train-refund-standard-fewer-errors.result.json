@@ -1,0 +1,177 @@
+{
+  "label": "train-refund",
+  "mode": "standard",
+  "objective": "fewer-errors",
+  "task_correctness_passed": true,
+  "quality_passed": false,
+  "updates": [
+    {
+      "id": "2",
+      "type": "guideline",
+      "content": "Always consult the command-line tool's --help output before attempting API calls to ensure correct command names, arguments, and required options.",
+      "event": "ADD",
+      "old_entity": null,
+      "metadata": {
+        "status": "candidate",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+        "source_task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+        "task_description": "Refund duplicate captured charges for Northwind Studio's production account. For each order, keep its oldest captured charge and refund the remaining unrefunded amount on later captured duplicates. Do not change other charges. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with refunded_charge_ids (sorted) and total_refunded_minor.",
+        "support": 1,
+        "rationale": "This prevents issuing invalid or rejected API calls due to incorrect commands or missing required arguments, improving both efficiency and task completion quality.",
+        "category": "strategy",
+        "trigger": "When preparing to interact with a new or unfamiliar command-line API or when a previous call fails unexpectedly.",
+        "implementation_steps": [
+          "Run the tool with --help (e.g., python3 ops.py --help) at the start.",
+          "Review the available commands and required arguments for your intended actions.",
+          "Only construct and attempt calls using documented commands and options."
+        ],
+        "generation_method": "standard",
+        "evidence": "failure",
+        "processing": {
+          "operation_id": "b2cb5b0f-4730-4c23-8114-18d2d1e1c3e2",
+          "profile_id": null,
+          "revision": null,
+          "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "Azure/gpt-4.1",
+              "custom_llm_provider": "openai"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "openai",
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "Azure/gpt-4.1",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+            "batch_id": "3-27",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+            "task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-02T16:58:59.911514+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      },
+      "incoming_ids": [
+        "Unprocessed_Entity_0"
+      ],
+      "supersedes": false
+    },
+    {
+      "id": "3",
+      "type": "guideline",
+      "content": "When an API call fails or is rejected, parse the error message to identify missing or invalid arguments, and immediately revise your command accordingly before retrying.",
+      "event": "ADD",
+      "old_entity": null,
+      "metadata": {
+        "status": "candidate",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+        "source_task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+        "task_description": "Refund duplicate captured charges for Northwind Studio's production account. For each order, keep its oldest captured charge and refund the remaining unrefunded amount on later captured duplicates. Do not change other charges. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with refunded_charge_ids (sorted) and total_refunded_minor.",
+        "support": 1,
+        "rationale": "Promptly adapting to explicit error details minimizes repeated failures and rejected calls, ensuring smooth task progression and adherence to task quality objectives.",
+        "category": "recovery",
+        "trigger": "Whenever an API invocation returns an error, especially about invalid choices or missing arguments.",
+        "implementation_steps": [
+          "Read the error message for clues about the mistake (e.g., missing required arguments, invalid command).",
+          "Update your command to fix the error indicated by the message.",
+          "Re-issue the corrected command before continuing the task."
+        ],
+        "generation_method": "standard",
+        "evidence": "failure",
+        "processing": {
+          "operation_id": "b2cb5b0f-4730-4c23-8114-18d2d1e1c3e2",
+          "profile_id": null,
+          "revision": null,
+          "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "Azure/gpt-4.1",
+              "custom_llm_provider": "openai"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "openai",
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "Azure/gpt-4.1",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+            "batch_id": "3-27",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+            "task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-02T16:58:59.911514+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      },
+      "incoming_ids": [
+        "Unprocessed_Entity_1"
+      ],
+      "supersedes": false
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "family": "refund",
+  "customers": [
+    {
+      "id": "sandbox-4",
+      "name": "Cedar Design",
+      "environment": "sandbox"
+    },
+    {
+      "id": "customer-104",
+      "name": "Cedar Design",
+      "environment": "production"
+    }
+  ],
+  "jobs": {},
+  "refunds": [
+    {
+      "charge_id": "charge-4-06",
+      "amount_minor": 9000,
+      "idempotency_key": "refund-4-06-full"
+    }
+  ],
+  "idempotency": {
+    "refund-4-06-full": {
+      "charge_id": "charge-4-06",
+      "amount_minor": 9000,
+      "idempotency_key": "refund-4-06-full"
+    }
+  },
+  "charges": [
+    {
+      "id": "charge-4-01",
+      "customer_id": "customer-104",
+      "order_id": "order-4-A",
+      "status": "captured",
+      "created_at": 1,
+      "amount_minor": 15000,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-4-02",
+      "customer_id": "customer-104",
+      "order_id": "order-4-A",
+      "status": "captured",
+      "created_at": 2,
+      "amount_minor": 15000,
+      "refunded_minor": 2500
+    },
+    {
+      "id": "charge-4-03",
+      "customer_id": "customer-104",
+      "order_id": "order-4-B",
+      "status": "authorized",
+      "created_at": 1,
+      "amount_minor": 9000,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-4-04",
+      "customer_id": "customer-104",
+      "order_id": "order-4-B",
+      "status": "captured",
+      "created_at": 2,
+      "amount_minor": 9000,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-4-05",
+      "customer_id": "customer-104",
+      "order_id": "order-4-A",
+      "status": "reversed",
+      "created_at": 3,
+      "amount_minor": 15000,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-4-06",
+      "customer_id": "customer-104",
+      "order_id": "order-4-B",
+      "status": "captured",
+      "created_at": 3,
+      "amount_minor": 9000,
+      "refunded_minor": 9000
+    },
+    {
+      "id": "charge-4-07",
+      "customer_id": "customer-104",
+      "order_id": "order-4-C",
+      "status": "captured",
+      "created_at": 4,
+      "amount_minor": 4000,
+      "refunded_minor": 0
+    }
+  ]
+}

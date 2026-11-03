@@ -1,0 +1,140 @@
+{
+  "recorded_at": "2026-11-02T17:55:31.335454+00:00",
+  "model": "Azure/gpt-4.1",
+  "task": "Refund duplicate captured charges for Willow Works production, preserving oldest captured charges and other balances.",
+  "selection": "Selected positive case after reviewing all six matched bridge cases; overall results remain mixed.",
+  "training": "Northwind Studio invoice export with measured no-rejected-calls quality feedback; successful task correctness recorded separately.",
+  "guideline": {
+    "id": "1",
+    "content": "Consult command-specific help before issuing API commands, especially when encountering unfamiliar or ambiguous arguments.",
+    "candidate_id": "1"
+  },
+  "required_compatibility": "Cortex then local system-text bridge then configured model gateway. Both arms use the same bridge.",
+  "arms": {
+    "baseline": {
+      "label": "bridge-baseline-refund-f",
+      "session_id": "eff98341-8f5d-4025-ab87-7d039a2e0d8a",
+      "case": "refund_f",
+      "answer": {
+        "refunded_charge_ids": [
+          "charge-7-02",
+          "charge-7-06"
+        ],
+        "total_refunded_minor": 27500
+      },
+      "expected": {
+        "refunded_charge_ids": [
+          "charge-7-02",
+          "charge-7-06"
+        ],
+        "total_refunded_minor": 27500
+      },
+      "passed": true,
+      "checks": {
+        "exact_refund_operations": true,
+        "reported_refunds": true,
+        "all_charge_balances": true
+      },
+      "service_calls": 15,
+      "service_errors": 6,
+      "num_turns": 16,
+      "bash_commands": [
+        "python3 ops.py list_orders --account-id WillowWorksProd",
+        "python3 ops.py charges --account-id WillowWorksProd",
+        "python3 ops.py find-customer --account-id WillowWorksProd",
+        "python3 ops.py find-customer --name 'Willow Works'",
+        "python3 ops.py find-customer WillowWorksProd",
+        "python3 ops.py find-customer WillowWorks",
+        "python3 ops.py find-customer Willow",
+        "python3 ops.py charges --customer customer-107",
+        "python3 ops.py charges --customer customer-107 --cursor cursor-2",
+        "python3 ops.py charges --customer customer-107 --cursor cursor-4",
+        "python3 ops.py charges --customer customer-107 --cursor cursor-6",
+        "python3 ops.py refund-charge charge-7-02 --amount-minor 16250",
+        "python3 ops.py refund-charge charge-7-06 --amount-minor 11250",
+        "python3 ops.py refund-charge charge-7-02 --amount-minor 16250 --idempotency-key refund-f-7-02",
+        "python3 ops.py refund-charge charge-7-06 --amount-minor 11250 --idempotency-key refund-f-7-06"
+      ],
+      "injected_ids": [],
+      "first_request": {
+        "seq": 1,
+        "phase": "request",
+        "evolve": null,
+        "invocations": []
+      },
+      "all_requests_rewritten": false
+    },
+    "evolve": {
+      "label": "bridge-evolve-refund-f",
+      "session_id": "e7f82069-09bd-4f3c-9caf-7cc0b1cd0064",
+      "case": "refund_f",
+      "answer": {
+        "refunded_charge_ids": [
+          "charge-7-02",
+          "charge-7-06"
+        ],
+        "total_refunded_minor": 27500
+      },
+      "expected": {
+        "refunded_charge_ids": [
+          "charge-7-02",
+          "charge-7-06"
+        ],
+        "total_refunded_minor": 27500
+      },
+      "passed": true,
+      "checks": {
+        "exact_refund_operations": true,
+        "reported_refunds": true,
+        "all_charge_balances": true
+      },
+      "service_calls": 7,
+      "service_errors": 0,
+      "num_turns": 12,
+      "bash_commands": [
+        "python3 ops.py --help",
+        "python3 ops.py find-customer --help",
+        "python3 ops.py find-customer \"Willow Works\"",
+        "python3 ops.py charges --help",
+        "python3 ops.py charges --customer customer-107",
+        "python3 ops.py charges --customer customer-107 --cursor cursor-2",
+        "python3 ops.py charges --customer customer-107 --cursor cursor-4",
+        "python3 ops.py charges --customer customer-107 --cursor cursor-6",
+        "python3 ops.py refund-charge --help",
+        "python3 ops.py refund-charge charge-7-02 --amount-minor 16250 --idempotency-key refund-02-all-rest",
+        "python3 ops.py refund-charge charge-7-06 --amount-minor 11250 --idempotency-key refund-06-all"
+      ],
+      "injected_ids": [
+        "1"
+      ],
+      "first_request": {
+        "seq": 1,
+        "phase": "request",
+        "evolve": {
+          "injected": true,
+          "ids": [
+            "1"
+          ],
+          "revisions": [
+            1
+          ],
+          "sources": [
+            "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+          ],
+          "cached": false,
+          "fetchedAt": "2026-11-02T11:52:21.724615-06:00"
+        },
+        "invocations": [
+          {
+            "plugin": "evolve",
+            "action": "modify",
+            "phase": "request",
+            "reason": "body_rewritten",
+            "path": "/v1/messages"
+          }
+        ]
+      },
+      "all_requests_rewritten": true
+    }
+  }
+}

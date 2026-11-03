@@ -1,0 +1,417 @@
+{
+  "label": "bridge-evolve-export-d",
+  "case": "export_d",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "8beb57be-de01-4a46-b61e-b6f6b39fd554",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "file": "open-invoices-harbor-prod.csv",
+    "rows": 8
+  },
+  "expected": {
+    "rows": 8,
+    "customer_id": "customer-105"
+  },
+  "passed": true,
+  "checks": {
+    "relative_output_file": true,
+    "exact_exported_rows": true,
+    "reported_row_count": true
+  },
+  "duration_seconds": 32.8,
+  "cost_usd": 0.0420128,
+  "usage": {
+    "input_tokens": 7431,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 6144,
+    "output_tokens": 553,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7431,
+      "outputTokens": 553,
+      "cacheReadInputTokens": 6144,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0420128,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py export-invoices --account harbor-prod --status open --output open-invoices-harbor-prod.csv",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer harbor-prod",
+    "python3 ops.py find-customer \"Harbor Systems\"",
+    "python3 ops.py begin-export customer-105 open-invoices",
+    "python3 ops.py begin-export --customer customer-105 --dataset open-invoices",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 open-invoices-harbor-prod.csv",
+    "python3 ops.py fetch-artifact --output open-invoices-harbor-prod.csv artifact-1"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py export-invoices --account harbor-prod --status open --output open-invoices-harbor-prod.csv",
+    "python3 ops.py begin-export customer-105 open-invoices",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 open-invoices-harbor-prod.csv"
+  ],
+  "num_turns": 12,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:48:18.258911-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1"
+  ],
+  "family": "export",
+  "transport": "gateway-bridge",
+  "service_calls": 10,
+  "service_errors": 4
+}

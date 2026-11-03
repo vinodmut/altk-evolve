@@ -1,0 +1,14 @@
+[
+  {
+    "shape": "blocks",
+    "expected": "visible-34a8eb94fe8a4d9d8d8062143b273ccc",
+    "answer": "FIRST_BLOCK",
+    "passed": false
+  },
+  {
+    "shape": "string",
+    "expected": "visible-34a8eb94fe8a4d9d8d8062143b273ccc",
+    "answer": "visible-34a8eb94fe8a4d9d8d8062143b273ccc",
+    "passed": true
+  }
+]

@@ -1,0 +1,92 @@
+{
+  "label": "train-export",
+  "mode": "standard",
+  "objective": "fewer-errors",
+  "task_correctness_passed": true,
+  "quality_passed": false,
+  "updates": [
+    {
+      "id": "1",
+      "type": "guideline",
+      "content": "Consult command-specific help before issuing API commands, especially when encountering unfamiliar or ambiguous arguments.",
+      "event": "ADD",
+      "old_entity": null,
+      "metadata": {
+        "status": "candidate",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+        "source_task_id": "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31",
+        "task_description": "Prepare a complete CSV export of open invoices for Northwind Studio's production account. Save the export in this directory. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with file (relative path) and rows (number of data rows).",
+        "support": 1,
+        "rationale": "This prevents rejected API calls by ensuring correct syntax and argument usage for each command, reducing trial-and-error and task delays.",
+        "category": "strategy",
+        "trigger": "When preparing to use a new or unclear command, or after an API call is rejected due to invalid arguments or unknown options.",
+        "implementation_steps": [
+          "Invoke the --help option for the specific command to review required arguments and options.",
+          "Adjust the command invocation to match the documented syntax before re-attempting the API call."
+        ],
+        "generation_method": "standard",
+        "evidence": "failure",
+        "processing": {
+          "operation_id": "71d0c9ea-b84e-41a5-a339-67fa91799962",
+          "profile_id": null,
+          "revision": null,
+          "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "Azure/gpt-4.1",
+              "custom_llm_provider": "openai"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "openai",
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "Azure/gpt-4.1",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+            "batch_id": "3-31",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+            "task_id": "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-02T16:57:37.631242+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      },
+      "incoming_ids": [
+        "Unprocessed_Entity_0"
+      ],
+      "supersedes": false
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "source": "recorded Cortex training session",
+  "original_rendered_observations": 0,
+  "fixed_rendered_observations": 17,
+  "original_includes_accounting_contract": false,
+  "fixed_includes_accounting_contract": true,
+  "cortex_merge": "4262d0a8",
+  "public_upstream": "8b0facd5",
+  "merge_tree": "028acc2ce16edc2b50254e3f62756d3d7e3e3479",
+  "binary_sha256": "75f77ac0e9022d2c3805fb2a5ad2e78cb5fc53f9957eb223257c65072dce6762"
+}

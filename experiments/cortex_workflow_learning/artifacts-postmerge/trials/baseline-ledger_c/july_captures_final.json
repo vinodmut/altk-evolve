@@ -1,0 +1,50 @@
+[
+  {
+    "event_id": "evt-4-corrected",
+    "revision": 2,
+    "kind": "capture",
+    "amount_minor": 14000,
+    "currency": "USD",
+    "status": "settled"
+  },
+  {
+    "event_id": "evt-4-eur",
+    "revision": 1,
+    "kind": "capture",
+    "amount_minor": 4700,
+    "currency": "EUR",
+    "status": "settled"
+  },
+  {
+    "event_id": "evt-4-moved",
+    "revision": 1,
+    "kind": "capture",
+    "amount_minor": 3333,
+    "currency": "USD",
+    "status": "settled"
+  },
+  {
+    "event_id": "evt-4-test",
+    "revision": 1,
+    "kind": "capture",
+    "amount_minor": 6666,
+    "currency": "USD",
+    "status": "settled"
+  },
+  {
+    "event_id": "evt-4-utc-out",
+    "revision": 1,
+    "kind": "capture",
+    "amount_minor": 5555,
+    "currency": "USD",
+    "status": "settled"
+  },
+  {
+    "event_id": "evt-4-void",
+    "revision": 1,
+    "kind": "capture",
+    "amount_minor": 8800,
+    "currency": "USD",
+    "status": "settled"
+  }
+]

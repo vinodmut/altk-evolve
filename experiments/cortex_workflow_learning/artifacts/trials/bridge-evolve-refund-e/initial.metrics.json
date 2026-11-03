@@ -1,0 +1,427 @@
+{
+  "label": "bridge-evolve-refund-e",
+  "case": "refund_e",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "cb5f2806-a68a-4ab7-9e81-2916eb214f9f",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "refunded_charge_ids": [
+      "charge-6-02",
+      "charge-6-06"
+    ],
+    "total_refunded_minor": 25500
+  },
+  "expected": {
+    "refunded_charge_ids": [
+      "charge-6-02",
+      "charge-6-06"
+    ],
+    "total_refunded_minor": 25500
+  },
+  "passed": true,
+  "checks": {
+    "exact_refund_operations": true,
+    "reported_refunds": true,
+    "all_charge_balances": true
+  },
+  "duration_seconds": 46.51,
+  "cost_usd": 0.0433752,
+  "usage": {
+    "input_tokens": 6303,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 9216,
+    "output_tokens": 816,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 6303,
+      "outputTokens": 816,
+      "cacheReadInputTokens": 9216,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0433752,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py refund-duplicates --production --format json",
+    "python3 ops.py charges --production --format json",
+    "python3 ops.py find-customer --name 'Summit Labs' --format json",
+    "python3 ops.py find-customer 'Summit Labs'",
+    "python3 ops.py charges --customer customer-106 --format json",
+    "python3 ops.py charges --customer customer-106",
+    "python3 ops.py charges --customer customer-106 --cursor cursor-2",
+    "python3 ops.py charges --customer customer-106 --cursor cursor-4",
+    "python3 ops.py charges --customer customer-106 --cursor cursor-6",
+    "python3 ops.py refund-charge charge-6-02 --amount-minor 15000",
+    "python3 ops.py refund-charge charge-6-06 --amount-minor 10500",
+    "python3 ops.py refund-charge charge-6-02 --amount-minor 15000 --idempotency-key refund-e-charge-6-02",
+    "python3 ops.py refund-charge charge-6-06 --amount-minor 10500 --idempotency-key refund-e-charge-6-06"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py refund-duplicates --production --format json",
+    "python3 ops.py charges --production --format json",
+    "python3 ops.py find-customer --name 'Summit Labs' --format json",
+    "python3 ops.py charges --customer customer-106 --format json",
+    "python3 ops.py refund-charge charge-6-02 --amount-minor 15000",
+    "python3 ops.py refund-charge charge-6-06 --amount-minor 10500"
+  ],
+  "num_turns": 14,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:51:34.660047-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T11:52:06.478913-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:52:06.478913-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T11:52:06.478913-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1"
+  ],
+  "family": "refund",
+  "transport": "gateway-bridge",
+  "service_calls": 13,
+  "service_errors": 6
+}

@@ -1,0 +1,164 @@
+{
+  "label": "bridge-baseline-refund-e",
+  "case": "refund_e",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "f7cff823-5054-497b-8baf-833c24478884",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "refunded_charge_ids": [
+      "charge-6-02",
+      "charge-6-06"
+    ],
+    "total_refunded_minor": 25500
+  },
+  "expected": {
+    "refunded_charge_ids": [
+      "charge-6-02",
+      "charge-6-06"
+    ],
+    "total_refunded_minor": 25500
+  },
+  "passed": true,
+  "checks": {
+    "exact_refund_operations": true,
+    "reported_refunds": true,
+    "all_charge_balances": true
+  },
+  "duration_seconds": 32.59,
+  "cost_usd": 0.03870160000000001,
+  "usage": {
+    "input_tokens": 6105,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 7808,
+    "output_tokens": 636,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 6105,
+      "outputTokens": 636,
+      "cacheReadInputTokens": 7808,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.03870160000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name 'Summit Labs' --env prod",
+    "python3 ops.py find-customer 'Summit Labs'",
+    "python3 ops.py charges --customer-id customer-106",
+    "python3 ops.py charges --customer customer-106",
+    "python3 ops.py charges --customer customer-106 --cursor cursor-2",
+    "python3 ops.py charges --customer customer-106 --cursor cursor-4",
+    "python3 ops.py charges --customer customer-106 --cursor cursor-6",
+    "python3 ops.py refund-charge --charge charge-6-02 --amount 15000",
+    "python3 ops.py refund-charge --charge charge-6-06 --amount 10500",
+    "python3 ops.py refund-charge --amount-minor 15000 --idempotency-key refund-dupe-6-02 charge-6-02",
+    "python3 ops.py refund-charge --amount-minor 10500 --idempotency-key refund-dupe-6-06 charge-6-06"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py find-customer --name 'Summit Labs' --env prod",
+    "python3 ops.py charges --customer-id customer-106",
+    "python3 ops.py refund-charge --charge charge-6-02 --amount 15000",
+    "python3 ops.py refund-charge --charge charge-6-06 --amount 10500"
+  ],
+  "num_turns": 13,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "refund",
+  "transport": "gateway-bridge",
+  "service_calls": 11,
+  "service_errors": 4
+}

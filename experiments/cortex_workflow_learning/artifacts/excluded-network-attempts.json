@@ -1,0 +1,10 @@
+[
+  {
+    "label": "bridge-baseline-export-f",
+    "session_id": "e60b0b5d-4c72-4b35-9d01-7f3bd1eebad6",
+    "reason": "Claude returned API Error: Unable to connect to API (EPERM). Zero input/output tokens and service calls. Cortex session readback returned 404.",
+    "classification": "sandbox network failure before model execution",
+    "included_in_task_metrics": false,
+    "retry_label": "bridge-baseline-export-f-retry"
+  }
+]

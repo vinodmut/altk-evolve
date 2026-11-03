@@ -1,0 +1,172 @@
+{
+  "label": "bridge-baseline-export-f-retry",
+  "case": "export_f",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "8e3e9f5b-7b75-461a-9f95-4fb7b9a1ef91",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "file": "open-invoices-willowworks-production.csv",
+    "rows": 10
+  },
+  "expected": {
+    "rows": 10,
+    "customer_id": "customer-107"
+  },
+  "passed": true,
+  "checks": {
+    "relative_output_file": true,
+    "exact_exported_rows": true,
+    "reported_row_count": true
+  },
+  "duration_seconds": 64.39,
+  "cost_usd": 0.038524,
+  "usage": {
+    "input_tokens": 6218,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8960,
+    "output_tokens": 593,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 6218,
+      "outputTokens": 593,
+      "cacheReadInputTokens": 8960,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.038524,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py export-invoices --account production --org 'Willow Works' --status open --format csv --output open-invoices-willowworks-production.csv",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --org 'Willow Works' --env production",
+    "python3 ops.py find-customer 'Willow Works' production",
+    "python3 ops.py find-customer 'Willow Works'",
+    "python3 ops.py begin-export customer-107 open-invoices",
+    "python3 ops.py begin-export --customer customer-107 --dataset open-invoices",
+    "python3 ops.py export-status --job-id export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 open-invoices-willowworks-production.csv",
+    "python3 ops.py fetch-artifact --output open-invoices-willowworks-production.csv artifact-1"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py export-invoices --account production --org 'Willow Works' --status open --format csv --output open-invoices-willowworks-production.csv",
+    "python3 ops.py find-customer --org 'Willow Works' --env production",
+    "python3 ops.py find-customer 'Willow Works' production",
+    "python3 ops.py begin-export customer-107 open-invoices",
+    "python3 ops.py export-status --job-id export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 open-invoices-willowworks-production.csv"
+  ],
+  "num_turns": 13,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "export",
+  "transport": "gateway-bridge",
+  "service_calls": 11,
+  "service_errors": 6
+}

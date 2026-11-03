@@ -1,0 +1,6 @@
+{"action": "reconcile-revenue", "ok": false, "detail": "argument command: invalid choice: 'reconcile-revenue' (choose from find-customer, revenue-contract, ledger-export, begin-export, export-status, fetch-artifact, charges, refund-charge)"}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: --account=orchid-analytics-prod --period=2026-06"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: account-203"}
+{"action": "revenue-contract", "ok": true, "detail": null}
+{"action": "ledger-export", "ok": true, "detail": null}

@@ -1,0 +1,187 @@
+{
+  "label": "bridge-baseline-refund-f",
+  "case": "refund_f",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "eff98341-8f5d-4025-ab87-7d039a2e0d8a",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "refunded_charge_ids": [
+      "charge-7-02",
+      "charge-7-06"
+    ],
+    "total_refunded_minor": 27500
+  },
+  "expected": {
+    "refunded_charge_ids": [
+      "charge-7-02",
+      "charge-7-06"
+    ],
+    "total_refunded_minor": 27500
+  },
+  "passed": true,
+  "checks": {
+    "exact_refund_operations": true,
+    "reported_refunds": true,
+    "all_charge_balances": true
+  },
+  "duration_seconds": 66.11,
+  "cost_usd": 0.0480648,
+  "usage": {
+    "input_tokens": 7784,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 9344,
+    "output_tokens": 753,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7784,
+      "outputTokens": 753,
+      "cacheReadInputTokens": 9344,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0480648,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py list_orders --account-id WillowWorksProd",
+    "python3 ops.py charges --account-id WillowWorksProd",
+    "python3 ops.py find-customer --account-id WillowWorksProd",
+    "python3 ops.py find-customer --name 'Willow Works'",
+    "python3 ops.py find-customer WillowWorksProd",
+    "python3 ops.py find-customer WillowWorks",
+    "python3 ops.py find-customer Willow",
+    "python3 ops.py charges --customer customer-107",
+    "python3 ops.py charges --customer customer-107 --cursor cursor-2",
+    "python3 ops.py charges --customer customer-107 --cursor cursor-4",
+    "python3 ops.py charges --customer customer-107 --cursor cursor-6",
+    "python3 ops.py refund-charge charge-7-02 --amount-minor 16250",
+    "python3 ops.py refund-charge charge-7-06 --amount-minor 11250",
+    "python3 ops.py refund-charge charge-7-02 --amount-minor 16250 --idempotency-key refund-f-7-02",
+    "python3 ops.py refund-charge charge-7-06 --amount-minor 11250 --idempotency-key refund-f-7-06"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py list_orders --account-id WillowWorksProd",
+    "python3 ops.py charges --account-id WillowWorksProd",
+    "python3 ops.py find-customer --account-id WillowWorksProd",
+    "python3 ops.py find-customer --name 'Willow Works'",
+    "python3 ops.py refund-charge charge-7-02 --amount-minor 16250",
+    "python3 ops.py refund-charge charge-7-06 --amount-minor 11250"
+  ],
+  "num_turns": 16,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "refund",
+  "transport": "gateway-bridge",
+  "service_calls": 15,
+  "service_errors": 6
+}

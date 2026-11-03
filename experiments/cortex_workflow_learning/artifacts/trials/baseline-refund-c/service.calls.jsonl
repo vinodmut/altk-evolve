@@ -1,0 +1,14 @@
+{"action": "list-charges", "ok": false, "detail": "argument command: invalid choice: 'list-charges' (choose from find-customer, begin-export, export-status, fetch-artifact, charges, refund-charge)"}
+{"action": "charges", "ok": false, "detail": "the following arguments are required: --customer"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --account --env production"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --account"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "charges", "ok": false, "detail": "unrecognized arguments: --json"}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": false, "detail": "unrecognized arguments: --charge"}
+{"action": "refund-charge", "ok": true, "detail": null}

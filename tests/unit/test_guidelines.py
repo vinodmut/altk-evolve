@@ -350,6 +350,98 @@ class TestParseOpenaiAgentsTrajectory:
         assert result["function_calls"][0]["name"] == "get_weather"
         assert result["function_calls"][0]["call_id"] == "call_1"
         assert 'get_weather(city="Paris")' in result["trajectory_summary"]
+        assert "Tool result (observed output):\n18C sunny" in result["steps_list"][0]
+
+    def test_tool_errors_and_parallel_results_stay_with_their_calls(self):
+        messages = [
+            {"role": "user", "content": "Export invoices"},
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {"id": "a", "type": "function", "function": {"name": "Bash", "arguments": '{"command":"export --customer-id 1"}'}},
+                    {"id": "b", "type": "function", "function": {"name": "Bash", "arguments": '{"command":"export --help"}'}},
+                ],
+            },
+            {"role": "tool", "tool_call_id": "b", "content": "usage: export --customer ACCOUNT --output FILE"},
+            {"role": "tool", "tool_call_id": "a", "content": "[error] unrecognized arguments: --customer-id"},
+            {"role": "tool", "tool_call_id": "unknown", "content": "UNRELATED RESULT"},
+        ]
+        result = parse_openai_agents_trajectory(messages)
+        assert result["num_steps"] == 2
+        assert len(result["steps_list"]) == 2
+        assert "[error] unrecognized arguments" in result["steps_list"][0]
+        assert "usage: export --customer" not in result["steps_list"][0]
+        assert "usage: export --customer" in result["steps_list"][1]
+        assert "[error]" not in result["steps_list"][1]
+        assert "UNRELATED RESULT" not in result["trajectory_summary"]
+        assert result["trajectory_summary"] == "\n\n".join(result["steps_list"])
+
+    def test_long_call_cannot_crowd_out_the_observed_tool_output(self):
+        from altk_evolve.config.guideline_runtime import GuidelineRuntime
+
+        messages = [
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {
+                        "id": "a",
+                        "type": "function",
+                        "function": {"name": "Bash", "arguments": json.dumps({"command": "x" * 8000})},
+                    }
+                ],
+            },
+            {"role": "tool", "tool_call_id": "a", "content": "ERROR_MARKER " + "y" * 8000},
+        ]
+        result = parse_openai_agents_trajectory(messages, options=GuidelineRuntime(trajectory_max_step_chars=100))
+        assert "ERROR_MARKER" in result["trajectory_summary"]
+        assert "x" * 51 not in result["trajectory_summary"]
+        assert "y" * 51 not in result["trajectory_summary"]
+        assert messages[-1]["content"].endswith("y" * 8000)
+
+    def test_agents_sdk_call_keeps_its_structured_tool_result(self):
+        messages = [
+            {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "function_call",
+                        "id": "a",
+                        "function": {
+                            "name": "export_status",
+                            "arguments": '{"job_id":"job-1"}',
+                        },
+                    }
+                ],
+            },
+            {"role": "tool", "tool_call_id": "a", "content": {"state": "ready", "artifact_id": "artifact-1"}},
+        ]
+        result = parse_openai_agents_trajectory(messages)
+        assert result["num_steps"] == 1
+        assert '"artifact_id": "artifact-1"' in result["steps_list"][0]
+
+    @patch("altk_evolve.llm.guidelines.guidelines.completion")
+    def test_observed_tool_output_reaches_the_standard_generation_prompt(self, mock_completion, monkeypatch):
+        monkeypatch.setattr("altk_evolve.config.evolve.evolve_config.segmentation_enabled", False)
+        mock_completion.return_value = _mock_completion_response({"guidelines": []})
+        messages = [
+            {"role": "user", "content": "Reconcile revenue"},
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {
+                        "id": "contract",
+                        "type": "function",
+                        "function": {"name": "Bash", "arguments": '{"command":"ops.py revenue-contract"}'},
+                    }
+                ],
+            },
+            {"role": "tool", "tool_call_id": "contract", "content": "Refund amounts are positive magnitudes; subtract them."},
+        ]
+        generate_guidelines(messages)
+        assert "Refund amounts are positive magnitudes; subtract them." in mock_completion.call_args.kwargs["messages"][0]["content"]
 
     def test_native_tool_call_with_json_array_arguments_falls_back_to_raw(self):
         """arguments decoding to a JSON array (not an object) must not crash — .items()

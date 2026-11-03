@@ -1,0 +1,7 @@
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": true, "detail": null}

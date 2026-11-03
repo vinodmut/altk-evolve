@@ -1,0 +1,285 @@
+{
+  "label": "baseline-ledger_d",
+  "case": "ledger_d",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "15b0e7b3-4336-4479-a069-a9b19bc723c3",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": null,
+  "expected": {
+    "totals_minor": {
+      "USD": 13480,
+      "EUR": 4720
+    },
+    "included_event_ids": [
+      "evt-5-corrected",
+      "evt-5-eur",
+      "evt-5-eur-refund",
+      "evt-5-refund",
+      "evt-5-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 104.15,
+  "cost_usd": 0.097308,
+  "usage": {
+    "input_tokens": 11109,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 56960,
+    "output_tokens": 2074,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 11109,
+      "outputTokens": 2074,
+      "cacheReadInputTokens": 56960,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.097308,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer \"Harbor Systems\"",
+    "python3 ops.py revenue-contract account-205",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer account-205 --output temp-ledger.json",
+    "cat temp-ledger.json",
+    "python3 ops.py revenue-contract > contract.json && cat contract.json",
+    "date -u -d '2026-08-01T00:00:00Z' +%s",
+    "gdate -u -d '2026-08-01T00:00:00Z' +%s",
+    "gdate -u -d '2026-09-01T00:00:00Z' +%s",
+    "cat temp-ledger.json | jq '.[] | {event_id,revision,customer_id,kind,amount_minor,currency,status,occurred_at}'",
+    "python3 -c \"import json;from dateutil import parser;ledger=json.load(open('temp-ledger.json'));evt={};lo,hi=1785542400,1788220800;for row in ledger: k=row['event_id']; r=evt.setdefault(k,[]); r.append(row); filt=lambda r: r['customer_id']=='account-205' and r['status']=='settled' and lo<=parser.parse(r['occurred_at']).timestamp()<hi; coll={}; included=[]; from collections import defaultdict; totals=defaultdict(int); for k,rows in evt.items(): m=max(rows,key=lambda r:r['revision']); if filt(m): included.append(m['event_id']); sign=1 if m['kind']=='capture' else -1; totals[m['currency']]+=sign*m['amount_minor']; out={\"totals_minor\":dict(totals), \"included_event_ids\":sorted(set(included))}; json.dump(out,open('report.json','w')); print(json.dumps(out,indent=2))\"",
+    "cat temp-ledger.json | jq '.' > norm-ledger.json",
+    "python3 -c \"import json;from dateutil import parser;ledger=json.load(open('norm-ledger.json'));evt={};lo,hi=1785542400,1788220800;for row in ledger: k=row['event_id']; r=evt.setdefault(k,[]); r.append(row); def filt(r): return r['customer_id']=='account-205' and r['status']=='settled' and lo<=parser.parse(r['occurred_at']).timestamp()<hi; included=[]; from collections import defaultdict; totals=defaultdict(int); for k,rows in evt.items(): m=max(rows,key=lambda r:r['revision']); if filt(m): included.append(m['event_id']); sign=1 if m['kind']=='capture' else -1; totals[m['currency']]+=sign*m['amount_minor']; out={'totals_minor':dict(totals), 'included_event_ids':sorted(set(included))}; json.dump(out,open('report.json','w')); print(json.dumps(out,indent=2))\"",
+    "python3 -c \"import json; from dateutil import parser; from collections import defaultdict; ledger = json.load(open('norm-ledger.json')); evt = {}; lo, hi = 1785542400, 1788220800; for row in ledger: k = row['event_id']; r = evt.setdefault(k, []); r.append(row); def filt(r): return r['customer_id'] == 'account-205' and r['status'] == 'settled' and lo <= parser.parse(r['occurred_at']).timestamp() < hi; included = []; totals = defaultdict(int); for k, rows in evt.items(): m = max(rows, key=lambda r: r['revision']); if filt(m): included.append(m['event_id']); sign = 1 if m['kind'] == 'capture' else -1; totals[m['currency']] += sign * m['amount_minor']; out = {'totals_minor': dict(totals), 'included_event_ids': sorted(set(included))}; json.dump(out, open('report.json', 'w')); print(json.dumps(out, indent=2))\"",
+    "python3 -c \"import json; from dateutil import parser; from collections import defaultdict; ledger = json.load(open('norm-ledger.json')); evt = {}; lo, hi = 1785542400, 1788220800; def filt(r): return r['customer_id'] == 'account-205' and r['status'] == 'settled' and lo <= parser.parse(r['occurred_at']).timestamp() < hi; for row in ledger: k = row['event_id']; r = evt.setdefault(k, []); r.append(row); included = []; totals = defaultdict(int); for k, rows in evt.items(): m = max(rows, key=lambda r: r['revision']); if filt(m): included.append(m['event_id']); sign = 1 if m['kind'] == 'capture' else -1; totals[m['currency']] += sign * m['amount_minor']; out = {'totals_minor': dict(totals), 'included_event_ids': sorted(set(included))}; json.dump(out, open('report.json', 'w')); print(json.dumps(out, indent=2))\"",
+    "python3 fix_revenue_report.py",
+    "python3"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py revenue-contract account-205",
+    "date -u -d '2026-08-01T00:00:00Z' +%s",
+    "python3 -c \"import json;from dateutil import parser;ledger=json.load(open('temp-ledger.json'));evt={};lo,hi=1785542400,1788220800;for row in ledger: k=row['event_id']; r=evt.setdefault(k,[]); r.append(row); filt=lambda r: r['customer_id']=='account-205' and r['status']=='settled' and lo<=parser.parse(r['occurred_at']).timestamp()<hi; coll={}; included=[]; from collections import defaultdict; totals=defaultdict(int); for k,rows in evt.items(): m=max(rows,key=lambda r:r['revision']); if filt(m): included.append(m['event_id']); sign=1 if m['kind']=='capture' else -1; totals[m['currency']]+=sign*m['amount_minor']; out={\"totals_minor\":dict(totals), \"included_event_ids\":sorted(set(included))}; json.dump(out,open('report.json','w')); print(json.dumps(out,indent=2))\"",
+    "python3 -c \"import json;from dateutil import parser;ledger=json.load(open('norm-ledger.json'));evt={};lo,hi=1785542400,1788220800;for row in ledger: k=row['event_id']; r=evt.setdefault(k,[]); r.append(row); def filt(r): return r['customer_id']=='account-205' and r['status']=='settled' and lo<=parser.parse(r['occurred_at']).timestamp()<hi; included=[]; from collections import defaultdict; totals=defaultdict(int); for k,rows in evt.items(): m=max(rows,key=lambda r:r['revision']); if filt(m): included.append(m['event_id']); sign=1 if m['kind']=='capture' else -1; totals[m['currency']]+=sign*m['amount_minor']; out={'totals_minor':dict(totals), 'included_event_ids':sorted(set(included))}; json.dump(out,open('report.json','w')); print(json.dumps(out,indent=2))\"",
+    "python3 -c \"import json; from dateutil import parser; from collections import defaultdict; ledger = json.load(open('norm-ledger.json')); evt = {}; lo, hi = 1785542400, 1788220800; for row in ledger: k = row['event_id']; r = evt.setdefault(k, []); r.append(row); def filt(r): return r['customer_id'] == 'account-205' and r['status'] == 'settled' and lo <= parser.parse(r['occurred_at']).timestamp() < hi; included = []; totals = defaultdict(int); for k, rows in evt.items(): m = max(rows, key=lambda r: r['revision']); if filt(m): included.append(m['event_id']); sign = 1 if m['kind'] == 'capture' else -1; totals[m['currency']] += sign * m['amount_minor']; out = {'totals_minor': dict(totals), 'included_event_ids': sorted(set(included))}; json.dump(out, open('report.json', 'w')); print(json.dumps(out, indent=2))\"",
+    "python3 -c \"import json; from dateutil import parser; from collections import defaultdict; ledger = json.load(open('norm-ledger.json')); evt = {}; lo, hi = 1785542400, 1788220800; def filt(r): return r['customer_id'] == 'account-205' and r['status'] == 'settled' and lo <= parser.parse(r['occurred_at']).timestamp() < hi; for row in ledger: k = row['event_id']; r = evt.setdefault(k, []); r.append(row); included = []; totals = defaultdict(int); for k, rows in evt.items(): m = max(rows, key=lambda r: r['revision']); if filt(m): included.append(m['event_id']); sign = 1 if m['kind'] == 'capture' else -1; totals[m['currency']] += sign * m['amount_minor']; out = {'totals_minor': dict(totals), 'included_event_ids': sorted(set(included))}; json.dump(out, open('report.json', 'w')); print(json.dumps(out, indent=2))\"",
+    "python3 fix_revenue_report.py"
+  ],
+  "num_turns": 21,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 32,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 37,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 38,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 42,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 45,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 46,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 49,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 50,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 53,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 54,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 57,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 4,
+  "service_errors": 1
+}

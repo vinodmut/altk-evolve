@@ -1,0 +1,34 @@
+{
+  "exit_code": 0,
+  "session_id": "fc7b1e5e-efb4-4734-8331-211d30086d7f",
+  "result": "Consult command-specific help before issuing API commands, especially when encountering unfamiliar or ambiguous arguments.",
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T11:23:20.348004-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ]
+}

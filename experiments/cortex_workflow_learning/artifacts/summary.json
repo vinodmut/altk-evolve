@@ -1,0 +1,1009 @@
+{
+  "model": "Azure/gpt-4.1",
+  "scope": "Synthetic operational workflows: asynchronous CSV export and paginated duplicate-charge refunds",
+  "learning": [
+    {
+      "label": "train-export",
+      "mode": "standard",
+      "training_passed": true,
+      "updates": []
+    },
+    {
+      "label": "train-export",
+      "mode": "standard",
+      "objective": "fewer-errors",
+      "task_correctness_passed": true,
+      "quality_passed": false,
+      "updates": [
+        {
+          "id": "1",
+          "type": "guideline",
+          "content": "Consult command-specific help before issuing API commands, especially when encountering unfamiliar or ambiguous arguments.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+            "source_task_id": "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31",
+            "task_description": "Prepare a complete CSV export of open invoices for Northwind Studio's production account. Save the export in this directory. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with file (relative path) and rows (number of data rows).",
+            "support": 1,
+            "rationale": "This prevents rejected API calls by ensuring correct syntax and argument usage for each command, reducing trial-and-error and task delays.",
+            "category": "strategy",
+            "trigger": "When preparing to use a new or unclear command, or after an API call is rejected due to invalid arguments or unknown options.",
+            "implementation_steps": [
+              "Invoke the --help option for the specific command to review required arguments and options.",
+              "Adjust the command invocation to match the documented syntax before re-attempting the API call."
+            ],
+            "generation_method": "standard",
+            "evidence": "failure",
+            "processing": {
+              "operation_id": "71d0c9ea-b84e-41a5-a339-67fa91799962",
+              "profile_id": null,
+              "revision": null,
+              "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "standard",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+                "batch_id": "3-31",
+                "revision": "2",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+                "task_id": "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T16:57:37.631242+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [
+            "Unprocessed_Entity_0"
+          ],
+          "supersedes": false
+        }
+      ]
+    },
+    {
+      "label": "train-refund",
+      "mode": "standard",
+      "objective": "fewer-errors",
+      "task_correctness_passed": true,
+      "quality_passed": false,
+      "updates": [
+        {
+          "id": "2",
+          "type": "guideline",
+          "content": "Always consult the command-line tool's --help output before attempting API calls to ensure correct command names, arguments, and required options.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+            "source_task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+            "task_description": "Refund duplicate captured charges for Northwind Studio's production account. For each order, keep its oldest captured charge and refund the remaining unrefunded amount on later captured duplicates. Do not change other charges. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with refunded_charge_ids (sorted) and total_refunded_minor.",
+            "support": 1,
+            "rationale": "This prevents issuing invalid or rejected API calls due to incorrect commands or missing required arguments, improving both efficiency and task completion quality.",
+            "category": "strategy",
+            "trigger": "When preparing to interact with a new or unfamiliar command-line API or when a previous call fails unexpectedly.",
+            "implementation_steps": [
+              "Run the tool with --help (e.g., python3 ops.py --help) at the start.",
+              "Review the available commands and required arguments for your intended actions.",
+              "Only construct and attempt calls using documented commands and options."
+            ],
+            "generation_method": "standard",
+            "evidence": "failure",
+            "processing": {
+              "operation_id": "b2cb5b0f-4730-4c23-8114-18d2d1e1c3e2",
+              "profile_id": null,
+              "revision": null,
+              "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "standard",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+                "batch_id": "3-27",
+                "revision": "2",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+                "task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T16:58:59.911514+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [
+            "Unprocessed_Entity_0"
+          ],
+          "supersedes": false
+        },
+        {
+          "id": "3",
+          "type": "guideline",
+          "content": "When an API call fails or is rejected, parse the error message to identify missing or invalid arguments, and immediately revise your command accordingly before retrying.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+            "source_task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+            "task_description": "Refund duplicate captured charges for Northwind Studio's production account. For each order, keep its oldest captured charge and refund the remaining unrefunded amount on later captured duplicates. Do not change other charges. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with refunded_charge_ids (sorted) and total_refunded_minor.",
+            "support": 1,
+            "rationale": "Promptly adapting to explicit error details minimizes repeated failures and rejected calls, ensuring smooth task progression and adherence to task quality objectives.",
+            "category": "recovery",
+            "trigger": "Whenever an API invocation returns an error, especially about invalid choices or missing arguments.",
+            "implementation_steps": [
+              "Read the error message for clues about the mistake (e.g., missing required arguments, invalid command).",
+              "Update your command to fix the error indicated by the message.",
+              "Re-issue the corrected command before continuing the task."
+            ],
+            "generation_method": "standard",
+            "evidence": "failure",
+            "processing": {
+              "operation_id": "b2cb5b0f-4730-4c23-8114-18d2d1e1c3e2",
+              "profile_id": null,
+              "revision": null,
+              "digest": "0ae03d25a7d72e2f0312162913bd371fb69bd116c6d8c50031b7d5363df0cfd3",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "standard",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+                "batch_id": "3-27",
+                "revision": "2",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "e1f5c47d-3cc3-4ce1-9815-d86a122052f1",
+                "task_id": "cortex:e1f5c47d-3cc3-4ce1-9815-d86a122052f1:27",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T16:58:59.911514+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [
+            "Unprocessed_Entity_1"
+          ],
+          "supersedes": false
+        }
+      ]
+    },
+    {
+      "label": "train-export",
+      "mode": "consistency",
+      "objective": "correctness",
+      "task_correctness_passed": true,
+      "quality_passed": true,
+      "updates": []
+    },
+    {
+      "label": "train-export",
+      "mode": "consistency",
+      "objective": "correctness",
+      "task_correctness_passed": true,
+      "quality_passed": true,
+      "updates": [
+        {
+          "id": "4",
+          "type": "guideline",
+          "content": "Before executing a complex export or fetch operation, consult the command-line tool's help output (e.g., --help flags for the main script and relevant subcommands) to verify required parameters, understand command structure, and reduce unnecessary trial-and-error steps.",
+          "event": "ADD",
+          "old_entity": null,
+          "metadata": {
+            "status": "candidate",
+            "creation_mode": "auto-cortex",
+            "agent_id": "claude-code",
+            "session_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+            "source_task_id": "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31",
+            "task_description": "Prepare a complete CSV export of open invoices for Northwind Studio's production account. Save the export in this directory. Use the local service via `python3 ops.py`; its --help describes the API. Return JSON with file (relative path) and rows (number of data rows).",
+            "support": 1,
+            "rationale": "Repeated unsuccessful or redundant calls (such as multiple forms of customer lookup and attempting export commands without confirmed parameters) increase operational overhead and risk errors. Systematically consulting the tool's help ensures that the agent uses correct command structures and parameters from the outset.",
+            "category": "strategy",
+            "trigger": "When preparing to use a command-line utility with multiple subcommands or nontrivial parameter structures, especially with unfamiliar or infrequently used commands.",
+            "implementation_steps": [
+              "Before performing main actions (e.g., export, fetch, job status), run the tool's --help and relevant subcommand --help options.",
+              "Use the obtained documentation to plan the full sequence, confirm parameter requirements, and avoid speculative or redundant calls."
+            ],
+            "generation_method": "consistency-fast",
+            "evidence": "success",
+            "processing": {
+              "operation_id": "2ccdb3ce-3c0d-4b81-95d6-55ba3d744f1c",
+              "profile_id": null,
+              "revision": null,
+              "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+              "manifest": {
+                "conflict_resolution": {
+                  "conflict_resolution_model": "Azure/gpt-4.1",
+                  "custom_llm_provider": "openai"
+                },
+                "processors": [
+                  {
+                    "api_version": 1,
+                    "config": {
+                      "analysis_config": null,
+                      "consistency_method": "fast",
+                      "custom_llm_provider": "openai",
+                      "guidelines_mode": "consistency",
+                      "guidelines_model": "Azure/gpt-4.1",
+                      "segmentation_enabled": false,
+                      "trajectory_max_step_chars": 2000,
+                      "trajectory_max_steps": 50,
+                      "trajectory_tail_steps": 0
+                    },
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "version": "1"
+                  }
+                ],
+                "schema_version": 1
+              },
+              "source_batch": {
+                "source": "cortex",
+                "conversation_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+                "batch_id": "3-31",
+                "revision": "3",
+                "scope": "cortex",
+                "aliases": [],
+                "alias_revisions": {}
+              },
+              "processor_id": "guidelines"
+            },
+            "sources": [
+              {
+                "conversation_id": "63fcc9fa-d23c-484a-b298-120382a3cca2",
+                "task_id": "cortex:63fcc9fa-d23c-484a-b298-120382a3cca2:31",
+                "user_id": null,
+                "agent_id": "claude-code",
+                "status": "supporting",
+                "associated_at": "2026-11-02T17:13:59.289905+00:00"
+              }
+            ],
+            "provenance_incomplete": false,
+            "memory_revision": 1
+          },
+          "incoming_ids": [],
+          "supersedes": false
+        }
+      ],
+      "skipped_processors": []
+    }
+  ],
+  "promoted": [
+    {
+      "id": "1",
+      "content": "Consult command-specific help before issuing API commands, especially when encountering unfamiliar or ambiguous arguments.",
+      "candidate_id": "1"
+    }
+  ],
+  "transports": {
+    "direct-gateway": {
+      "export": {
+        "baseline": {
+          "passed": 3,
+          "trials": 3,
+          "agent_turns": 39,
+          "service_calls": 33,
+          "service_errors": 18,
+          "input_tokens": 19661,
+          "output_tokens": 1674,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "baseline-export-a",
+              "case": "export_a",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "open_invoices_mapleworkshop_prod.csv",
+                "rows": 6
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 6,
+              "num_turns": 15
+            },
+            {
+              "label": "baseline-export-b",
+              "case": "export_b",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "orchid_open_invoices.csv",
+                "rows": 7
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 6,
+              "num_turns": 12
+            },
+            {
+              "label": "baseline-export-c",
+              "case": "export_c",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "invoices_cedar_design_open.csv",
+                "rows": 8
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 6,
+              "num_turns": 12
+            }
+          ]
+        },
+        "evolve": {
+          "passed": 3,
+          "trials": 3,
+          "agent_turns": 43,
+          "service_calls": 32,
+          "service_errors": 15,
+          "input_tokens": 17846,
+          "output_tokens": 1848,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "evolve-export-a",
+              "case": "export_a",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "open_invoices_maple_workshop.csv",
+                "rows": 6
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 11,
+              "service_errors": 5,
+              "num_turns": 15
+            },
+            {
+              "label": "evolve-export-b",
+              "case": "export_b",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "open_invoices_orchidanalytics.csv",
+                "rows": 7
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 10,
+              "service_errors": 5,
+              "num_turns": 13
+            },
+            {
+              "label": "evolve-export-c",
+              "case": "export_c",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "invoices_cedar_design_open.csv",
+                "rows": 8
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 11,
+              "service_errors": 5,
+              "num_turns": 15
+            }
+          ]
+        }
+      },
+      "refund": {
+        "baseline": {
+          "passed": 2,
+          "trials": 3,
+          "agent_turns": 60,
+          "service_calls": 40,
+          "service_errors": 19,
+          "input_tokens": 25096,
+          "output_tokens": 3150,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "baseline-refund-a",
+              "case": "refund_a",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-2-02",
+                  "charge-2-06"
+                ],
+                "total_refunded_minor": 17500
+              },
+              "injected_ids": [],
+              "service_calls": 15,
+              "service_errors": 8,
+              "num_turns": 17
+            },
+            {
+              "label": "baseline-refund-b",
+              "case": "refund_b",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-3-02",
+                  "charge-3-06"
+                ],
+                "total_refunded_minor": 19500
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 4,
+              "num_turns": 13
+            },
+            {
+              "label": "baseline-refund-c",
+              "case": "refund_c",
+              "passed": false,
+              "checks": {
+                "exact_refund_operations": false,
+                "reported_refunds": false,
+                "all_charge_balances": false
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-4-06"
+                ],
+                "total_refunded_minor": 9000
+              },
+              "injected_ids": [],
+              "service_calls": 14,
+              "service_errors": 7,
+              "num_turns": 30
+            }
+          ]
+        },
+        "evolve": {
+          "passed": 1,
+          "trials": 3,
+          "agent_turns": 37,
+          "service_calls": 30,
+          "service_errors": 14,
+          "input_tokens": 18667,
+          "output_tokens": 2016,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "evolve-refund-a",
+              "case": "refund_a",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-2-02",
+                  "charge-2-06"
+                ],
+                "total_refunded_minor": 17500
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 8,
+              "service_errors": 1,
+              "num_turns": 12
+            },
+            {
+              "label": "evolve-refund-b",
+              "case": "refund_b",
+              "passed": false,
+              "checks": {
+                "exact_refund_operations": false,
+                "reported_refunds": false,
+                "all_charge_balances": false
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-3-02",
+                  "charge-3-04",
+                  "charge-3-06"
+                ],
+                "total_refunded_minor": 27750
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 17,
+              "service_errors": 9,
+              "num_turns": 18
+            },
+            {
+              "label": "evolve-refund-c",
+              "case": "refund_c",
+              "passed": false,
+              "checks": {
+                "exact_refund_operations": false,
+                "reported_refunds": false,
+                "all_charge_balances": false
+              },
+              "answer": null,
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 5,
+              "service_errors": 4,
+              "num_turns": 7
+            }
+          ]
+        }
+      }
+    },
+    "gateway-bridge": {
+      "export": {
+        "baseline": {
+          "passed": 3,
+          "trials": 3,
+          "agent_turns": 43,
+          "service_calls": 35,
+          "service_errors": 17,
+          "input_tokens": 21368,
+          "output_tokens": 1844,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "bridge-baseline-export-d",
+              "case": "export_d",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "harbor_open_invoices.csv",
+                "rows": 8
+              },
+              "injected_ids": [],
+              "service_calls": 10,
+              "service_errors": 5,
+              "num_turns": 15
+            },
+            {
+              "label": "bridge-baseline-export-e",
+              "case": "export_e",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "summitlabs_open_invoices.csv",
+                "rows": 9
+              },
+              "injected_ids": [],
+              "service_calls": 14,
+              "service_errors": 6,
+              "num_turns": 15
+            },
+            {
+              "label": "bridge-baseline-export-f-retry",
+              "case": "export_f",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "open-invoices-willowworks-production.csv",
+                "rows": 10
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 6,
+              "num_turns": 13
+            }
+          ]
+        },
+        "evolve": {
+          "passed": 2,
+          "trials": 3,
+          "agent_turns": 29,
+          "service_calls": 21,
+          "service_errors": 9,
+          "input_tokens": 17908,
+          "output_tokens": 1294,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "bridge-evolve-export-d",
+              "case": "export_d",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "open-invoices-harbor-prod.csv",
+                "rows": 8
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 10,
+              "service_errors": 4,
+              "num_turns": 12
+            },
+            {
+              "label": "bridge-evolve-export-e",
+              "case": "export_e",
+              "passed": false,
+              "checks": {
+                "relative_output_file": false,
+                "exact_exported_rows": false,
+                "reported_row_count": false
+              },
+              "answer": null,
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 4,
+              "service_errors": 3,
+              "num_turns": 7
+            },
+            {
+              "label": "bridge-evolve-export-f",
+              "case": "export_f",
+              "passed": true,
+              "checks": {
+                "relative_output_file": true,
+                "exact_exported_rows": true,
+                "reported_row_count": true
+              },
+              "answer": {
+                "file": "open-invoices.csv",
+                "rows": 10
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 7,
+              "service_errors": 2,
+              "num_turns": 10
+            }
+          ]
+        }
+      },
+      "refund": {
+        "baseline": {
+          "passed": 3,
+          "trials": 3,
+          "agent_turns": 43,
+          "service_calls": 38,
+          "service_errors": 15,
+          "input_tokens": 20165,
+          "output_tokens": 2163,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "bridge-baseline-refund-d",
+              "case": "refund_d",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-5-02",
+                  "charge-5-06"
+                ],
+                "total_refunded_minor": 23500
+              },
+              "injected_ids": [],
+              "service_calls": 12,
+              "service_errors": 5,
+              "num_turns": 14
+            },
+            {
+              "label": "bridge-baseline-refund-e",
+              "case": "refund_e",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-6-02",
+                  "charge-6-06"
+                ],
+                "total_refunded_minor": 25500
+              },
+              "injected_ids": [],
+              "service_calls": 11,
+              "service_errors": 4,
+              "num_turns": 13
+            },
+            {
+              "label": "bridge-baseline-refund-f",
+              "case": "refund_f",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-7-02",
+                  "charge-7-06"
+                ],
+                "total_refunded_minor": 27500
+              },
+              "injected_ids": [],
+              "service_calls": 15,
+              "service_errors": 6,
+              "num_turns": 16
+            }
+          ]
+        },
+        "evolve": {
+          "passed": 3,
+          "trials": 3,
+          "agent_turns": 58,
+          "service_calls": 34,
+          "service_errors": 13,
+          "input_tokens": 21576,
+          "output_tokens": 3397,
+          "injection_matches_arm": true,
+          "details": [
+            {
+              "label": "bridge-evolve-refund-d",
+              "case": "refund_d",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-5-02",
+                  "charge-5-06"
+                ],
+                "total_refunded_minor": 23500
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 14,
+              "service_errors": 7,
+              "num_turns": 32
+            },
+            {
+              "label": "bridge-evolve-refund-e",
+              "case": "refund_e",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-6-02",
+                  "charge-6-06"
+                ],
+                "total_refunded_minor": 25500
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 13,
+              "service_errors": 6,
+              "num_turns": 14
+            },
+            {
+              "label": "bridge-evolve-refund-f",
+              "case": "refund_f",
+              "passed": true,
+              "checks": {
+                "exact_refund_operations": true,
+                "reported_refunds": true,
+                "all_charge_balances": true
+              },
+              "answer": {
+                "refunded_charge_ids": [
+                  "charge-7-02",
+                  "charge-7-06"
+                ],
+                "total_refunded_minor": 27500
+              },
+              "injected_ids": [
+                "1"
+              ],
+              "service_calls": 7,
+              "service_errors": 0,
+              "num_turns": 12
+            }
+          ]
+        }
+      }
+    }
+  },
+  "gateway_system_block_probe": [
+    {
+      "shape": "blocks",
+      "expected": "visible-34a8eb94fe8a4d9d8d8062143b273ccc",
+      "answer": "FIRST_BLOCK",
+      "passed": false
+    },
+    {
+      "shape": "string",
+      "expected": "visible-34a8eb94fe8a4d9d8d8062143b273ccc",
+      "answer": "visible-34a8eb94fe8a4d9d8d8062143b273ccc",
+      "passed": true
+    }
+  ],
+  "excluded_network_attempts": [
+    {
+      "label": "bridge-baseline-export-f",
+      "session_id": "e60b0b5d-4c72-4b35-9d01-7f3bd1eebad6",
+      "reason": "Claude returned API Error: Unable to connect to API (EPERM). Zero input/output tokens and service calls. Cortex session readback returned 404.",
+      "classification": "sandbox network failure before model execution",
+      "included_in_task_metrics": false,
+      "retry_label": "bridge-baseline-export-f-retry"
+    }
+  ],
+  "selected_positive_case": {
+    "case": "refund_f",
+    "selection": "posthoc",
+    "evidence_file": "/Users/vinod/data/digitallabor/src/agents/altk-evolve.rossocortex/experiments/cortex_workflow_learning/artifacts/positive-refund-example.json"
+  }
+}

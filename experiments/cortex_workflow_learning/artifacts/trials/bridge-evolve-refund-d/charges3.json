@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": "charge-5-05",
+      "customer_id": "customer-105",
+      "order_id": "order-5-A",
+      "status": "reversed",
+      "created_at": 3,
+      "amount_minor": 16250,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-5-06",
+      "customer_id": "customer-105",
+      "order_id": "order-5-B",
+      "status": "captured",
+      "created_at": 3,
+      "amount_minor": 9750,
+      "refunded_minor": 0
+    }
+  ],
+  "next_cursor": "cursor-6"
+}

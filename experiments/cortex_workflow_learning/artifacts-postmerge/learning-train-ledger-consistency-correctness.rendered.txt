@@ -1,0 +1,370 @@
+**Step 1 - Action:**
+Bash(command="python3 ops.py reconcile --account NorthwindStudio-production --month 2026-04 --output report.json", description="Reconcile April 2026 revenue for Northwind Studio production account and save report as report.json")
+Tool result (observed output):
+[error] Exit code 2
+usage: ops.py [-h]
+              {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+              ...
+ops.py: error: argument command: invalid choice: 'reconcile' (choose from find-customer, revenue-contract, ledger-export, begin-export, export-status, fetch-artifact, charges, refund-charge)
+
+**Step 2 - Action:**
+Bash(command="python3 ops.py --help", description="Show usage information for the ops.py local billing workflow service")
+Tool result (observed output):
+usage: ops.py [-h]
+              {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+              ...
+
+A local billing service. All mutations stay in this synthetic trial directory.
+
+positional arguments:
+  {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+    find-customer       Search accounts by name; choose the required
+                        environment
+    revenue-contract    Read the canonical revenue accounting rules
+    ledger-export       Download the raw ledger; apply revenue-contract to
+                        reconcile it
+    begin-export        Start an asynchronous open-invoices CSV export
+    export-status       Poll a job until ready, then use its artifact_id
+    fetch-artifact      Download a ready artifact to a relative filename
+    charges             List charges; follow next_cursor until null
+    refund-charge       Refund a positive remaining amount on a captured
+                        charge
+
+options:
+  -h, --help            show this help message and exit
+
+**Step 3 - Action:**
+Bash(command="python3 ops.py find-customer --name NorthwindStudio --environment production", description="Find Northwind Studio production account details")
+Tool result (observed output):
+[error] Exit code 2
+usage: ops.py [-h]
+              {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+              ...
+ops.py: error: unrecognized arguments: --name --environment production
+
+**Step 4 - Action:**
+Bash(command="python3 ops.py find-customer NorthwindStudio production", description="Find NorthwindStudio account in production environment")
+Tool result (observed output):
+[error] Exit code 2
+usage: ops.py [-h]
+              {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+              ...
+ops.py: error: unrecognized arguments: production
+
+**Step 5 - Action:**
+Bash(command="python3 ops.py find-customer NorthwindStudio", description="Search for NorthwindStudio customer account")
+Tool result (observed output):
+[]
+
+**Step 6 - Action:**
+Bash(command="python3 ops.py find-customer --help", description="Show help for the find-customer command")
+Tool result (observed output):
+usage: ops.py find-customer [-h] query
+
+positional arguments:
+  query
+
+options:
+  -h, --help  show this help message and exit
+
+**Step 7 - Action:**
+Bash(command="python3 ops.py find-customer NorthwindStudio-production", description="Find customer account for NorthwindStudio-production")
+Tool result (observed output):
+[]
+
+**Step 8 - Action:**
+Bash(command="python3 ops.py find-customer Studio", description="Find customer accounts containing 'Studio'")
+Tool result (observed output):
+[
+  {
+    "id": "sandbox-1",
+    "name": "Northwind Studio",
+    "environment": "sandbox"
+  },
+  {
+    "id": "account-201",
+    "name": "Northwind Studio",
+    "environment": "production"
+  }
+]
+
+**Step 9 - Action:**
+Bash(command="python3 ops.py revenue-contract --account account-201", description="Show accounting contract for Northwind Studio production account")
+Tool result (observed output):
+[error] Exit code 2
+usage: ops.py [-h]
+              {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+              ...
+ops.py: error: unrecognized arguments: --account account-201
+
+**Step 10 - Action:**
+Bash(command="python3 ops.py revenue-contract account-201", description="Show revenue contract for Northwind Studio production account")
+Tool result (observed output):
+[error] Exit code 2
+usage: ops.py [-h]
+              {find-customer,revenue-contract,ledger-export,begin-export,export-status,fetch-artifact,charges,refund-charge}
+              ...
+ops.py: error: unrecognized arguments: account-201
+
+**Step 11 - Action:**
+Bash(command="python3 ops.py revenue-contract --help", description="Show help for revenue-contract command")
+Tool result (observed output):
+usage: ops.py revenue-contract [-h]
+
+options:
+  -h, --help  show this help message and exit
+
+**Step 12 - Action:**
+Bash(command="python3 ops.py ledger-export --help", description="Show help for the ledger-export command")
+Tool result (observed output):
+usage: ops.py ledger-export [-h] --customer CUSTOMER --output OUTPUT
+
+options:
+  -h, --help           show this help message and exit
+  --customer CUSTOMER
+  --output OUTPUT
+
+**Step 13 - Action:**
+Bash(command="python3 ops.py ledger-export --customer account-201 --output ledger.json", description="Export ledger for Northwind Studio production account to ledger.json")
+Tool result (observed output):
+{
+  "file": "ledger.json",
+  "rows": 15,
+  "contract": "revenue-contract"
+}
+
+**Step 14 - Action:**
+Bash(command="python3 ops.py revenue-contract > contract.json", description="Save the canonical revenue accounting contract to contract.json")
+Tool result (observed output):
+(Bash completed with no output)
+
+**Step 15 - Action:**
+Bash(command="cat ledger.json", description="Show contents of ledger.json to examine April 2026 entries")
+Tool result (observed output):
+[
+  {
+    "event_id": "evt-1-corrected",
+    "revision": 1,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 99999,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-corrected",
+    "revision": 2,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 12875,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-corrected",
+    "revision": 1,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 99999,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-refund",
+    "revision": 1,
+    "customer_id": "account-201",
+    "kind": "refund",
+    "amount_minor": 950,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-eur",
+    "revision": 1,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 4325,
+    "currency": "EUR",
+    "status": "settled",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-void",
+    "revision": 1,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 8800,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-void",
+    "revision": 2,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 8800,
+    "currency": "USD",
+    "status": "voided",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1-pending",
+    "revision": 1,
+    "customer_id": "account-201",
+    "kind": "capture",
+    "amount_minor": 7777,
+    "currency": "USD",
+    "status": "pending",
+    "occurred_at": "2026-04-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-1...
+
+**Step 16 - Action:**
+Bash(command="cat contract.json", description="Show canonical revenue accounting contract to understand reconciliation rules")
+Tool result (observed output):
+{
+  "contract": "Billing revenue contract v1:\n1. Ledger exports contain replayed events and corrections, including sandbox accounts.\n   Collapse rows by event_id using the greatest numeric revision across the ENTIRE export,\n   before applying any account, status, or date filter. Equal-revision replays are identical.\n   A later revision can void an event or move it out of the reporting month.\n2. Resolve the production account with find-customer; use its customer_id only.\n3. Include only status=settled. Pending and voided rows contribute nothing.\n4. Month boundaries are UTC: include occurred_at >= first day 00:00:00Z and\n   occurred_at < next month's first day 00:00:00Z. Parse offsets; do not slice the date string.\n5. amount_minor is a positive integer magnitude for BOTH capture and refund events.\n   Add captures, subtract refunds. Keep each currency separate; do not convert currencies.\n6. Report totals_minor by currency and sorted distinct included_event_ids.\nAPI: python3 ops.py find-customer 'CUSTOMER NAME'\n     python3 ops.py ledger-export --customer PRODUCTION_ID --output ledger.json\n     python3 ops.py revenue-contract\n"
+}
+
+**Step 17 - Action:**
+Bash(command="python3 ops.py revenue-contract", description="Print revenue contract for reference as required for reconciliation")
+Tool result (observed output):
+{
+  "contract": "Billing revenue contract v1:\n1. Ledger exports contain replayed events and corrections, including sandbox accounts.\n   Collapse rows by event_id using the greatest numeric revision across the ENTIRE export,\n   before applying any account, status, or date filter. Equal-revision replays are identical.\n   A later revision can void an event or move it out of the reporting month.\n2. Resolve the production account with find-customer; use its customer_id only.\n3. Include only status=settled. Pending and voided rows contribute nothing.\n4. Month boundaries are UTC: include occurred_at >= first day 00:00:00Z and\n   occurred_at < next month's first day 00:00:00Z. Parse offsets; do not slice the date string.\n5. amount_minor is a positive integer magnitude for BOTH capture and refund events.\n   Add captures, subtract refunds. Keep each currency separate; do not convert currencies.\n6. Report totals_minor by currency and sorted distinct included_event_ids.\nAPI: python3 ops.py find-customer 'CUSTOMER NAME'\n     python3 ops.py ledger-export --customer PRODUCTION_ID --output ledger.json\n     python3 ops.py revenue-contract\n"
+}
+
+**Step 18 - Reasoning:**
+To reconcile Northwind Studio's 2026-04 revenue using the billing contract, I will use the provided rules and ledger data:
+
+### Steps (according to the contract):
+
+1. **Collapse by event_id and greatest revision** across the ledger.
+2. **Use only the production account** (`account-201`).
+3. **Include only status=settled**; ignore pending or voided.
+4. **Filter events that happened in April 2026 (UTC boundaries):**  
+   - Include: `2026-04-01T00:00:00Z` ≤ occurred_at < `2026-05-01T00:00:00Z` (after offsets applied).
+5. **Sum captures, subtract refunds** per currency.  
+6. **Report totals_minor and included_event_ids.**
+
+---
+
+### 1. Collapse rows by event_id (pick greatest revision):
+
+- **evt-1-corrected:** Pick revision 2.  
+  Amount: 12875 USD  
+  Status: settled  
+  Date: 2026-04-15  
+- **evt-1-refund:** revision 1, 950 USD, settled, 2026-04-15  
+- **evt-1-eur:** revision 1, 4325 EUR, settled, 2026-04-15
+- **evt-1-void:** revision 2 is voided (ignore, per contract), so nothing for this event.
+- **evt-1-pending:** status pending ⇒ ignore.
+- **evt-1-test:** wrong customer_id ⇒ ignore.
+- **evt-1-utc-in:** 2026-03-31T23:30:00-02:00 = 2026-04-01T01:30:00Z ⇒ included.
+- **evt-1-utc-out:** 2026-04-01T00:30:00+02:00 = 2026-03-31T22:30:00Z ⇒ excluded, outside April.
+- **evt-1-upper-bound:** 2026-05-01T00:00:00Z ⇒ excluded.
+- **evt-1-moved:** greatest revision is 2, occurred_at 2026-05-02; so this event moves out of April (contract: "move it out"). So exclude.
+- **evt-1-eur-refund:** revision 1, 101 EUR, settled, 2026-04-15
+
+---
+
+### 2. Filter per contract & sum:
+
+#### Now filter by:
+- customer_id = `account-201`
+- status = `settled`
+- event_id used only once (revision collapse)
+- date in UTC:  
+  - `evt-1-corrected` (2026-04-15)
+  - `evt-1-refund` (2026-04-15)
+  - `evt-1-eur` (2026-04-15)
+  - `evt-1-eur-refund` (2026-04-15)
+  - `evt-1-utc-in` (2026-04-01T01:30:00Z, included)
+
+---
+
+#### Distinct valid events in April 2026:
+
+- evt-1-corrected: capture, 12875 USD, settled, 202...
+
+**Step 19 - Action:**
+Bash(command="cat report.json", description="Show contents of report.json to confirm if it matches the required output")
+Tool result (observed output):
+[error] Exit code 1
+[31m[bat error][0m: 'report.json': No such file or directory (os error 2)
+
+**Step 20 - Action:**
+Bash(command="echo '{\"totals_minor\": {\"USD\": 12176, \"EUR\": 4224}, \"included_event_ids\": [\"evt-1-corrected\", \"evt-1-eur\", \"evt-1-eur-refund\", \"evt-1-refund\", \"evt-1-utc-in\"]}' > report.json", description="Save the reconciliation report as report.json with currency totals and sorted event IDs")
+Tool result (observed output):
+(Bash completed with no output)
+
+**Step 21 - Action:**
+Bash(command="cat report.json", description="Show contents of the newly saved report.json for final verification")
+Tool result (observed output):
+{"totals_minor": {"USD": 12176, "EUR": 4224}, "included_event_ids": ["evt-1-corrected", "evt-1-eur", "evt-1-eur-refund", "evt-1-refund", "evt-1-utc-in"]}
+
+**Step 22 - Reasoning:**
+### Reusable reconciliation procedure (per the billing contract):
+
+1. **Find production account ID:**  
+   Use `ops.py find-customer <CustomerName>` to locate the correct production account.
+
+2. **Export ledger:**  
+   Use `ops.py ledger-export --customer <AccountID> --output <file>` to obtain all ledger rows.
+
+3. **Obtain revenue contract:**  
+   Use `ops.py revenue-contract` to review reconciliation rules.
+
+4. **Collapse events:**  
+   For each event_id, keep only the row with the highest revision number (across all rows).
+
+5. **Apply filters:**
+   - Account must match the production ID.
+   - Status must be `"settled"`.
+   - Date must be within the target month (`YYYY-MM`), respecting UTC boundaries and timezone offsets.
+
+6. **Sum net revenue:**  
+   Add `amount_minor` for `"capture"` rows, subtract for `"refund"` rows, per currency. Do **not** convert currencies.
+
+7. **Report:**  
+   - `totals_minor`: Map of currencies to net integer (minor units).
+   - `included_event_ids`: All event_id values used in calculation, sorted.
+
+8. **Save JSON:**  
+   Write the output to `report.json` for inspection or use.
+
+---
+
+### Service State Validation
+
+- The service did not have report.json saved previously.
+- I have now written the required file and validated its content using `cat report.json`.
+
+---
+
+### Final report.json
+
+```json
+{
+  "totals_minor": {
+    "USD": 12176,
+    "EUR": 4224
+  },
+  "included_event_ids": [
+    "evt-1-corrected",
+    "evt-1-eur",
+    "evt-1-eur-refund",
+    "evt-1-refund",
+    "evt-1-utc-in"
+  ]
+}
+```
+
+---
+
+This is the verified and saved state for the reconciliation report. Let me know if you need the procedure as a script or a reusable function!

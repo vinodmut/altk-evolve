@@ -1,0 +1,105 @@
+{
+  "family": "refund",
+  "customers": [
+    {
+      "id": "sandbox-2",
+      "name": "Maple Workshop",
+      "environment": "sandbox"
+    },
+    {
+      "id": "customer-102",
+      "name": "Maple Workshop",
+      "environment": "production"
+    }
+  ],
+  "jobs": {},
+  "refunds": [
+    {
+      "charge_id": "charge-2-02",
+      "amount_minor": 10000,
+      "idempotency_key": "ref-charge-2-02-1"
+    },
+    {
+      "charge_id": "charge-2-06",
+      "amount_minor": 7500,
+      "idempotency_key": "ref-charge-2-06-1"
+    }
+  ],
+  "idempotency": {
+    "ref-charge-2-02-1": {
+      "charge_id": "charge-2-02",
+      "amount_minor": 10000,
+      "idempotency_key": "ref-charge-2-02-1"
+    },
+    "ref-charge-2-06-1": {
+      "charge_id": "charge-2-06",
+      "amount_minor": 7500,
+      "idempotency_key": "ref-charge-2-06-1"
+    }
+  },
+  "charges": [
+    {
+      "id": "charge-2-01",
+      "customer_id": "customer-102",
+      "order_id": "order-2-A",
+      "status": "captured",
+      "created_at": 1,
+      "amount_minor": 12500,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-2-02",
+      "customer_id": "customer-102",
+      "order_id": "order-2-A",
+      "status": "captured",
+      "created_at": 2,
+      "amount_minor": 12500,
+      "refunded_minor": 12500
+    },
+    {
+      "id": "charge-2-03",
+      "customer_id": "customer-102",
+      "order_id": "order-2-B",
+      "status": "authorized",
+      "created_at": 1,
+      "amount_minor": 7500,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-2-04",
+      "customer_id": "customer-102",
+      "order_id": "order-2-B",
+      "status": "captured",
+      "created_at": 2,
+      "amount_minor": 7500,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-2-05",
+      "customer_id": "customer-102",
+      "order_id": "order-2-A",
+      "status": "reversed",
+      "created_at": 3,
+      "amount_minor": 12500,
+      "refunded_minor": 0
+    },
+    {
+      "id": "charge-2-06",
+      "customer_id": "customer-102",
+      "order_id": "order-2-B",
+      "status": "captured",
+      "created_at": 3,
+      "amount_minor": 7500,
+      "refunded_minor": 7500
+    },
+    {
+      "id": "charge-2-07",
+      "customer_id": "customer-102",
+      "order_id": "order-2-C",
+      "status": "captured",
+      "created_at": 4,
+      "amount_minor": 4000,
+      "refunded_minor": 0
+    }
+  ]
+}

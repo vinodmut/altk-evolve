@@ -1,10 +1,10 @@
-from altk_evolve.llm.guidelines.context import render_supporting_context
+from altk_evolve.llm.guidelines.context import render_action_with_result, render_supporting_context, tool_results_by_call_id
 import json
 import logging
 import re
 from json import JSONDecodeError
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 from jinja2 import Template
 from altk_evolve.telemetry import model_completion as completion
@@ -40,6 +40,14 @@ _MAX_SUCCESS_GUIDELINES = 2
 _MAX_FAILED_CHECKS = 10
 _MAX_CHECK_CHARS = 500
 _MAX_DETAIL_CHARS = 2500
+
+
+class _TrajectoryStep(TypedDict):
+    type: str
+    content: str
+    raw: dict
+    tool_result: NotRequired[str]
+
 
 # Matches one escape at a time: group 1 is a complete, valid JSON escape (\u only counts
 # when four hex digits follow, so LaTeX like \underbrace is repaired rather than left as
@@ -243,8 +251,12 @@ def parse_openai_agents_trajectory(
         - marker_index: 0-based position of the elision marker in steps_list, or None
     """
     options = options or GuidelineRuntime.from_settings()
-    agent_steps: list[dict[str, str | dict]] = []
+    agent_steps: list[_TrajectoryStep] = []
     function_calls: list[dict[str, str | dict]] = []
+    # Keep each observation with its action. Separate observation steps would change
+    # the indices used by segmentation and consistency analysis. Match IDs rather
+    # than message position because parallel calls may return out of order.
+    tool_results = tool_results_by_call_id(messages)
     task_instruction: str | None = next(
         (m["content"][:2000] for m in (context_messages or []) if m.get("role") == "user" and isinstance(m.get("content"), str)), None
     )
@@ -291,6 +303,7 @@ def parse_openai_agents_trajectory(
                             {
                                 "type": "action",
                                 "content": function_description,
+                                "tool_result": tool_results.get(assistant_response["id"], ""),
                                 "raw": assistant_response,
                             }
                         )
@@ -327,6 +340,7 @@ def parse_openai_agents_trajectory(
                         {
                             "type": "action",
                             "content": function_description,
+                            "tool_result": tool_results.get(call.get("id"), ""),
                             "raw": call,
                         }
                     )
@@ -334,7 +348,7 @@ def parse_openai_agents_trajectory(
 
     head, tail = trajectory_step_window(len(agent_steps), max_steps=options.trajectory_max_steps, tail_steps=options.trajectory_tail_steps)
     steps_omitted = len(agent_steps) - head - tail
-    kept: list[dict[str, str | dict] | None] = list(agent_steps[:head])
+    kept: list[_TrajectoryStep | None] = list(agent_steps[:head])
     if tail:
         # None marks the gap. It takes a position in the list so that a step's label still
         # matches its index, and travels into any subtask slice that spans the elision.
@@ -353,9 +367,8 @@ def parse_openai_agents_trajectory(
             continue
         step_type = step["type"]
         content = step["content"]
-        # Truncate long content
-        if len(content) > max_step_chars:
-            content = content[:max_step_chars] + "..."
+        tool_result = step.get("tool_result", "")
+        content = render_action_with_result(content, tool_result, max_chars=max_step_chars)
 
         if step_type == "reasoning":
             steps_list.append(f"**Step {i} - Reasoning:**\n{content}")

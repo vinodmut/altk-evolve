@@ -1,0 +1,520 @@
+{
+  "label": "evolve-ledger_a",
+  "case": "ledger_a",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "d0506335-f7d5-4186-80e3-21e79c828bb3",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 12502,
+      "EUR": 4348
+    },
+    "included_event_ids": [
+      "evt-2-corrected",
+      "evt-2-eur",
+      "evt-2-eur-refund",
+      "evt-2-refund",
+      "evt-2-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 12502,
+      "EUR": 4348
+    },
+    "included_event_ids": [
+      "evt-2-corrected",
+      "evt-2-eur",
+      "evt-2-eur-refund",
+      "evt-2-refund",
+      "evt-2-utc-in"
+    ]
+  },
+  "passed": true,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": true
+  },
+  "duration_seconds": 59.23,
+  "cost_usd": 0.058766399999999996,
+  "usage": {
+    "input_tokens": 8452,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 11392,
+    "output_tokens": 1134,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 8452,
+      "outputTokens": 1134,
+      "cacheReadInputTokens": 11392,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.058766399999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile --help",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py find-customer 'Maple Workshop production'",
+    "python3 ops.py find-customer 'Maple Workshop'",
+    "python3 ops.py ledger-export --customer account-202 --output ledger2026-05.json",
+    "cat ledger2026-05.json",
+    "python3 ops.py revenue-contract",
+    "python3 -c '\nimport json\nfrom datetime import datetime, timezone\n\nwith open(\"ledger2026-05.json\") as f:\n    ledger = json.load(f)\n\n# Step 1: Find the greatest revision per event_id across the entire export\nmax_revision = {}\nfor row in ledger:\n    eid = row[\"event_id\"]\n    rev = row[\"revision\"]\n    if eid not in max_revision or rev > max_revision[eid]:\n        max_revision[eid] = rev\n\n# Step 2: Collapse rows by event_id using only the greatest revision. Ignore lower revisions.\ncollapsed = {}\nfor row in ledger:\n    eid = row[\"event_id\"]\n    if row[\"revision\"] == max_revision[eid]:\n        collapsed[eid] = row  # last matching revision wins\n\n# Step 3: Only production account id\nenv_id = \"account-202\"\ncollapsed = [v for v in collapsed.values() if v[\"customer_id\"] == env_id]\n\n# Step 4: Only status=settled\ncollapsed = [v for v in collapsed if v[\"status\"] == \"settled\"]\n\n# Step 5: Filter date range boundaries\n# 2026-05-01T00:00:00Z <= occurred_at < 2026-06-01T00:00:00Z\nstart_utc = datetime(2026,5,1,0,0,0,tzinfo=timezone.utc)\nend_utc = datetime(2026,6,1,0,0,0,tzinfo=timezone.utc)\n\ndef parse_dt(d):\n    try:\n        return datetime.fromisoformat(d.replace(\"Z\", \"+00:00\"))\n    except Exception:\n        return datetime.strptime(d, \"%Y-%m-%dT%H:%M:%S%z\")\n\ncollapsed = [v for v in collapsed if start_utc <= parse_dt(v[\"occurred_at\"]) < end_utc]\n\n# Step 6: Sum amount_minor per currency, refund is subtract, capture is add\ntotals_minor = {}\nincluded_event_ids = []\nfor v in collapsed:\n    cur = v[\"currency\"]\n    amt = v[\"amount_minor\"]\n    if v[\"kind\"] == \"refund\":\n        amt = -amt\n    if cur not in totals_minor:\n        totals_minor[cur] = 0\n    totals_minor[cur] += amt\n    included_event_ids.append(v[\"event_id\"])\n\nincluded_event_ids = sorted(list(set(included_event_ids)))\n\nresult = {\n    \"totals_minor\": totals_minor,\n    \"included_event_ids\": included_event_ids\n}\n\nwith open(\"report.json\", \"w\") as f:\n    json.dump(result, f, indent=2)\n'",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --help"
+  ],
+  "num_turns": 12,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:33:27.820651-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:27.820651-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:27.820651-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:27.820651-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:27.820651-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "phase": "request",
+      "evolve": null,
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_tools",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:33:58.754939-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1",
+    "2",
+    "3"
+  ],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 5,
+  "service_errors": 1
+}

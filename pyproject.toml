@@ -301,6 +301,7 @@ exclude = [
     "plugin-source/",
     "examples/",
     "experiments/cortex_learning_demo/artifacts/",
+    "experiments/cortex_workflow_learning/artifacts[^/]*/",
     "explorations/agent-wiki/wikis/",
 ]
 

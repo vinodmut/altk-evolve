@@ -1,0 +1,763 @@
+{
+  "label": "evolve-ledger_f",
+  "case": "ledger_f",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "5a6b1e37-3148-4876-96d9-9b17686de487",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 14132,
+      "EUR": 4968
+    },
+    "included_event_ids": [
+      "evt-7-corrected",
+      "evt-7-eur",
+      "evt-7-eur-refund",
+      "evt-7-refund",
+      "evt-7-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 14132,
+      "EUR": 4968
+    },
+    "included_event_ids": [
+      "evt-7-corrected",
+      "evt-7-eur",
+      "evt-7-eur-refund",
+      "evt-7-refund",
+      "evt-7-utc-in"
+    ]
+  },
+  "passed": true,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": true
+  },
+  "duration_seconds": 138.99,
+  "cost_usd": 0.08540400000000001,
+  "usage": {
+    "input_tokens": 8386,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 35200,
+    "output_tokens": 2241,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 8386,
+      "outputTokens": 2241,
+      "cacheReadInputTokens": 35200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.08540400000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile-revenue --help",
+    "python3 ops.py find-customer --search \"Willow Works\"",
+    "python3 ops.py find-customer -h",
+    "python3 ops.py find-customer \"Willow Works\"",
+    "python3 ops.py revenue-contract account-207",
+    "python3 ops.py ledger-export account-207 --month 2026-10",
+    "python3 ops.py revenue-contract --customer account-207",
+    "python3 ops.py ledger-export --customer account-207 --output ledger-2026-10.jsonl --month 2026-10",
+    "python3 ops.py revenue-contract -h",
+    "python3 ops.py revenue-contract",
+    "python3 ops.py ledger-export --customer account-207 --output ledger-2026-10.jsonl",
+    "head -5 ledger-2026-10.jsonl",
+    "jq -c . ledger-2026-10.jsonl | head -15",
+    "jq -c . ledger-2026-10.jsonl > ledger-2026-10.ndjson",
+    "python3 -c '\nimport sys,json; from dateutil import parser, tz\nrows=[json.loads(l) for l in open(\"ledger-2026-10.ndjson\")]\n# Step 1: Collapse by event_id to max revision\ncollapsed={}\nfor r in rows:\n    eid=r[\"event_id\"]\n    if eid not in collapsed or r[\"revision\"]>collapsed[eid][\"revision\"]:\n        collapsed[eid]=r\n# Step 2: Only production customer_id\nprod_rows=[r for r in collapsed.values() if r[\"customer_id\"]==\"account-207\"]\n# Step 3: Only status=settled\nsettled=[r for r in prod_rows if r[\"status\"]==\"settled\"]\n# Step 4: Occurred_at range: [2026-10-01T00:00:00Z,2026-11-01T00:00:00Z)\nstart=parser.isoparse(\"2026-10-01T00:00:00Z\")\nend=parser.isoparse(\"2026-11-01T00:00:00Z\")\ndef in_window(datestr):\n    dt=parser.isoparse(datestr)\n    return dt>=start and dt<end\nin_month=[r for r in settled if in_window(r[\"occurred_at\")]]\n# Step 5/6: Add captures, subtract refunds, per currency; gather event_ids\nfrom collections import defaultdict\nout_totals=defaultdict(int)\nevent_ids=[]\nfor r in in_month:\n    eid=r[\"event_id\"]\n    cur=r[\"currency\"]\n    amt=r[\"amount_minor\"]\n    if r[\"kind\"]==\"capture\": out_totals[cur]+=amt\n    elif r[\"kind\"]==\"refund\": out_totals[cur]-=amt\n    event_ids.append(eid)\nresult={\"totals_minor\":dict(out_totals),\"included_event_ids\":sorted(set(event_ids))}\njson.dump(result,sys.stdout)\n' > report.json",
+    "python3 -c '\nimport sys,json; from dateutil import parser\nrows=[json.loads(l) for l in open(\"ledger-2026-10.ndjson\")]\n# Collapse by event_id using max revision\ncollapsed={}\nfor r in rows:\n    eid=r[\"event_id\"]\n    if eid not in collapsed or r[\"revision\"]>collapsed[eid][\"revision\"]:\n        collapsed[eid]=r\n# Only production account\nprod_rows=[r for r in collapsed.values() if r[\"customer_id\"]==\"account-207\"]\n# Only status=settled\nsettled=[r for r in prod_rows if r[\"status\"]==\"settled\"]\n# Occurred_at range\nstart=parser.isoparse(\"2026-10-01T00:00:00Z\")\nend=parser.isoparse(\"2026-11-01T00:00:00Z\")\ndef in_window(datestr):\n    dt=parser.isoparse(datestr)\n    return dt>=start and dt<end\nin_month=[r for r in settled if in_window(r[\"occurred_at\"])]\n# Add captures, subtract refunds, by currency; collect event_ids\nfrom collections import defaultdict\nout_totals=defaultdict(int)\nevent_ids=[]\nfor r in in_month:\n    eid=r[\"event_id\"]\n    cur=r[\"currency\"]\n    amt=r[\"amount_minor\"]\n    if r[\"kind\"]==\"capture\": out_totals[cur]+=amt\n    elif r[\"kind\"]==\"refund\": out_totals[cur]-=amt\n    event_ids.append(eid)\nresult={\"totals_minor\":dict(out_totals),\"included_event_ids\":sorted(set(event_ids))}\njson.dump(result,sys.stdout)\n' > report.json",
+    "head -5 ledger-2026-10.ndjson",
+    "python3 -c '\nimport sys, json\nfrom dateutil import parser\n# Each line is a dict\nrows = json.load(open(\"ledger-2026-10.ndjson\")) if open(\"ledger-2026-10.ndjson\").read().strip().startswith(\"[\") else [json.loads(l) for l in open(\"ledger-2026-10.ndjson\")]\n# Flatten JSON array if loaded as one list\nif isinstance(rows, dict):\n    rows = [rows]\nif isinstance(rows, list) and len(rows) == 1 and isinstance(rows[0], list):\n    rows = rows[0]\n# Collapse by event_id to max revision\ncollapsed = {}\nfor r in rows:\n    eid = r[\"event_id\"]\n    if eid not in collapsed or r[\"revision\"] > collapsed[eid][\"revision\"]:\n        collapsed[eid] = r\n# Only production account\nprod_rows = [r for r in collapsed.values() if r[\"customer_id\"]==\"account-207\"]\n# Only status=settled\nsettled = [r for r in prod_rows if r[\"status\"]==\"settled\"]\n# Occurred_at range\nstart = parser.isoparse(\"2026-10-01T00:00:00Z\")\nend = parser.isoparse(\"2026-11-01T00:00:00Z\")\ndef in_window(datestr):\n    dt = parser.isoparse(datestr)\n    return dt>=start and dt<end\nin_month = [r for r in settled if in_window(r[\"occurred_at\"])]\n# Add captures, subtract refunds, by currency; collect event_ids\nfrom collections import defaultdict\nout_totals = defaultdict(int)\nevent_ids = []\nfor r in in_month:\n    eid = r[\"event_id\"]\n    cur = r[\"currency\"]\n    amt = r[\"amount_minor\"]\n    if r[\"kind\"]==\"capture\":\n        out_totals[cur] += amt\n    elif r[\"kind\"]==\"refund\":\n        out_totals[cur] -= amt\n    event_ids.append(eid)\nresult = {\"totals_minor\": dict(out_totals), \"included_event_ids\": sorted(set(event_ids))}\njson.dump(result, sys.stdout)\n' > report.json",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile-revenue --help",
+    "python3 ops.py find-customer --search \"Willow Works\"",
+    "python3 ops.py revenue-contract account-207",
+    "python3 ops.py ledger-export account-207 --month 2026-10",
+    "python3 ops.py revenue-contract --customer account-207",
+    "python3 ops.py ledger-export --customer account-207 --output ledger-2026-10.jsonl --month 2026-10",
+    "python3 -c '\nimport sys,json; from dateutil import parser, tz\nrows=[json.loads(l) for l in open(\"ledger-2026-10.ndjson\")]\n# Step 1: Collapse by event_id to max revision\ncollapsed={}\nfor r in rows:\n    eid=r[\"event_id\"]\n    if eid not in collapsed or r[\"revision\"]>collapsed[eid][\"revision\"]:\n        collapsed[eid]=r\n# Step 2: Only production customer_id\nprod_rows=[r for r in collapsed.values() if r[\"customer_id\"]==\"account-207\"]\n# Step 3: Only status=settled\nsettled=[r for r in prod_rows if r[\"status\"]==\"settled\"]\n# Step 4: Occurred_at range: [2026-10-01T00:00:00Z,2026-11-01T00:00:00Z)\nstart=parser.isoparse(\"2026-10-01T00:00:00Z\")\nend=parser.isoparse(\"2026-11-01T00:00:00Z\")\ndef in_window(datestr):\n    dt=parser.isoparse(datestr)\n    return dt>=start and dt<end\nin_month=[r for r in settled if in_window(r[\"occurred_at\")]]\n# Step 5/6: Add captures, subtract refunds, per currency; gather event_ids\nfrom collections import defaultdict\nout_totals=defaultdict(int)\nevent_ids=[]\nfor r in in_month:\n    eid=r[\"event_id\"]\n    cur=r[\"currency\"]\n    amt=r[\"amount_minor\"]\n    if r[\"kind\"]==\"capture\": out_totals[cur]+=amt\n    elif r[\"kind\"]==\"refund\": out_totals[cur]-=amt\n    event_ids.append(eid)\nresult={\"totals_minor\":dict(out_totals),\"included_event_ids\":sorted(set(event_ids))}\njson.dump(result,sys.stdout)\n' > report.json",
+    "python3 -c '\nimport sys,json; from dateutil import parser\nrows=[json.loads(l) for l in open(\"ledger-2026-10.ndjson\")]\n# Collapse by event_id using max revision\ncollapsed={}\nfor r in rows:\n    eid=r[\"event_id\"]\n    if eid not in collapsed or r[\"revision\"]>collapsed[eid][\"revision\"]:\n        collapsed[eid]=r\n# Only production account\nprod_rows=[r for r in collapsed.values() if r[\"customer_id\"]==\"account-207\"]\n# Only status=settled\nsettled=[r for r in prod_rows if r[\"status\"]==\"settled\"]\n# Occurred_at range\nstart=parser.isoparse(\"2026-10-01T00:00:00Z\")\nend=parser.isoparse(\"2026-11-01T00:00:00Z\")\ndef in_window(datestr):\n    dt=parser.isoparse(datestr)\n    return dt>=start and dt<end\nin_month=[r for r in settled if in_window(r[\"occurred_at\"])]\n# Add captures, subtract refunds, by currency; collect event_ids\nfrom collections import defaultdict\nout_totals=defaultdict(int)\nevent_ids=[]\nfor r in in_month:\n    eid=r[\"event_id\"]\n    cur=r[\"currency\"]\n    amt=r[\"amount_minor\"]\n    if r[\"kind\"]==\"capture\": out_totals[cur]+=amt\n    elif r[\"kind\"]==\"refund\": out_totals[cur]-=amt\n    event_ids.append(eid)\nresult={\"totals_minor\":dict(out_totals),\"included_event_ids\":sorted(set(event_ids))}\njson.dump(result,sys.stdout)\n' > report.json"
+  ],
+  "num_turns": 20,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:50:26.467985-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:26.467985-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:26.467985-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:26.467985-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:26.467985-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:26.467985-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:50:58.831006-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:58.831006-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:58.831006-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:50:58.831006-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:51:35.974137-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:51:35.974137-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:51:35.974137-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 26,
+      "phase": "request",
+      "evolve": null,
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_tools",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:51:35.974137-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 30,
+      "phase": "request",
+      "evolve": null,
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_tools",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:51:35.974137-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:52:09.289021-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 36,
+      "phase": "request",
+      "evolve": null,
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_tools",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:52:09.289021-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:36",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44",
+          "cortex:62598afa-9f2b-41c1-9be4-2f0c82bbc51d:44"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:52:09.289021-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1",
+    "2",
+    "3"
+  ],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 9,
+  "service_errors": 6
+}

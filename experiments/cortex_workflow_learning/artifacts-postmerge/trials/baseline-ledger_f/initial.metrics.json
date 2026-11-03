@@ -1,0 +1,319 @@
+{
+  "label": "baseline-ledger_f",
+  "case": "ledger_f",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "810f0954-997d-4457-b1ab-aeae07392805",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 14132,
+      "EUR": 4968
+    },
+    "included_event_ids": [
+      "evt-7-corrected",
+      "evt-7-eur",
+      "evt-7-eur-refund",
+      "evt-7-refund",
+      "evt-7-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 14132,
+      "EUR": 4968
+    },
+    "included_event_ids": [
+      "evt-7-corrected",
+      "evt-7-eur",
+      "evt-7-eur-refund",
+      "evt-7-refund",
+      "evt-7-utc-in"
+    ]
+  },
+  "passed": true,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": true
+  },
+  "duration_seconds": 138.01,
+  "cost_usd": 0.08597679999999999,
+  "usage": {
+    "input_tokens": 12179,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 24704,
+    "output_tokens": 1616,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 12179,
+      "outputTokens": 1616,
+      "cacheReadInputTokens": 24704,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.08597679999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "/usr/bin/env python3 ops.py reconcile-revenue --account=willow-works-production --period=2026-10 --output=report.json",
+    "/usr/bin/env python3 ops.py revenue-contract --account=willow-works-production",
+    "/usr/bin/env python3 ops.py revenue-contract willow-works-production",
+    "/usr/bin/env python3 ops.py revenue-contract --help",
+    "/usr/bin/env python3 ops.py find-customer --help",
+    "/usr/bin/env python3 ops.py find-customer \"Willow Works production\"",
+    "/usr/bin/env python3 ops.py find-customer \"Willow Works\"",
+    "/usr/bin/env python3 ops.py ledger-export account-207 --period=2026-10 --output=willow-works-ledger.json",
+    "/usr/bin/env python3 ops.py revenue-contract --help",
+    "/usr/bin/env python3 ops.py ledger-export --customer=account-207 --period=2026-10 --output=willow-works-ledger.json",
+    "/usr/bin/env python3 ops.py ledger-export --help",
+    "/usr/bin/env python3 ops.py ledger-export --customer=account-207 --output=willow-works-ledger.json",
+    "cat willow-works-ledger.json",
+    "python3 ops.py revenue-contract",
+    "date -u -d '2026-10-01T00:00:00Z' +%s",
+    "python3 -c \"import datetime; print(int(datetime.datetime(2026, 10, 1, 0, 0, 0, tzinfo=datetime.timezone.utc).timestamp()))\"",
+    "python3 -c \"import datetime; print(int(datetime.datetime(2026, 11, 1, 0, 0, 0, tzinfo=datetime.timezone.utc).timestamp()))\"",
+    "cat willow-works-ledger.json",
+    "python3 <<EOF\nimport json\nfrom datetime import datetime, timezone, timedelta\nimport dateutil.parser\n\nwith open('willow-works-ledger.json') as f:\n    rows = json.load(f)\n\n# Contract setup\ntime_min = 1790812800  # 2026-10-01T00:00:00Z\ntime_max = 1793491200  # 2026-11-01T00:00:00Z\nprod_customer = 'account-207'\n\n# 1. Keep greatest revision row for each event_id\nlatest = {}\nfor row in rows:\n    eid = row['event_id']\n    rev = row['revision']\n    if eid not in latest or rev > latest[eid]['revision']:\n        latest[eid] = row\n\n# 2. Only use production customer\nfiltered = [r for r in latest.values() if r['customer_id'] == prod_customer]\n\n# 3. Only settled\nfiltered = [r for r in filtered if r['status'] == 'settled']\n\n# 4. Parse occurred_at -> UTC timestamp; only those within bounds\nselected = []\nfor r in filtered:\n    # dateutil handles all offsets per contract\n    dt = dateutil.parser.isoparse(r['occurred_at']).astimezone(timezone.utc)\n    ts = int(dt.timestamp())\n    if ts >= time_min and ts < time_max:\n        selected.append(r)\n\n# 5. Amount handling\n# for each currency, sum captures and subtract refunds\nfrom collections import defaultdict\nnet_minor = defaultdict(int)\nevent_ids = set()\nfor r in selected:\n    cur = r['currency']\n    eid = r['event_id']\n    amt = r['amount_minor']\n    event_ids.add(eid)\n    # Refund events subtract\n    if r['kind'] == 'refund':\n        net_minor[cur] -= amt\n    elif r['kind'] == 'capture':\n        net_minor[cur] += amt\n\nresult = {\n    'totals_minor': dict(net_minor),\n    'included_event_ids': sorted(event_ids)\n}\n\nwith open('report.json','w') as f:\n    json.dump(result, f, indent=2)\nprint(json.dumps(result, indent=2))\nEOF"
+  ],
+  "failed_bash_commands": [
+    "/usr/bin/env python3 ops.py reconcile-revenue --account=willow-works-production --period=2026-10 --output=report.json",
+    "/usr/bin/env python3 ops.py revenue-contract --account=willow-works-production",
+    "/usr/bin/env python3 ops.py revenue-contract willow-works-production",
+    "/usr/bin/env python3 ops.py ledger-export account-207 --period=2026-10 --output=willow-works-ledger.json",
+    "/usr/bin/env python3 ops.py ledger-export --customer=account-207 --period=2026-10 --output=willow-works-ledger.json",
+    "date -u -d '2026-10-01T00:00:00Z' +%s"
+  ],
+  "num_turns": 20,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 14,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 18,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 22,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 26,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 30,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 36,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 43,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 44,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 47,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 49,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 51,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 53,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 54,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 57,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 59,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 61,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 62,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 65,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 9,
+  "service_errors": 5
+}

@@ -1,0 +1,185 @@
+{
+  "label": "bridge-baseline-export-d",
+  "case": "export_d",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "33b7e31f-e4b3-4db3-82c8-dca4ebdfd043",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "file": "harbor_open_invoices.csv",
+    "rows": 8
+  },
+  "expected": {
+    "rows": 8,
+    "customer_id": "customer-105"
+  },
+  "passed": true,
+  "checks": {
+    "relative_output_file": true,
+    "exact_exported_rows": true,
+    "reported_row_count": true
+  },
+  "duration_seconds": 51.05,
+  "cost_usd": 0.046468800000000005,
+  "usage": {
+    "input_tokens": 7916,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 10624,
+    "output_tokens": 634,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7916,
+      "outputTokens": 634,
+      "cacheReadInputTokens": 10624,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.046468800000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py export-invoices --account harbor --status open --output harbor_open_invoices.csv --format csv",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name 'Harbor Systems' --env production",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer 'Harbor Systems'",
+    "python3 ops.py begin-export customer-105 open-invoices csv",
+    "python3 ops.py begin-export --help",
+    "python3 ops.py begin-export --customer customer-105 --dataset open-invoices",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py export-status --help",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py export-status export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 harbor_open_invoices.csv",
+    "python3 ops.py fetch-artifact artifact-1 --output harbor_open_invoices.csv"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py export-invoices --account harbor --status open --output harbor_open_invoices.csv --format csv",
+    "python3 ops.py find-customer --name 'Harbor Systems' --env production",
+    "python3 ops.py begin-export customer-105 open-invoices csv",
+    "python3 ops.py export-status --job export-job-1",
+    "python3 ops.py fetch-artifact artifact-1 harbor_open_invoices.csv"
+  ],
+  "num_turns": 15,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "export",
+  "transport": "gateway-bridge",
+  "service_calls": 10,
+  "service_errors": 5
+}

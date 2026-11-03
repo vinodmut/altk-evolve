@@ -1,0 +1,18 @@
+[
+  {
+    "event_id": "evt-4-refund",
+    "revision": 1,
+    "kind": "refund",
+    "amount_minor": 1100,
+    "currency": "USD",
+    "status": "settled"
+  },
+  {
+    "event_id": "evt-4-eur-refund",
+    "revision": 1,
+    "kind": "refund",
+    "amount_minor": 104,
+    "currency": "EUR",
+    "status": "settled"
+  }
+]

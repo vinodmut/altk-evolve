@@ -1,0 +1,7 @@
+invoice_id,customer_id,amount_minor,status
+invoice-1-1,customer-101,1425,open
+invoice-1-2,customer-101,1600,open
+invoice-1-4,customer-101,1950,open
+invoice-1-5,customer-101,2125,open
+invoice-1-7,customer-101,2475,open
+invoice-1-8,customer-101,2650,open

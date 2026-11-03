@@ -1,0 +1,440 @@
+{
+  "label": "train-ledger",
+  "case": "ledger_train",
+  "arm": "training",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "62598afa-9f2b-41c1-9be4-2f0c82bbc51d",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 12176,
+      "EUR": 4224
+    },
+    "included_event_ids": [
+      "evt-1-corrected",
+      "evt-1-eur",
+      "evt-1-eur-refund",
+      "evt-1-refund",
+      "evt-1-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 12176,
+      "EUR": 4224
+    },
+    "included_event_ids": [
+      "evt-1-corrected",
+      "evt-1-eur",
+      "evt-1-eur-refund",
+      "evt-1-refund",
+      "evt-1-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": false
+  },
+  "duration_seconds": 74.32,
+  "cost_usd": 0.0682256,
+  "usage": {
+    "input_tokens": 7699,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 21248,
+    "output_tokens": 1659,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7699,
+      "outputTokens": 1659,
+      "cacheReadInputTokens": 21248,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0682256,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile --account NorthwindStudio-production --month 2026-04 --output report.json",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name NorthwindStudio --environment production",
+    "python3 ops.py find-customer NorthwindStudio production",
+    "python3 ops.py find-customer NorthwindStudio",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer NorthwindStudio-production",
+    "python3 ops.py find-customer Studio",
+    "python3 ops.py revenue-contract --account account-201",
+    "python3 ops.py revenue-contract account-201",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer account-201 --output ledger.json",
+    "python3 ops.py revenue-contract > contract.json",
+    "cat ledger.json",
+    "cat contract.json",
+    "python3 ops.py revenue-contract"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --account NorthwindStudio-production --month 2026-04 --output report.json",
+    "python3 ops.py find-customer --name NorthwindStudio --environment production",
+    "python3 ops.py find-customer NorthwindStudio production",
+    "python3 ops.py revenue-contract --account account-201",
+    "python3 ops.py revenue-contract account-201"
+  ],
+  "num_turns": 18,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:21.716667-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": false,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": {
+        "injected": false,
+        "cached": true,
+        "fetchedAt": "2026-11-02T12:26:58.085112-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_guidelines",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 11,
+  "service_errors": 5
+}

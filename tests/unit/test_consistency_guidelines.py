@@ -551,6 +551,30 @@ class TestCanSegmentTrajectory:
 class TestFormatTrajectoryData:
     """Tests for format_trajectory_data's step rendering and uncertainty markers."""
 
+    def test_tool_outputs_reach_accurate_renderer_without_changing_step_numbers(self):
+        messages = [
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {
+                        "id": "a",
+                        "type": "function",
+                        "function": {"name": "Bash", "arguments": '{"command":"ops.py export"}'},
+                    }
+                ],
+            },
+            {"role": "tool", "tool_call_id": "a", "content": "[error] export requires --customer ACCOUNT"},
+            {"role": "assistant", "content": "Retry with the documented argument."},
+        ]
+        result = format_trajectory_data(messages, {"step_uncertainties": {1: 0.5}})
+        assert "Step 1 [" in result
+        assert "[error] export requires --customer ACCOUNT" in result
+        assert "Step 2 - Agent reasoning" in result
+        assert "Step 3" not in result
+        scoped = format_trajectory_data(messages, {"step_uncertainties": {1: 0.5}}, step_range=(2, 2))
+        assert "export requires" not in scoped
+
     def test_includes_assistant_steps(self):
         messages = [
             {"role": "user", "content": "What is 2+3?"},

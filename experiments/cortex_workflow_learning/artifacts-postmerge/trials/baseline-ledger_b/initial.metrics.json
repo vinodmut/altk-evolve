@@ -1,0 +1,159 @@
+{
+  "label": "baseline-ledger_b",
+  "case": "ledger_b",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "13c8543f-5474-4c8f-8c14-5bef29ba5ccd",
+  "exit_code": 0,
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 12828,
+      "EUR": 4472
+    },
+    "included_event_ids": [
+      "evt-3-corrected",
+      "evt-3-eur",
+      "evt-3-eur-refund",
+      "evt-3-refund",
+      "evt-3-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 12828,
+      "EUR": 4472
+    },
+    "included_event_ids": [
+      "evt-3-corrected",
+      "evt-3-eur",
+      "evt-3-eur-refund",
+      "evt-3-refund",
+      "evt-3-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": false
+  },
+  "duration_seconds": 43.51,
+  "cost_usd": 0.052012,
+  "usage": {
+    "input_tokens": 7525,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 2560,
+    "output_tokens": 1070,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7525,
+      "outputTokens": 1070,
+      "cacheReadInputTokens": 2560,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.052012,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile-revenue --account=orchid-analytics-prod --period=2026-06 --output=report.json",
+    "python3 ops.py revenue-contract --account=orchid-analytics-prod --period=2026-06",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py find-customer 'Orchid Analytics'",
+    "python3 ops.py revenue-contract account-203",
+    "python3 ops.py revenue-contract",
+    "python3 ops.py ledger-export --customer account-203 --output ledger.json",
+    "cat ledger.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile-revenue --account=orchid-analytics-prod --period=2026-06 --output=report.json",
+    "python3 ops.py revenue-contract --account=orchid-analytics-prod --period=2026-06",
+    "python3 ops.py revenue-contract account-203"
+  ],
+  "num_turns": 9,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 6,
+  "service_errors": 3
+}

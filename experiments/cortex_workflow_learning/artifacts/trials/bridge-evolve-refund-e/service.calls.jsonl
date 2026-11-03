@@ -1,0 +1,13 @@
+{"action": "refund-duplicates", "ok": false, "detail": "argument command: invalid choice: 'refund-duplicates' (choose from find-customer, begin-export, export-status, fetch-artifact, charges, refund-charge)"}
+{"action": "charges", "ok": false, "detail": "the following arguments are required: --customer"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --name --format json"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "charges", "ok": false, "detail": "unrecognized arguments: --format json"}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": true, "detail": null}

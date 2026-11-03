@@ -1,0 +1,14 @@
+{"action": "refund-duplicate-captures", "ok": false, "detail": "argument command: invalid choice: 'refund-duplicate-captures' (choose from find-customer, begin-export, export-status, fetch-artifact, charges, refund-charge)"}
+{"action": "charges", "ok": false, "detail": "the following arguments are required: --customer"}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --name --env production --json-out customer.json"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "charges", "ok": false, "detail": "unrecognized arguments: --json-out charges.json"}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "charges", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": false, "detail": "the following arguments are required: --idempotency-key"}
+{"action": "refund-charge", "ok": false, "detail": "unrecognized arguments: --reason duplicate captured charge (evolve) --json-out refund1.json"}
+{"action": "refund-charge", "ok": true, "detail": null}
+{"action": "refund-charge", "ok": true, "detail": null}

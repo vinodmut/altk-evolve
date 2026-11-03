@@ -1,0 +1,98 @@
+{
+  "family": "export",
+  "customers": [
+    {
+      "id": "sandbox-4",
+      "name": "Cedar Design",
+      "environment": "sandbox"
+    },
+    {
+      "id": "customer-104",
+      "name": "Cedar Design",
+      "environment": "production"
+    }
+  ],
+  "jobs": {
+    "export-job-1": {
+      "customer_id": "customer-104",
+      "polls": 2,
+      "artifact_id": "artifact-1"
+    }
+  },
+  "refunds": [],
+  "idempotency": {},
+  "invoices": [
+    {
+      "invoice_id": "invoice-4-1",
+      "customer_id": "customer-104",
+      "amount_minor": 1425,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-2",
+      "customer_id": "customer-104",
+      "amount_minor": 1600,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-3",
+      "customer_id": "customer-104",
+      "amount_minor": 1775,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-4-4",
+      "customer_id": "customer-104",
+      "amount_minor": 1950,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-5",
+      "customer_id": "customer-104",
+      "amount_minor": 2125,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-6",
+      "customer_id": "customer-104",
+      "amount_minor": 2300,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-4-7",
+      "customer_id": "customer-104",
+      "amount_minor": 2475,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-8",
+      "customer_id": "customer-104",
+      "amount_minor": 2650,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-9",
+      "customer_id": "customer-104",
+      "amount_minor": 2825,
+      "status": "paid"
+    },
+    {
+      "invoice_id": "invoice-4-10",
+      "customer_id": "customer-104",
+      "amount_minor": 3000,
+      "status": "open"
+    },
+    {
+      "invoice_id": "invoice-4-11",
+      "customer_id": "customer-104",
+      "amount_minor": 3175,
+      "status": "open"
+    },
+    {
+      "invoice_id": "sandbox-invoice",
+      "customer_id": "sandbox-4",
+      "amount_minor": 999,
+      "status": "open"
+    }
+  ]
+}

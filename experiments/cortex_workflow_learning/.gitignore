@@ -1,0 +1,7 @@
+artifacts*/runtime/
+artifacts*/state.json
+artifacts*/**/claude-config/
+artifacts*/trials/*/settings.json
+artifacts*/trials/*/ops.py
+artifacts*/trials/*/*.stderr.log
+__pycache__/

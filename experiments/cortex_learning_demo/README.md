@@ -18,6 +18,13 @@ Longer lists expose counting errors even when the agent selects the correct note
 **The 2026-11-02 run did not demonstrate an improvement in task correctness.**
 All three arms passed the short lists and failed the long lists.
 
+Subsequent [workflow experiments](../cortex_workflow_learning/README.md) found
+that the configured GPT-4.1 gateway ignores later Anthropic system text blocks,
+including Cortex's appended Evolve block. The observed results below remain
+valid, but request injection metadata did not establish model-visible guidance.
+The workflow experiment includes a model-visible probe and a local compatibility
+bridge for a fresh comparison.
+
 | Arm | Short lists | Long lists | Total correct | Agent turns |
 |---|---:|---:|---:|---:|
 | Baseline, no guidance | 3/3 | 0/3 | 3/6 | 28 |

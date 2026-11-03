@@ -36,6 +36,10 @@ SESSION_API = "http://127.0.0.1:47801"
 MCP = "http://127.0.0.1:18201/sse"
 LEARN_NS = "bucket-list-candidates"
 SERVE_NS = "bucket-list-reviewed"
+TASK_TOOL = "notes.py"
+PROFILE = "bucket-list-demo"
+REVIEW_PURPOSE = "reusable note-selection and checkbox-counting procedure"
+INFERENCE_BASE_URL = None
 PROMPT = (
     "How many activities are done in my current bucket list note? "
     "Use the local notes service via `python3 notes.py` (its --help describes the API). "
@@ -195,7 +199,7 @@ def config(learn=False):
                             "agents": ["claude-code"],
                             "serve_namespace": SERVE_NS,
                             "learn_namespace": LEARN_NS,
-                            "processing_profile": "bucket-list-demo",
+                            "processing_profile": PROFILE,
                             "learn": learn,
                             "inject": True,
                             "idle_after_seconds": 60,
@@ -347,16 +351,22 @@ def run_trial(label, case, arm, *, resume=None, prompt=PROMPT, suffix=None):
         )
         if plugin["config"]["learn"]:
             raise RuntimeError("Disable learning before evaluation so held-out sessions cannot enter training")
-        if arm == "baseline" and state.get("promoted"):
-            raise RuntimeError("Baseline trials must run before promoting guidelines; use a fresh artifacts directory")
+        if arm == "baseline" and state.get("promoted") and plugin["config"]["inject"]:
+            raise RuntimeError("Disable injection or run baselines before promoting guidelines")
         if arm != "baseline" and not state.get("promoted"):
             raise RuntimeError("Review and promote learned guidelines before running the Evolve arm")
+        if arm != "baseline" and not plugin["config"]["inject"]:
+            raise RuntimeError("Enable injection before running the Evolve arm")
     target = ARTIFACTS / "trials" / label if resume else prepare_trial(label, case)
     suffix = suffix or ("feedback" if resume else "initial")
     if (target / f"{suffix}.metrics.json").exists():
         raise RuntimeError(f"Trial output {label}/{suffix} already exists")
     env = base_env(state["model"])
     env.update(CLAUDE_CONFIG_DIR=str(target / "claude-config"), HTTPS_PROXY=PROXY, NODE_EXTRA_CA_CERTS=str(CA_DIR / "ca.crt"))
+    if INFERENCE_BASE_URL:
+        env.update(ANTHROPIC_BASE_URL=INFERENCE_BASE_URL, HTTP_PROXY=PROXY)
+        env.pop("NO_PROXY", None)
+        env.pop("no_proxy", None)
     session_id = resume or str(uuid.uuid4())
     cmd = [
         "claude",
@@ -374,7 +384,7 @@ def run_trial(label, case, arm, *, resume=None, prompt=PROMPT, suffix=None):
         "--tools",
         "Bash",
         "--allowedTools",
-        "Bash(python3 notes.py:*)",
+        f"Bash(python3 {TASK_TOOL}:*)",
         "Bash(python3 -c:*)",
         "--max-budget-usd",
         "1.00",
@@ -385,7 +395,19 @@ def run_trial(label, case, arm, *, resume=None, prompt=PROMPT, suffix=None):
     cmd += ["--resume", resume] if resume else ["--session-id", session_id]
     cmd += ["-p", prompt]
     started = time.monotonic()
-    result = subprocess.run(cmd, cwd=target, env=env, capture_output=True, text=True, timeout=240)
+    timed_out = False
+    try:
+        result = subprocess.run(cmd, cwd=target, env=env, capture_output=True, text=True, timeout=240)
+    except subprocess.TimeoutExpired as error:
+        timed_out = True
+        stdout = error.stdout or ""
+        stderr = error.stderr or ""
+        result = subprocess.CompletedProcess(
+            cmd,
+            124,
+            stdout=stdout.decode(errors="replace") if isinstance(stdout, bytes) else stdout,
+            stderr=stderr.decode(errors="replace") if isinstance(stderr, bytes) else stderr,
+        )
     (target / f"{suffix}.jsonl").write_text(result.stdout)
     (target / f"{suffix}.stderr.log").write_text(result.stderr)
     records = []
@@ -395,7 +417,17 @@ def run_trial(label, case, arm, *, resume=None, prompt=PROMPT, suffix=None):
         except ValueError:
             pass
     final = next((r for r in reversed(records) if r.get("type") == "result"), {})
+    if timed_out:
+        final = {
+            "subtype": "timeout",
+            "result": "",
+            "num_turns": sum(r.get("type") == "assistant" for r in records),
+        }
     answer = decode_answer(final.get("result", ""))
+    assessment = grade(case, answer)
+    if timed_out:
+        assessment["passed"] = False
+        assessment["checks"] = {**assessment.get("checks", {}), "completed_within_time_limit": False}
     commands = [
         b.get("input", {}).get("command", "")
         for r in records
@@ -412,9 +444,11 @@ def run_trial(label, case, arm, *, resume=None, prompt=PROMPT, suffix=None):
         "phase": suffix,
         "session_id": session_id,
         "exit_code": result.returncode,
+        "timed_out": timed_out,
+        "turn_count_source": "partial_transcript" if timed_out else "claude_result",
         "subtype": final.get("subtype"),
         "answer": answer,
-        **grade(case, answer),
+        **assessment,
         "duration_seconds": round(time.monotonic() - started, 2),
         "cost_usd": final.get("total_cost_usd"),
         "usage": final.get("usage"),
@@ -434,7 +468,7 @@ def run_trial(label, case, arm, *, resume=None, prompt=PROMPT, suffix=None):
             indent=2,
         )
     )
-    if result.returncode or not final:
+    if (result.returncode or not final) and not timed_out:
         raise RuntimeError("Claude session failed; inspect trial stderr and initial.jsonl")
     return metrics
 
@@ -496,7 +530,7 @@ def promote(ids):
         entity = c.get_entity_by_id(LEARN_NS, identifier)
         if entity is None or entity.type != "guideline":
             raise RuntimeError(f"Unknown candidate {identifier}")
-        metadata = {**entity.metadata, "status": "active", "reviewed_for": "reusable note-selection and checkbox-counting procedure"}
+        metadata = {**entity.metadata, "status": "active", "reviewed_for": REVIEW_PURPOSE}
         updates = c.update_entities(
             SERVE_NS, [Entity(type="guideline", content=entity.content, metadata=metadata)], enable_conflict_resolution=False
         )
