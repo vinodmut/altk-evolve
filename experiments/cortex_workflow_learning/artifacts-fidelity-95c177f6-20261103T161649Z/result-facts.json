@@ -1,0 +1,27 @@
+{
+  "totals": {
+    "baseline": {
+      "passes": 2,
+      "turns": 127,
+      "rejected": 16,
+      "timeouts": 0
+    },
+    "evolve": {
+      "passes": 4,
+      "turns": 102,
+      "rejected": 9,
+      "timeouts": 0
+    }
+  },
+  "paired_wins": [
+    "Orchid Analytics",
+    "Cedar Design",
+    "Willow Works"
+  ],
+  "paired_regressions": [
+    "Harbor Systems"
+  ],
+  "first_request_injection_matches_arm": true,
+  "all_saved_grades_reverified": true,
+  "generated_at": "2026-11-03T16:58:35.326560+00:00"
+}

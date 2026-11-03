@@ -7,11 +7,14 @@ modified. Evolve learns only from the explicitly selected training sessions.
 
 import argparse
 import asyncio
+import hashlib
+import importlib
 import json
 import os
 import shutil
 import subprocess
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 import yaml
@@ -104,6 +107,34 @@ def trial(label, case, arm, *, feedback=False, via_bridge=False):
     print(json.dumps({key: result[key] for key in ("passed", "checks", "service_calls", "service_errors", "bash_commands")}, indent=2))
 
 
+@contextmanager
+def record_learning_prompts(path):
+    """Save the actual guideline requests without credentials or transport options."""
+    originals = []
+    for name in ("guidelines", "consistency_guidelines"):
+        module = importlib.import_module(f"altk_evolve.llm.guidelines.{name}")
+        original = module.completion
+
+        def recorded(*args, _original=original, _purpose=name, **kwargs):
+            with path.open("a") as output:
+                output.write(json.dumps({"purpose": _purpose, "model": kwargs.get("model"), "messages": kwargs.get("messages")}) + "\n")
+            return _original(*args, **kwargs)
+
+        originals.append((module, original))
+        module.completion = recorded
+    try:
+        yield
+    finally:
+        for module, original in originals:
+            module.completion = original
+
+
+def analysis_revision(original, mode, objective, outcome):
+    """Different evidence/objectives must not collide with ingestion revisions."""
+    evidence = json.dumps({"original": original, "mode": mode, "objective": objective, "outcome": outcome}, sort_keys=True)
+    return "analysis-" + hashlib.sha256(evidence.encode()).hexdigest()[:24]
+
+
 def learn(label, mode, objective):
     state = driver.read_state()
     metric = next(trial for trial in reversed(state["trials"]) if trial["label"] == label)
@@ -130,9 +161,9 @@ def learn(label, mode, objective):
         )
     finally:
         cortex.close()
-    if captured.trajectory is None:
+    batches = captured.trajectories or ([captured.trajectory] if captured.trajectory else [])
+    if not batches:
         raise RuntimeError(f"Training trajectory unavailable: {captured.status}")
-    trajectory = Trajectory.model_validate(captured.trajectory)
     checks = dict(metric["checks"])
     detail = {"task_correctness_passed": metric["passed"], "checks": checks, "expected": metric["expected"]}
     if objective == "fewer-errors":
@@ -140,41 +171,55 @@ def learn(label, mode, objective):
         calls = [json.loads(line) for line in (driver.ARTIFACTS / "trials" / label / "service.calls.jsonl").read_text().splitlines()]
         detail["quality_objective"] = "Complete the task without rejected API invocations; task correctness is a separate criterion."
         detail["rejected_api_calls"] = [call for call in calls if not call["ok"]]
-        trajectory.batch = trajectory.batch.model_copy(update={"revision": "2"})
-    if mode == "consistency":
-        # A changed analysis is a new revision; redelivery of the original batch
-        # correctly skips processors even if deployment defaults have changed.
-        trajectory.batch = trajectory.batch.model_copy(update={"revision": "3"})
-    trajectory.outcome = TrajectoryOutcome(
+    outcome = TrajectoryOutcome(
         success=all(checks.values()),
         failed_checks=tuple(name for name, passed in checks.items() if not passed),
         detail=json.dumps(detail),
     )
     output = driver.ARTIFACTS / f"learning-{label}-{mode}-{objective}"
-    output.with_suffix(".input.json").write_text(json.dumps(trajectory.model_dump(mode="json"), indent=2) + "\n")
-    rendered = parse_openai_agents_trajectory(trajectory.messages)
-    output.with_suffix(".rendered.txt").write_text(rendered["trajectory_summary"] + "\n")
-    calls = [call for message in trajectory.messages for call in message.get("tool_calls", [])]
-    results = [message for message in trajectory.messages if message.get("role") == "tool"]
-    call_ids = {call["id"] for call in calls}
-    recording = {
-        "tool_calls": len(calls),
-        "tool_results": len(results),
-        "paired_results": sum(message.get("tool_call_id") in call_ids for message in results),
-        "rendered_observations": rendered["trajectory_summary"].count("Tool result (observed output):"),
-    }
     client = EvolveClient()
     client.ensure_namespace(driver.LEARN_NS)
-    result = client.process_trajectory(trajectory, namespace_id=driver.LEARN_NS)
+    inputs, reports = [], []
+    with record_learning_prompts(output.with_suffix(".prompts.jsonl")):
+        for index, batch in enumerate(batches):
+            trajectory = Trajectory.model_validate(batch)
+            trajectory.outcome = outcome
+            trajectory.batch = trajectory.batch.model_copy(
+                update={"revision": analysis_revision(trajectory.batch.revision, mode, objective, outcome.model_dump(mode="json"))}
+            )
+            inputs.append(trajectory.model_dump(mode="json"))
+            output.with_suffix(".inputs.json").write_text(json.dumps(inputs, indent=2) + "\n")
+            rendered = parse_openai_agents_trajectory(trajectory.messages, context_messages=trajectory.context_messages)
+            # This is a conversation view; .prompts.jsonl contains the complete model-facing requests.
+            (driver.ARTIFACTS / f"{output.name}.batch-{index + 1}.conversation.txt").write_text(rendered["trajectory_summary"] + "\n")
+            calls = [call for message in trajectory.messages for call in message.get("tool_calls", [])]
+            results = [message for message in trajectory.messages if message.get("role") == "tool"]
+            call_ids = {call["id"] for call in calls}
+            result = client.process_trajectory(trajectory, namespace_id=driver.LEARN_NS)
+            reports.append(
+                {
+                    "batch": index + 1,
+                    "revision": trajectory.batch.revision,
+                    "updates": result.updates,
+                    "skipped_processors": result.skipped_processors,
+                    "recording": {
+                        "tool_calls": len(calls),
+                        "tool_results": len(results),
+                        "paired_results": sum(message.get("tool_call_id") in call_ids for message in results),
+                        "rendered_observations": rendered["trajectory_summary"].count("Tool result (observed output):"),
+                    },
+                }
+            )
+            output.with_suffix(".batches.json").write_text(json.dumps(reports, indent=2) + "\n")
     report = {
         "label": label,
         "mode": mode,
         "objective": objective,
         "task_correctness_passed": metric["passed"],
         "quality_passed": all(checks.values()),
-        "updates": result.updates,
-        "skipped_processors": result.skipped_processors,
-        "recording": recording,
+        "updates": [update for batch in reports for update in batch["updates"]],
+        "skipped_processors": [processor for batch in reports for processor in batch["skipped_processors"]],
+        "batches": reports,
     }
     output.with_suffix(".result.json").write_text(json.dumps(report, indent=2) + "\n")
     state["learning"] = [*state.get("learning", []), report]

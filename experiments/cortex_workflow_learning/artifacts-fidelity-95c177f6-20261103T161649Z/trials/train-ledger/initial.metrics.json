@@ -1,0 +1,215 @@
+{
+  "label": "train-ledger",
+  "case": "ledger_train",
+  "arm": "training",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 12176,
+      "EUR": 4224
+    },
+    "included_event_ids": [
+      "evt-1-corrected",
+      "evt-1-eur",
+      "evt-1-eur-refund",
+      "evt-1-refund",
+      "evt-1-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 12176,
+      "EUR": 4224
+    },
+    "included_event_ids": [
+      "evt-1-corrected",
+      "evt-1-eur",
+      "evt-1-eur-refund",
+      "evt-1-refund",
+      "evt-1-utc-in"
+    ]
+  },
+  "passed": true,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": true
+  },
+  "duration_seconds": 95.16,
+  "cost_usd": 0.0681008,
+  "usage": {
+    "input_tokens": 9166,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 16384,
+    "output_tokens": 1408,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 9166,
+      "outputTokens": 1408,
+      "cacheReadInputTokens": 16384,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0681008,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile-revenue --account northwind-studio-production --period 2026-04 --output report.json",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer \"Northwind Studio\"",
+    "python3 ops.py revenue-contract --account account-201",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer account-201 --output ledger.json",
+    "python3 ops.py revenue-contract > contract.json",
+    "ls -l ledger.json contract.json",
+    "cat contract.json",
+    "cat ledger.json",
+    "python3 -c \"import json; from datetime import datetime, timezone, timedelta; import dateutil.parser\nledger=json.load(open('ledger.json'))\naccount_id='account-201'\nstart=datetime(2026,4,1,tzinfo=timezone.utc)\nend=datetime(2026,5,1,tzinfo=timezone.utc)\nlatest={{}}\nfor row in ledger:\n    ev=row['event_id']\n    r=row['revision']\n    if (ev not in latest) or (r>latest[ev]['revision']):\n        latest[ev]=row\nkept=[]\nfor e in latest.values():\n    if e['customer_id']!=account_id: continue\n    if e['status']!='settled': continue\n    occ=dateutil.parser.isoparse(e['occurred_at']).astimezone(timezone.utc)\n    if occ<start or occ>=end: continue\n    kept.append(e)\ntotals={{}}\nevent_ids=[]\nfor e in kept:\n    c=e['currency']\n    if c not in totals: totals[c]=0\n    amt = e['amount_minor'] if e['kind']=='capture' else -e['amount_minor']\n    totals[c]+=amt\n    event_ids.append(e['event_id'])\nresult={{'totals_minor':totals,'included_event_ids':sorted(set(event_ids))}}\njson.dump(result, open('report.json','w'), indent=2)\nprint(json.dumps(result, indent=2))\"",
+    "python3 -c \"import json; from datetime import datetime, timezone; from dateutil import parser\nledger=json.load(open('ledger.json'))\naccount_id='account-201'\nstart=datetime(2026,4,1,tzinfo=timezone.utc)\nend=datetime(2026,5,1,tzinfo=timezone.utc)\nlatest={}\nfor row in ledger:\n    ev=row['event_id']\n    if (ev not in latest) or (row['revision']>latest[ev]['revision']):\n        latest[ev]=row\nkept=[]\nfor e in latest.values():\n    if e['customer_id']!=account_id: continue\n    if e['status']!='settled': continue\n    occ=parser.isoparse(e['occurred_at']).astimezone(timezone.utc)\n    if occ<start or occ>=end: continue\n    kept.append(e)\ntotals={}\nevent_ids=[]\nfor e in kept:\n    c=e['currency']\n    if c not in totals: totals[c]=0\n    amt = e['amount_minor'] if e['kind']=='capture' else -e['amount_minor']\n    totals[c]+=amt\n    event_ids.append(e['event_id'])\nresult={'totals_minor':totals,'included_event_ids':sorted(set(event_ids))}\njson.dump(result, open('report.json','w'), indent=2)\nprint(json.dumps(result, indent=2))\""
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile-revenue --account northwind-studio-production --period 2026-04 --output report.json",
+    "python3 ops.py revenue-contract --account account-201",
+    "python3 -c \"import json; from datetime import datetime, timezone, timedelta; import dateutil.parser\nledger=json.load(open('ledger.json'))\naccount_id='account-201'\nstart=datetime(2026,4,1,tzinfo=timezone.utc)\nend=datetime(2026,5,1,tzinfo=timezone.utc)\nlatest={{}}\nfor row in ledger:\n    ev=row['event_id']\n    r=row['revision']\n    if (ev not in latest) or (r>latest[ev]['revision']):\n        latest[ev]=row\nkept=[]\nfor e in latest.values():\n    if e['customer_id']!=account_id: continue\n    if e['status']!='settled': continue\n    occ=dateutil.parser.isoparse(e['occurred_at']).astimezone(timezone.utc)\n    if occ<start or occ>=end: continue\n    kept.append(e)\ntotals={{}}\nevent_ids=[]\nfor e in kept:\n    c=e['currency']\n    if c not in totals: totals[c]=0\n    amt = e['amount_minor'] if e['kind']=='capture' else -e['amount_minor']\n    totals[c]+=amt\n    event_ids.append(e['event_id'])\nresult={{'totals_minor':totals,'included_event_ids':sorted(set(event_ids))}}\njson.dump(result, open('report.json','w'), indent=2)\nprint(json.dumps(result, indent=2))\""
+  ],
+  "num_turns": 15,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 26,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 30,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 5,
+  "service_errors": 2
+}

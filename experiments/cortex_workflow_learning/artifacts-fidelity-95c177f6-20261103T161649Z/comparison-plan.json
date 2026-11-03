@@ -1,0 +1,74 @@
+{
+  "cases": [
+    "ledger_a",
+    "ledger_b",
+    "ledger_c",
+    "ledger_d",
+    "ledger_e",
+    "ledger_f"
+  ],
+  "guidelines": [
+    {
+      "id": "1",
+      "content": "Carefully review the CLI tool's supported commands and argument formats\u0014via its --help output\u0014before invoking any API action, especially when the command or arguments are not explicitly documented or familiar.",
+      "candidate_id": "1"
+    },
+    {
+      "id": "2",
+      "content": "When selecting the latest revision per event from a ledger, use the event_id as the key and retain only the row with the highest revision number for each event_id before applying further filters.",
+      "candidate_id": "2"
+    },
+    {
+      "id": "3",
+      "content": "After determining correct filter criteria from a contract or runtime help (status, date, account, etc.), methodically apply filters in the order they are described or logically required before performing aggregates or calculations.",
+      "candidate_id": "4"
+    }
+  ],
+  "selection": "Reviewed from training only, before any held-out evaluation",
+  "primary": "Independent exact report correctness",
+  "secondary": "Agent turns and rejected service calls; report both even if worse",
+  "order": [
+    {
+      "case": "ledger_a",
+      "arms": [
+        "baseline",
+        "evolve"
+      ]
+    },
+    {
+      "case": "ledger_b",
+      "arms": [
+        "evolve",
+        "baseline"
+      ]
+    },
+    {
+      "case": "ledger_c",
+      "arms": [
+        "baseline",
+        "evolve"
+      ]
+    },
+    {
+      "case": "ledger_d",
+      "arms": [
+        "evolve",
+        "baseline"
+      ]
+    },
+    {
+      "case": "ledger_e",
+      "arms": [
+        "baseline",
+        "evolve"
+      ]
+    },
+    {
+      "case": "ledger_f",
+      "arms": [
+        "evolve",
+        "baseline"
+      ]
+    }
+  ]
+}

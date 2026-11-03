@@ -1,0 +1,102 @@
+[
+  {
+    "event_id": "evt-6-corrected",
+    "revision": 2,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 14750,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-09-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-6-eur",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 4950,
+    "currency": "EUR",
+    "status": "settled",
+    "occurred_at": "2026-09-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-6-eur-refund",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "refund",
+    "amount_minor": 106,
+    "currency": "EUR",
+    "status": "settled",
+    "occurred_at": "2026-09-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-6-moved",
+    "revision": 2,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 3333,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-10-02T00:00:00Z"
+  },
+  {
+    "event_id": "evt-6-pending",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 7777,
+    "currency": "USD",
+    "status": "pending",
+    "occurred_at": "2026-09-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-6-refund",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "refund",
+    "amount_minor": 1200,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-09-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-6-upper-bound",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 4444,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-10-01T00:00:00Z"
+  },
+  {
+    "event_id": "evt-6-utc-in",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 256,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-08-31T23:30:00-02:00"
+  },
+  {
+    "event_id": "evt-6-utc-out",
+    "revision": 1,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 5555,
+    "currency": "USD",
+    "status": "settled",
+    "occurred_at": "2026-09-01T00:30:00+02:00"
+  },
+  {
+    "event_id": "evt-6-void",
+    "revision": 2,
+    "customer_id": "account-206",
+    "kind": "capture",
+    "amount_minor": 8800,
+    "currency": "USD",
+    "status": "voided",
+    "occurred_at": "2026-09-15T12:00:00Z"
+  }
+]

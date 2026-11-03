@@ -1,0 +1,187 @@
+{
+  "label": "baseline-ledger_a",
+  "case": "ledger_a",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "a71c0925-75dc-4d4d-bc86-19ccf62efefa",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 12502,
+      "EUR": 4348
+    },
+    "included_event_ids": [
+      "evt-2-corrected",
+      "evt-2-eur",
+      "evt-2-eur-refund",
+      "evt-2-refund",
+      "evt-2-utc-in"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 12502,
+      "EUR": 4348
+    },
+    "included_event_ids": [
+      "evt-2-corrected",
+      "evt-2-eur",
+      "evt-2-eur-refund",
+      "evt-2-refund",
+      "evt-2-utc-in"
+    ]
+  },
+  "passed": true,
+  "checks": {
+    "currency_totals": true,
+    "exact_event_ids": true,
+    "saved_report": true
+  },
+  "duration_seconds": 62.09,
+  "cost_usd": 0.06864240000000002,
+  "usage": {
+    "input_tokens": 7667,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 15872,
+    "output_tokens": 1740,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7667,
+      "outputTokens": 1740,
+      "cacheReadInputTokens": 15872,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.06864240000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py --help",
+    "python3 ops.py find-customer 'Maple Workshop'",
+    "python3 ops.py revenue-contract account-202",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer account-202 --output ledger.json",
+    "cat ledger.json",
+    "python3 ops.py revenue-contract",
+    "date -u -d '2026-05-01T00:00:00Z' +%s; date -u -d '2026-06-01T00:00:00Z' +%s",
+    "cat > report.json <<EOF\n{\n  \"totals_minor\": {\n    \"USD\": 12502,\n    \"EUR\": 4348\n  },\n  \"included_event_ids\": [\n    \"evt-2-corrected\",\n    \"evt-2-eur\",\n    \"evt-2-eur-refund\",\n    \"evt-2-refund\",\n    \"evt-2-utc-in\"\n  ]\n}\nEOF\n",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py revenue-contract account-202",
+    "date -u -d '2026-05-01T00:00:00Z' +%s; date -u -d '2026-06-01T00:00:00Z' +%s"
+  ],
+  "num_turns": 12,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 20,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 4,
+  "service_errors": 1
+}

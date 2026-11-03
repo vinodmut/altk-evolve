@@ -1,0 +1,22 @@
+[
+  {
+    "event_id": "evt-3-eur",
+    "revision": 1,
+    "customer_id": "account-203",
+    "kind": "capture",
+    "amount_minor": 4575,
+    "currency": "EUR",
+    "status": "settled",
+    "occurred_at": "2026-06-15T12:00:00Z"
+  },
+  {
+    "event_id": "evt-3-eur-refund",
+    "revision": 1,
+    "customer_id": "account-203",
+    "kind": "refund",
+    "amount_minor": 103,
+    "currency": "EUR",
+    "status": "settled",
+    "occurred_at": "2026-06-15T12:00:00Z"
+  }
+]

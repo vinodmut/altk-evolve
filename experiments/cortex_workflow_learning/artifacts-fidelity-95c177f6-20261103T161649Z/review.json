@@ -1,0 +1,18 @@
+{
+  "reviewed_before_evaluation": true,
+  "training_label": "train-ledger",
+  "training_case": "ledger_train",
+  "training_session": "ca60ece3-1546-4bea-912a-245ce66536f2",
+  "analysis_selection": ["standard/fewer-errors", "consistency/correctness"],
+  "selected_candidate_ids": ["1", "2", "4"],
+  "decisions": {
+    "1": "Supported by the two rejected CLI invocations in training; reusable across customers.",
+    "2": "Supported by the accounting contract and successful training code; greatest revision must precede all filters.",
+    "3": "Excluded: generic coding-error recovery advice is less directly useful than the selected reconciliation procedure.",
+    "4": "Supported by the training contract and filter sequence; complements revision selection without copying customer answers."
+  },
+  "scope": "Fresh sessions and storage on the same six evaluation fixtures used in the previous experiment. No evaluation trace may generate guidelines or alter this selection.",
+  "primary": "Exact currency totals, included event IDs, and matching saved report.json",
+  "secondary": "Agent turns and rejected service calls, including failures and timeouts",
+  "comparison_limits": "One paired trial per fixture, not a statistical reliability estimate or an isolated measurement of the adapter fixes. Both arms use the gateway bridge."
+}

@@ -1,0 +1,226 @@
+{
+  "label": "baseline-ledger_f",
+  "case": "ledger_f",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "14a39421-35a4-499f-95c9-a6f2d304208f",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 22763,
+      "EUR": 4968
+    },
+    "included_event_ids": [
+      "evt-7-corrected",
+      "evt-7-eur",
+      "evt-7-eur-refund",
+      "evt-7-moved",
+      "evt-7-refund",
+      "evt-7-utc-out"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 14132,
+      "EUR": 4968
+    },
+    "included_event_ids": [
+      "evt-7-corrected",
+      "evt-7-eur",
+      "evt-7-eur-refund",
+      "evt-7-refund",
+      "evt-7-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 51.63,
+  "cost_usd": 0.058919200000000005,
+  "usage": {
+    "input_tokens": 9431,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 18176,
+    "output_tokens": 878,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 9431,
+      "outputTokens": 878,
+      "cacheReadInputTokens": 18176,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.058919200000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile --account=willow-works-prod --period=2026-10 --output=report.json",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name=\"Willow Works\"",
+    "python3 ops.py find-customer --name=\"willow-works-prod\"",
+    "python3 ops.py find-customer willow-works-prod",
+    "python3 ops.py find-customer Willow Works",
+    "python3 ops.py find-customer Willow",
+    "python3 ops.py revenue-contract --account=account-207",
+    "python3 ops.py revenue-contract account-207",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer=account-207 --output=ledger.json",
+    "python3 ops.py revenue-contract",
+    "cat ledger.json",
+    "cat > report.json <<EOF\n{\n  \"totals_minor\": {\"USD\": 15125 + 5555 + 3333 - 1250, \"EUR\": 5075 - 107},\n  \"included_event_ids\": [\"evt-7-corrected\", \"evt-7-eur\", \"evt-7-eur-refund\", \"evt-7-moved\", \"evt-7-refund\", \"evt-7-utc-out\"]\n}\nEOF",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --account=willow-works-prod --period=2026-10 --output=report.json",
+    "python3 ops.py find-customer --name=\"willow-works-prod\"",
+    "python3 ops.py find-customer Willow Works",
+    "python3 ops.py revenue-contract --account=account-207",
+    "python3 ops.py revenue-contract account-207"
+  ],
+  "num_turns": 17,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 30,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 10,
+  "service_errors": 5
+}

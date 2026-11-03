@@ -1,0 +1,10 @@
+{"action": "reconcile", "ok": false, "detail": "argument command: invalid choice: 'reconcile' (choose from find-customer, revenue-contract, ledger-export, begin-export, export-status, fetch-artifact, charges, refund-charge)"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "find-customer", "ok": false, "detail": "the following arguments are required: query"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: Works"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: --account=account-207"}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: account-207"}
+{"action": "ledger-export", "ok": true, "detail": null}
+{"action": "revenue-contract", "ok": true, "detail": null}

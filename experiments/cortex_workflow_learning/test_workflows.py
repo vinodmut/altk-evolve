@@ -13,6 +13,81 @@ from . import ledger_tasks
 pytestmark = pytest.mark.unit
 
 
+def test_learning_analysis_identity_separates_objectives_and_feedback():
+    from .run import analysis_revision
+
+    original = analysis_revision("2", "standard", "correctness", {"success": True})
+    assert original == analysis_revision("2", "standard", "correctness", {"success": True})
+    assert (
+        len(
+            {
+                original,
+                analysis_revision("2", "standard", "fewer-errors", {"success": True}),
+                analysis_revision("2", "consistency", "correctness", {"success": True}),
+                analysis_revision("2", "standard", "correctness", {"success": False}),
+            }
+        )
+        == 4
+    )
+
+
+def test_learning_prompt_recording_excludes_transport_secrets_and_restores_on_error(tmp_path, monkeypatch):
+    from . import run
+
+    modules = [SimpleNamespace(completion=lambda **kwargs: kwargs["messages"]) for _ in range(2)]
+    originals = [module.completion for module in modules]
+    monkeypatch.setattr(run.importlib, "import_module", lambda name: modules[int(name.endswith("consistency_guidelines"))])
+    path = tmp_path / "prompts.jsonl"
+    messages = [{"role": "user", "content": "Task evidence"}]
+    with pytest.raises(RuntimeError, match="probe"):
+        with run.record_learning_prompts(path):
+            assert (
+                modules[0].completion(model="test", messages=messages, api_key="secret-value", headers={"Authorization": "secret"})
+                == messages
+            )
+            raise RuntimeError("probe")
+    assert [module.completion for module in modules] == originals
+    assert json.loads(path.read_text()) == {"purpose": "guidelines", "model": "test", "messages": messages}
+    assert "secret" not in path.read_text()
+
+
+def test_learning_processes_every_captured_batch(tmp_path, monkeypatch):
+    from altk_evolve.frontend.client import evolve_client
+    from altk_evolve.sync import cortex_sync
+    from . import run
+
+    batches = [
+        {
+            "batch": {"source": "cortex", "conversation_id": "training", "batch_id": str(index), "revision": "2"},
+            "messages": [{"role": "user", "content": f"batch {index}"}],
+        }
+        for index in range(2)
+    ]
+    metric = {"label": "train", "case": "ledger_train", "session_id": "training", "checks": {"saved": True}, "passed": True, "expected": {}}
+    state = {"model": "test", "trials": [metric]}
+    processed = []
+
+    class Client:
+        def ensure_namespace(self, namespace):
+            pass
+
+        def process_trajectory(self, trajectory, **kwargs):
+            processed.append(trajectory)
+            return SimpleNamespace(updates=[], skipped_processors=[])
+
+    monkeypatch.setattr(run.driver, "ARTIFACTS", tmp_path)
+    monkeypatch.setattr(run.driver, "read_state", lambda: state)
+    monkeypatch.setattr(run.driver, "write_state", lambda value: None)
+    monkeypatch.setattr(run.driver, "base_env", lambda model: {})
+    monkeypatch.setattr(evolve_client, "EvolveClient", Client)
+    monkeypatch.setattr(cortex_sync, "CortexSessionClient", lambda url: SimpleNamespace(close=lambda: None))
+    monkeypatch.setattr(cortex_sync, "ingest_session", lambda *args, **kwargs: SimpleNamespace(trajectory=batches[0], trajectories=batches))
+    run.learn("train", "standard", "correctness")
+    assert [trajectory.batch.batch_id for trajectory in processed] == ["0", "1"]
+    assert all(trajectory.outcome.success for trajectory in processed)
+    assert len(json.loads((tmp_path / "learning-train-standard-correctness.inputs.json").read_text())) == 2
+
+
 def test_timeout_preserves_partial_output_and_cannot_pass(tmp_path, monkeypatch):
     import subprocess
 

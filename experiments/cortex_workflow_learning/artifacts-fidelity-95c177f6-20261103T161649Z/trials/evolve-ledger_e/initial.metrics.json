@@ -1,0 +1,884 @@
+{
+  "label": "evolve-ledger_e",
+  "case": "ledger_e",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "932767df-e3bd-4263-8fb1-1cef2f51e56f",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 19105,
+      "EUR": 4844
+    },
+    "included_event_ids": [
+      "evt-6-corrected",
+      "evt-6-eur",
+      "evt-6-eur-refund",
+      "evt-6-refund",
+      "evt-6-utc-out"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 13806,
+      "EUR": 4844
+    },
+    "included_event_ids": [
+      "evt-6-corrected",
+      "evt-6-eur",
+      "evt-6-eur-refund",
+      "evt-6-refund",
+      "evt-6-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 113.85,
+  "cost_usd": 0.08314239999999998,
+  "usage": {
+    "input_tokens": 10446,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 52992,
+    "output_tokens": 1538,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 10446,
+      "outputTokens": 1538,
+      "cacheReadInputTokens": 52992,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.08314239999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile --help",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer 'Summit Labs'",
+    "python3 ops.py ledger-export --customer account-206 --output ledger.json",
+    "python3 ops.py revenue-contract > contract.json",
+    "head -20 ledger.json",
+    "head -20 contract.json",
+    "jq '.' ledger.json",
+    "jq '[ group_by(.event_id) | map(max_by(.revision)) ] | flatten' ledger.json > latest.json",
+    "jq '[ .[] | select(.customer_id==\"account-206\") ]' latest.json > prod.json",
+    "jq '[ .[] | select(.status==\"settled\") ]' prod.json > settled.json",
+    "jq '[ .[] | select((.occurred_at | fromdateiso8601) >= (\"2026-09-01T00:00:00Z\" | fromdateiso8601) and (.occurred_at | fromdateiso8601) < (\"2026-10-01T00:00:00Z\" | fromdateiso8601)) ]' settled.json > sept.json",
+    "jq '[ .[] | select((.occurred_at | fromdateiso8601) >= 1772323200 and (.occurred_at | fromdateiso8601) < 1773004800) ]' settled.json > sept.json",
+    "jq '[ .[] | select(.occurred_at | test(\"^2026-09\")) ]' settled.json > sept.json",
+    "jq '.' sept.json",
+    "jq '[ .[] | {event_id, kind, amount_minor, currency} ]' sept.json",
+    "jq -c '[ .[] | {event_id, kind, amount_minor, currency} ]' sept.json",
+    "echo '[{\"event_id\":\"evt-6-corrected\",\"kind\":\"capture\",\"amount_minor\":14750,\"currency\":\"USD\"},{\"event_id\":\"evt-6-eur\",\"kind\":\"capture\",\"amount_minor\":4950,\"currency\":\"EUR\"},{\"event_id\":\"evt-6-eur-refund\",\"kind\":\"refund\",\"amount_minor\":106,\"currency\":\"EUR\"},{\"event_id\":\"evt-6-refund\",\"kind\":\"refund\",\"amount_minor\":1200,\"currency\":\"USD\"},{\"event_id\":\"evt-6-utc-out\",\"kind\":\"capture\",\"amount_minor\":5555,\"currency\":\"USD\"}]' | jq -r 'reduce .[] as $e ({}; .[$e.currency] += if $e.kind == \"capture\" then $e.amount_minor else -$e.amount_minor end)'",
+    "echo '[{\"event_id\":\"evt-6-corrected\",\"kind\":\"capture\",\"amount_minor\":14750,\"currency\":\"USD\"},{\"event_id\":\"evt-6-eur\",\"kind\":\"capture\",\"amount_minor\":4950,\"currency\":\"EUR\"},{\"event_id\":\"evt-6-eur-refund\",\"kind\":\"refund\",\"amount_minor\":106,\"currency\":\"EUR\"},{\"event_id\":\"evt-6-refund\",\"kind\":\"refund\",\"amount_minor\":1200,\"currency\":\"USD\"},{\"event_id\":\"evt-6-utc-out\",\"kind\":\"capture\",\"amount_minor\":5555,\"currency\":\"USD\"}]' | jq '[.[].event_id] | unique | sort'",
+    "echo '{\"totals_minor\":{\"USD\":19105,\"EUR\":4844},\"included_event_ids\":[\"evt-6-corrected\",\"evt-6-eur\",\"evt-6-eur-refund\",\"evt-6-refund\",\"evt-6-utc-out\"]}' > report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --help",
+    "jq '[ .[] | select((.occurred_at | fromdateiso8601) >= (\"2026-09-01T00:00:00Z\" | fromdateiso8601) and (.occurred_at | fromdateiso8601) < (\"2026-10-01T00:00:00Z\" | fromdateiso8601)) ]' settled.json > sept.json",
+    "jq '[ .[] | select((.occurred_at | fromdateiso8601) >= 1772323200 and (.occurred_at | fromdateiso8601) < 1773004800) ]' settled.json > sept.json"
+  ],
+  "num_turns": 23,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:09.961905-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:41:40.191518-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:40.191518-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:40.191518-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:40.191518-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:40.191518-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:41:40.191518-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 37,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:14.915558-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 43,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:42:50.287537-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 45,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:42:50.287537-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1",
+    "2",
+    "3"
+  ],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 4,
+  "service_errors": 1
+}

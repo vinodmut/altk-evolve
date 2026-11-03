@@ -1,0 +1,6 @@
+{"action": "find-customer", "ok": false, "detail": "unrecognized arguments: --name --env production"}
+{"action": "find-customer", "ok": true, "detail": null}
+{"action": "revenue-contract", "ok": false, "detail": "unrecognized arguments: --account account-205"}
+{"action": "revenue-contract", "ok": true, "detail": null}
+{"action": "ledger-export", "ok": false, "detail": "the following arguments are required: --customer"}
+{"action": "ledger-export", "ok": true, "detail": null}

@@ -1,0 +1,1272 @@
+[
+  {
+    "batch": 1,
+    "revision": "analysis-2c36bd7e875390c5cc458def",
+    "updates": [
+      {
+        "id": "2",
+        "type": "guideline",
+        "content": "When selecting the latest revision per event from a ledger, use the event_id as the key and retain only the row with the highest revision number for each event_id before applying further filters.",
+        "event": "ADD",
+        "old_entity": null,
+        "metadata": {
+          "status": "candidate",
+          "creation_mode": "auto-cortex",
+          "agent_id": "claude-code",
+          "session_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+          "cortex_capture": {
+            "adapter_revision": 2,
+            "excluded_events": 19,
+            "subagent_seqs": [],
+            "turns": [
+              {
+                "seq": 2,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 11635,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 491,
+                  "completionTokens": 61,
+                  "totalTokens": 552,
+                  "inputTokens": 491,
+                  "outputTokens": 61,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 4,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 2106,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 646,
+                  "completionTokens": 34,
+                  "totalTokens": 680,
+                  "inputTokens": 646,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 6,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1818,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 901,
+                  "completionTokens": 45,
+                  "totalTokens": 946,
+                  "inputTokens": 901,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 8,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 13610,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 988,
+                  "completionTokens": 47,
+                  "totalTokens": 1035,
+                  "inputTokens": 988,
+                  "outputTokens": 47,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 10,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 2759,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1103,
+                  "completionTokens": 40,
+                  "totalTokens": 1143,
+                  "inputTokens": 1103,
+                  "outputTokens": 40,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 12,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 3459,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1206,
+                  "completionTokens": 41,
+                  "totalTokens": 1247,
+                  "inputTokens": 182,
+                  "cacheReadTokens": 1024,
+                  "outputTokens": 41,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 14,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1729,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1279,
+                  "completionTokens": 45,
+                  "totalTokens": 1324,
+                  "inputTokens": 127,
+                  "cacheReadTokens": 1152,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 16,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 9857,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1373,
+                  "completionTokens": 45,
+                  "totalTokens": 1418,
+                  "inputTokens": 221,
+                  "cacheReadTokens": 1152,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 18,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1727,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1452,
+                  "completionTokens": 35,
+                  "totalTokens": 1487,
+                  "inputTokens": 172,
+                  "cacheReadTokens": 1280,
+                  "outputTokens": 35,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 20,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1980,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1502,
+                  "completionTokens": 34,
+                  "totalTokens": 1536,
+                  "inputTokens": 94,
+                  "cacheReadTokens": 1408,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 22,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 4016,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1605,
+                  "completionTokens": 34,
+                  "totalTokens": 1639,
+                  "inputTokens": 197,
+                  "cacheReadTokens": 1408,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 24,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1965,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1910,
+                  "completionTokens": 34,
+                  "totalTokens": 1944,
+                  "inputTokens": 374,
+                  "cacheReadTokens": 1536,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 27,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 11461,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 3237,
+                  "completionTokens": 370,
+                  "totalTokens": 3607,
+                  "inputTokens": 3237,
+                  "outputTokens": 370,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 31,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 8437,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 3652,
+                  "completionTokens": 462,
+                  "totalTokens": 4114,
+                  "inputTokens": 196,
+                  "cacheReadTokens": 3456,
+                  "outputTokens": 462,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 34,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 9282,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "end_turn",
+                  "promptTokens": 4205,
+                  "completionTokens": 81,
+                  "totalTokens": 4286,
+                  "inputTokens": 237,
+                  "cacheReadTokens": 3968,
+                  "outputTokens": 81,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              }
+            ],
+            "limits": [
+              "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+              "Subagents are separate supporting observations; tool-less side calls are excluded.",
+              "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+            ]
+          },
+          "source_task_id": "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+          "support": 1,
+          "rationale": "This approach ensures that only the most up-to-date version of each event is used for financial reconciliation, in line with contract rules. It prevents including outdated or superseded event states.",
+          "category": "strategy",
+          "trigger": "When processing a ledger export containing multiple revisions for the same event_id.",
+          "implementation_steps": [
+            "Iterate through all ledger entries.",
+            "For each row, if its event_id is not yet seen or its revision is higher than the stored revision, store it as the current latest for that event_id."
+          ],
+          "generation_method": "consistency-fast",
+          "evidence": "success",
+          "processing": {
+            "operation_id": "e5efee30-e2e6-44df-8972-e40762a415d3",
+            "profile_id": null,
+            "revision": null,
+            "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+            "manifest": {
+              "conflict_resolution": {
+                "conflict_resolution_model": "Azure/gpt-4.1",
+                "custom_llm_provider": "openai"
+              },
+              "processors": [
+                {
+                  "api_version": 1,
+                  "config": {
+                    "analysis_config": null,
+                    "consistency_method": "fast",
+                    "custom_llm_provider": "openai",
+                    "guidelines_mode": "consistency",
+                    "guidelines_model": "Azure/gpt-4.1",
+                    "segmentation_enabled": false,
+                    "trajectory_max_step_chars": 2000,
+                    "trajectory_max_steps": 50,
+                    "trajectory_tail_steps": 0
+                  },
+                  "id": "guidelines",
+                  "plugin": "evolve.guidelines",
+                  "version": "1"
+                }
+              ],
+              "schema_version": 1
+            },
+            "source_batch": {
+              "source": "cortex",
+              "conversation_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+              "batch_id": "2-34",
+              "revision": "analysis-2c36bd7e875390c5cc458def",
+              "scope": "cortex",
+              "aliases": [],
+              "alias_revisions": {}
+            },
+            "processor_id": "guidelines"
+          },
+          "sources": [
+            {
+              "conversation_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+              "task_id": "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+              "user_id": null,
+              "agent_id": "claude-code",
+              "status": "supporting",
+              "associated_at": "2026-11-03T16:25:35.145231+00:00"
+            }
+          ],
+          "provenance_incomplete": false,
+          "memory_revision": 1
+        },
+        "incoming_ids": [
+          "Unprocessed_Entity_0"
+        ],
+        "supersedes": false
+      },
+      {
+        "id": "3",
+        "type": "guideline",
+        "content": "If a coding error occurs (such as using an unhashable type as a dictionary key), analyze the traceback to precisely locate the mistake, then adjust logic accordingly and retry rather than switching problems or abandoning the workflow.",
+        "event": "ADD",
+        "old_entity": null,
+        "metadata": {
+          "status": "candidate",
+          "creation_mode": "auto-cortex",
+          "agent_id": "claude-code",
+          "session_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+          "cortex_capture": {
+            "adapter_revision": 2,
+            "excluded_events": 19,
+            "subagent_seqs": [],
+            "turns": [
+              {
+                "seq": 2,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 11635,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 491,
+                  "completionTokens": 61,
+                  "totalTokens": 552,
+                  "inputTokens": 491,
+                  "outputTokens": 61,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 4,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 2106,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 646,
+                  "completionTokens": 34,
+                  "totalTokens": 680,
+                  "inputTokens": 646,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 6,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1818,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 901,
+                  "completionTokens": 45,
+                  "totalTokens": 946,
+                  "inputTokens": 901,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 8,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 13610,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 988,
+                  "completionTokens": 47,
+                  "totalTokens": 1035,
+                  "inputTokens": 988,
+                  "outputTokens": 47,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 10,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 2759,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1103,
+                  "completionTokens": 40,
+                  "totalTokens": 1143,
+                  "inputTokens": 1103,
+                  "outputTokens": 40,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 12,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 3459,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1206,
+                  "completionTokens": 41,
+                  "totalTokens": 1247,
+                  "inputTokens": 182,
+                  "cacheReadTokens": 1024,
+                  "outputTokens": 41,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 14,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1729,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1279,
+                  "completionTokens": 45,
+                  "totalTokens": 1324,
+                  "inputTokens": 127,
+                  "cacheReadTokens": 1152,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 16,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 9857,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1373,
+                  "completionTokens": 45,
+                  "totalTokens": 1418,
+                  "inputTokens": 221,
+                  "cacheReadTokens": 1152,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 18,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1727,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1452,
+                  "completionTokens": 35,
+                  "totalTokens": 1487,
+                  "inputTokens": 172,
+                  "cacheReadTokens": 1280,
+                  "outputTokens": 35,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 20,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1980,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1502,
+                  "completionTokens": 34,
+                  "totalTokens": 1536,
+                  "inputTokens": 94,
+                  "cacheReadTokens": 1408,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 22,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 4016,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1605,
+                  "completionTokens": 34,
+                  "totalTokens": 1639,
+                  "inputTokens": 197,
+                  "cacheReadTokens": 1408,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 24,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1965,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1910,
+                  "completionTokens": 34,
+                  "totalTokens": 1944,
+                  "inputTokens": 374,
+                  "cacheReadTokens": 1536,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 27,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 11461,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 3237,
+                  "completionTokens": 370,
+                  "totalTokens": 3607,
+                  "inputTokens": 3237,
+                  "outputTokens": 370,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 31,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 8437,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 3652,
+                  "completionTokens": 462,
+                  "totalTokens": 4114,
+                  "inputTokens": 196,
+                  "cacheReadTokens": 3456,
+                  "outputTokens": 462,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 34,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 9282,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "end_turn",
+                  "promptTokens": 4205,
+                  "completionTokens": 81,
+                  "totalTokens": 4286,
+                  "inputTokens": 237,
+                  "cacheReadTokens": 3968,
+                  "outputTokens": 81,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              }
+            ],
+            "limits": [
+              "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+              "Subagents are separate supporting observations; tool-less side calls are excluded.",
+              "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+            ]
+          },
+          "source_task_id": "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+          "support": 1,
+          "rationale": "Addressing specific coding mistakes quickly ensures efficient error recovery and preserves the forward progress in the agent's workflow.",
+          "category": "recovery",
+          "trigger": "When a runtime error or exception interrupts a multi-step data processing task.",
+          "implementation_steps": [
+            "Read the traceback and determine the specific line and condition causing the error.",
+            "Revise the problematic code, fix the logic or data structure, and re-run the corrected script to continue the process."
+          ],
+          "generation_method": "consistency-fast",
+          "evidence": "success",
+          "processing": {
+            "operation_id": "e5efee30-e2e6-44df-8972-e40762a415d3",
+            "profile_id": null,
+            "revision": null,
+            "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+            "manifest": {
+              "conflict_resolution": {
+                "conflict_resolution_model": "Azure/gpt-4.1",
+                "custom_llm_provider": "openai"
+              },
+              "processors": [
+                {
+                  "api_version": 1,
+                  "config": {
+                    "analysis_config": null,
+                    "consistency_method": "fast",
+                    "custom_llm_provider": "openai",
+                    "guidelines_mode": "consistency",
+                    "guidelines_model": "Azure/gpt-4.1",
+                    "segmentation_enabled": false,
+                    "trajectory_max_step_chars": 2000,
+                    "trajectory_max_steps": 50,
+                    "trajectory_tail_steps": 0
+                  },
+                  "id": "guidelines",
+                  "plugin": "evolve.guidelines",
+                  "version": "1"
+                }
+              ],
+              "schema_version": 1
+            },
+            "source_batch": {
+              "source": "cortex",
+              "conversation_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+              "batch_id": "2-34",
+              "revision": "analysis-2c36bd7e875390c5cc458def",
+              "scope": "cortex",
+              "aliases": [],
+              "alias_revisions": {}
+            },
+            "processor_id": "guidelines"
+          },
+          "sources": [
+            {
+              "conversation_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+              "task_id": "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+              "user_id": null,
+              "agent_id": "claude-code",
+              "status": "supporting",
+              "associated_at": "2026-11-03T16:25:35.145231+00:00"
+            }
+          ],
+          "provenance_incomplete": false,
+          "memory_revision": 1
+        },
+        "incoming_ids": [
+          "Unprocessed_Entity_1"
+        ],
+        "supersedes": false
+      },
+      {
+        "id": "4",
+        "type": "guideline",
+        "content": "After determining correct filter criteria from a contract or runtime help (status, date, account, etc.), methodically apply filters in the order they are described or logically required before performing aggregates or calculations.",
+        "event": "ADD",
+        "old_entity": null,
+        "metadata": {
+          "status": "candidate",
+          "creation_mode": "auto-cortex",
+          "agent_id": "claude-code",
+          "session_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+          "cortex_capture": {
+            "adapter_revision": 2,
+            "excluded_events": 19,
+            "subagent_seqs": [],
+            "turns": [
+              {
+                "seq": 2,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 11635,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 491,
+                  "completionTokens": 61,
+                  "totalTokens": 552,
+                  "inputTokens": 491,
+                  "outputTokens": 61,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 4,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 2106,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 646,
+                  "completionTokens": 34,
+                  "totalTokens": 680,
+                  "inputTokens": 646,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 6,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1818,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 901,
+                  "completionTokens": 45,
+                  "totalTokens": 946,
+                  "inputTokens": 901,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 8,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 13610,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 988,
+                  "completionTokens": 47,
+                  "totalTokens": 1035,
+                  "inputTokens": 988,
+                  "outputTokens": 47,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 10,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 2759,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1103,
+                  "completionTokens": 40,
+                  "totalTokens": 1143,
+                  "inputTokens": 1103,
+                  "outputTokens": 40,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 12,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 3459,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1206,
+                  "completionTokens": 41,
+                  "totalTokens": 1247,
+                  "inputTokens": 182,
+                  "cacheReadTokens": 1024,
+                  "outputTokens": 41,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 14,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1729,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1279,
+                  "completionTokens": 45,
+                  "totalTokens": 1324,
+                  "inputTokens": 127,
+                  "cacheReadTokens": 1152,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 16,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 9857,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1373,
+                  "completionTokens": 45,
+                  "totalTokens": 1418,
+                  "inputTokens": 221,
+                  "cacheReadTokens": 1152,
+                  "outputTokens": 45,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 18,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1727,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1452,
+                  "completionTokens": 35,
+                  "totalTokens": 1487,
+                  "inputTokens": 172,
+                  "cacheReadTokens": 1280,
+                  "outputTokens": 35,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 20,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1980,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1502,
+                  "completionTokens": 34,
+                  "totalTokens": 1536,
+                  "inputTokens": 94,
+                  "cacheReadTokens": 1408,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 22,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 4016,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1605,
+                  "completionTokens": 34,
+                  "totalTokens": 1639,
+                  "inputTokens": 197,
+                  "cacheReadTokens": 1408,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 24,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 1965,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 1910,
+                  "completionTokens": 34,
+                  "totalTokens": 1944,
+                  "inputTokens": 374,
+                  "cacheReadTokens": 1536,
+                  "outputTokens": 34,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 27,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 11461,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 3237,
+                  "completionTokens": 370,
+                  "totalTokens": 3607,
+                  "inputTokens": 3237,
+                  "outputTokens": 370,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 31,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 8437,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "tool_use",
+                  "promptTokens": 3652,
+                  "completionTokens": 462,
+                  "totalTokens": 4114,
+                  "inputTokens": 196,
+                  "cacheReadTokens": 3456,
+                  "outputTokens": 462,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              },
+              {
+                "seq": 34,
+                "phase": "response",
+                "statusCode": 200,
+                "durationMs": 9282,
+                "inference": {
+                  "model": "Azure/gpt-4.1",
+                  "maxTokens": 32000,
+                  "stream": true,
+                  "agentRole": "main",
+                  "streamedResponse": true,
+                  "finishReason": "end_turn",
+                  "promptTokens": 4205,
+                  "completionTokens": 81,
+                  "totalTokens": 4286,
+                  "inputTokens": 237,
+                  "cacheReadTokens": 3968,
+                  "outputTokens": 81,
+                  "presentKinds": 15,
+                  "isAction": true
+                }
+              }
+            ],
+            "limits": [
+              "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+              "Subagents are separate supporting observations; tool-less side calls are excluded.",
+              "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+            ]
+          },
+          "source_task_id": "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "task_description": "Reconcile 2026-04 revenue for Northwind Studio's production account according to the billing service's accounting contract. Use the local service via `python3 ops.py`; its --help describes the API. Save report.json with totals_minor (currency to integer minor-unit net revenue) and included_event_ids (sorted distinct IDs). Return the same JSON in your final answer.",
+          "support": 1,
+          "rationale": "Applying filters in the correct order ensures contract compliance and prevents accidental inclusion of out-of-scope ledger events in the results.",
+          "category": "strategy",
+          "trigger": "When translating contract/business rules into code for data reconciliation.",
+          "implementation_steps": [
+            "Extract all filter criteria and required fields from the rules or documentation.",
+            "Implement and apply these filters sequentially before aggregating revenue totals or other output fields."
+          ],
+          "generation_method": "consistency-fast",
+          "evidence": "success",
+          "processing": {
+            "operation_id": "e5efee30-e2e6-44df-8972-e40762a415d3",
+            "profile_id": null,
+            "revision": null,
+            "digest": "786ba80975c99e827f1e9f6132ac5901613abbeca81ba6be976c548ef875322b",
+            "manifest": {
+              "conflict_resolution": {
+                "conflict_resolution_model": "Azure/gpt-4.1",
+                "custom_llm_provider": "openai"
+              },
+              "processors": [
+                {
+                  "api_version": 1,
+                  "config": {
+                    "analysis_config": null,
+                    "consistency_method": "fast",
+                    "custom_llm_provider": "openai",
+                    "guidelines_mode": "consistency",
+                    "guidelines_model": "Azure/gpt-4.1",
+                    "segmentation_enabled": false,
+                    "trajectory_max_step_chars": 2000,
+                    "trajectory_max_steps": 50,
+                    "trajectory_tail_steps": 0
+                  },
+                  "id": "guidelines",
+                  "plugin": "evolve.guidelines",
+                  "version": "1"
+                }
+              ],
+              "schema_version": 1
+            },
+            "source_batch": {
+              "source": "cortex",
+              "conversation_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+              "batch_id": "2-34",
+              "revision": "analysis-2c36bd7e875390c5cc458def",
+              "scope": "cortex",
+              "aliases": [],
+              "alias_revisions": {}
+            },
+            "processor_id": "guidelines"
+          },
+          "sources": [
+            {
+              "conversation_id": "ca60ece3-1546-4bea-912a-245ce66536f2",
+              "task_id": "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+              "user_id": null,
+              "agent_id": "claude-code",
+              "status": "supporting",
+              "associated_at": "2026-11-03T16:25:35.145231+00:00"
+            }
+          ],
+          "provenance_incomplete": false,
+          "memory_revision": 1
+        },
+        "incoming_ids": [
+          "Unprocessed_Entity_2"
+        ],
+        "supersedes": false
+      }
+    ],
+    "skipped_processors": [],
+    "recording": {
+      "tool_calls": 14,
+      "tool_results": 14,
+      "paired_results": 14,
+      "rendered_observations": 14
+    }
+  }
+]

@@ -1,0 +1,167 @@
+{
+  "family": "ledger",
+  "customers": [
+    {
+      "id": "sandbox-7",
+      "name": "Willow Works",
+      "environment": "sandbox"
+    },
+    {
+      "id": "account-207",
+      "name": "Willow Works",
+      "environment": "production"
+    }
+  ],
+  "ledger": [
+    {
+      "event_id": "evt-7-corrected",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 99999,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-corrected",
+      "revision": 2,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 15125,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-corrected",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 99999,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-refund",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "refund",
+      "amount_minor": 1250,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-eur",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 5075,
+      "currency": "EUR",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-void",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 8800,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-void",
+      "revision": 2,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 8800,
+      "currency": "USD",
+      "status": "voided",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-pending",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 7777,
+      "currency": "USD",
+      "status": "pending",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-test",
+      "revision": 1,
+      "customer_id": "sandbox-7",
+      "kind": "capture",
+      "amount_minor": 6666,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-utc-in",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 257,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-09-30T23:30:00-02:00"
+    },
+    {
+      "event_id": "evt-7-utc-out",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 5555,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-01T00:30:00+02:00"
+    },
+    {
+      "event_id": "evt-7-upper-bound",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 4444,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-11-01T00:00:00Z"
+    },
+    {
+      "event_id": "evt-7-moved",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 3333,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    },
+    {
+      "event_id": "evt-7-moved",
+      "revision": 2,
+      "customer_id": "account-207",
+      "kind": "capture",
+      "amount_minor": 3333,
+      "currency": "USD",
+      "status": "settled",
+      "occurred_at": "2026-11-02T00:00:00Z"
+    },
+    {
+      "event_id": "evt-7-eur-refund",
+      "revision": 1,
+      "customer_id": "account-207",
+      "kind": "refund",
+      "amount_minor": 107,
+      "currency": "EUR",
+      "status": "settled",
+      "occurred_at": "2026-10-15T12:00:00Z"
+    }
+  ]
+}

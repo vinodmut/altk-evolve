@@ -1,0 +1,341 @@
+{
+  "label": "baseline-ledger_b",
+  "case": "ledger_b",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "86918f4d-0438-486a-901e-808e7494957a",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 255604,
+      "EUR": 4678
+    },
+    "included_event_ids": [
+      "evt-3-corrected",
+      "evt-3-eur",
+      "evt-3-eur-refund",
+      "evt-3-moved",
+      "evt-3-pending",
+      "evt-3-refund",
+      "evt-3-test",
+      "evt-3-utc-out",
+      "evt-3-void"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 12828,
+      "EUR": 4472
+    },
+    "included_event_ids": [
+      "evt-3-corrected",
+      "evt-3-eur",
+      "evt-3-eur-refund",
+      "evt-3-refund",
+      "evt-3-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 128.05,
+  "cost_usd": 0.08250160000000001,
+  "usage": {
+    "input_tokens": 9741,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 57088,
+    "output_tokens": 1606,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 9741,
+      "outputTokens": 1606,
+      "cacheReadInputTokens": 57088,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.08250160000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile --account 'Orchid Analytics:production' --period 2026-06 --output report.json",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name 'Orchid Analytics' --env production",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer 'Orchid Analytics'",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py revenue-contract > revenue_contract.json",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer account-203 --output ledger.json",
+    "ls -l ledger.json",
+    "head ledger.json",
+    "jq '.[].occurred_at' ledger.json | grep '2026-06' | wc -l",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\"))]' ledger.json > ledger_june.json",
+    "jq '[.[].event_id] | unique | sort' ledger_june.json > event_ids.json",
+    "jq '[.[].amount_minor] | add' ledger_june.json",
+    "jq '.' event_ids.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\"))].currency | unique' ledger.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\")) | .currency] | unique' ledger.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\") and .currency==\"USD\")]' ledger.json > ledger_june_usd.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\")) | select(.currency==\"USD\")]' ledger.json > ledger_june_usd.json",
+    "jq '[.[].event_id] | unique | sort' ledger_june_usd.json > event_ids_usd.json",
+    "jq '[.[].amount_minor] | add' ledger_june_usd.json",
+    "jq '.' event_ids_usd.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\") and .currency==\"EUR\") | .amount_minor] | add' ledger.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\")) | select(.currency==\"EUR\")]' ledger.json > ledger_june_eur.json",
+    "jq '[.[].amount_minor] | add' ledger_june_eur.json",
+    "jq '[.[].event_id] | unique | sort' ledger_june_eur.json > event_ids_eur.json",
+    "jq '.' event_ids_eur.json",
+    "jq -s '.[0] + .[1]' event_ids_usd.json event_ids_eur.json | jq 'unique' > event_ids_all.json",
+    "jq '.' event_ids_all.json",
+    "jq -n --argjson usd 255604 --argjson eur 4678 '{totals_minor: {USD: $usd, EUR: $eur}, included_event_ids: input}' event_ids_all.json > report.json",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --account 'Orchid Analytics:production' --period 2026-06 --output report.json",
+    "python3 ops.py find-customer --name 'Orchid Analytics' --env production",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\"))].currency | unique' ledger.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\") and .currency==\"USD\")]' ledger.json > ledger_june_usd.json",
+    "jq '[.[] | select(.occurred_at | startswith(\"2026-06\") and .currency==\"EUR\") | .amount_minor] | add' ledger.json"
+  ],
+  "num_turns": 33,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 37,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 43,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 45,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 47,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 49,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 51,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 53,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 55,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 57,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 59,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 61,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 63,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 65,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 67,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 5,
+  "service_errors": 2
+}

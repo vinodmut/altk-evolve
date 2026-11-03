@@ -1,0 +1,26 @@
+import json
+from datetime import datetime, timezone
+from dateutil import parser
+
+data = json.load(open('ledger.json'))
+seen = {}
+def in_august_2026(dt):
+    d = parser.isoparse(dt).astimezone(timezone.utc)
+    return datetime(2026,8,1,tzinfo=timezone.utc) <= d < datetime(2026,9,1,tzinfo=timezone.utc)
+for row in data:
+    eid = row['event_id']
+    rev = row['revision']
+    if (eid not in seen) or (rev > seen[eid]['revision']):
+        seen[eid] = row
+included = {'status': 'settled', 'customer_id': 'account-205'}
+filtered = [r for r in seen.values() if all(r[k]==v for k,v in included.items()) and in_august_2026(r['occurred_at'])]
+totals_minor = {}
+included_event_ids = []
+for r in filtered:
+    c = r['currency']
+    amt = r['amount_minor'] if r['kind']=='capture' else -r['amount_minor']
+    totals_minor[c] = totals_minor.get(c,0)+amt
+    included_event_ids.append(r['event_id'])
+out = {'totals_minor':totals_minor, 'included_event_ids':sorted(set(included_event_ids))}
+json.dump(out, open('report.json','w'))
+print(json.dumps(out,indent=2))

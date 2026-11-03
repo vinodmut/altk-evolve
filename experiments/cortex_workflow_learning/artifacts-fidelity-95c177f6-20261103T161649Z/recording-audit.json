@@ -1,0 +1,46 @@
+[
+  {
+    "analysis": "learning-train-ledger-consistency-correctness.inputs.json",
+    "batches": 1,
+    "tool_calls": 14,
+    "tool_results": 14,
+    "paired_results": 14,
+    "actual_prompt_calls": 1,
+    "model": [
+      "Azure/gpt-4.1"
+    ],
+    "original_task_visible": true,
+    "tool_contract_visible": true,
+    "accounting_contract_visible": true,
+    "rejected_commands_visible": true,
+    "python_error_visible": true,
+    "execution_metadata_visible": true,
+    "outcome_visible": false,
+    "context_roles": [
+      "system",
+      "user"
+    ]
+  },
+  {
+    "analysis": "learning-train-ledger-standard-fewer-errors.inputs.json",
+    "batches": 1,
+    "tool_calls": 14,
+    "tool_results": 14,
+    "paired_results": 14,
+    "actual_prompt_calls": 1,
+    "model": [
+      "Azure/gpt-4.1"
+    ],
+    "original_task_visible": true,
+    "tool_contract_visible": true,
+    "accounting_contract_visible": true,
+    "rejected_commands_visible": true,
+    "python_error_visible": true,
+    "execution_metadata_visible": true,
+    "outcome_visible": true,
+    "context_roles": [
+      "system",
+      "user"
+    ]
+  }
+]

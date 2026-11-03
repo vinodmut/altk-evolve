@@ -1,0 +1,14 @@
+{
+  "head": "95c177f643eab45eebae09dc63ba6b33ac8141c8",
+  "model": "Azure/gpt-4.1",
+  "harness_changes": "harness.patch",
+  "files": {
+    "experiments/cortex_workflow_learning/run.py": "a17431be49ecf5dd958d4077c34598d5bd7fa011f73814a37e7bea5a675dc14a",
+    "experiments/cortex_learning_demo/run.py": "92f3c01d12c90b56f94d868828d93bb3b63f5f95b9b565a2e1b7f11841774bf4",
+    "experiments/cortex_workflow_learning/ops.py": "216901cc686db485f96c29033cd2d41db346943c391174bfd21eb56a4e3968b6",
+    "experiments/cortex_workflow_learning/ledger_tasks.py": "c17d7de2e1bb3935bb8ca19e75a7b273b07e1b61d0947eecd735747e480c1912",
+    "altk_evolve/sync/cortex_sync.py": "2e91d66debd60324054c48946bde360b410c84a7c85502c0e56948dab6c591b0",
+    "uv.lock": "57cf001f466970b20d1445e46b613a00ce3a8d31bcdd416228387bfea8555b96",
+    "/Users/vinod/data/digitallabor/src/agents/cortex/bin/cortex": "75f77ac0e9022d2c3805fb2a5ad2e78cb5fc53f9957eb223257c65072dce6762"
+  }
+}

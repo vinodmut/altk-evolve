@@ -1,0 +1,323 @@
+{
+  "label": "baseline-ledger_e",
+  "case": "ledger_e",
+  "arm": "baseline",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "af731eec-0329-4c52-9f07-5fa8a7c87f7c",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": {
+      "USD": 19105,
+      "EUR": 4844
+    },
+    "included_event_ids": [
+      "evt-6-corrected",
+      "evt-6-eur",
+      "evt-6-eur-refund",
+      "evt-6-refund",
+      "evt-6-utc-out"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 13806,
+      "EUR": 4844
+    },
+    "included_event_ids": [
+      "evt-6-corrected",
+      "evt-6-eur",
+      "evt-6-eur-refund",
+      "evt-6-refund",
+      "evt-6-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 142.41,
+  "cost_usd": 0.1427912,
+  "usage": {
+    "input_tokens": 19282,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 82816,
+    "output_tokens": 2455,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 19282,
+      "outputTokens": 2455,
+      "cacheReadInputTokens": 82816,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.1427912,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py reconcile --account production --org 'Summit Labs' --month 2026-09 --format json --output report.json",
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name 'Summit Labs' --env production",
+    "python3 ops.py find-customer --help",
+    "python3 ops.py find-customer 'Summit Labs'",
+    "python3 ops.py revenue-contract account-206",
+    "python3 ops.py revenue-contract --help",
+    "python3 ops.py ledger-export --help",
+    "python3 ops.py ledger-export --customer account-206 --output ledger.json",
+    "python3 ops.py revenue-contract > contract.json",
+    "ls -lh ledger.json contract.json",
+    "head -40 ledger.json",
+    "head -40 contract.json",
+    "head -20 ledger.json | jq '.'",
+    "jq '.' ledger.json",
+    "jq '[ .[] | {event_id, revision, customer_id, kind, amount_minor, currency, status, occurred_at} ] | sort_by(.event_id, .revision)' ledger.json > ledger_sorted.json",
+    "jq '[ .[] | {event_id, revision} ]' ledger_sorted.json",
+    "jq 'group_by(.event_id) | map(max_by(.revision))' ledger_sorted.json > ledger_latest.json",
+    "jq '.[] | select(.customer_id == \"account-206\")' ledger_latest.json > ledger_account206.json",
+    "jq '.[] | select(.status == \"settled\")' ledger_account206.json > ledger_account206_settled.json",
+    "jq 'select(type == \"object\")' ledger_account206.json > ledger_account206_obj.json",
+    "jq 'select(.status == \"settled\")' ledger_account206_obj.json > ledger_account206_settled.json",
+    "jq '. | {event_id, occurred_at}' ledger_account206_settled.json",
+    "jq '{event_id, kind, amount_minor, currency, occurred_at}' ledger_account206_settled.json",
+    "date -u -d '2026-09-01T00:30:00+02:00' && date -u -d '2026-08-31T23:30:00-02:00' && date -u -d '2026-10-01T00:00:00Z' && date -u -d '2026-10-02T00:00:00Z'",
+    "gdate -u -d '2026-09-01T00:30:00+02:00' && gdate -u -d '2026-08-31T23:30:00-02:00' && gdate -u -d '2026-10-01T00:00:00Z' && gdate -u -d '2026-10-02T00:00:00Z'",
+    "jq '.' ledger_account206_settled.json",
+    "echo '2026-09-15T12:00:00Z\n2026-09-15T12:00:00Z\n2026-09-15T12:00:00Z\n2026-10-02T00:00:00Z\n2026-09-15T12:00:00Z\n2026-10-01T00:00:00Z\n2026-08-31T23:30:00-02:00\n2026-09-01T00:30:00+02:00' | gdate -f - --iso-8601=seconds --utc 2>/dev/null || true",
+    "jq -c '.[]' ledger_account206_settled.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py reconcile --account production --org 'Summit Labs' --month 2026-09 --format json --output report.json",
+    "python3 ops.py find-customer --name 'Summit Labs' --env production",
+    "python3 ops.py revenue-contract account-206",
+    "head -20 ledger.json | jq '.'",
+    "jq '.[] | select(.status == \"settled\")' ledger_account206.json > ledger_account206_settled.json",
+    "date -u -d '2026-09-01T00:30:00+02:00' && date -u -d '2026-08-31T23:30:00-02:00' && date -u -d '2026-10-01T00:00:00Z' && date -u -d '2026-10-02T00:00:00Z'"
+  ],
+  "num_turns": 30,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 37,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 41,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 43,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 45,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 47,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 49,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 51,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 53,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 55,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 57,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 58,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 61,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    },
+    {
+      "seq": 63,
+      "phase": "request",
+      "evolve": null,
+      "invocations": []
+    }
+  ],
+  "injected_ids": [],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 6,
+  "service_errors": 3
+}

@@ -1,0 +1,4 @@
+{
+  "totals_minor": {"USD": 15125 + 5555 + 3333 - 1250, "EUR": 5075 - 107},
+  "included_event_ids": ["evt-7-corrected", "evt-7-eur", "evt-7-eur-refund", "evt-7-moved", "evt-7-refund", "evt-7-utc-out"]
+}

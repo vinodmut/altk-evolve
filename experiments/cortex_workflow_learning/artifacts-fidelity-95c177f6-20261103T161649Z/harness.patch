@@ -1,0 +1,186 @@
+diff --git a/experiments/cortex_workflow_learning/run.py b/experiments/cortex_workflow_learning/run.py
+index ba247538..e2a95aaa 100644
+--- a/experiments/cortex_workflow_learning/run.py
++++ b/experiments/cortex_workflow_learning/run.py
+@@ -9,0 +10,2 @@ import asyncio
++import hashlib
++import importlib
+@@ -14,0 +17 @@ import time
++from contextlib import contextmanager
+@@ -106,0 +110,28 @@ def trial(label, case, arm, *, feedback=False, via_bridge=False):
++@contextmanager
++def record_learning_prompts(path):
++    """Save the actual guideline requests without credentials or transport options."""
++    originals = []
++    for name in ("guidelines", "consistency_guidelines"):
++        module = importlib.import_module(f"altk_evolve.llm.guidelines.{name}")
++        original = module.completion
++
++        def recorded(*args, _original=original, _purpose=name, **kwargs):
++            with path.open("a") as output:
++                output.write(json.dumps({"purpose": _purpose, "model": kwargs.get("model"), "messages": kwargs.get("messages")}) + "\n")
++            return _original(*args, **kwargs)
++
++        originals.append((module, original))
++        module.completion = recorded
++    try:
++        yield
++    finally:
++        for module, original in originals:
++            module.completion = original
++
++
++def analysis_revision(original, mode, objective, outcome):
++    """Different evidence/objectives must not collide with ingestion revisions."""
++    evidence = json.dumps({"original": original, "mode": mode, "objective": objective, "outcome": outcome}, sort_keys=True)
++    return "analysis-" + hashlib.sha256(evidence.encode()).hexdigest()[:24]
++
++
+@@ -133 +164,2 @@ def learn(label, mode, objective):
+-    if captured.trajectory is None:
++    batches = captured.trajectories or ([captured.trajectory] if captured.trajectory else [])
++    if not batches:
+@@ -135 +166,0 @@ def learn(label, mode, objective):
+-    trajectory = Trajectory.model_validate(captured.trajectory)
+@@ -143,6 +174 @@ def learn(label, mode, objective):
+-        trajectory.batch = trajectory.batch.model_copy(update={"revision": "2"})
+-    if mode == "consistency":
+-        # A changed analysis is a new revision; redelivery of the original batch
+-        # correctly skips processors even if deployment defaults have changed.
+-        trajectory.batch = trajectory.batch.model_copy(update={"revision": "3"})
+-    trajectory.outcome = TrajectoryOutcome(
++    outcome = TrajectoryOutcome(
+@@ -154,12 +179,0 @@ def learn(label, mode, objective):
+-    output.with_suffix(".input.json").write_text(json.dumps(trajectory.model_dump(mode="json"), indent=2) + "\n")
+-    rendered = parse_openai_agents_trajectory(trajectory.messages)
+-    output.with_suffix(".rendered.txt").write_text(rendered["trajectory_summary"] + "\n")
+-    calls = [call for message in trajectory.messages for call in message.get("tool_calls", [])]
+-    results = [message for message in trajectory.messages if message.get("role") == "tool"]
+-    call_ids = {call["id"] for call in calls}
+-    recording = {
+-        "tool_calls": len(calls),
+-        "tool_results": len(results),
+-        "paired_results": sum(message.get("tool_call_id") in call_ids for message in results),
+-        "rendered_observations": rendered["trajectory_summary"].count("Tool result (observed output):"),
+-    }
+@@ -168 +182,32 @@ def learn(label, mode, objective):
+-    result = client.process_trajectory(trajectory, namespace_id=driver.LEARN_NS)
++    inputs, reports = [], []
++    with record_learning_prompts(output.with_suffix(".prompts.jsonl")):
++        for index, batch in enumerate(batches):
++            trajectory = Trajectory.model_validate(batch)
++            trajectory.outcome = outcome
++            trajectory.batch = trajectory.batch.model_copy(
++                update={"revision": analysis_revision(trajectory.batch.revision, mode, objective, outcome.model_dump(mode="json"))}
++            )
++            inputs.append(trajectory.model_dump(mode="json"))
++            output.with_suffix(".inputs.json").write_text(json.dumps(inputs, indent=2) + "\n")
++            rendered = parse_openai_agents_trajectory(trajectory.messages, context_messages=trajectory.context_messages)
++            # This is a conversation view; .prompts.jsonl contains the complete model-facing requests.
++            (driver.ARTIFACTS / f"{output.name}.batch-{index + 1}.conversation.txt").write_text(rendered["trajectory_summary"] + "\n")
++            calls = [call for message in trajectory.messages for call in message.get("tool_calls", [])]
++            results = [message for message in trajectory.messages if message.get("role") == "tool"]
++            call_ids = {call["id"] for call in calls}
++            result = client.process_trajectory(trajectory, namespace_id=driver.LEARN_NS)
++            reports.append(
++                {
++                    "batch": index + 1,
++                    "revision": trajectory.batch.revision,
++                    "updates": result.updates,
++                    "skipped_processors": result.skipped_processors,
++                    "recording": {
++                        "tool_calls": len(calls),
++                        "tool_results": len(results),
++                        "paired_results": sum(message.get("tool_call_id") in call_ids for message in results),
++                        "rendered_observations": rendered["trajectory_summary"].count("Tool result (observed output):"),
++                    },
++                }
++            )
++            output.with_suffix(".batches.json").write_text(json.dumps(reports, indent=2) + "\n")
+@@ -175,3 +220,3 @@ def learn(label, mode, objective):
+-        "updates": result.updates,
+-        "skipped_processors": result.skipped_processors,
+-        "recording": recording,
++        "updates": [update for batch in reports for update in batch["updates"]],
++        "skipped_processors": [processor for batch in reports for processor in batch["skipped_processors"]],
++        "batches": reports,
+diff --git a/experiments/cortex_workflow_learning/test_workflows.py b/experiments/cortex_workflow_learning/test_workflows.py
+index d2e2d5ca..9870c229 100644
+--- a/experiments/cortex_workflow_learning/test_workflows.py
++++ b/experiments/cortex_workflow_learning/test_workflows.py
+@@ -15,0 +16,75 @@ pytestmark = pytest.mark.unit
++def test_learning_analysis_identity_separates_objectives_and_feedback():
++    from .run import analysis_revision
++
++    original = analysis_revision("2", "standard", "correctness", {"success": True})
++    assert original == analysis_revision("2", "standard", "correctness", {"success": True})
++    assert (
++        len(
++            {
++                original,
++                analysis_revision("2", "standard", "fewer-errors", {"success": True}),
++                analysis_revision("2", "consistency", "correctness", {"success": True}),
++                analysis_revision("2", "standard", "correctness", {"success": False}),
++            }
++        )
++        == 4
++    )
++
++
++def test_learning_prompt_recording_excludes_transport_secrets_and_restores_on_error(tmp_path, monkeypatch):
++    from . import run
++
++    modules = [SimpleNamespace(completion=lambda **kwargs: kwargs["messages"]) for _ in range(2)]
++    originals = [module.completion for module in modules]
++    monkeypatch.setattr(run.importlib, "import_module", lambda name: modules[int(name.endswith("consistency_guidelines"))])
++    path = tmp_path / "prompts.jsonl"
++    messages = [{"role": "user", "content": "Task evidence"}]
++    with pytest.raises(RuntimeError, match="probe"):
++        with run.record_learning_prompts(path):
++            assert (
++                modules[0].completion(model="test", messages=messages, api_key="secret-value", headers={"Authorization": "secret"})
++                == messages
++            )
++            raise RuntimeError("probe")
++    assert [module.completion for module in modules] == originals
++    assert json.loads(path.read_text()) == {"purpose": "guidelines", "model": "test", "messages": messages}
++    assert "secret" not in path.read_text()
++
++
++def test_learning_processes_every_captured_batch(tmp_path, monkeypatch):
++    from altk_evolve.frontend.client import evolve_client
++    from altk_evolve.sync import cortex_sync
++    from . import run
++
++    batches = [
++        {
++            "batch": {"source": "cortex", "conversation_id": "training", "batch_id": str(index), "revision": "2"},
++            "messages": [{"role": "user", "content": f"batch {index}"}],
++        }
++        for index in range(2)
++    ]
++    metric = {"label": "train", "case": "ledger_train", "session_id": "training", "checks": {"saved": True}, "passed": True, "expected": {}}
++    state = {"model": "test", "trials": [metric]}
++    processed = []
++
++    class Client:
++        def ensure_namespace(self, namespace):
++            pass
++
++        def process_trajectory(self, trajectory, **kwargs):
++            processed.append(trajectory)
++            return SimpleNamespace(updates=[], skipped_processors=[])
++
++    monkeypatch.setattr(run.driver, "ARTIFACTS", tmp_path)
++    monkeypatch.setattr(run.driver, "read_state", lambda: state)
++    monkeypatch.setattr(run.driver, "write_state", lambda value: None)
++    monkeypatch.setattr(run.driver, "base_env", lambda model: {})
++    monkeypatch.setattr(evolve_client, "EvolveClient", Client)
++    monkeypatch.setattr(cortex_sync, "CortexSessionClient", lambda url: SimpleNamespace(close=lambda: None))
++    monkeypatch.setattr(cortex_sync, "ingest_session", lambda *args, **kwargs: SimpleNamespace(trajectory=batches[0], trajectories=batches))
++    run.learn("train", "standard", "correctness")
++    assert [trajectory.batch.batch_id for trajectory in processed] == ["0", "1"]
++    assert all(trajectory.outcome.success for trajectory in processed)
++    assert len(json.loads((tmp_path / "learning-train-standard-correctness.inputs.json").read_text())) == 2
++
++

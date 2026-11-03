@@ -1,0 +1,762 @@
+{
+  "label": "evolve-ledger_d",
+  "case": "ledger_d",
+  "arm": "evolve",
+  "feedback": false,
+  "phase": "initial",
+  "session_id": "5082864d-5cbc-40fa-b904-6746f8840a6f",
+  "exit_code": 0,
+  "timed_out": false,
+  "turn_count_source": "claude_result",
+  "subtype": "success",
+  "answer": {
+    "totals_minor": 36009,
+    "included_event_ids": [
+      "evt-5-corrected",
+      "evt-5-eur",
+      "evt-5-eur-refund",
+      "evt-5-moved",
+      "evt-5-refund",
+      "evt-5-test",
+      "evt-5-utc-out"
+    ]
+  },
+  "expected": {
+    "totals_minor": {
+      "USD": 13480,
+      "EUR": 4720
+    },
+    "included_event_ids": [
+      "evt-5-corrected",
+      "evt-5-eur",
+      "evt-5-eur-refund",
+      "evt-5-refund",
+      "evt-5-utc-in"
+    ]
+  },
+  "passed": false,
+  "checks": {
+    "currency_totals": false,
+    "exact_event_ids": false,
+    "saved_report": false
+  },
+  "duration_seconds": 134.21,
+  "cost_usd": 0.055674400000000006,
+  "usage": {
+    "input_tokens": 7901,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 23552,
+    "output_tokens": 968,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "model_usage": {
+    "Azure/gpt-4.1": {
+      "inputTokens": 7901,
+      "outputTokens": 968,
+      "cacheReadInputTokens": 23552,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.055674400000000006,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "azure/gpt-4.1",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "bash_commands": [
+    "python3 ops.py --help",
+    "python3 ops.py find-customer --name 'Harbor Systems' --env production",
+    "python3 ops.py find-customer -h",
+    "python3 ops.py find-customer 'Harbor Systems'",
+    "python3 ops.py revenue-contract --account account-205",
+    "python3 ops.py revenue-contract -h",
+    "python3 ops.py revenue-contract > contract.json",
+    "python3 ops.py ledger-export --account account-205 --period 2026-08 --revenue-contract contract.json --output raw_ledger.json",
+    "python3 ops.py ledger-export --customer account-205 --output raw_ledger.json",
+    "head -20 raw_ledger.json",
+    "jq 'map(select(.occurred_at | startswith(\"2026-08\")))' raw_ledger.json > aug_ledger.json",
+    "jq 'group_by(.event_id) | map(max_by(.revision))' aug_ledger.json > latest_aug_ledger.json",
+    "jq '[.[] | select(.status==\"settled\") | .amount_minor] | add' latest_aug_ledger.json",
+    "jq '[.[] | select(.status==\"settled\") | .event_id]' latest_aug_ledger.json | sort | uniq",
+    "jq '[.[] | select(.status==\"settled\") | .event_id]' latest_aug_ledger.json | sort | uniq | jq -c",
+    "jq '[.[] | select(.status==\"settled\") | .event_id]' latest_aug_ledger.json | jq 'unique | sort'",
+    "jq -n '{totals_minor: 36009, included_event_ids: [\"evt-5-corrected\", \"evt-5-eur\", \"evt-5-eur-refund\", \"evt-5-moved\", \"evt-5-refund\", \"evt-5-test\", \"evt-5-utc-out\"]}' > report.json",
+    "cat report.json"
+  ],
+  "failed_bash_commands": [
+    "python3 ops.py find-customer --name 'Harbor Systems' --env production",
+    "python3 ops.py revenue-contract --account account-205",
+    "python3 ops.py ledger-export --account account-205 --period 2026-08 --revenue-contract contract.json --output raw_ledger.json",
+    "jq '[.[] | select(.status==\"settled\") | .event_id]' latest_aug_ledger.json | sort | uniq | jq -c"
+  ],
+  "num_turns": 19,
+  "evidence": [
+    {
+      "seq": 1,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:35:01.337411-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:35:01.337411-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:35:01.337411-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:07.765-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 27,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 29,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "phase": "request",
+      "evolve": null,
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "skip",
+          "phase": "request",
+          "reason": "no_tools",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 33,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 35,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 37,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    },
+    {
+      "seq": 39,
+      "phase": "request",
+      "evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3"
+        ],
+        "revisions": [
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34",
+          "cortex:ca60ece3-1546-4bea-912a-245ce66536f2:34"
+        ],
+        "cached": true,
+        "fetchedAt": "2026-11-03T10:36:38.728839-06:00"
+      },
+      "invocations": [
+        {
+          "plugin": "evolve",
+          "action": "modify",
+          "phase": "request",
+          "reason": "body_rewritten",
+          "path": "/v1/messages"
+        }
+      ]
+    }
+  ],
+  "injected_ids": [
+    "1",
+    "2",
+    "3"
+  ],
+  "family": "ledger",
+  "transport": "gateway-bridge",
+  "service_calls": 6,
+  "service_errors": 3
+}
