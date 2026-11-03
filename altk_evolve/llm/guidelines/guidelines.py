@@ -1,4 +1,9 @@
-from altk_evolve.llm.guidelines.context import render_action_with_result, render_supporting_context, tool_results_by_call_id
+from altk_evolve.llm.guidelines.context import (
+    render_action_with_result,
+    render_input_evidence,
+    render_supporting_context,
+    tool_results_by_call_id,
+)
 import json
 import logging
 import re
@@ -394,6 +399,7 @@ def _generate_guidelines_for_segment(
     *,
     options: GuidelineRuntime,
     supporting_context: str = "",
+    input_evidence: str = "",
     outcome: "TrajectoryOutcome | None" = None,
     segmented: bool = False,
 ) -> GuidelineGenerationResult:
@@ -425,6 +431,7 @@ def _generate_guidelines_for_segment(
     prompt = _GENERATE_GUIDELINES_TEMPLATE.render(
         task_instruction=task_description,
         supporting_context=supporting_context,
+        input_evidence=input_evidence,
         num_steps=num_steps,
         trajectory_summary=trajectory_slice,
         constrained_decoding_supported=constrained_decoding_supported,
@@ -475,6 +482,8 @@ def generate_guidelines(
     options: GuidelineRuntime | None = None,
     context_messages: list[dict] | None = None,
     outcome: "TrajectoryOutcome | None" = None,
+    tools: list[dict] | None = None,
+    execution_metadata: dict | None = None,
 ) -> list[GuidelineGenerationResult]:
     """Generate guidelines from a trajectory, optionally segmented into subtasks.
 
@@ -517,6 +526,7 @@ def generate_guidelines(
     constrained_decoding_supported = bool(not is_groq and supports_response_format and response_schema_enabled)
 
     trajectory_data = parse_openai_agents_trajectory(messages, context_messages=context_messages, options=options)
+    input_evidence = render_input_evidence(messages, context_messages=context_messages, tools=tools, execution_metadata=execution_metadata)
     task_instruction = trajectory_data["task_instruction"]
     # Real agent steps in the rendered window: the elision marker takes a list position but is
     # not a step, so it is not counted (the consistency paths gate on real steps too).
@@ -543,6 +553,7 @@ def generate_guidelines(
                 constrained_decoding_supported=constrained_decoding_supported,
                 options=options,
                 supporting_context=render_supporting_context(context_messages),
+                input_evidence=input_evidence,
                 outcome=outcome,
                 segmented=True,
             )
@@ -559,6 +570,7 @@ def generate_guidelines(
             constrained_decoding_supported=constrained_decoding_supported,
             options=options,
             supporting_context=render_supporting_context(context_messages),
+            input_evidence=input_evidence,
             outcome=outcome,
         )
     ]

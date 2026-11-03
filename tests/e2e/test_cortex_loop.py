@@ -5,6 +5,8 @@ router, cursor store, processing pipeline, filesystem backend and CLI together.
 """
 
 import httpx
+import json
+from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
@@ -15,7 +17,6 @@ from altk_evolve.config.filesystem import FilesystemSettings
 from altk_evolve.frontend.api import cortex as cortex_api
 from altk_evolve.frontend.client.evolve_client import EvolveClient
 from altk_evolve.schema.conflict_resolution import EntityUpdate
-from altk_evolve.schema.guidelines import Guideline, GuidelineGenerationResult
 from altk_evolve.sync import cortex_sync
 
 pytestmark = pytest.mark.e2e
@@ -46,12 +47,20 @@ def _turn(seq, history, completion, calls=()):
 
 
 def _fake_cortex():
-    task = [{"role": "user", "content": "run the tests"}]
+    task = [{"role": "system", "content": "PROJECT_RULE: use uv for Python commands"}, {"role": "user", "content": "run the tests"}]
     events = {
         2: _turn(2, task, "Running.", calls=["t1"]),
-        4: _turn(4, task + [{"role": "assistant", "content": "Running."}, {"role": "user", "content": ""}], "All tests pass."),
+        4: _turn(
+            4,
+            task + [{"role": "assistant", "content": "Running."}, {"role": "user", "content": "USER_CORRECTION: run pytest verbosely"}],
+            "All tests pass.",
+        ),
     }
     events[4]["inference"]["toolResults"] = [{"toolUseId": "t1", "content": "TOOL_OBSERVATION: 24 tests passed"}]
+    for event in events.values():
+        event["inference"]["tools"] = [
+            {"name": "Bash", "description": "TOOL_CONTRACT: run shell commands", "parameters": {"type": "object", "required": ["command"]}}
+        ]
 
     def handler(request):
         path = request.url.path
@@ -81,19 +90,19 @@ def loop(tmp_path, monkeypatch):
 
     monkeypatch.setattr(guidelines_settings, "guidelines_mode", "standard")
 
-    def generate(messages, *, context_messages=None, options, outcome=None):
-        from altk_evolve.llm.guidelines.guidelines import parse_openai_agents_trajectory
+    def complete(**kwargs):
+        prompt = kwargs["messages"][0]["content"]
+        for marker in ("TOOL_OBSERVATION: 24 tests passed", "PROJECT_RULE", "USER_CORRECTION", "TOOL_CONTRACT"):
+            assert marker in prompt
+        if "**Task Status:** FAILED" in prompt:
+            assert "test output must include all required cases" in prompt
+            assert "Missing a required test case" in prompt
+        payload = {"guidelines": [{"content": "Run tests with uv run pytest -v", "rationale": "r", "category": "strategy", "trigger": "t"}]}
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))])
 
-        rendered = parse_openai_agents_trajectory(messages, options=options)
-        assert "TOOL_OBSERVATION: 24 tests passed" in rendered["trajectory_summary"]
-        return [
-            GuidelineGenerationResult(
-                task_description="run the tests",
-                guidelines=[Guideline(content="Run tests with uv run pytest -v", rationale="r", category="strategy", trigger="t")],
-            )
-        ]
-
-    monkeypatch.setattr("altk_evolve.llm.guidelines.guidelines.generate_guidelines", generate)
+    monkeypatch.setattr("altk_evolve.llm.guidelines.guidelines.completion", complete)
+    monkeypatch.setattr("altk_evolve.llm.guidelines.guidelines.get_supported_openai_params", lambda **kwargs: [])
+    monkeypatch.setattr("altk_evolve.llm.guidelines.guidelines.supports_response_schema", lambda **kwargs: False)
     monkeypatch.setattr(
         "altk_evolve.llm.conflict_resolution.conflict_resolution.resolve_conflicts",
         lambda candidates, incoming, settings=None: [EntityUpdate(id=e.id, type=e.type, content=e.content, event="ADD") for e in incoming],
@@ -139,3 +148,21 @@ def test_cortex_loop_gates_on_review_and_rolls_back(loop):
     assert runner.invoke(cli, ["entities", "retire", "cortex", guideline.id, "--reason", "stale"]).exit_code == 0
     assert _served(api) == []
     assert client.get_entity_by_id("cortex", guideline.id).metadata["status"] == "retired"
+
+
+def test_evaluator_feedback_after_ingestion_is_grounded_and_idempotent(loop):
+    client, api = loop
+    api.post(f"/api/cortex/sessions/{SID}/ingest", headers=AUTH)
+    body = {
+        "outcome": {
+            "success": False,
+            "failed_checks": ["test output must include all required cases"],
+            "detail": "Missing a required test case",
+        }
+    }
+    assert api.post(f"/api/cortex/sessions/{SID}/ingest", json=body, headers=AUTH).status_code == 202
+    guidelines = client.get_all_entities("cortex", filters={"type": "guideline"})
+    assert any(g.metadata.get("evidence") == "failure" for g in guidelines)
+    assert all(g.metadata["status"] == "candidate" for g in guidelines)
+    api.post(f"/api/cortex/sessions/{SID}/ingest", json=body, headers=AUTH)
+    assert len(client.get_all_entities("cortex", filters={"type": "guideline"})) == len(guidelines)

@@ -1,4 +1,9 @@
-from altk_evolve.llm.guidelines.context import render_action_with_result, render_supporting_context, tool_results_by_call_id
+from altk_evolve.llm.guidelines.context import (
+    render_action_with_result,
+    render_input_evidence,
+    render_supporting_context,
+    tool_results_by_call_id,
+)
 import json
 import logging
 from collections.abc import Callable
@@ -179,9 +184,13 @@ def transform_trajectory_to_IR(trajectory: dict) -> dict:
 
     steps: list[dict] = []
     step_number = 0
-    current_messages: list[dict] = list(context_messages)
+    current_messages: list[dict] = [m for m in context_messages if not m.get("cortex_observation")]
 
     for msg in messages:
+        # Adapter observations enrich extraction, not the input the main agent
+        # actually saw. Keep child internals and telemetry out of resampling.
+        if msg.get("cortex_observation"):
+            continue
         role = msg.get("role")
 
         if role == "assistant":
@@ -456,6 +465,7 @@ def _generate_guideline_result(
     options: GuidelineRuntime,
     trajectory_renderer: Optional[Callable[..., str]] = None,
     context_messages: list[dict] | None = None,
+    execution_metadata: dict | None = None,
 ) -> GuidelineGenerationResult:
     """Generate a single GuidelineGenerationResult for one segment (or the full trajectory).
 
@@ -504,6 +514,7 @@ def _generate_guideline_result(
         task_instruction=task_description,
         trajectory_summary=trajectory_summary,
         supporting_context=render_supporting_context(context_messages),
+        input_evidence=render_input_evidence(messages, context_messages=context_messages, execution_metadata=execution_metadata),
         constrained_decoding_supported=constrained_decoding_supported,
     )
 
@@ -799,6 +810,7 @@ def generate_consistency_guidelines(
                 options=options,
                 trajectory_renderer=trajectory_renderer,
                 context_messages=trajectory.get("context_messages"),
+                execution_metadata=trajectory.get("metadata", {}).get("cortex_capture"),
             )
             results.append(result)
         if debug_dir:
@@ -819,6 +831,7 @@ def generate_consistency_guidelines(
         options=options,
         trajectory_renderer=trajectory_renderer,
         context_messages=trajectory.get("context_messages"),
+        execution_metadata=trajectory.get("metadata", {}).get("cortex_capture"),
     )
     if debug_dir:
         _write_guidelines_debug(debug_dir, trace_id, [result], "_consistency")
@@ -836,6 +849,7 @@ def _generate_fast_guideline_result(
     *,
     options: GuidelineRuntime,
     supporting_context: str = "",
+    input_evidence: str = "",
 ) -> GuidelineGenerationResult:
     """Generate a single GuidelineGenerationResult for one segment (or the full trajectory)
     using the fast consistency pipeline: the LLM judges each step's confidence itself, in the
@@ -844,6 +858,7 @@ def _generate_fast_guideline_result(
     prompt = _CONSISTENCY_GUIDELINES_FAST_TEMPLATE.render(
         task_instruction=task_description,
         supporting_context=supporting_context,
+        input_evidence=input_evidence,
         num_steps=num_steps,
         trajectory_summary=trajectory_slice,
         constrained_decoding_supported=constrained_decoding_supported,
@@ -912,9 +927,9 @@ def generate_consistency_guidelines_fast(trajectory: dict, *, options: Guideline
 
     Args:
         trajectory: dict with key `messages` (OpenAI-format conversation). `trace_id` is used
-            to name debug artifacts when EVOLVE_DEBUG_DIR is set. `model` and `tools` are
-            accepted for call-site parity with `generate_consistency_guidelines` but are not
-            used — this pipeline never resamples.
+            to name debug artifacts when EVOLVE_DEBUG_DIR is set. `tools` supplies the
+            available tool definitions for the learning prompt; `model` is accepted for
+            call-site parity but is not used — this pipeline never resamples.
     """
     options = options or GuidelineRuntime.from_settings()
     messages = trajectory.get("messages", [])
@@ -945,6 +960,12 @@ def generate_consistency_guidelines_fast(trajectory: dict, *, options: Guideline
     constrained_decoding_supported = bool(not is_groq and supports_response_format and response_schema_enabled)
 
     trajectory_data = parse_openai_agents_trajectory(messages, context_messages=trajectory.get("context_messages"), options=options)
+    input_evidence = render_input_evidence(
+        messages,
+        context_messages=trajectory.get("context_messages"),
+        tools=trajectory.get("tools"),
+        execution_metadata=trajectory.get("metadata", {}).get("cortex_capture"),
+    )
     task_instruction = trajectory_data["task_instruction"]
     # Real agent steps in the rendered window, not list positions: the elision marker is not a
     # step. Same count as generate_guidelines' gate.
@@ -979,6 +1000,7 @@ def generate_consistency_guidelines_fast(trajectory: dict, *, options: Guideline
                 debug_suffix=f"_seg{i}",
                 options=options,
                 supporting_context=render_supporting_context(trajectory.get("context_messages")),
+                input_evidence=input_evidence,
             )
             for i, (subtask, slice_steps, real_steps) in enumerate(valid_slices, 1)
         ]
@@ -997,6 +1019,7 @@ def generate_consistency_guidelines_fast(trajectory: dict, *, options: Guideline
         trace_id=trace_id,
         options=options,
         supporting_context=render_supporting_context(trajectory.get("context_messages")),
+        input_evidence=input_evidence,
     )
     if debug_dir:
         _write_guidelines_debug(debug_dir, trace_id, [result], "_consistency-fast")

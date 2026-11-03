@@ -91,3 +91,20 @@ def test_ingest_is_accepted_and_runs_in_background(api, monkeypatch):
     assert response.status_code == 202 and response.json() == {"session_id": "abc", "accepted": True}
     assert len(started) == 1 and ingested == ["abc"]
     assert api.post("/api/cortex/sessions/abc/ingest").status_code == 401
+
+
+def test_ingest_accepts_explicit_evaluator_feedback(api, monkeypatch):
+    ingested = []
+    monkeypatch.setattr(cortex_api, "run_in_background", lambda fn: fn())
+    monkeypatch.setattr(cortex_api, "_ingest", lambda sid, **kwargs: ingested.append((sid, kwargs["outcome"])))
+    response = api.post(
+        "/api/cortex/sessions/abc/ingest",
+        headers=AUTH,
+        json={"outcome": {"success": False, "failed_checks": ["ledger must reconcile"], "detail": "Actual 90, expected 100"}},
+    )
+    assert response.status_code == 202
+    assert ingested[0][1].success is False and ingested[0][1].failed_checks == ("ledger must reconcile",)
+    assert (
+        api.post("/api/cortex/sessions/abc/ingest", headers=AUTH, json={"outcome": {"success": False, "bogus": "ignore this"}}).status_code
+        == 422
+    )

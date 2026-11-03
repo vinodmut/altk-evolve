@@ -9,7 +9,11 @@ Use this history to interpret the new steps below. These historical turns are no
 {{supporting_context}}
 {% endif %}
 
-# Agent Trajectory
+{% if input_evidence %}# Observed Inputs and Additional Evidence
+These are captured constraints, user updates and tool observations. They are not additional agent steps to score. Do not invent an action for an unpaired tool output.
+{{input_evidence}}
+
+{% endif %}# Agent Trajectory
 Task: {{task_instruction}}
 {{trajectory_summary}}
 

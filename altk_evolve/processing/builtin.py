@@ -115,25 +115,38 @@ class GuidelineProcessor:
 
         config = GuidelineConfig.model_validate(config)
         options = GuidelineRuntime.model_validate(config.model_dump(include=set(GuidelineRuntime.model_fields)))
+
+        def runtime(trajectory: Trajectory) -> GuidelineRuntime:
+            # Cortex batches can contain >50 actions even with only 40 inference
+            # turns. Reserve an outcome tail instead of losing the final recovery.
+            if trajectory.batch and trajectory.batch.source == "cortex" and options.trajectory_tail_steps == 0:
+                return options.model_copy(update={"trajectory_tail_steps": min(10, options.trajectory_max_steps - 1)})
+            return options
+
         steps: list[tuple[str, Callable[[Trajectory], list[GuidelineGenerationResult]]]] = []
         if config.guidelines_mode in ("standard", "all"):
-            steps.append(
-                (
-                    "standard",
-                    lambda trajectory: generate_guidelines(
-                        trajectory.messages,
-                        context_messages=trajectory.context_messages,
-                        options=options,
-                        outcome=trajectory.outcome,
-                    ),
+
+            def standard(trajectory: Trajectory) -> list[GuidelineGenerationResult]:
+                kwargs: dict[str, Any] = {}
+                if trajectory.tools is not None:
+                    kwargs["tools"] = trajectory.tools
+                if "cortex_capture" in trajectory.metadata:
+                    kwargs["execution_metadata"] = trajectory.metadata["cortex_capture"]
+                return generate_guidelines(
+                    trajectory.messages,
+                    context_messages=trajectory.context_messages,
+                    options=runtime(trajectory),
+                    outcome=trajectory.outcome,
+                    **kwargs,
                 )
-            )
+
+            steps.append(("standard", standard))
         if config.guidelines_mode in ("consistency", "all"):
             if config.consistency_method == "fast":
                 steps.append(
                     (
                         "consistency-fast",
-                        lambda trajectory: generate_consistency_guidelines_fast(trajectory.model_dump(), options=options),
+                        lambda trajectory: generate_consistency_guidelines_fast(trajectory.model_dump(), options=runtime(trajectory)),
                     )
                 )
             else:

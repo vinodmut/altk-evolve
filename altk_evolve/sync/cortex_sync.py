@@ -18,6 +18,7 @@ output the agent read, so nothing learned from it is served until a reviewer pro
 """
 
 import json
+import hashlib
 import logging
 import os
 import re
@@ -31,7 +32,7 @@ from typing import Any, cast
 import httpx
 
 from altk_evolve.frontend.client.evolve_client import EvolveClient
-from altk_evolve.processing import Trajectory, TrajectoryBatch
+from altk_evolve.processing import Trajectory, TrajectoryBatch, TrajectoryOutcome
 
 logger = logging.getLogger("evolve.sync.cortex")
 
@@ -40,12 +41,12 @@ SOURCE = "cortex"
 CREATION_MODE = "auto-cortex"
 # The session API caps a page at 2000 events.
 PAGE_LIMIT = 2000
-MAX_TOOL_RESULT_CHARS = 4000
-MAX_USER_CHARS = 8000
+CONTEXT_TURNS = 10
 
 # Harness-injected context, and guidelines Cortex itself injected: neither is the user's words,
 # and learning from injected guidelines would feed Evolve its own output.
-_STRIP_BLOCKS = re.compile(r"<(system-reminder|evolve-guidelines)\b[^>]*>.*?</\1>", re.DOTALL)
+_STRIP_BLOCKS = re.compile(r"<evolve-guidelines\b[^>]*>.*?</evolve-guidelines>", re.DOTALL)
+_REMINDERS = re.compile(r"<system-reminder\b[^>]*>.*?</system-reminder>", re.DOTALL)
 
 
 def cortex_url() -> str:
@@ -53,7 +54,7 @@ def cortex_url() -> str:
 
 
 def clean_text(text: str | None) -> str:
-    """Remove injected blocks and surrounding whitespace from a message's text."""
+    """Remove Evolve's own injected guidelines, retaining task/environment constraints."""
     return _STRIP_BLOCKS.sub("", text or "").strip()
 
 
@@ -120,53 +121,132 @@ def _message_count(event: dict) -> int:
 def first_user_text(event: dict) -> str | None:
     for message in (event.get("inference") or {}).get("messages") or []:
         if message.get("role") == "user":
-            text = clean_text(message.get("content"))
+            text = _REMINDERS.sub("", clean_text(message.get("content"))).strip()
             if text:
-                return text[:MAX_USER_CHARS]
+                return text
     return None
 
 
-def turns_to_messages(turns: list[dict], *, prev_message_count: int = 0, prev_tool_call_ids: tuple[str, ...] = ()) -> list[dict]:
+def turns_to_messages(
+    turns: list[dict],
+    *,
+    prev_message_count: int = 0,
+    prev_tool_call_ids: tuple[str, ...] = (),
+    previous_turn: dict | None = None,
+    supporting_events: list[dict] | None = None,
+) -> list[dict]:
     """Rebuild OpenAI chat messages from consecutive full main-turn response events.
 
     Cortex keeps only the text of each message in a request, so the history's tool calls are
     taken from each turn's own ``toolCalls`` and its tool results from ``toolResults``.
     """
     messages: list[dict] = []
-    pending_calls = set(prev_tool_call_ids)
+    previous_inference = (previous_turn or {}).get("inference") or {}
+    previous_history = previous_inference.get("messages")
+    if previous_turn is not None:
+        prev_message_count = len(previous_history or [])
+        prev_tool_call_ids = tuple(c["id"] for c in previous_inference.get("toolCalls") or [] if c.get("id"))
+    pending_calls = dict.fromkeys(prev_tool_call_ids)
+    seen_results = {r.get("toolUseId") for r in previous_inference.get("toolResults") or []}
+    supporting = iter(sorted(supporting_events or [], key=lambda e: e["seq"]))
+    child = next(supporting, None)
     for turn in turns:
+        while child is not None and child["seq"] < turn["seq"]:
+            child_inference = child.get("inference") or {}
+            observation = {
+                "seq": child["seq"],
+                "subagent": child.get("subagent"),
+                "model": child_inference.get("model"),
+                "messages": [{**m, "content": clean_text(m.get("content"))} for m in child_inference.get("messages") or []],
+                "completion": clean_text(child_inference.get("completion")),
+                "toolCalls": child_inference.get("toolCalls") or [],
+                "toolResults": child_inference.get("toolResults") or [],
+                "tools": child_inference.get("tools") or [],
+            }
+            messages.append(
+                {
+                    "role": "system",
+                    "cortex_observation": True,
+                    "content": "Cortex subagent observation (separate agent; supporting evidence, "
+                    "not the main agent's user instructions):\n" + json.dumps(observation, ensure_ascii=False),
+                }
+            )
+            child = next(supporting, None)
         inference = turn.get("inference") or {}
         history = inference.get("messages") or []
-        if len(history) < prev_message_count:  # the agent compacted its context
+        if previous_history is not None:
+            # Compare contents, not just lengths: compaction and same-length edits can
+            # replace a user correction without changing the message count.
+            prev_message_count = 0
+            for old, current in zip(previous_history, history):
+                # Injected guideline IDs and wire byte counts can change while
+                # the conversation stays the same. Neither makes old input new.
+                old_key = (old.get("role"), clean_text(old.get("content")), old.get("toolUseId"))
+                current_key = (current.get("role"), clean_text(current.get("content")), current.get("toolUseId"))
+                if old_key != current_key:
+                    break
+                prev_message_count += 1
+        elif len(history) < prev_message_count:
             prev_message_count = 0
         results = {r.get("toolUseId"): r for r in inference.get("toolResults") or [] if r.get("toolUseId")}
-        for call_id in sorted(pending_calls & results.keys()):
+        # OpenAI clients also put results in role=tool messages. Do not duplicate
+        # the copy now provided in toolResults by current Cortex versions.
+        for message in history:
+            if message.get("role") == "tool" and message.get("toolUseId"):
+                results.setdefault(message["toolUseId"], message)
+        ordered_ids = [cid for cid in pending_calls if cid in results]
+        ordered_ids.extend(cid for cid in results if cid not in pending_calls and cid not in seen_results)
+        for call_id in ordered_ids:
             result = results[call_id]
-            content = (result.get("content") or "")[:MAX_TOOL_RESULT_CHARS]
+            content = result.get("content") or ""
             if result.get("isError"):
                 content = f"[error] {content}"
             messages.append({"role": "tool", "tool_call_id": call_id, "content": content})
+            pending_calls.pop(call_id, None)
+            seen_results.add(call_id)
         for message in history[prev_message_count:]:
-            if message.get("role") != "user":
+            if message.get("role") not in ("user", "system", "developer"):
                 continue
             text = clean_text(message.get("content"))
             if text:
-                messages.append({"role": "user", "content": text[:MAX_USER_CHARS]})
-        calls = inference.get("toolCalls") or []
-        assistant: dict[str, Any] = {"role": "assistant", "content": inference.get("completion") or ""}
+                messages.append({"role": message["role"], "content": text})
+        input_only = turn.get("phase") == "request"
+        calls = [] if input_only else inference.get("toolCalls") or []
+        assistant: dict[str, Any] = {"role": "assistant", "content": "" if input_only else clean_text(inference.get("completion"))}
         if calls:
             assistant["tool_calls"] = [
                 {
                     "id": call.get("id") or f"call_{turn['seq']}_{i}",
                     "type": "function",
-                    "function": {"name": call.get("name") or "unknown", "arguments": call.get("arguments") or "{}"},
+                    "function": {"name": call.get("name") or "unknown", "arguments": call.get("arguments", "{}")},
                 }
                 for i, call in enumerate(calls)
             ]
         if assistant["content"] or calls:
             messages.append(assistant)
-        pending_calls = {c["id"] for c in assistant.get("tool_calls", [])}
+        pending_calls.update(dict.fromkeys(c["id"] for c in assistant.get("tool_calls", [])))
         prev_message_count = len(history)
+        previous_history = history
+        if input_only:
+            messages.append(
+                {
+                    "role": "system",
+                    "content": f"Cortex captured input at seq {turn['seq']}; no response was captured yet. "
+                    "The observed tool outputs and user inputs do not establish task success.",
+                    "cortex_observation": True,
+                }
+            )
+        finish = inference.get("finishReason")
+        status = turn.get("statusCode")
+        if finish in ("length", "max_tokens", "incomplete", "content_filter") or (status and status >= 400) or turn.get("error"):
+            messages.append(
+                {
+                    "role": "system",
+                    "content": f"Cortex observed an incomplete or failed inference at seq {turn['seq']}: "
+                    + json.dumps({"finishReason": finish, "statusCode": status, "error": turn.get("error")}),
+                    "cortex_observation": True,
+                }
+            )
     return messages
 
 
@@ -213,6 +293,7 @@ class IngestResult:
     last_seq: int | None = None
     guidelines: list[str] = field(default_factory=list)
     trajectory: dict | None = None
+    trajectories: list[dict] | None = None
 
 
 _session_locks: dict[str, threading.Lock] = {}
@@ -234,48 +315,160 @@ def ingest_session(
     min_new_turns: int = 2,
     max_turns: int = 40,
     dry_run: bool = False,
+    outcome: TrajectoryOutcome | None = None,
 ) -> IngestResult:
-    """Learn candidate guidelines from the turns of ``session_id`` after its cursor."""
+    """Drain new turns in bounded batches, checkpointing only completed batches.
+
+    An explicit evaluator outcome replays the available session with an outcome-owned
+    revision, including when its turns were already ingested. Identical feedback is
+    deduplicated by the processing pipeline. No success is inferred from agent text.
+    """
+    if min_new_turns < 1 or max_turns < 1:
+        raise ValueError("min_new_turns and max_turns must be positive")
     with _session_lock(session_id):
         cursor = cursors.get(session_id)
-        turns = [e for e in cortex.summary_events(session_id) if is_main_turn(e)]
+        summaries = cortex.summary_events(session_id)
+        turns = [e for e in summaries if is_main_turn(e)]
+        last_response = max((t["seq"] for t in turns), default=0)
+        # A failed/aborted final inference can still carry the last tool output in
+        # its request. Learn that observed input without inventing a response.
+        turns.extend(
+            e for e in summaries if e["seq"] > last_response and e.get("phase") == "request" and is_main_turn({**e, "phase": "response"})
+        )
+        turns.sort(key=lambda e: e["seq"])
         new = [t for t in turns if t["seq"] > cursor]
-        if not new:
+        selected = turns if outcome is not None else new
+        if not selected:
             return IngestResult(session_id, "up-to-date")
-        if len(new) < min_new_turns:
+        if outcome is None and len(new) < min_new_turns and cursor == 0:
             return IngestResult(session_id, "too-few-turns", new_turns=len(new))
 
-        window = new[-max_turns:]
-        previous = [t for t in turns if t["seq"] < window[0]["seq"]]
-        full = [cortex.event(session_id, t["seq"]) for t in window]
-        prev_calls: tuple[str, ...] = ()
-        if previous:
-            prev_full = cortex.event(session_id, previous[-1]["seq"])
-            prev_calls = tuple(c.get("id") for c in (prev_full.get("inference") or {}).get("toolCalls") or [] if c.get("id"))
-        messages = turns_to_messages(
-            full, prev_message_count=_message_count(previous[-1]) if previous else 0, prev_tool_call_ids=prev_calls
-        )
-        task = first_user_text(full[0])
-        context = [{"role": "user", "content": task}] if task and previous else []
+        cache: dict[int, dict] = {}
 
-        agent = (window[-1].get("client") or {}).get("name")
-        first_seq, last_seq = window[0]["seq"], window[-1]["seq"]
-        trajectory = Trajectory(
-            messages=messages,
-            context_messages=context,
-            batch=TrajectoryBatch(source=SOURCE, conversation_id=session_id, batch_id=f"{first_seq}-{last_seq}", scope=SOURCE),
-            trace_id=f"{SOURCE}:{session_id}:{last_seq}",
-            model=(window[-1].get("inference") or {}).get("model"),
-            metadata={"status": "candidate", "creation_mode": CREATION_MODE, "agent_id": agent, "session_id": session_id},
-        )
+        def full_event(summary: dict) -> dict:
+            seq = summary["seq"]
+            if seq not in cache:
+                cache[seq] = cortex.event(session_id, seq)
+            return cache[seq]
+
+        # The first available task is stable across later context compactions.
+        first_event = full_event(turns[0])
+        original_task = first_user_text(first_event)
+        original_constraints = []
+        for message in (first_event.get("inference") or {}).get("messages") or []:
+            text = clean_text(message.get("content"))
+            if text and message.get("role") in ("system", "developer"):
+                original_constraints.append({"role": message["role"], "content": text})
+            elif message.get("role") == "user":
+                original_constraints.extend({"role": "system", "content": m.group(0)} for m in _REMINDERS.finditer(text))
+        revision = "2"
+        if outcome is not None:
+            revision += ":outcome:" + hashlib.sha256(outcome.model_dump_json().encode()).hexdigest()
+        trajectories: list[dict] = []
+        guidelines: list[str] = []
+        for start in range(0, len(selected), max_turns):
+            window = selected[start : start + max_turns]
+            previous = [t for t in turns if t["seq"] < window[0]["seq"]]
+            full = [full_event(t) for t in window]
+            earlier = [full_event(t) for t in previous[-CONTEXT_TURNS:]]
+            context: list[dict[str, Any]] = [{"role": "user", "content": original_task}] if original_task else []
+            context.extend(original_constraints)
+            context.extend(turns_to_messages(earlier))
+            lower_seq = previous[-1]["seq"] if previous else 0
+            child_summaries = [
+                e
+                for e in summaries
+                if lower_seq < e["seq"] < window[-1]["seq"]
+                and e.get("phase") == "response"
+                and e.get("inference")
+                and not e.get("tunnel")
+                and (e.get("subagent") or e["inference"].get("agentRole") == "subagent")
+            ]
+            messages = turns_to_messages(
+                full, previous_turn=earlier[-1] if earlier else None, supporting_events=[full_event(e) for e in child_summaries]
+            )
+            tools = [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": tool["name"],
+                        "description": tool.get("description", ""),
+                        "parameters": tool.get("parameters") or {"type": "object"},
+                    },
+                }
+                for tool in (full[-1].get("inference") or {}).get("tools") or []
+                if tool.get("name")
+            ]
+            # Preserve changes to schemas/descriptions, not just the final manifest.
+            manifest = None
+            for event in full:
+                current = (event.get("inference") or {}).get("tools") or []
+                if current != manifest:
+                    context.append(
+                        {
+                            "role": "system",
+                            "content": f"Tool definitions at Cortex seq {event['seq']}: " + json.dumps(current, ensure_ascii=False),
+                            "cortex_observation": True,
+                        }
+                    )
+                    manifest = current
+            agent = (window[-1].get("client") or {}).get("name")
+            first_seq, last_seq = window[0]["seq"], window[-1]["seq"]
+            capture = {
+                "adapter_revision": 2,
+                "excluded_events": len(summaries) - len(turns),
+                "subagent_seqs": [e["seq"] for e in child_summaries],
+                "turns": [
+                    {
+                        "seq": event["seq"],
+                        "phase": event.get("phase"),
+                        **{k: event[k] for k in ("statusCode", "error", "durationMs") if k in event},
+                        "inference": {
+                            k: value
+                            for k, value in (event.get("inference") or {}).items()
+                            if k not in ("messages", "tools", "toolCalls", "toolResults", "completion")
+                        },
+                    }
+                    for event in full
+                ],
+                "limits": [
+                    "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+                    "Subagents are separate supporting observations; tool-less side calls are excluded.",
+                    "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result.",
+                ],
+            }
+            trajectory = Trajectory(
+                messages=messages,
+                context_messages=context,
+                tools=tools,
+                batch=TrajectoryBatch(
+                    source=SOURCE, conversation_id=session_id, batch_id=f"{first_seq}-{last_seq}", revision=revision, scope=SOURCE
+                ),
+                trace_id=f"{SOURCE}:{session_id}:{last_seq}",
+                model=(full[-1].get("inference") or {}).get("model"),
+                metadata={
+                    "status": "candidate",
+                    "creation_mode": CREATION_MODE,
+                    "agent_id": agent,
+                    "session_id": session_id,
+                    "cortex_capture": capture,
+                },
+                outcome=outcome,
+            )
+            if dry_run:
+                trajectories.append(trajectory.model_dump(mode="json"))
+                cache = {t["seq"]: cache[t["seq"]] for t in window[-CONTEXT_TURNS:]}
+                continue
+            assert client is not None
+            client.ensure_namespace(namespace_id)
+            result = client.process_trajectory(trajectory, namespace_id=namespace_id)
+            cursors.set(session_id, max(cursor, last_seq))
+            guidelines.extend(u["id"] for u in result.updates if u.get("type") == "guideline" and u.get("event") in ("ADD", "UPDATE"))
+            cache = {t["seq"]: cache[t["seq"]] for t in window[-CONTEXT_TURNS:]}
+
+        first_seq, last_seq = selected[0]["seq"], selected[-1]["seq"]
         if dry_run:
-            return IngestResult(session_id, "dry-run", len(new), first_seq, last_seq, trajectory=trajectory.model_dump(mode="json"))
-
-        assert client is not None
-        client.ensure_namespace(namespace_id)
-        result = client.process_trajectory(trajectory, namespace_id=namespace_id)
-        cursors.set(session_id, last_seq)
-        guidelines = [u["id"] for u in result.updates if u.get("type") == "guideline" and u.get("event") in ("ADD", "UPDATE")]
+            return IngestResult(session_id, "dry-run", len(new), first_seq, last_seq, trajectory=trajectories[0], trajectories=trajectories)
         logger.info("cortex session %s: learned from seq %s-%s, %d guideline change(s)", session_id, first_seq, last_seq, len(guidelines))
         return IngestResult(session_id, "processed", len(new), first_seq, last_seq, guidelines)
 

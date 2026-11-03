@@ -972,9 +972,16 @@ class TestOutcomePrompt:
     @pytest.mark.parametrize("constrained", [True, False])
     @pytest.mark.parametrize("context_messages", [None, [{"role": "user", "content": "Earlier request"}]])
     def test_without_outcome_prompt_is_unchanged(self, constrained, context_messages):
-        """Pins the default path: callers that pass no outcome get the pre-outcome prompt byte for byte."""
+        """Keep the legacy prompt without updates; expose a new user input after context."""
         self.mock_schema.return_value = constrained
         generate_guidelines(self.MESSAGES, context_messages=context_messages)
+
+        if context_messages:
+            prompt = self._prompt(self.mock_completion)
+            assert "# Observed Inputs and Additional Evidence" in prompt
+            assert self.MESSAGES[0]["content"] in prompt
+            assert "There is also no user feedback" not in prompt
+            return
 
         data = parse_openai_agents_trajectory(self.MESSAGES, context_messages=context_messages)
         expected = Template(_PRE_OUTCOME_TEMPLATE.read_text()).render(

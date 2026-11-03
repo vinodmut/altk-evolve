@@ -19,6 +19,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from altk_evolve.processing import TrajectoryOutcome
+
 logger = logging.getLogger("evolve.api.cortex")
 
 
@@ -54,12 +56,12 @@ def _namespace() -> str:
     return evolve_config.namespace_id
 
 
-def _ingest(session_id: str) -> None:
+def _ingest(session_id: str, *, outcome: TrajectoryOutcome | None = None) -> None:
     from altk_evolve.sync.cortex_sync import CortexSessionClient, default_cursor_store, ingest_session
 
     cortex = CortexSessionClient()
     try:
-        ingest_session(_client(), cortex, session_id, namespace_id=_namespace(), cursors=default_cursor_store())
+        ingest_session(_client(), cortex, session_id, namespace_id=_namespace(), cursors=default_cursor_store(), outcome=outcome)
     except Exception:
         logger.exception("cortex session %s: ingest failed", session_id)
     finally:
@@ -81,6 +83,7 @@ class GuidelinesRequest(BaseModel):
 class IngestRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     agent: str | None = None
+    outcome: TrajectoryOutcome | None = None
 
 
 def _guideline_payload(entity) -> dict[str, Any]:
@@ -114,7 +117,10 @@ def guidelines(request: GuidelinesRequest) -> dict[str, Any]:
 @router.post("/sessions/{session_id}/ingest", status_code=202)
 def ingest(session_id: str, request: IngestRequest | None = None) -> dict[str, Any]:
     logger.info("cortex session %s: idle notification (agent=%s)", session_id, request.agent if request else None)
-    run_in_background(lambda: _ingest(session_id))
+    if request and request.outcome is not None:
+        run_in_background(lambda: _ingest(session_id, outcome=request.outcome))
+    else:
+        run_in_background(lambda: _ingest(session_id))
     return {"session_id": session_id, "accepted": True}
 
 

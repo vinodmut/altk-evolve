@@ -668,7 +668,17 @@ def sync_cortex_cmd(
 
     if dry_run:
         for result in results:
-            print(json.dumps({"session_id": result.session_id, "status": result.status, "trajectory": result.trajectory}, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "session_id": result.session_id,
+                        "status": result.status,
+                        "trajectory": result.trajectory,
+                        "trajectories": result.trajectories,
+                    },
+                    indent=2,
+                )
+            )
         return
     table = Table(title="Cortex Sync Results")
     table.add_column("Session", style="cyan")

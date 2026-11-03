@@ -8,8 +8,9 @@ Extract actionable, relevant guidelines from this trajectory that would help an 
 {% endfor %}{% if omitted_checks %}- ... and {{omitted_checks}} more
 {% endif %}{% endif %}{% if detail %}**Evaluation detail:**
 {{detail}}
-{% endif %}{% else %}**Task Status:** There is no evaluation of the task's trajectory or output against any ground truth. There is also no user feedback to the AI agent. But the trajectory may contain the agent's self-evaluation of whether the task succeeded or failed.
-{% endif %}**Steps Taken:** {{num_steps}}
+{% endif %}{% else %}{% if input_evidence %}**Task Status:** There is no external ground-truth evaluation. User input below may contain corrections or feedback. The agent's self-evaluation is not verified success.
+{% else %}**Task Status:** There is no evaluation of the task's trajectory or output against any ground truth. There is also no user feedback to the AI agent. But the trajectory may contain the agent's self-evaluation of whether the task succeeded or failed.
+{% endif %}{% endif %}**Steps Taken:** {{num_steps}}
 
 {% if supporting_context %}
 # Supporting Conversation History
@@ -17,7 +18,11 @@ Use this history to interpret the new steps below, not as additional steps to le
 {{supporting_context}}
 {% endif %}
 
-# Agent Trajectory
+{% if input_evidence %}# Observed Inputs and Additional Evidence
+Use these constraints, user updates and tool observations to interpret the agent's actions. Message positions preserve their order within this batch. An unpaired tool output is evidence of an observation, not proof of an invented action. Tool definitions describe available capabilities, not executions.
+{{input_evidence}}
+
+{% endif %}# Agent Trajectory
 {{trajectory_summary}}
 
 **IMPORTANT TO REMEMBER:**
