@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cortex + Evolve — manual end-to-end walkthrough</title>
+  <style>
+    :root{--ink:#16243b;--muted:#52647d;--blue:#2456c6;--border:#d8e1ed;--page:#f2f5fa;--ok:#136a48;--amber:#85550a;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--page);line-height:1.65}
+    *{box-sizing:border-box}body{margin:0}a{color:var(--blue);text-underline-offset:3px}header{background:#14284a;color:white;padding:40px max(24px,calc((100vw - 1240px)/2))}header p{max-width:850px;color:#d9e5ff}h1{font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.15;max-width:900px;margin:12px 0 20px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.78rem}.tags{display:flex;flex-wrap:wrap;gap:8px}.tags span{background:#28416b;padding:5px 12px;border-radius:20px;font-size:.82rem}.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:30px;max-width:1280px;margin:auto;padding:28px 20px 65px}aside{position:sticky;top:16px;align-self:start;font-size:.85rem}aside nav{display:grid;gap:4px}aside a{padding:5px 9px;text-decoration:none;border-radius:5px}aside a:hover{background:#e3ebfa}main{min-width:0}.intro,.step,.extra{background:white;border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:22px;scroll-margin-top:20px}h2{font-size:1.35rem;line-height:1.35;margin:0 0 14px}h3{font-size:1rem;margin:22px 0 8px}p{margin:10px 0 14px}ul,ol{padding-left:24px}li{margin:6px 0}.step-head{display:flex;gap:12px;align-items:start}.number{background:#e8efff;color:var(--blue);border-radius:8px;min-width:38px;text-align:center;padding:5px;font-weight:700}.step-title{flex:1}.done{white-space:nowrap;font-size:.8rem;color:var(--muted)}.done input{accent-color:var(--blue);width:16px;height:16px;vertical-align:middle}.step.complete{border-left:5px solid var(--ok)}.see{background:#edf7f1;border-left:4px solid #2a8a60;padding:12px 16px;margin:16px 0}.note{background:#fff6e6;border-left:4px solid #d99b31;padding:12px 16px;margin:16px 0}.see strong,.note strong{display:block;margin-bottom:4px}.codebox{position:relative;margin:12px 0}.codebox button{position:absolute;right:8px;top:8px;background:#fff;border:1px solid #b8c9e4;color:var(--ink);border-radius:5px;padding:5px 10px;cursor:pointer;font-size:.75rem}.codebox pre{padding-top:40px}pre{background:#10213b;color:#e5edf9;border-radius:8px;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:.82rem;tab-size:2;overflow:auto}pre.output{background:#f0f4fa;color:var(--ink);padding-top:16px}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}p code,li code,td code{font-size:.9em;background:#eef2f8;padding:1px 4px;border-radius:3px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid>div{border:1px solid var(--border);border-radius:8px;padding:15px}.muted{color:var(--muted)}table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}th{background:#edf2fb}.scroll{overflow-x:auto}details{margin:16px 0}summary{cursor:pointer;color:var(--blue);font-weight:600}.progress{margin:10px 0 16px;padding:12px;border:1px solid var(--border);border-radius:8px;background:white}progress{width:100%;accent-color:var(--blue)}#reset{background:white;border:1px solid var(--border);padding:6px 10px;border-radius:5px;cursor:pointer;color:var(--muted)}svg{width:100%;height:auto;display:block}.caption{font-size:.86rem;color:var(--muted)}footer{font-size:.82rem;color:var(--muted);margin:25px 4px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0)}
+    @media(max-width:950px){.layout{grid-template-columns:1fr}aside{position:static}aside nav{display:flex;flex-wrap:wrap;gap:4px}aside a{background:white;border:1px solid var(--border);padding:5px 8px}.progress{max-width:400px}.grid{grid-template-columns:1fr}}@media(max-width:600px){header{padding:28px 18px}.layout{padding:18px 10px}.intro,.step,.extra{padding:18px 14px}.step-head{flex-wrap:wrap}.done{margin-left:50px}.codebox pre{font-size:.76rem}td,th{padding:8px;font-size:.82rem}}@media print{aside,.codebox button,.done,#status{display:none}.layout{display:block;padding:0}header{background:white;color:black;padding:0}header p{color:black}.tags span{background:#eee;color:black}.intro,.step,.extra{break-inside:avoid;border:1px solid #ddd}pre{background:#f4f4f4;color:black}details>*{display:block!important}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Hands-on guide · integration checkout f63283f8 · 3 November 2026</div>
+  <h1>Run a task, learn from its trajectory, and run it again with Evolve</h1>
+  <p>Set up an isolated Cortex proxy and Evolve server. Run revenue reconciliation without guidelines, learn a procedure from a separate training task, review and promote the generated guidelines, then rerun the original task in a fresh session.</p>
+  <div class="tags"><span>One terminal · Bash or zsh</span><span>Local synthetic billing data</span><span>Real model calls</span><span>15 manual steps</span></div>
+</header>
+<div class="layout">
+<aside aria-label="Walkthrough navigation">
+  <div class="progress"><strong id="progress-text">0 of 15 steps complete</strong><progress id="progress" max="15" value="0" aria-label="Walkthrough progress"></progress><button id="reset" type="button">Reset checklist</button></div>
+  <nav>
+    <a href="#overview">What you will build</a><a href="#step-1">1. Prerequisites</a><a href="#step-2">2. Paths and workspace</a><a href="#step-3">3. Install Evolve</a><a href="#step-4">4. Build Cortex</a><a href="#step-5">5. CA and credentials</a><a href="#step-6">6. Define the helper</a><a href="#step-7">7. Preflight</a><a href="#step-8">8. Start services</a><a href="#step-9">9. Baseline task</a><a href="#step-10">10. Training task</a><a href="#step-11">11. Generate guidelines</a><a href="#step-12">12. Review and promote</a><a href="#step-13">13. Guided task</a><a href="#step-14">14. Compare and verify</a><a href="#step-15">15. Stop services</a><a href="#full-comparison">Optional: all six cases</a><a href="#troubleshooting">Troubleshooting</a><a href="#sources">Source links</a>
+  </nav>
+</aside>
+<main>
+<section class="intro" id="overview">
+  <h2>What counts as a successful walkthrough?</h2>
+  <p>You should be able to inspect a real captured conversation, see guidelines generated from that conversation, choose which guidelines to serve, and prove that Cortex injected those serving IDs into the second task attempt. Separately, the grader tells you whether the agent actually completed the task.</p>
+  <div class="grid"><div><strong>Task you compare</strong><p>Orchid Analytics, June 2026 production revenue: <code>ledger_b</code>. The before and after runs have identical task data and prompts, separate directories, and fresh session IDs.</p></div><div><strong>Task you learn from</strong><p>Northwind Studio, April 2026 production revenue: <code>ledger_train</code>. Only this training conversation goes into guideline generation.</p></div></div>
+  <svg viewBox="0 0 900 295" role="img" aria-labelledby="architecture-title architecture-desc">
+    <title id="architecture-title">Cortex and Evolve demo architecture</title><desc id="architecture-desc">Claude Code sends inference requests through Cortex, then through a gateway compatibility bridge to the model. Cortex records the conversation. Manual Evolve reflection creates candidate guidelines, the operator promotes selected candidates, and Cortex retrieves the reviewed guidelines for the next agent session.</desc>
+    <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#53719c"/></marker></defs>
+    <g fill="#edf3ff" stroke="#adbfdb"><rect x="15" y="35" width="165" height="75" rx="10"/><rect x="245" y="35" width="165" height="75" rx="10"/><rect x="475" y="35" width="165" height="75" rx="10"/><rect x="705" y="35" width="180" height="75" rx="10"/></g>
+    <g text-anchor="middle" fill="#16243b" font-family="system-ui,sans-serif" font-size="16"><text x="97" y="66">Claude Code</text><text x="97" y="90" font-size="12">Task + local Bash tools</text><text x="327" y="66">Cortex</text><text x="327" y="90" font-size="12">Capture + injection</text><text x="557" y="66">Gateway bridge</text><text x="557" y="90" font-size="12">Preserve all system text</text><text x="795" y="66">Model gateway</text><text x="795" y="90" font-size="12">GPT-4.1 in the recorded run</text></g>
+    <g stroke="#53719c" stroke-width="2" fill="none" marker-end="url(#arrow)"><path d="M180 72 H237"/><path d="M410 72 H467"/><path d="M640 72 H697"/><path d="M327 110 V168"/></g>
+    <g fill="#edf7f1" stroke="#abcdbb"><rect x="210" y="180" width="230" height="76" rx="10"/><rect x="505" y="180" width="230" height="76" rx="10"/></g>
+    <g text-anchor="middle" fill="#16243b" font-family="system-ui,sans-serif" font-size="16"><text x="325" y="212">Evolve reflection</text><text x="325" y="236" font-size="12">Training-only candidates</text><text x="620" y="212">Review + promotion</text><text x="620" y="236" font-size="12">Isolated serving namespace</text></g>
+    <g stroke="#53719c" stroke-width="2" fill="none" marker-end="url(#arrow)"><path d="M440 218 H497"/><path d="M735 218 H863 V140 H398 V117"/></g><text x="682" y="155" fill="#52647d" font-family="system-ui,sans-serif" font-size="12">Guidelines retrieved for the next task</text>
+  </svg>
+  <p class="caption">You issue each command manually. The repository’s <code>workflow</code> runner handles fresh fixtures, service processes, session IDs, and independent grading. You inspect the configuration and artifacts at every boundary.</p>
+  <p>The latest recorded six-case run passed <strong>4/6 with Evolve versus 2/6 without</strong>. Orchid changed from an incorrect report in 33 turns to an exact report in 16. Your fresh model responses, guideline IDs, and pass/fail outcomes can differ. A baseline pass or an empty guideline set is a valid observation.</p>
+  <p>Plan for three agent invocations plus reflection and retrieval. Each invocation has a 240-second timeout and a $1 CLI budget cap; learning and retrieval calls are additional. No Docker, Milvus, Langfuse, or everyday Cortex service installation is needed for this filesystem-backed demo.</p>
+</section>
+
+<section class="step" id="step-1"><div class="step-head"><span class="number">1</span><h2 class="step-title">Gather the prerequisites</h2><label class="done"><input type="checkbox" data-step="1"> Done</label></div>
+  <p>You need this <strong>Evolve integration checkout</strong>, a matching <strong>Cortex checkout with the Evolve plugin</strong>, <code>uv</code>, <code>git</code>, <code>make</code>, <code>go</code>, a C/C++ compiler for the Cortex build, <code>openssl</code>, <code>curl</code>, <code>jq</code>, and a recent <code>claude</code> CLI.</p>
+  <p>The Evolve checkout must include <code>f63283f8</code> or its changes. The tested Cortex integration branch is <code>evolve-plugin</code>, with upstream merged at <code>4262d0a8</code>. Obtain these checkouts or source archives from the project maintainer; these local commits are not promised to exist on a public remote.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>uv --version
+git --version
+make --version
+go version
+openssl version
+jq --version
+claude --version</code></pre></div>
+  <div class="see"><strong>You should see</strong>Version output from every command. Evolve requires Python 3.12 or later; <code>uv sync</code> creates its managed environment. Use the Go toolchain required by the Cortex checkout’s <code>cmd/cortex/go.mod</code> (1.26.10 in the checked snapshot). The recorded rerun used Claude Code 2.1.287.</div>
+  <p>If <code>uv</code> is missing, install it from <a href="https://docs.astral.sh/uv/getting-started/installation/">the uv installation guide</a>. Install the Claude Code CLI using <a href="https://code.claude.com/docs/en/setup">its setup instructions</a>. On macOS, the Cortex build may require the Xcode Command Line Tools; on Linux, install your distribution’s compiler/build tools.</p>
+  <div class="note"><strong>Gateway requirement</strong>This runner expects one gateway and credential that support Anthropic <code>/v1/messages</code>, OpenAI-compatible <code>/v1/chat/completions</code>, and a model catalog at <code>/v1/models</code> or <code>/models</code>. Its preflight selects a supported GPT-4.1 model or <code>claude-sonnet-4-5</code>. A direct endpoint supporting only one of those APIs needs runner adaptation before using this guide.</div>
+</section>
+
+<section class="step" id="step-2"><div class="step-head"><span class="number">2</span><h2 class="step-title">Set paths and create a private demo workspace</h2><label class="done"><input type="checkbox" data-step="2"> Done</label></div>
+  <p>Open Bash or zsh. Replace the two checkout paths below. Keep using this terminal so the exported paths and helper function remain available.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>export DEMO_EVOLVE_REPO="/absolute/path/to/altk-evolve.rossocortex"
+export DEMO_CORTEX_REPO="/absolute/path/to/cortex"
+export DEMO_ROOT="$HOME/.local/state/cortex-evolve-manual"
+export DEMO_CORTEX_BIN="$DEMO_CORTEX_REPO/bin/cortex"
+export DEMO_CA_DIR="$DEMO_ROOT/ca"
+export DEMO_CREDENTIALS="$DEMO_ROOT/gateway.env"
+export DEMO_RESULTS="$DEMO_ROOT/run-$(date -u +%Y%m%dT%H%M%SZ)"
+
+mkdir -p "$DEMO_ROOT"
+chmod 700 "$DEMO_ROOT"
+cd "$DEMO_EVOLVE_REPO"
+test -f experiments/cortex_workflow_learning/run.py
+printf 'Results will be saved in: %s\n' "$DEMO_RESULTS"</code></pre></div>
+  <div class="see"><strong>You should see</strong>The final line prints a new timestamped results path. The <code>test</code> command succeeds silently. This directory will hold all trial files and isolated Evolve storage. Use a new <code>DEMO_RESULTS</code> for each complete rerun.</div>
+  <p>You can instead point <code>DEMO_CREDENTIALS</code> to an existing compatible environment file, and <code>DEMO_CA_DIR</code> to an existing Cortex CA. The helper in step 6 overrides the runner’s developer-specific defaults without editing source files.</p>
+</section>
+
+<section class="step" id="step-3"><div class="step-head"><span class="number">3</span><h2 class="step-title">Install Evolve and its demo dependencies</h2><label class="done"><input type="checkbox" data-step="3"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>cd "$DEMO_EVOLVE_REPO"
+uv sync
+uv run --no-sync evolve-mcp --help
+uv run --no-sync python -m experiments.cortex_workflow_learning.run --help</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>uv</code> resolves/installs the locked environment. The MCP help includes transport and port options. The workflow help lists <code>preflight</code>, <code>start</code>, <code>trial</code>, <code>learn</code>, <code>candidates</code>, <code>promote</code>, <code>warm</code>, <code>verify</code>, and <code>stop</code>.</div>
+  <p>The demo sets <code>EVOLVE_BACKEND=filesystem</code> and puts entities under <code>$DEMO_RESULTS/runtime/data</code>, with bookkeeping at <code>runtime/entities.sqlite.db</code>. It supplies model settings from your gateway file. You do not need to edit the repository’s <code>.env</code> for this walkthrough.</p>
+</section>
+
+<section class="step" id="step-4"><div class="step-head"><span class="number">4</span><h2 class="step-title">Build Cortex with the Evolve plugin</h2><label class="done"><input type="checkbox" data-step="4"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>git -C "$DEMO_CORTEX_REPO" log -1 --oneline
+make -C "$DEMO_CORTEX_REPO" cortex PROFILE=full
+test -x "$DEMO_CORTEX_BIN"</code></pre></div>
+  <div class="see"><strong>You should see</strong>The tested integration checkout reports merge <code>4262d0a8</code>, or your maintainer-provided successor. The build prints its <code>full</code> profile tag list, which must include <code>evolve</code>, and creates <code>bin/cortex</code>. The executable check succeeds silently.</div>
+  <p><code>lite</code> and <code>local</code> profiles do not include this plugin in the checked integration source. If you already have a matching full-profile binary, set <code>DEMO_CORTEX_BIN</code> to it and skip rebuilding. Step 8 confirms that the running pipeline actually contains <code>evolve</code>.</p>
+</section>
+
+<section class="step" id="step-5"><div class="step-head"><span class="number">5</span><h2 class="step-title">Prepare the Cortex CA and gateway credentials</h2><label class="done"><input type="checkbox" data-step="5"> Done</label></div>
+  <p>Cortex requires a signing certificate, private key, and trust certificate named <code>tls.crt</code>, <code>tls.key</code>, and <code>ca.crt</code>. If you chose an existing Cortex CA, check that all three exist and skip the generation block.</p>
+  <p><strong>For a new demo CA directory only:</strong></p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>mkdir -p "$DEMO_CA_DIR"
+chmod 700 "$DEMO_CA_DIR"
+if [ -e "$DEMO_CA_DIR/tls.key" ] || [ -e "$DEMO_CA_DIR/tls.crt" ]; then
+  printf 'A CA already exists here; reuse it or choose a new DEMO_CA_DIR.\n'
+else
+  cat &gt; "$DEMO_CA_DIR/ca.cnf" &lt;&lt;'CA_CONFIG'
+[req]
+prompt = no
+distinguished_name = dn
+x509_extensions = v3_ca
+[dn]
+CN = Cortex Evolve Manual Demo CA
+[v3_ca]
+basicConstraints = critical,CA:TRUE
+keyUsage = critical,keyCertSign,cRLSign
+CA_CONFIG
+  openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 30 \
+    -config "$DEMO_CA_DIR/ca.cnf" \
+    -keyout "$DEMO_CA_DIR/tls.key" -out "$DEMO_CA_DIR/tls.crt"
+  cp "$DEMO_CA_DIR/tls.crt" "$DEMO_CA_DIR/ca.crt"
+  chmod 600 "$DEMO_CA_DIR/tls.key"
+fi
+test -f "$DEMO_CA_DIR/tls.key"
+test -f "$DEMO_CA_DIR/tls.crt"
+openssl x509 -in "$DEMO_CA_DIR/ca.crt" -noout -subject</code></pre></div>
+  <div class="see"><strong>You should see</strong>OpenSSL may print key-generation progress, then the certificate subject. A newly generated CA has subject <code>Cortex Evolve Manual Demo CA</code>. An existing CA has its own subject. The runner configures the agent’s <code>NODE_EXTRA_CA_CERTS</code> for this CA; installing it into the OS trust store is unnecessary for this demo.</div>
+  <p>Create or edit <code>$DEMO_CREDENTIALS</code> in your editor with the following two entries. Replace both placeholders with your gateway’s values. The base URL should be the gateway root, without a trailing <code>/v1</code>.</p>
+  <pre class="output"><code>ANTHROPIC_BASE_URL=https://your-compatible-gateway.example
+ANTHROPIC_API_KEY=REPLACE_WITH_YOUR_GATEWAY_KEY</code></pre>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>chmod 600 "$DEMO_CREDENTIALS"
+test -s "$DEMO_CREDENTIALS"</code></pre></div>
+  <div class="see"><strong>You should see</strong>Both commands succeed silently. The same key is used for the gateway’s Anthropic requests and Evolve’s OpenAI-compatible requests. <code>ANTHROPIC_AUTH_TOKEN</code> is also accepted in the file and converted to the API-key environment used by the bare agent.</div>
+  <p>Keep the credential file and CA private key in the private demo workspace. The runner reads credentials into subprocess environments; you do not need to print the file or paste a key into any command below.</p>
+</section>
+
+<section class="step" id="step-6"><div class="step-head"><span class="number">6</span><h2 class="step-title">Define the portable workflow helper</h2><label class="done"><input type="checkbox" data-step="6"> Done</label></div>
+  <p>Paste this whole function into the same terminal. It selects your paths, delegates each requested action to the existing workflow CLI, and keeps the repository working directory correct.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="workflow-helper"><code>workflow() {
+  (
+    cd "$DEMO_EVOLVE_REPO" || exit 1
+    env UV_CACHE_DIR="$DEMO_ROOT/uv-cache" \
+      uv run --no-sync python -u - "$@" &lt;&lt;'WORKFLOW_PY'
+import os
+import sys
+from pathlib import Path
+from experiments.cortex_learning_demo import run as driver
+from experiments.cortex_workflow_learning import run
+
+driver.CORTEX = Path(os.environ["DEMO_CORTEX_BIN"]).expanduser().resolve()
+driver.CA_DIR = Path(os.environ["DEMO_CA_DIR"]).expanduser().resolve()
+driver.CREDENTIALS = Path(os.environ["DEMO_CREDENTIALS"]).expanduser().resolve()
+sys.argv = [
+    "workflow", "--artifacts-dir", os.environ["DEMO_RESULTS"], *sys.argv[1:]
+]
+run.main()
+WORKFLOW_PY
+  )
+}
+
+workflow --help</code></pre></div>
+  <div class="see"><strong>You should see</strong>The same workflow help as step 3. This validates the function and argument forwarding without starting services or making model calls.</div>
+  <p>Run all remaining <code>workflow</code> commands through this function. An ordinary <code>evolve</code> command in another terminal may use a different data directory or namespace unless you explicitly reproduce these demo settings.</p>
+</section>
+
+<section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Check the ports and gateway</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
+  <p>The demo uses fixed ports. Run this check before starting anything; another demo or local service must not occupy them.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>uv run --no-sync python - &lt;&lt;'PORTS_PY'
+import socket
+
+ports = [47800, 47801, 47802, 47803, 47804, 18201, 18202]
+busy = []
+for port in ports:
+    with socket.socket() as sock:
+        sock.settimeout(0.5)
+        if sock.connect_ex(("127.0.0.1", port)) == 0:
+            busy.append(port)
+print("Busy ports:", busy)
+if busy:
+    raise SystemExit("Resolve these port conflicts before continuing.")
+PORTS_PY
+
+workflow preflight</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>Busy ports: []</code>, followed by a JSON preflight report. The recorded run selected <code>"model": "Azure/gpt-4.1"</code>. A supported alternative may be selected from your catalog. Preflight creates <code>$DEMO_RESULTS/state.json</code>; it does not run the task.</div>
+  <pre class="output"><code>{
+  "model": "Azure/gpt-4.1",
+  "task": "Reconcile monthly production-account revenue from the local billing ledger according to its accounting contract.",
+  "held_out_cases": ["...", "ledger_a", "ledger_b", "ledger_c", "ledger_d", "ledger_e", "ledger_f"]
+}</code></pre>
+  <p>The catalog also includes export/refund fixtures; this guide uses only ledger tasks. If preflight fails, inspect the binary/CA paths, gateway reachability, API compatibility, credential validity, and supported model names. If it reports an existing experiment, choose a new results directory rather than overwriting the old state.</p>
+</section>
+
+<section class="step" id="step-8"><div class="step-head"><span class="number">8</span><h2 class="step-title">Start Evolve, Cortex, and the gateway bridge</h2><label class="done"><input type="checkbox" data-step="8"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow start
+workflow bridge-start
+workflow injection-off
+
+curl --noproxy '*' --fail --silent http://127.0.0.1:47801/v1/pipeline \
+  | jq '.outbound | map(.name)'
+curl --noproxy '*' --fail --silent http://127.0.0.1:18202/openapi.json \
+  | jq '.paths | keys'
+cat "$DEMO_RESULTS/runtime/cortex.yaml"</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>start</code> reports the <code>evolve</code> and <code>cortex</code> services ready. The pipeline contains <code>inference-parser</code>, <code>mcp-parser</code>, <code>a2a-parser</code>, and <code>evolve</code>. The bridge’s OpenAPI paths include <code>/v1/messages</code>. Injection is explicitly off and automatic learning remains off.</div>
+  <pre class="output"><code>{"started": ["evolve", "cortex"], "pipeline": ["inference-parser", "mcp-parser", "a2a-parser", "evolve"]}
+{"started": "bridge", "port": 18202}
+{"inject": false, "learn": false}</code></pre>
+  <div class="scroll"><table><thead><tr><th>Piece</th><th>Address / file</th><th>What to inspect</th></tr></thead><tbody><tr><td>Cortex forward proxy</td><td><code>127.0.0.1:47800</code></td><td>Agent inference traffic passes through it.</td></tr><tr><td>Cortex session API</td><td><code>127.0.0.1:47801</code></td><td>Captured sessions and pipeline status.</td></tr><tr><td>Cortex other listeners</td><td><code>47802–47804</code></td><td>Stats, configured transparent address, and health.</td></tr><tr><td>Evolve MCP</td><td><code>http://127.0.0.1:18201/sse</code></td><td>Guideline retrieval used by Cortex.</td></tr><tr><td>Compatibility bridge</td><td><code>http://127.0.0.1:18202</code></td><td>Flattens all Anthropic system text blocks after Cortex.</td></tr><tr><td>Storage / logs</td><td><code>$DEMO_RESULTS/runtime/</code></td><td><code>data/</code>, SQLite, <code>evolve.log</code>, <code>cortex.log</code>, <code>bridge.log</code>.</td></tr></tbody></table></div>
+  <p>In the YAML, find <code>serve_namespace: workflow-reviewed</code>, <code>learn_namespace: workflow-candidates</code>, <code>learn: false</code>, and <code>inject: false</code>. The profile name <code>workflow-demo</code> is passed in the config; manual <code>learn</code> uses Evolve’s standard processing defaults with the mode you select.</p>
+  <details><summary>What the start command runs underneath</summary><pre class="output"><code>Evolve: uv run --no-sync evolve-mcp --transport sse --port 18201
+Cortex: YOUR_CORTEX_BINARY --config YOUR_RESULTS/runtime/cortex.yaml
+Bridge: uv run --no-sync python -m experiments.cortex_workflow_learning.bridge</code></pre><p>These run as isolated background process groups with the demo’s model and storage environment. The helper records their process IDs for cleanup. You do not also start duplicate foreground services.</p></details>
+  <div class="note"><strong>Keep the bridge in both arms</strong>The configured gateway previously ignored later system-array blocks, including Cortex’s appended guidelines. The bridge preserves all those text blocks in a single string. Every trial below uses <code>--via-bridge</code> so that transport remains the same before and after.</div>
+</section>
+
+<section class="step" id="step-9"><div class="step-head"><span class="number">9</span><h2 class="step-title">Run Orchid Analytics without guidelines</h2><label class="done"><input type="checkbox" data-step="9"> Done</label></div>
+  <p>The agent must read the billing CLI’s help and accounting contract, export the raw ledger, compute June revenue for the production account, save <code>report.json</code>, and return the same JSON. The ledger includes stale replays, corrections, voided/moved events, sandbox rows, UTC offsets, and positive-magnitude refunds in two currencies.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow trial --label baseline-orchid --case ledger_b --arm baseline --via-bridge
+
+jq '{passed, checks, answer, expected, num_turns, service_errors, injected_ids, session_id}' \
+  "$DEMO_RESULTS/trials/baseline-orchid/initial.metrics.json"
+jq -r '.bash_commands[]' \
+  "$DEMO_RESULTS/trials/baseline-orchid/initial.metrics.json"</code></pre></div>
+  <div class="see"><strong>You should see</strong>After up to four minutes, the runner prints the task’s answer, independent expected answer, checks, and metrics. <code>injected_ids</code> must be <code>[]</code>. <code>passed</code> may be true or false. The raw conversation and tool results are saved in <code>trials/baseline-orchid/initial.jsonl</code>.</div>
+  <p>The independently correct answer is below. It is used by the grader; do not add it to the agent prompt or repair the agent’s output manually.</p>
+  <pre class="output"><code>{
+  "totals_minor": {"USD": 12828, "EUR": 4472},
+  "included_event_ids": [
+    "evt-3-corrected", "evt-3-eur", "evt-3-eur-refund",
+    "evt-3-refund", "evt-3-utc-in"
+  ]
+}</code></pre>
+  <p>Open the trial directory. You should find the copied service, fixture data, metrics, raw CLI stream, and any exported ledger/report files the agent produced. A missing or malformed <code>report.json</code> is a task failure even if the final answer looks correct.</p>
+  <div class="note"><strong>Recorded result, not a required fresh outcome</strong>In the committed rerun, Orchid’s baseline returned USD 255,604 / EUR 4,678 minor units in 33 turns, with two rejected service calls. Your baseline can succeed; keep whatever actually happened.</div>
+</section>
+
+<section class="step" id="step-10"><div class="step-head"><span class="number">10</span><h2 class="step-title">Run the separate Northwind training task</h2><label class="done"><input type="checkbox" data-step="10"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow trial --label train-ledger --case ledger_train --arm training --via-bridge
+
+jq '{passed, checks, num_turns, service_errors, injected_ids, session_id}' \
+  "$DEMO_RESULTS/trials/train-ledger/initial.metrics.json"
+
+export DEMO_TRAIN_SESSION="$(jq -r '.session_id' "$DEMO_RESULTS/trials/train-ledger/initial.metrics.json")"
+curl --noproxy '*' --fail --silent \
+  "http://127.0.0.1:47801/v1/sessions/$DEMO_TRAIN_SESSION" \
+  &gt; "$DEMO_RESULTS/training-cortex-session.json"
+jq '{events: (.events | length)}' "$DEMO_RESULTS/training-cortex-session.json"</code></pre></div>
+  <div class="see"><strong>You should see</strong>A different session ID, no injected guidelines, and a nonempty Cortex event list. The recorded training run passed in 15 turns with two rejected service calls. Fresh correctness and error counts may differ. Northwind’s correct totals are USD 12,176 and EUR 4,224 minor units.</div>
+  <p><strong>Capture is not learning:</strong> the raw conversation is now available to Cortex, but no automatic idle learning runs. You explicitly generate guidelines in step 11. The baseline Orchid conversation will not be used for learning.</p>
+  <details><summary>If training failed and you want to study a real recovery</summary><p>Optionally send the actual independent checks back to the same training agent before step 11:</p><div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow feedback --label train-ledger --via-bridge
+jq '{passed, checks, session_id}' "$DEMO_RESULTS/trials/train-ledger/feedback.metrics.json"</code></pre></div><p>You should see a resumed session with the same ID and a new <code>feedback.metrics.json</code>. Learning then uses the latest training assessment and captured history. Initial failures remain recorded. Apply feedback only to training, and only describe failures the checks actually observed.</p></details>
+</section>
+
+<section class="step" id="step-11"><div class="step-head"><span class="number">11</span><h2 class="step-title">Generate guidelines and inspect what Evolve received</h2><label class="done"><input type="checkbox" data-step="11"> Done</label></div>
+  <p>Run both analyses used in the fresh recorded experiment. Standard reflection asks how to avoid rejected service calls; correctness stays a separate reported criterion. Fast consistency extracts lessons from the recorded procedure.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow learn --label train-ledger --mode standard --objective fewer-errors
+workflow learn --label train-ledger --mode consistency --objective correctness
+workflow candidates
+
+jq 'map({id, content, method: .metadata.generation_method, source_session: .metadata.session_id, rationale: .metadata.rationale})' \
+  "$DEMO_RESULTS/candidates.json"
+
+jq '{batches: length, tool_calls: ([.[].messages[] | .tool_calls[]?] | length), tool_results: ([.[].messages[] | select(.role == "tool")] | length)}' \
+  "$DEMO_RESULTS/learning-train-ledger-standard-fewer-errors.inputs.json"
+jq -r '.messages[] | .content' \
+  "$DEMO_RESULTS/learning-train-ledger-standard-fewer-errors.prompts.jsonl" \
+  &gt; "$DEMO_RESULTS/standard-learning-prompt.txt"</code></pre></div>
+  <div class="see"><strong>You should see</strong>Each analysis prints updates, quality/correctness results, batch recording counts, and any skipped processors. Candidates have IDs, content, rationale, generation method, and the Northwind source session. The recorded run captured one batch with 14 calls and 14 tool results and generated four candidates across the two analyses. Counts and IDs can differ in your run.</div>
+  <p>Open <code>standard-learning-prompt.txt</code>. Find the original task, CLI/tool definitions, accounting contract, recorded errors, and evaluator detail. The <code>.inputs.json</code> files retain reconstructed evidence; <code>.prompts.jsonl</code> records actual guideline-generation requests. Readable <code>.conversation.txt</code> files are conversation views, not complete prompts.</p>
+  <div class="note"><strong>If there are no candidates</strong>An empty update list is valid. Successful, low-error training can yield no standard lessons; fast consistency may still generate some. If both analyses return no candidates, preserve that observation and run <code>workflow stop</code> to clean up the services. You can inspect the <a href="artifacts-fidelity-95c177f6-20261103T161649Z/candidates.json">previously generated candidates</a> and <a href="artifacts-fidelity-95c177f6-20261103T161649Z/REPORT.html">recorded report</a> to understand the successful cycle.</div>
+  <p>Analysis revisions include the objective and actual outcome, so switching modes/objectives does not accidentally deduplicate the second analysis. Repeating an identical analysis can legitimately show skipped processors. Fast consistency currently omits explicit evaluator feedback from its generation prompt; standard reflection includes it. Neither path sends unlimited prompt text: excerpts remain bounded.</p>
+</section>
+
+<section class="step" id="step-12"><div class="step-head"><span class="number">12</span><h2 class="step-title">Review, promote, and preview the serving guidelines</h2><label class="done"><input type="checkbox" data-step="12"> Done</label></div>
+  <p>Review the fresh candidate content and rationale. Prefer a reusable procedure supported by Northwind’s actual evidence, rather than copied customer IDs or answers. Select candidates from training only. Keep this choice fixed for the guided run.</p>
+  <div class="scroll"><table><thead><tr><th>Candidate in the recorded run</th><th>Lesson</th><th>Decision</th></tr></thead><tbody><tr><td>1</td><td>Inspect CLI help before unfamiliar commands or arguments.</td><td>Selected: supported by rejected invocations.</td></tr><tr><td>2</td><td>Keep the highest revision per event ID before applying filters.</td><td>Selected: the accounting contract and successful code support it.</td></tr><tr><td>3</td><td>Recover precisely from coding errors.</td><td>Excluded: more generic than the reconciliation procedure.</td></tr><tr><td>4</td><td>Apply the contract’s required filters before aggregation.</td><td>Selected: complements revision selection.</td></tr></tbody></table></div>
+  <p><strong>Replace the example IDs below with the IDs you actually reviewed.</strong> Run promotion once for the final selection.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>DEMO_APPROVED_IDS=(1 2 4)
+workflow promote --ids "${DEMO_APPROVED_IDS[@]}"
+workflow warm
+jq '.promoted' "$DEMO_RESULTS/state.json"
+jq . "$DEMO_RESULTS/retrieval-warmup.json"</code></pre></div>
+  <div class="see"><strong>You should see</strong>Promotion returns each <strong>serving ID</strong>, its original <code>candidate_id</code>, and unchanged content. Warmup retrieves the selected text over Evolve MCP, with <code>entity_ids</code>, revisions, and namespace <code>workflow-reviewed</code>.</div>
+  <pre class="output"><code>Promotion mapping in the recorded run:
+candidate 1 → serving ID 1
+candidate 2 → serving ID 2
+candidate 4 → serving ID 3
+
+Warmup fields:
+{"entity_ids": ["3", "1", "2"], "namespace_id": "workflow-reviewed", "text": "...selected guideline text..."}</code></pre>
+  <p>Promotion here <strong>copies</strong> selected candidates into the isolated serving namespace with active status. Originals remain in <code>workflow-candidates</code> for provenance. Candidate IDs and serving IDs can differ. The next step checks serving IDs, not the numbers you supplied to <code>--ids</code>.</p>
+  <div class="note"><strong>Stop if warmup is empty</strong>Check the namespace and promotion mapping before a guided trial. There must be retrievable serving text. Warmup is a preview of retrieval; it does not by itself prove injection into an agent request.</div>
+</section>
+
+<section class="step" id="step-13"><div class="step-head"><span class="number">13</span><h2 class="step-title">Rerun Orchid Analytics with the guidelines</h2><label class="done"><input type="checkbox" data-step="13"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow injection-on
+workflow trial --label evolve-orchid --case ledger_b --arm evolve --via-bridge
+
+jq '{passed, checks, answer, num_turns, service_errors, injected_ids, session_id, first_request: .evidence[0].evolve}' \
+  "$DEMO_RESULTS/trials/evolve-orchid/initial.metrics.json"</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>{"inject": true, "learn": false}</code>, then a new task result. The session ID differs from baseline. Its first request should report <code>injected: true</code>, with the selected serving IDs and Northwind source attribution. <code>injected_ids</code> must be nonempty and match your promotion. In the recorded run, these were IDs 1, 2, and 3.</div>
+  <pre class="output"><code>{
+  "passed": true,
+  "checks": {"currency_totals": true, "exact_event_ids": true, "saved_report": true},
+  "num_turns": 16,
+  "service_errors": 2,
+  "injected_ids": ["1", "2", "3"],
+  "first_request": {"injected": true, "ids": ["1", "2", "3"], "sources": ["...Northwind training attribution..."]}
+}</code></pre>
+  <p>The JSON above is a condensed <strong>recorded example</strong>, not a promise about a fresh model run. The task may still fail even when all guidelines are present. Successful injection and correct execution are separate checks.</p>
+  <p>This is a fresh directory containing a fresh copy of the same ledger fixture. It does not reuse baseline output files or resume baseline’s conversation. The model, task prompt, CLI tool, gateway bridge, timeout, and budget remain the same.</p>
+</section>
+
+<section class="step" id="step-14"><div class="step-head"><span class="number">14</span><h2 class="step-title">Compare answers, inspect trajectories, and regrade</h2><label class="done"><input type="checkbox" data-step="14"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow summary
+workflow verify
+
+jq -s 'map({label, passed, checks, num_turns, service_errors, injected_ids, timed_out})' \
+  "$DEMO_RESULTS/trials/baseline-orchid/initial.metrics.json" \
+  "$DEMO_RESULTS/trials/evolve-orchid/initial.metrics.json"
+
+jq -r '.bash_commands[]' "$DEMO_RESULTS/trials/baseline-orchid/initial.metrics.json"
+jq -r '.bash_commands[]' "$DEMO_RESULTS/trials/evolve-orchid/initial.metrics.json"
+jq -r 'select(.type == "user") | .message.content[]? | select(.type == "tool_result") | .content' \
+  "$DEMO_RESULTS/trials/evolve-orchid/initial.jsonl"</code></pre></div>
+  <div class="see"><strong>You should see</strong>Summary reports one evaluation trial per arm for the ledger family. Verification reports <code>{"regraded": 2, "all_match": true}</code> when both saved grades reproduce, including saved failures. The remaining commands show the actual before/after Bash commands and guided tool outputs.</div>
+  <div class="note"><strong>What “all_match” means</strong>It means the saved answers/files regrade to the previously recorded result. It does not mean both tasks passed. A task pass requires exact currency totals, exact sorted event IDs, and the independently correct saved <code>report.json</code>.</div>
+  <p>For a correct guided run, inspect <code>trials/evolve-orchid/report.json</code> and compare it with the grader’s <code>expected</code>. Review calls for maximum-revision selection before filtering, UTC-aware timestamps, refund subtraction, and separate currency totals. Record any failures or extra work as well as gains.</p>
+  <div class="scroll"><table><thead><tr><th>Measure</th><th>Recorded Orchid baseline</th><th>Recorded Orchid with Evolve</th></tr></thead><tbody><tr><td>Correct result and saved report</td><td>Fail</td><td>Pass</td></tr><tr><td>Agent turns</td><td>33</td><td>16</td></tr><tr><td>Rejected service calls</td><td>2</td><td>2</td></tr><tr><td>Elapsed seconds</td><td>128.05</td><td>51.83</td></tr></tbody></table></div>
+  <p>Rejected service-call counts include billing CLI/API errors, and exclude help-only invocations and other Bash errors. Agent turns include help and other agent work. The single manual pair is a demonstration; the <a href="artifacts-fidelity-95c177f6-20261103T161649Z/REPORT.html">full recorded comparison</a> includes three paired wins, one regression, one shared failure, and one shared pass.</p>
+</section>
+
+<section class="step" id="step-15"><div class="step-head"><span class="number">15</span><h2 class="step-title">Stop the isolated services and keep the evidence</h2><label class="done"><input type="checkbox" data-step="15"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>workflow stop
+workflow verify
+printf 'Saved evidence: %s\n' "$DEMO_RESULTS"</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>Stopped only the processes started by this experiment</code>. Verification still works after shutdown because it reads local artifacts and needs no model or services. All results remain in your demo directory.</div>
+  <p>The stop command signals the process groups recorded in this run’s state. It does not erase evidence. To start a new complete cycle, set a fresh <code>DEMO_RESULTS</code>, then run preflight and startup again. The driver retains the previous service records after stopping, so <code>start</code> on the same state refuses a restart.</p>
+  <p>If startup failed partway through, inspect <code>runtime/evolve.log</code>, <code>runtime/cortex.log</code>, and <code>runtime/bridge.log</code>, call <code>workflow stop</code> for that failed run, then choose a fresh results directory before retrying.</p>
+</section>
+
+<section class="extra" id="full-comparison"><h2>Optional: reproduce the full six-case comparison</h2>
+  <p>Use this sequence <strong>after stopping the single-pair demo</strong>. It creates a separate run, learns only from Northwind, and freezes the selected guidelines before any of its twelve evaluation trials. Do not run <code>compare</code> in the already-used single-pair directory: it refuses a predeclared comparison once evaluation trials exist.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>export DEMO_RESULTS="$DEMO_ROOT/comparison-$(date -u +%Y%m%dT%H%M%SZ)"
+workflow preflight
+workflow start
+workflow bridge-start
+workflow injection-off
+workflow trial --label train-ledger --case ledger_train --arm training --via-bridge
+workflow learn --label train-ledger --mode standard --objective fewer-errors
+workflow learn --label train-ledger --mode consistency --objective correctness
+workflow candidates</code></pre></div>
+  <p>Review the fresh candidate IDs again. Promote only your new selection; previous numeric IDs do not carry over.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code># Replace these example IDs with this new run's reviewed candidate IDs.
+DEMO_APPROVED_IDS=(1 2 4)
+workflow promote --ids "${DEMO_APPROVED_IDS[@]}"
+workflow warm
+workflow compare --cases ledger_a ledger_b ledger_c ledger_d ledger_e ledger_f
+workflow verify
+workflow stop</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>comparison-plan.json</code> records six cases, selected guideline content, and alternating arm order. Compare runs both arms through the bridge, disables automatic learning, retains timeouts/failures, and writes <code>summary.json</code>. Verification should report twelve regraded trials. The committed rerun observed baseline 2/6 and Evolve 4/6, with 127 versus 102 turns and 16 versus 9 rejected service calls.</div>
+  <p>If <code>compare</code> is interrupted, inspect its output and artifacts. Rerunning it with the same cases and frozen guidelines resumes already recorded labels; a partially created trial directory without metrics needs inspection rather than silent deletion. Do not change selection or learn from evaluation failures during a frozen comparison.</p>
+</section>
+
+<section class="extra" id="troubleshooting"><h2>Find the first broken boundary</h2><div class="scroll"><table><thead><tr><th>What you see</th><th>What to check / do</th></tr></thead><tbody>
+  <tr><td>Missing CLI/module, unsupported <code>--bare</code></td><td>Complete <code>uv sync</code>, check the integration source paths, and use a recent Claude Code CLI.</td></tr>
+  <tr><td>Preflight cannot read the model catalog</td><td>Check gateway root, authentication, network access, and catalog support. The runner must be able to use both API protocols with the same credential.</td></tr>
+  <tr><td>Unknown <code>evolve</code> plugin / startup exits</td><td>Use the integration Cortex source and <code>PROFILE=full</code>. Read <code>runtime/cortex.log</code>; a profile name alone does not prove the plugin was compiled.</td></tr>
+  <tr><td>Address already in use</td><td>Inspect the conflicting owner. Stop your previous demo through its recorded state; leave unrelated services alone. This runner’s ports are fixed.</td></tr>
+  <tr><td>CA missing or invalid / certificate error</td><td>Verify all three CA files, expiration, certificate/key pairing, and the <code>DEMO_CA_DIR</code> path. It must be a signing CA, not an ordinary server certificate. Do not disable TLS verification.</td></tr>
+  <tr><td>Bridge not reachable immediately after startup</td><td>Retry its local OpenAPI check after a moment. If it stays unavailable, read <code>bridge.log</code> and check the recorded process.</td></tr>
+  <tr><td>Waiting for trial output</td><td>The runner captures the CLI stream and normally prints it only when the invocation ends. Each invocation has a 240-second timeout. Inspect live <code>service.calls.jsonl</code> for progress; retain any timeout.</td></tr>
+  <tr><td><code>passed: false</code></td><td>Read individual checks and the actual report. A missing file, expression instead of integer, wrong UTC event, or incorrect refund sign is a task failure; it does not by itself mean Cortex/Evolve transport failed.</td></tr>
+  <tr><td>No training trajectory</td><td>Confirm the training session has Cortex events and every agent invocation used <code>--via-bridge</code> with the configured proxy. Capture requires traffic to traverse Cortex.</td></tr>
+  <tr><td><code>updates: []</code> / skipped processors</td><td>Empty generation is valid. Check actual input/prompt files and the selected objective. Identical analysis revisions are deduplicated; different objectives should process separately.</td></tr>
+  <tr><td><code>Unknown candidate</code></td><td>Read this run’s <code>candidates.json</code> again. Use fresh candidate IDs; recorded report IDs are examples.</td></tr>
+  <tr><td>Warmup text empty</td><td>Check the serving namespace and promoted mappings. Do not start the guided trial until the reviewed guidelines are retrievable.</td></tr>
+  <tr><td>Guided <code>injected_ids: []</code></td><td>Check <code>inject: true</code>, <code>learn: false</code>, the MCP server/namespace, and the first-request evidence. Inspect Cortex logs for retrieval timeouts.</td></tr>
+  <tr><td>IDs present but guidelines ineffective</td><td>Confirm both arms use the system-text bridge. Then inspect the agent’s actual choices: correct injection does not guarantee it follows the procedure or improves the result.</td></tr>
+  <tr><td>Trial already exists / services already started</td><td>Preserve existing evidence. Use a new label for a new trial; use a new results directory for a complete fresh experiment. Stop recorded services first if reusing the fixed ports.</td></tr>
+  <tr><td>JSON parse error while opening a failed report</td><td>It may be the agent’s actual malformed output. Keep the file; the independent grader already treats invalid or missing reports as failures.</td></tr>
+  </tbody></table></div></section>
+
+<section class="extra" id="sources"><h2>Source and recorded evidence</h2>
+  <p>This walkthrough is grounded in the current experiment driver and the committed rerun. Use the links below to inspect implementation details or verify the historical comparison offline.</p>
+  <ul><li><a href="run.py">Workflow actions, learning, comparison, and verification</a></li><li><a href="../cortex_learning_demo/run.py">Shared service setup, model environment, trial runner, promotion, and cleanup</a></li><li><a href="ops.py">Local billing CLI and accounting contract</a> · <a href="ledger_tasks.py">Fixtures and independent grader</a></li><li><a href="bridge.py">System-text compatibility bridge</a></li><li><a href="../../docs/integrations/cortex.md">Trajectory fidelity and remaining capture limits</a></li><li><a href="artifacts-fidelity-95c177f6-20261103T161649Z/REPORT.html">Fresh recorded HTML report: guidelines and all paired trajectories</a></li><li><a href="artifacts-fidelity-95c177f6-20261103T161649Z/example-orchid.json">Recorded Orchid before/after evidence</a> · <a href="artifacts-fidelity-95c177f6-20261103T161649Z/review.json">Training-only guideline review</a></li></ul>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>cd "$DEMO_EVOLVE_REPO"
+uv run --no-sync python -m experiments.cortex_workflow_learning.run \
+  --artifacts-dir experiments/cortex_workflow_learning/artifacts-fidelity-95c177f6-20261103T161649Z verify</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>{"regraded": 12, "all_match": true}</code>. This verifies the committed results without gateway credentials, a running Cortex/Evolve service, or model calls. It does not execute the live manual walkthrough.</div>
+</section>
+<footer>The file is self-contained. Copy buttons and the checklist work locally; the checklist tracks your reading/actions, not service status. Resetting it changes only browser checklist state. Commands run only when you paste them into your terminal.</footer>
+</main>
+</div>
+<div id="status" class="sr-only" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  const key = 'cortex-evolve-manual-e2e-v1';
+  const checks = Array.from(document.querySelectorAll('input[data-step]'));
+  let saved = {};
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '{}');
+    if (parsed && typeof parsed === 'object') saved = parsed;
+  } catch (_) {}
+  function update() {
+    const state = {};
+    checks.forEach(check => {
+      state[check.dataset.step] = check.checked;
+      check.closest('.step').classList.toggle('complete', check.checked);
+    });
+    const count = checks.filter(check => check.checked).length;
+    document.getElementById('progress').value = count;
+    document.getElementById('progress-text').textContent = `${count} of ${checks.length} steps complete`;
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (_) {}
+  }
+  checks.forEach(check => { check.checked = Boolean(saved[check.dataset.step]); check.addEventListener('change', update); });
+  document.getElementById('reset').addEventListener('click', () => { checks.forEach(check => { check.checked = false; }); update(); });
+  document.querySelectorAll('.codebox button').forEach(button => {
+    button.addEventListener('click', async () => {
+      const text = button.parentElement.querySelector('code').textContent;
+      try {
+        if (!navigator.clipboard) throw new Error('Clipboard API unavailable');
+        await navigator.clipboard.writeText(text);
+      } catch (_) {
+        const area = document.createElement('textarea');
+        area.value = text; area.style.position = 'fixed'; area.style.opacity = '0';
+        document.body.appendChild(area); area.focus(); area.select();
+        const copied = document.execCommand('copy'); area.remove();
+        if (!copied) { button.textContent = 'Select text to copy'; return; }
+      }
+      button.textContent = 'Copied';
+      document.getElementById('status').textContent = 'Command copied. Paste it into your terminal to run it.';
+      setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+    });
+  });
+  update();
+})();
+</script>
+</body>
+</html>

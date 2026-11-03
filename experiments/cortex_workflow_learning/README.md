@@ -1,5 +1,10 @@
 # Learning billing workflows with Cortex + Evolve
 
+For a fresh manual run, open the [HTML end-to-end walkthrough](MANUAL-E2E.html).
+It covers portable setup, the Orchid baseline, separate Northwind training,
+guideline inspection and promotion, a guided rerun, and expected observations
+at every step.
+
 The newer [post-merge revenue reconciliation comparison](POSTMERGE.md) includes
 the tool-output rendering fix, six fresh cases, a frozen guideline selection,
 alternating arm order, and a walkthrough. The export/refund results below are
