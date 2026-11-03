@@ -1,7 +1,10 @@
 # Learning billing workflows with Cortex + Evolve
 
 For a fresh manual run, open the [HTML end-to-end walkthrough](MANUAL-E2E.html).
-It covers portable setup, the Orchid baseline, separate Northwind training,
+It includes copyable commands to clone `vinodmut/kaizen` (`rossocortex`) and
+`vinodmut/cortex` (`evolve-plugin`) into a fresh temporary directory, then covers
+Evolve LLM configuration and a connection check, the Orchid baseline,
+separate Northwind training,
 guideline inspection and promotion, a guided rerun, and expected observations
 at every step.
 

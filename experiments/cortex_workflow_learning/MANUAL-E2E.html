@@ -21,7 +21,7 @@
 <aside aria-label="Walkthrough navigation">
   <div class="progress"><strong id="progress-text">0 of 15 steps complete</strong><progress id="progress" max="15" value="0" aria-label="Walkthrough progress"></progress><button id="reset" type="button">Reset checklist</button></div>
   <nav>
-    <a href="#overview">What you will build</a><a href="#step-1">1. Prerequisites</a><a href="#step-2">2. Paths and workspace</a><a href="#step-3">3. Install Evolve</a><a href="#step-4">4. Build Cortex</a><a href="#step-5">5. CA and credentials</a><a href="#step-6">6. Define the helper</a><a href="#step-7">7. Preflight</a><a href="#step-8">8. Start services</a><a href="#step-9">9. Baseline task</a><a href="#step-10">10. Training task</a><a href="#step-11">11. Generate guidelines</a><a href="#step-12">12. Review and promote</a><a href="#step-13">13. Guided task</a><a href="#step-14">14. Compare and verify</a><a href="#step-15">15. Stop services</a><a href="#full-comparison">Optional: all six cases</a><a href="#troubleshooting">Troubleshooting</a><a href="#sources">Source links</a>
+    <a href="#overview">What you will build</a><a href="#step-1">1. Prerequisites</a><a href="#step-2">2. Clone into /tmp</a><a href="#step-3">3. Install Evolve</a><a href="#step-4">4. Build Cortex</a><a href="#step-5">5. CA and LLM credentials</a><a href="#step-6">6. Define the helper</a><a href="#step-7">7. Configure Evolve’s LLM</a><a href="#step-8">8. Start services</a><a href="#step-9">9. Baseline task</a><a href="#step-10">10. Training task</a><a href="#step-11">11. Generate guidelines</a><a href="#step-12">12. Review and promote</a><a href="#step-13">13. Guided task</a><a href="#step-14">14. Compare and verify</a><a href="#step-15">15. Stop services</a><a href="#full-comparison">Optional: all six cases</a><a href="#troubleshooting">Troubleshooting</a><a href="#sources">Source links</a>
   </nav>
 </aside>
 <main>
@@ -41,12 +41,12 @@
   </svg>
   <p class="caption">You issue each command manually. The repository’s <code>workflow</code> runner handles fresh fixtures, service processes, session IDs, and independent grading. You inspect the configuration and artifacts at every boundary.</p>
   <p>The latest recorded six-case run passed <strong>4/6 with Evolve versus 2/6 without</strong>. Orchid changed from an incorrect report in 33 turns to an exact report in 16. Your fresh model responses, guideline IDs, and pass/fail outcomes can differ. A baseline pass or an empty guideline set is a valid observation.</p>
-  <p>Plan for three agent invocations plus reflection and retrieval. Each invocation has a 240-second timeout and a $1 CLI budget cap; learning and retrieval calls are additional. No Docker, Milvus, Langfuse, or everyday Cortex service installation is needed for this filesystem-backed demo.</p>
+  <p>Plan for three agent invocations plus a short LLM connection check, reflection, and retrieval. Each agent invocation has a 240-second timeout and a $1 CLI budget cap; the connection check, learning, and retrieval calls are additional. No Docker, Milvus, Langfuse, or everyday Cortex service installation is needed for this filesystem-backed demo.</p>
 </section>
 
 <section class="step" id="step-1"><div class="step-head"><span class="number">1</span><h2 class="step-title">Gather the prerequisites</h2><label class="done"><input type="checkbox" data-step="1"> Done</label></div>
   <p>You need this <strong>Evolve integration checkout</strong>, a matching <strong>Cortex checkout with the Evolve plugin</strong>, <code>uv</code>, <code>git</code>, <code>make</code>, <code>go</code>, a C/C++ compiler for the Cortex build, <code>openssl</code>, <code>curl</code>, <code>jq</code>, and a recent <code>claude</code> CLI.</p>
-  <p>The Evolve checkout must include <code>f63283f8</code> or its changes. The tested Cortex integration branch is <code>evolve-plugin</code>, with upstream merged at <code>4262d0a8</code>. Obtain these checkouts or source archives from the project maintainer; these local commits are not promised to exist on a public remote.</p>
+  <p>Step 2 clones the exact integration branches: <a href="https://github.com/vinodmut/kaizen/tree/rossocortex">Evolve: <code>vinodmut/kaizen</code>, branch <code>rossocortex</code></a> and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">Cortex: <code>vinodmut/cortex</code>, branch <code>evolve-plugin</code></a>. The commands create both checkouts for you; no existing checkout or path editing is needed.</p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>uv --version
 git --version
 make --version
@@ -59,23 +59,39 @@ claude --version</code></pre></div>
   <div class="note"><strong>Gateway requirement</strong>This runner expects one gateway and credential that support Anthropic <code>/v1/messages</code>, OpenAI-compatible <code>/v1/chat/completions</code>, and a model catalog at <code>/v1/models</code> or <code>/models</code>. Its preflight selects a supported GPT-4.1 model or <code>claude-sonnet-4-5</code>. A direct endpoint supporting only one of those APIs needs runner adaptation before using this guide.</div>
 </section>
 
-<section class="step" id="step-2"><div class="step-head"><span class="number">2</span><h2 class="step-title">Set paths and create a private demo workspace</h2><label class="done"><input type="checkbox" data-step="2"> Done</label></div>
-  <p>Open Bash or zsh. Replace the two checkout paths below. Keep using this terminal so the exported paths and helper function remain available.</p>
-  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>export DEMO_EVOLVE_REPO="/absolute/path/to/altk-evolve.rossocortex"
-export DEMO_CORTEX_REPO="/absolute/path/to/cortex"
-export DEMO_ROOT="$HOME/.local/state/cortex-evolve-manual"
+<section class="step" id="step-2"><div class="step-head"><span class="number">2</span><h2 class="step-title">Clone both branches into a fresh temporary directory</h2><label class="done"><input type="checkbox" data-step="2"> Done</label></div>
+  <p>Open Bash or zsh and paste this entire block unchanged. It creates a unique private directory under your system’s temporary directory, clones both branches side by side, and sets every path used later. Keep using this terminal so the exported paths and helper function remain available.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="clone-setup"><code>umask 077
+export DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/cortex-evolve-manual.XXXXXX")"
+export DEMO_EVOLVE_REPO="$DEMO_ROOT/kaizen"
+export DEMO_CORTEX_REPO="$DEMO_ROOT/cortex"
 export DEMO_CORTEX_BIN="$DEMO_CORTEX_REPO/bin/cortex"
 export DEMO_CA_DIR="$DEMO_ROOT/ca"
 export DEMO_CREDENTIALS="$DEMO_ROOT/gateway.env"
 export DEMO_RESULTS="$DEMO_ROOT/run-$(date -u +%Y%m%dT%H%M%SZ)"
+export UV_CACHE_DIR="$DEMO_ROOT/uv-cache"
 
-mkdir -p "$DEMO_ROOT"
-chmod 700 "$DEMO_ROOT"
-cd "$DEMO_EVOLVE_REPO"
-test -f experiments/cortex_workflow_learning/run.py
-printf 'Results will be saved in: %s\n' "$DEMO_RESULTS"</code></pre></div>
-  <div class="see"><strong>You should see</strong>The final line prints a new timestamped results path. The <code>test</code> command succeeds silently. This directory will hold all trial files and isolated Evolve storage. Use a new <code>DEMO_RESULTS</code> for each complete rerun.</div>
-  <p>You can instead point <code>DEMO_CREDENTIALS</code> to an existing compatible environment file, and <code>DEMO_CA_DIR</code> to an existing Cortex CA. The helper in step 6 overrides the runner’s developer-specific defaults without editing source files.</p>
+git clone --depth 1 --single-branch --branch rossocortex \
+  https://github.com/vinodmut/kaizen.git "$DEMO_EVOLVE_REPO" &amp;&amp;
+git clone --depth 1 --single-branch --branch evolve-plugin \
+  https://github.com/vinodmut/cortex.git "$DEMO_CORTEX_REPO" &amp;&amp;
+cd "$DEMO_EVOLVE_REPO" &amp;&amp;
+test -f experiments/cortex_workflow_learning/run.py &amp;&amp;
+printf 'Demo root: %s\nEvolve checkout: %s\nCortex checkout: %s\nResults: %s\n' \
+  "$DEMO_ROOT" "$DEMO_EVOLVE_REPO" "$DEMO_CORTEX_REPO" "$DEMO_RESULTS" &amp;&amp;
+git -C "$DEMO_EVOLVE_REPO" branch --show-current &amp;&amp;
+git -C "$DEMO_CORTEX_REPO" branch --show-current</code></pre></div>
+  <div class="see"><strong>You should see</strong>Git reports <code>Cloning into …/kaizen</code> and <code>Cloning into …/cortex</code>, then prints your temporary paths. The final two lines are <code>rossocortex</code> and <code>evolve-plugin</code>. The workflow-file check succeeds silently. If cloning fails, resolve that error before continuing.</div>
+  <pre class="output"><code>Your directory layout (the random suffix will differ):
+/tmp/cortex-evolve-manual.A1b2C3/
+├── kaizen/                 Evolve, rossocortex branch
+├── cortex/                 Cortex, evolve-plugin branch
+├── ca/                     created in step 5
+├── gateway.env             created in step 5
+├── uv-cache/               dependency cache
+└── run-20261103T120000Z/    trial evidence and isolated Evolve storage</code></pre>
+  <p>On macOS, the root may be under <code>/var/folders/…/T/</code> instead of <code>/tmp</code>; the variables handle either location. Later commands use these exported paths automatically. You only need to supply your gateway URL/key in step 5 and choose the freshly generated guidelines in step 12.</p>
+  <p>The helper in step 6 overrides the runner’s developer-specific defaults without editing source files. All checkouts, build output, credentials, and results for this run live under the printed <code>DEMO_ROOT</code>. To retain evidence beyond temporary-directory cleanup, copy your results to a lasting location after step 15.</p>
 </section>
 
 <section class="step" id="step-3"><div class="step-head"><span class="number">3</span><h2 class="step-title">Install Evolve and its demo dependencies</h2><label class="done"><input type="checkbox" data-step="3"> Done</label></div>
@@ -84,18 +100,18 @@ uv sync
 uv run --no-sync evolve-mcp --help
 uv run --no-sync python -m experiments.cortex_workflow_learning.run --help</code></pre></div>
   <div class="see"><strong>You should see</strong><code>uv</code> resolves/installs the locked environment. The MCP help includes transport and port options. The workflow help lists <code>preflight</code>, <code>start</code>, <code>trial</code>, <code>learn</code>, <code>candidates</code>, <code>promote</code>, <code>warm</code>, <code>verify</code>, and <code>stop</code>.</div>
-  <p>The demo sets <code>EVOLVE_BACKEND=filesystem</code> and puts entities under <code>$DEMO_RESULTS/runtime/data</code>, with bookkeeping at <code>runtime/entities.sqlite.db</code>. It supplies model settings from your gateway file. You do not need to edit the repository’s <code>.env</code> for this walkthrough.</p>
+  <p>The demo sets <code>EVOLVE_BACKEND=filesystem</code> and puts entities under <code>$DEMO_RESULTS/runtime/data</code>, with bookkeeping at <code>runtime/entities.sqlite.db</code>. <strong>Installing Evolve does not configure its LLM:</strong> step 5 saves its gateway endpoint/key, and step 7 selects and tests its model. The runner loads that configuration for step 8 and every learning command; the repository’s <code>.env</code> is not required.</p>
 </section>
 
 <section class="step" id="step-4"><div class="step-head"><span class="number">4</span><h2 class="step-title">Build Cortex with the Evolve plugin</h2><label class="done"><input type="checkbox" data-step="4"> Done</label></div>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>git -C "$DEMO_CORTEX_REPO" log -1 --oneline
 make -C "$DEMO_CORTEX_REPO" cortex PROFILE=full
 test -x "$DEMO_CORTEX_BIN"</code></pre></div>
-  <div class="see"><strong>You should see</strong>The tested integration checkout reports merge <code>4262d0a8</code>, or your maintainer-provided successor. The build prints its <code>full</code> profile tag list, which must include <code>evolve</code>, and creates <code>bin/cortex</code>. The executable check succeeds silently.</div>
+  <div class="see"><strong>You should see</strong>The Cortex log shows the latest commit on <code>evolve-plugin</code> (the recorded run used upstream merge <code>4262d0a8</code>). The build prints its <code>full</code> profile tag list, which must include <code>evolve</code>, and creates <code>bin/cortex</code>. The executable check succeeds silently.</div>
   <p><code>lite</code> and <code>local</code> profiles do not include this plugin in the checked integration source. If you already have a matching full-profile binary, set <code>DEMO_CORTEX_BIN</code> to it and skip rebuilding. Step 8 confirms that the running pipeline actually contains <code>evolve</code>.</p>
 </section>
 
-<section class="step" id="step-5"><div class="step-head"><span class="number">5</span><h2 class="step-title">Prepare the Cortex CA and gateway credentials</h2><label class="done"><input type="checkbox" data-step="5"> Done</label></div>
+<section class="step" id="step-5"><div class="step-head"><span class="number">5</span><h2 class="step-title">Prepare the Cortex CA and configure the LLM gateway</h2><label class="done"><input type="checkbox" data-step="5"> Done</label></div>
   <p>Cortex requires a signing certificate, private key, and trust certificate named <code>tls.crt</code>, <code>tls.key</code>, and <code>ca.crt</code>. If you chose an existing Cortex CA, check that all three exist and skip the generation block.</p>
   <p><strong>For a new demo CA directory only:</strong></p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>mkdir -p "$DEMO_CA_DIR"
@@ -124,12 +140,36 @@ test -f "$DEMO_CA_DIR/tls.key"
 test -f "$DEMO_CA_DIR/tls.crt"
 openssl x509 -in "$DEMO_CA_DIR/ca.crt" -noout -subject</code></pre></div>
   <div class="see"><strong>You should see</strong>OpenSSL may print key-generation progress, then the certificate subject. A newly generated CA has subject <code>Cortex Evolve Manual Demo CA</code>. An existing CA has its own subject. The runner configures the agent’s <code>NODE_EXTRA_CA_CERTS</code> for this CA; installing it into the OS trust store is unnecessary for this demo.</div>
-  <p>Create or edit <code>$DEMO_CREDENTIALS</code> in your editor with the following two entries. Replace both placeholders with your gateway’s values. The base URL should be the gateway root, without a trailing <code>/v1</code>.</p>
-  <pre class="output"><code>ANTHROPIC_BASE_URL=https://your-compatible-gateway.example
-ANTHROPIC_API_KEY=REPLACE_WITH_YOUR_GATEWAY_KEY</code></pre>
-  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>chmod 600 "$DEMO_CREDENTIALS"
-test -s "$DEMO_CREDENTIALS"</code></pre></div>
-  <div class="see"><strong>You should see</strong>Both commands succeed silently. The same key is used for the gateway’s Anthropic requests and Evolve’s OpenAI-compatible requests. <code>ANTHROPIC_AUTH_TOKEN</code> is also accepted in the file and converted to the API-key environment used by the bare agent.</div>
+  <h3>Configure the gateway used by Evolve and the task agent</h3>
+  <p>Evolve needs an LLM to generate, reconcile, and retrieve guidelines. In this demo, it calls your gateway’s <strong>OpenAI-compatible API</strong>; Claude Code calls the same gateway’s <strong>Anthropic-compatible API</strong>. Cortex’s proxy/MCP addresses are separate from this LLM endpoint.</p>
+  <p>Paste the block below, then enter your gateway URL and key when prompted. The block normalizes a trailing <code>/v1</code>, hides key entry, and writes both clients’ configuration into the private <code>gateway.env</code> file.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="gateway-credentials"><code>{
+printf 'Gateway root URL: '
+IFS= read -r DEMO_GATEWAY_URL
+printf 'Gateway API key (hidden): '
+IFS= read -r -s DEMO_GATEWAY_KEY
+printf '\n'
+
+if [ -z "$DEMO_GATEWAY_URL" ] || [ -z "$DEMO_GATEWAY_KEY" ]; then
+  printf 'Both values are required. Paste this block again to retry.\n'
+else
+  DEMO_GATEWAY_URL="${DEMO_GATEWAY_URL%/}"
+  DEMO_GATEWAY_URL="${DEMO_GATEWAY_URL%/v1}"
+  (
+    umask 077
+    printf 'ANTHROPIC_BASE_URL=%s\nANTHROPIC_API_KEY=%s\nOPENAI_BASE_URL=%s/v1\nOPENAI_API_KEY=%s\nEVOLVE_CUSTOM_LLM_PROVIDER=openai\n' \
+      "$DEMO_GATEWAY_URL" "$DEMO_GATEWAY_KEY" \
+      "$DEMO_GATEWAY_URL" "$DEMO_GATEWAY_KEY" &gt; "$DEMO_CREDENTIALS"
+  )
+  chmod 600 "$DEMO_CREDENTIALS"
+  printf 'Gateway configuration saved to %s\n' "$DEMO_CREDENTIALS"
+fi
+unset DEMO_GATEWAY_KEY DEMO_GATEWAY_URL
+test -s "$DEMO_CREDENTIALS"
+}</code></pre></div>
+  <div class="see"><strong>You should see</strong>Two prompts followed by <code>Gateway configuration saved to …/gateway.env</code>. The file check succeeds silently; the key is never printed. The same key is used for the gateway’s Anthropic requests and Evolve’s OpenAI-compatible requests. An existing file using <code>ANTHROPIC_AUTH_TOKEN</code> is also accepted by the runner.</div>
+  <div class="scroll"><table><thead><tr><th>Evolve setting</th><th>Value / where it comes from</th><th>Purpose</th></tr></thead><tbody><tr><td><code>EVOLVE_CUSTOM_LLM_PROVIDER</code></td><td><code>openai</code>, saved by the block above</td><td>Use the OpenAI-compatible protocol through your gateway, even if the gateway’s model ID contains a provider prefix.</td></tr><tr><td><code>OPENAI_BASE_URL</code></td><td>Your gateway root plus <code>/v1</code></td><td>Evolve’s inference endpoint. It is not the local Cortex proxy or Evolve MCP URL.</td></tr><tr><td><code>OPENAI_API_KEY</code></td><td>The key you entered</td><td>Authenticate Evolve’s model calls.</td></tr><tr><td><code>EVOLVE_MODEL_NAME</code></td><td>The gateway-supported model selected in step 7</td><td>Default model for Evolve’s LLM operations.</td></tr><tr><td><code>EVOLVE_GUIDELINES_MODEL</code></td><td>Explicitly set to the same selected model in step 7</td><td>Model used to generate the guidelines you will inspect.</td></tr></tbody></table></div>
+  <p>The <code>workflow</code> runner reads <code>gateway.env</code> and supplies these settings to Evolve subprocesses. You do not need to paste a key into a shell export or manually start a second server. Step 7 verifies the actual resolved Evolve settings and sends a small inference request.</p>
   <p>Keep the credential file and CA private key in the private demo workspace. The runner reads credentials into subprocess environments; you do not need to print the file or paste a key into any command below.</p>
 </section>
 
@@ -162,7 +202,7 @@ workflow --help</code></pre></div>
   <p>Run all remaining <code>workflow</code> commands through this function. An ordinary <code>evolve</code> command in another terminal may use a different data directory or namespace unless you explicitly reproduce these demo settings.</p>
 </section>
 
-<section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Check the ports and gateway</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
+<section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Select Evolve’s LLM and verify the connection</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
   <p>The demo uses fixed ports. Run this check before starting anything; another demo or local service must not occupy them.</p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>uv run --no-sync python - &lt;&lt;'PORTS_PY'
 import socket
@@ -187,6 +227,52 @@ workflow preflight</code></pre></div>
   "held_out_cases": ["...", "ledger_a", "ledger_b", "ledger_c", "ledger_d", "ledger_e", "ledger_f"]
 }</code></pre>
   <p>The catalog also includes export/refund fixtures; this guide uses only ledger tasks. If preflight fails, inspect the binary/CA paths, gateway reachability, API compatibility, credential validity, and supported model names. If it reports an existing experiment, choose a new results directory rather than overwriting the old state.</p>
+  <h3>Set the model Evolve will use</h3>
+  <p>Preflight checks the model catalog and stores the selected model ID in <code>state.json</code>. Paste this block to use that exact ID for Evolve’s default model and guideline generator. No model-name editing is needed.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="evolve-model-config"><code>export EVOLVE_MODEL_NAME="$(jq -er '.model' "$DEMO_RESULTS/state.json")"
+export EVOLVE_GUIDELINES_MODEL="$EVOLVE_MODEL_NAME"
+printf 'Evolve default model: %s\nGuideline model: %s\n' \
+  "$EVOLVE_MODEL_NAME" "$EVOLVE_GUIDELINES_MODEL"</code></pre></div>
+  <div class="see"><strong>You should see</strong>The same model ID twice, for example <code>Azure/gpt-4.1</code>. These exports apply to subsequent <code>workflow start</code> and <code>workflow learn</code> commands in this terminal. The runner also uses <code>state.json</code> to keep the task agent’s model fixed.</div>
+  <h3>Test Evolve’s actual LLM settings before starting services</h3>
+  <p>A readable model catalog does not prove inference works. The following uses Evolve’s <code>LLMSettings</code> and the same LiteLLM completion function used for learning. It prints only the endpoint, provider, model, and whether a key is present, then makes <strong>one small model call</strong>.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="evolve-llm-check"><code>uv run --no-sync python - &lt;&lt;'LLM_CHECK_PY'
+import json
+import os
+from pathlib import Path
+from experiments.cortex_learning_demo import run as driver
+
+driver.CREDENTIALS = Path(os.environ["DEMO_CREDENTIALS"])
+driver.ARTIFACTS = Path(os.environ["DEMO_RESULTS"])
+state = json.loads((driver.ARTIFACTS / "state.json").read_text())
+environment = driver.base_env(state["model"])
+os.environ.update(environment)
+
+from altk_evolve.config.llm import LLMSettings
+from litellm import completion
+
+settings = LLMSettings()
+print(json.dumps({
+    "provider": settings.custom_llm_provider,
+    "guidelines_model": settings.guidelines_model,
+    "base_url": environment["OPENAI_BASE_URL"],
+    "api_key_configured": bool(environment["OPENAI_API_KEY"]),
+}, indent=2))
+response = completion(
+    model=settings.guidelines_model,
+    custom_llm_provider=settings.custom_llm_provider,
+    messages=[{"role": "user", "content": "Reply with exactly EVOLVE_LLM_OK."}],
+    max_tokens=32,
+    temperature=0,
+    timeout=45,
+)
+reply = response.choices[0].message.content
+if not reply:
+    raise SystemExit("The LLM returned an empty reply; inspect the gateway response.")
+print(json.dumps({"llm_connection": "ok", "reply": reply}, indent=2))
+LLM_CHECK_PY</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>provider: openai</code>, your selected guideline model, your gateway’s <code>/v1</code> URL, <code>api_key_configured: true</code>, and a reply such as <code>{"llm_connection": "ok", "reply": "EVOLVE_LLM_OK"}</code>. This confirms Evolve can make an inference request through the configured protocol; the learning step will exercise its longer prompts.</div>
+  <p>If the call fails, check the OpenAI-compatible inference route, key permissions, exact model ID, and gateway logs before continuing. Model-not-found or authorization errors require fixing the gateway configuration, even when the catalog request succeeded. If you open a new terminal, restore the paths/helper and repeat the model exports before starting or learning.</p>
 </section>
 
 <section class="step" id="step-8"><div class="step-head"><span class="number">8</span><h2 class="step-title">Start Evolve, Cortex, and the gateway bridge</h2><label class="done"><input type="checkbox" data-step="8"> Done</label></div>
@@ -204,7 +290,7 @@ cat "$DEMO_RESULTS/runtime/cortex.yaml"</code></pre></div>
 {"started": "bridge", "port": 18202}
 {"inject": false, "learn": false}</code></pre>
   <div class="scroll"><table><thead><tr><th>Piece</th><th>Address / file</th><th>What to inspect</th></tr></thead><tbody><tr><td>Cortex forward proxy</td><td><code>127.0.0.1:47800</code></td><td>Agent inference traffic passes through it.</td></tr><tr><td>Cortex session API</td><td><code>127.0.0.1:47801</code></td><td>Captured sessions and pipeline status.</td></tr><tr><td>Cortex other listeners</td><td><code>47802–47804</code></td><td>Stats, configured transparent address, and health.</td></tr><tr><td>Evolve MCP</td><td><code>http://127.0.0.1:18201/sse</code></td><td>Guideline retrieval used by Cortex.</td></tr><tr><td>Compatibility bridge</td><td><code>http://127.0.0.1:18202</code></td><td>Flattens all Anthropic system text blocks after Cortex.</td></tr><tr><td>Storage / logs</td><td><code>$DEMO_RESULTS/runtime/</code></td><td><code>data/</code>, SQLite, <code>evolve.log</code>, <code>cortex.log</code>, <code>bridge.log</code>.</td></tr></tbody></table></div>
-  <p>In the YAML, find <code>serve_namespace: workflow-reviewed</code>, <code>learn_namespace: workflow-candidates</code>, <code>learn: false</code>, and <code>inject: false</code>. The profile name <code>workflow-demo</code> is passed in the config; manual <code>learn</code> uses Evolve’s standard processing defaults with the mode you select.</p>
+  <p>Evolve starts with the gateway endpoint/key from step 5 and the guideline model verified in step 7. In the YAML, find <code>serve_namespace: workflow-reviewed</code>, <code>learn_namespace: workflow-candidates</code>, <code>learn: false</code>, and <code>inject: false</code>. The profile name <code>workflow-demo</code> is passed in the config; manual <code>learn</code> uses Evolve’s standard processing defaults with the mode you select.</p>
   <details><summary>What the start command runs underneath</summary><pre class="output"><code>Evolve: uv run --no-sync evolve-mcp --transport sse --port 18201
 Cortex: YOUR_CORTEX_BINARY --config YOUR_RESULTS/runtime/cortex.yaml
 Bridge: uv run --no-sync python -m experiments.cortex_workflow_learning.bridge</code></pre><p>These run as isolated background process groups with the demo’s model and storage environment. The helper records their process IDs for cleanup. You do not also start duplicate foreground services.</p></details>
@@ -341,6 +427,8 @@ printf 'Saved evidence: %s\n' "$DEMO_RESULTS"</code></pre></div>
   <p>Use this sequence <strong>after stopping the single-pair demo</strong>. It creates a separate run, learns only from Northwind, and freezes the selected guidelines before any of its twelve evaluation trials. Do not run <code>compare</code> in the already-used single-pair directory: it refuses a predeclared comparison once evaluation trials exist.</p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>export DEMO_RESULTS="$DEMO_ROOT/comparison-$(date -u +%Y%m%dT%H%M%SZ)"
 workflow preflight
+export EVOLVE_MODEL_NAME="$(jq -er '.model' "$DEMO_RESULTS/state.json")"
+export EVOLVE_GUIDELINES_MODEL="$EVOLVE_MODEL_NAME"
 workflow start
 workflow bridge-start
 workflow injection-off
@@ -361,8 +449,10 @@ workflow stop</code></pre></div>
 </section>
 
 <section class="extra" id="troubleshooting"><h2>Find the first broken boundary</h2><div class="scroll"><table><thead><tr><th>What you see</th><th>What to check / do</th></tr></thead><tbody>
+  <tr><td>Clone fails / repository or branch not found</td><td>Check network access and access to <code>vinodmut/kaizen</code> and <code>vinodmut/cortex</code>. The commands require branches <code>rossocortex</code> and <code>evolve-plugin</code>. Step 2 prints the checked-out branches after successful cloning.</td></tr>
   <tr><td>Missing CLI/module, unsupported <code>--bare</code></td><td>Complete <code>uv sync</code>, check the integration source paths, and use a recent Claude Code CLI.</td></tr>
   <tr><td>Preflight cannot read the model catalog</td><td>Check gateway root, authentication, network access, and catalog support. The runner must be able to use both API protocols with the same credential.</td></tr>
+  <tr><td>Catalog works, but Evolve’s LLM check fails</td><td>Verify <code>OPENAI_BASE_URL</code> ends in <code>/v1</code>, the gateway supports OpenAI-compatible chat completions, the selected model ID is available to this key, and <code>EVOLVE_CUSTOM_LLM_PROVIDER=openai</code>. Step 7 prints resolved settings without revealing the key.</td></tr>
   <tr><td>Unknown <code>evolve</code> plugin / startup exits</td><td>Use the integration Cortex source and <code>PROFILE=full</code>. Read <code>runtime/cortex.log</code>; a profile name alone does not prove the plugin was compiled.</td></tr>
   <tr><td>Address already in use</td><td>Inspect the conflicting owner. Stop your previous demo through its recorded state; leave unrelated services alone. This runner’s ports are fixed.</td></tr>
   <tr><td>CA missing or invalid / certificate error</td><td>Verify all three CA files, expiration, certificate/key pairing, and the <code>DEMO_CA_DIR</code> path. It must be a signing CA, not an ordinary server certificate. Do not disable TLS verification.</td></tr>
