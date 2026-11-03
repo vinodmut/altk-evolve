@@ -100,14 +100,19 @@ uv sync
 uv run --no-sync evolve-mcp --help
 uv run --no-sync python -m experiments.cortex_workflow_learning.run --help</code></pre></div>
   <div class="see"><strong>You should see</strong><code>uv</code> resolves/installs the locked environment. The MCP help includes transport and port options. The workflow help lists <code>preflight</code>, <code>start</code>, <code>trial</code>, <code>learn</code>, <code>candidates</code>, <code>promote</code>, <code>warm</code>, <code>verify</code>, and <code>stop</code>.</div>
+  <pre class="output"><code>INFO:entities-mcp:Evolve UI dist directory not found. Skipping UI mount.
+usage: evolve-mcp ...
+usage: run.py ...</code></pre>
+  <p><strong>The UI message is expected for a fresh source clone.</strong> <code>uv sync</code> installs the Python dependencies; the optional web frontend has not been built. The MCP server and workflow CLI remain available, and this walkthrough inspects guidelines through CLI commands and JSON files. Continue to step 4 when both help screens appear. These <code>--help</code> commands exit after printing usage; services start in step 8.</p>
   <p>The demo sets <code>EVOLVE_BACKEND=filesystem</code> and puts entities under <code>$DEMO_RESULTS/runtime/data</code>, with bookkeeping at <code>runtime/entities.sqlite.db</code>. <strong>Installing Evolve does not configure its LLM:</strong> step 5 saves its gateway endpoint/key, and step 7 selects and tests its model. The runner loads that configuration for step 8 and every learning command; the repository’s <code>.env</code> is not required.</p>
 </section>
 
 <section class="step" id="step-4"><div class="step-head"><span class="number">4</span><h2 class="step-title">Build Cortex with the Evolve plugin</h2><label class="done"><input type="checkbox" data-step="4"> Done</label></div>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>git -C "$DEMO_CORTEX_REPO" log -1 --oneline
-make -C "$DEMO_CORTEX_REPO" cortex PROFILE=full
-test -x "$DEMO_CORTEX_BIN"</code></pre></div>
-  <div class="see"><strong>You should see</strong>The Cortex log shows the latest commit on <code>evolve-plugin</code> (the recorded run used upstream merge <code>4262d0a8</code>). The build prints its <code>full</code> profile tag list, which must include <code>evolve</code>, and creates <code>bin/cortex</code>. The executable check succeeds silently.</div>
+make -C "$DEMO_CORTEX_REPO" cortex PROFILE=full &amp;&amp;
+test -x "$DEMO_CORTEX_BIN" &amp;&amp;
+printf 'Ready Cortex binary: %s\n' "$DEMO_CORTEX_BIN"</code></pre></div>
+  <div class="see"><strong>You should see</strong>The Cortex log shows the latest commit on <code>evolve-plugin</code> (the recorded run used upstream merge <code>4262d0a8</code>). The build prints its <code>full</code> profile tag list, which must include <code>evolve</code>, creates <code>bin/cortex</code>, and ends with <code>Ready Cortex binary: …/cortex/bin/cortex</code>. Continue when that confirmation appears. If the build reports an error, resolve it before preflight in step 7.</div>
   <p><code>lite</code> and <code>local</code> profiles do not include this plugin in the checked integration source. If you already have a matching full-profile binary, set <code>DEMO_CORTEX_BIN</code> to it and skip rebuilding. Step 8 confirms that the running pipeline actually contains <code>evolve</code>.</p>
 </section>
 
@@ -203,9 +208,22 @@ workflow --help</code></pre></div>
 </section>
 
 <section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Select Evolve’s LLM and verify the connection</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
-  <p>The demo uses fixed ports. Run this check before starting anything; another demo or local service must not occupy them.</p>
-  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>uv run --no-sync python - &lt;&lt;'PORTS_PY'
+  <p>Run from the Kaizen checkout in the same terminal as steps 2–6. This block checks the built Cortex binary, CA files, and fixed ports before calling preflight. It stops if a prerequisite is missing.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="preflight-check"><code>cd "$DEMO_EVOLVE_REPO" &amp;&amp;
+uv run --no-sync python - &lt;&lt;'PORTS_PY' &amp;&amp; workflow preflight
+import os
 import socket
+from pathlib import Path
+
+binary = Path(os.environ["DEMO_CORTEX_BIN"])
+ca = Path(os.environ["DEMO_CA_DIR"])
+checks = [("Cortex binary (step 4)", binary, binary.is_file() and os.access(binary, os.X_OK))]
+checks += [("Cortex CA file (step 5)", ca / name, (ca / name).is_file())
+           for name in ("ca.crt", "tls.crt", "tls.key")]
+for label, path, ready in checks:
+    print(f"{'OK' if ready else 'MISSING'}: {label}: {path}")
+if not all(ready for _, _, ready in checks):
+    raise SystemExit("Complete the indicated setup step, then paste this check again.")
 
 ports = [47800, 47801, 47802, 47803, 47804, 18201, 18202]
 busy = []
@@ -217,10 +235,8 @@ for port in ports:
 print("Busy ports:", busy)
 if busy:
     raise SystemExit("Resolve these port conflicts before continuing.")
-PORTS_PY
-
-workflow preflight</code></pre></div>
-  <div class="see"><strong>You should see</strong><code>Busy ports: []</code>, followed by a JSON preflight report. The recorded run selected <code>"model": "Azure/gpt-4.1"</code>. A supported alternative may be selected from your catalog. Preflight creates <code>$DEMO_RESULTS/state.json</code>; it does not run the task.</div>
+PORTS_PY</code></pre></div>
+  <div class="see"><strong>You should see</strong>Four <code>OK</code> lines with the binary and CA paths, then <code>Busy ports: []</code>, followed by a JSON preflight report. A <code>MISSING</code> line identifies the exact path and setup step to complete. The recorded run selected <code>"model": "Azure/gpt-4.1"</code>. A supported alternative may be selected from your catalog. Preflight creates <code>$DEMO_RESULTS/state.json</code>; it does not run the task.</div>
   <pre class="output"><code>{
   "model": "Azure/gpt-4.1",
   "task": "Reconcile monthly production-account revenue from the local billing ledger according to its accounting contract.",
@@ -451,9 +467,11 @@ workflow stop</code></pre></div>
 <section class="extra" id="troubleshooting"><h2>Find the first broken boundary</h2><div class="scroll"><table><thead><tr><th>What you see</th><th>What to check / do</th></tr></thead><tbody>
   <tr><td>Clone fails / repository or branch not found</td><td>Check network access and access to <code>vinodmut/kaizen</code> and <code>vinodmut/cortex</code>. The commands require branches <code>rossocortex</code> and <code>evolve-plugin</code>. Step 2 prints the checked-out branches after successful cloning.</td></tr>
   <tr><td>Missing CLI/module, unsupported <code>--bare</code></td><td>Complete <code>uv sync</code>, check the integration source paths, and use a recent Claude Code CLI.</td></tr>
+  <tr><td><code>INFO: … Evolve UI dist directory not found. Skipping UI mount.</code></td><td>Expected in a fresh source clone: the optional web frontend has not been built. This does not block the MCP/CLI walkthrough. If both help screens appear in step 3, continue to step 4.</td></tr>
   <tr><td>Preflight cannot read the model catalog</td><td>Check gateway root, authentication, network access, and catalog support. The runner must be able to use both API protocols with the same credential.</td></tr>
   <tr><td>Catalog works, but Evolve’s LLM check fails</td><td>Verify <code>OPENAI_BASE_URL</code> ends in <code>/v1</code>, the gateway supports OpenAI-compatible chat completions, the selected model ID is available to this key, and <code>EVOLVE_CUSTOM_LLM_PROVIDER=openai</code>. Step 7 prints resolved settings without revealing the key.</td></tr>
   <tr><td>Unknown <code>evolve</code> plugin / startup exits</td><td>Use the integration Cortex source and <code>PROFILE=full</code>. Read <code>runtime/cortex.log</code>; a profile name alone does not prove the plugin was compiled.</td></tr>
+  <tr><td><code>The existing development Cortex binary and trusted CA are required</code></td><td>Run the prerequisite check in step 7. A missing <code>cortex/bin/cortex</code> requires the step 4 build; missing <code>ca.crt</code> requires step 5. The directory being correct and the ports being free do not establish that those files exist.</td></tr>
   <tr><td>Address already in use</td><td>Inspect the conflicting owner. Stop your previous demo through its recorded state; leave unrelated services alone. This runner’s ports are fixed.</td></tr>
   <tr><td>CA missing or invalid / certificate error</td><td>Verify all three CA files, expiration, certificate/key pairing, and the <code>DEMO_CA_DIR</code> path. It must be a signing CA, not an ordinary server certificate. Do not disable TLS verification.</td></tr>
   <tr><td>Bridge not reachable immediately after startup</td><td>Retry its local OpenAPI check after a moment. If it stays unavailable, read <code>bridge.log</code> and check the recorded process.</td></tr>
