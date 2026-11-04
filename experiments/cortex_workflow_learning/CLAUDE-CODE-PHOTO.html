@@ -12,7 +12,7 @@
 </head>
 <body><header><div class="eyebrow">Hands-on Cortex + Evolve</div><h1>Learn a photo-metadata workflow in interactive Claude Code</h1><p>Enter the prompts yourself. Inspect the learning, promotion, and fresh-session behavior at every boundary.</p><div class="tags"><span>Interactive Claude Code</span><span>Real EXIF fixture</span><span>Full Evolve + Cortex</span><span>Same-task before/after</span></div></header>
 <div class="layout"><aside><div class="progress"><strong id="progress-text">0 of 16 steps complete</strong><progress id="progress" max="16" value="0"></progress><button id="reset" type="button">Reset checklist</button></div><nav><a href="#overview">Read this first</a><a href="#step-1">1. Gather the prerequisites</a>
-<a href="#step-2">2. Clone both branches into a fresh temporary directory</a>
+<a href="#step-2">2. Create a fresh temporary directory and clone Cortex</a>
 <a href="#step-3">3. Install Evolve</a>
 <a href="#step-4">4. Build Cortex with the Evolve plugin</a>
 <a href="#step-5">5. Prepare the Cortex CA and configure the LLM gateway</a>
@@ -33,6 +33,7 @@
 <ol><li>Run a focal-length baseline with injection off.</li><li>Run and verify a separate GPS task; Evolve learns its successful extraction procedure.</li><li>Review and promote generated guidelines.</li><li>Repeat the identical focal-length prompt in a fresh session and inspect the injected guidelines and actual tool behavior.</li></ol>
 <p>The useful behavior to look for is reuse of a verified local EXIF command or interpreter environment, with fewer failed or exploratory commands and correct tag interpretation. The guide preserves whatever actually happens. A model with an available EXIF tool may solve both attempts equally well.</p>
 <div class="see"><strong>Observed improvement in the live development check</strong>The baseline saved the human-formatted focal length <code>"4.4 mm"</code>. After learning the GPS export procedure, the fresh guided run used <code>exiftool -n -j</code> and saved the original numeric value <code>4.38</code>. Both identified the 35mm equivalent as 27 mm. Both used three agent turns and two tool calls. <a href="photo-live-check.json">Read the recorded task, guideline, output files, trajectories, and injection evidence.</a></div>
+<p class="caption">The recorded pair used the previous checkout-based launcher. Its task results are preserved as evidence; the revised Git-installed setup is validated separately.</p>
 <div class="scroll"><table><thead><tr><th>Recorded trajectory</th><th>Baseline</th><th>With Evolve</th></tr></thead><tbody><tr><td>Extract and save</td><td><code>exiftool -json sample.jpg &gt; photo-result.json</code></td><td><code>exiftool -n -j sample.jpg &gt; photo-result.json</code></td></tr><tr><td>Inspect</td><td>Read <code>photo-result.json</code></td><td>Read <code>photo-result.json</code></td></tr><tr><td>Saved actual focal length</td><td><code>"4.4 mm"</code>, formatted and rounded</td><td><code>4.38</code>, numeric with stored precision</td></tr><tr><td>Saved 35mm equivalent</td><td><code>"27 mm"</code></td><td><code>27</code></td></tr><tr><td>Numeric-output requirement</td><td>Fail</td><td>Pass</td></tr></tbody></table></div>
 <svg class="diagram" viewBox="0 0 960 275" role="img" aria-label="Claude Code sends inference through Cortex and a compatibility bridge to the LLM. Cortex stores the trajectory. Evolve calls the LLM to learn candidates, reviewed guidelines are promoted, and Cortex injects them into a fresh session.">
 <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#53719c"/></marker></defs>
@@ -43,8 +44,8 @@
 <text x="445" y="133" fill="#52647d" font-family="system-ui,sans-serif" font-size="12">Guidelines for the fresh task</text></svg><p class="caption">Three fresh conversations. One explicitly selected training UUID. Separate candidate and serving namespaces. The guided folder starts with the same photo and installed tools as baseline.</p>
 <p>Keep one Bash or zsh terminal for all shell commands and helpers. The prompt boxes explicitly say when to paste into Claude Code. Setup needs a gateway supporting both Anthropic and OpenAI-compatible APIs, as in the existing Cortex walkthrough. Expect three interactive task calls, a short LLM probe, Evolve reflection, and retrieval; interactive Claude sessions have no automatic experiment-runner timeout or budget cap.</p>
 </section><section class="step" id="step-1"><div class="step-head"><span class="number">1</span><h2 class="step-title">Gather the prerequisites</h2><label class="done"><input type="checkbox" data-step="1"> Done</label></div>
-  <p>You need this <strong>Evolve integration checkout</strong>, a matching <strong>Cortex checkout with the Evolve plugin</strong>, <code>uv</code>, <code>git</code>, <code>make</code>, <code>go</code>, a C/C++ compiler for the Cortex build, <code>openssl</code>, <code>curl</code>, <code>jq</code>, and a recent <code>claude</code> CLI.</p>
-  <p>Step 2 clones the exact integration branches: <a href="https://github.com/vinodmut/kaizen/tree/rossocortex">Evolve: <code>vinodmut/kaizen</code>, branch <code>rossocortex</code></a> and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">Cortex: <code>vinodmut/cortex</code>, branch <code>evolve-plugin</code></a>. The commands create both checkouts for you; no existing checkout or path editing is needed.</p>
+  <p>You need a matching <strong>Cortex build with the Evolve plugin</strong>, <code>uv</code>, <code>git</code>, <code>make</code>, <code>go</code>, a C/C++ compiler for the Cortex build, <code>openssl</code>, <code>curl</code>, <code>jq</code>, and a recent <code>claude</code> CLI.</p>
+  <p>This guide uses the integration branches: <a href="https://github.com/vinodmut/kaizen/tree/rossocortex">Evolve: <code>vinodmut/kaizen</code>, branch <code>rossocortex</code></a> and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">Cortex: <code>vinodmut/cortex</code>, branch <code>evolve-plugin</code></a>. Evolve is installed directly from Git into uv’s managed cache. Only Cortex is cloned and built: this fork’s <code>evolve-plugin</code> branch has no downloadable release binary, and its local Go module replacements prevent a simple versioned <code>go install</code>. No existing checkout or path editing is needed.</p>
   <p><strong>Photo-task requirement for the recorded example:</strong> <code>exiftool</code> must be installed and available on the shell's <code>PATH</code>. The full development check ran on macOS with ExifTool installed. The photo task itself also works on other platforms that provide ExifTool. A Pillow-based Python extractor can perform the task, but its commands and generated guidelines will differ from the recorded ExifTool example.</p>
   <p>On macOS with Homebrew, install ExifTool if it is missing:</p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>brew install exiftool</code></pre></div>
@@ -58,48 +59,53 @@ go version
 openssl version
 jq --version
 claude --version</code></pre></div>
-  <div class="see"><strong>You should see</strong>An ExifTool executable path and version, followed by version output from every other command. Evolve requires Python 3.12 or later; <code>uv sync</code> creates its managed environment. Use the Go toolchain required by the Cortex checkout’s <code>cmd/cortex/go.mod</code> (1.26.10 in the checked snapshot). The recorded rerun used Claude Code 2.1.287.</div>
+  <div class="see"><strong>You should see</strong>An ExifTool executable path and version, followed by version output from every other command. Evolve requires Python 3.12 or later; <code>uv run --no-project --with</code> creates a cached environment and downloads Python 3.12 if needed. Use the Go toolchain required by the Cortex checkout’s <code>cmd/cortex/go.mod</code> (1.26.10 in the checked snapshot). The recorded rerun used Claude Code 2.1.287.</div>
   <p>If <code>uv</code> is missing, install it from <a href="https://docs.astral.sh/uv/getting-started/installation/">the uv installation guide</a>. Install the Claude Code CLI using <a href="https://code.claude.com/docs/en/setup">its setup instructions</a>. On macOS, the Cortex build may require the Xcode Command Line Tools; on Linux, install your distribution’s compiler/build tools.</p>
-  <div class="note"><strong>Gateway requirement</strong>This setup expects one gateway and credential that support Anthropic <code>/v1/messages</code>, OpenAI-compatible <code>/v1/chat/completions</code>, and a model catalog at <code>/v1/models</code> or <code>/models</code>. Its service setup selects a supported GPT-4.1 model or <code>claude-sonnet-4-5</code>. A direct endpoint supporting only one of those APIs needs runner adaptation before using this guide.</div>
+  <div class="note"><strong>Gateway requirement</strong>This setup expects one gateway and credential that support Anthropic <code>/v1/messages</code>, OpenAI-compatible <code>/v1/chat/completions</code>, and a model catalog at <code>/v1/models</code> or <code>/models</code>. Its service setup selects a supported GPT-4.1 model or <code>claude-sonnet-4-5</code>. A direct endpoint supporting only one of those APIs needs helper adaptation before using this guide.</div>
 </section>
-<section class="step" id="step-2"><div class="step-head"><span class="number">2</span><h2 class="step-title">Clone both branches into a fresh temporary directory</h2><label class="done"><input type="checkbox" data-step="2"> Done</label></div>
-  <p>Open Bash or zsh and paste this entire block unchanged. It creates a unique private directory under your system’s temporary directory, clones both branches side by side, and sets every path used later. Keep using this terminal so the exported paths and helper function remain available.</p>
+<section class="step" id="step-2"><div class="step-head"><span class="number">2</span><h2 class="step-title">Create a fresh temporary directory and clone Cortex</h2><label class="done"><input type="checkbox" data-step="2"> Done</label></div>
+  <p>Open Bash or zsh and paste this entire block unchanged. It creates a unique private directory under your system’s temporary directory, clones only Cortex, and sets every path used later. Keep using this terminal so the exported paths and helper function remain available.</p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="clone-setup"><code>umask 077
-export DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/cortex-evolve-photo.XXXXXX")"
-export DEMO_EVOLVE_REPO="$DEMO_ROOT/kaizen"
-export DEMO_CORTEX_REPO="$DEMO_ROOT/cortex"
-export DEMO_CORTEX_BIN="$DEMO_CORTEX_REPO/bin/cortex"
-export DEMO_CA_DIR="$DEMO_ROOT/ca"
-export DEMO_CREDENTIALS="$DEMO_ROOT/gateway.env"
-export DEMO_RESULTS="$DEMO_ROOT/run-$(date -u +%Y%m%dT%H%M%SZ)"
-export UV_CACHE_DIR="$DEMO_ROOT/uv-cache"
+export DEMO_ROOT=&quot;$(mktemp -d &quot;${TMPDIR:-/tmp}/cortex-evolve-photo.XXXXXX&quot;)&quot;
+export DEMO_EVOLVE_SPEC=&#x27;altk-evolve-core[server,cli,sentence-transformers] @ git+https://github.com/vinodmut/kaizen.git@rossocortex&#x27;
+export DEMO_CORTEX_REPO=&quot;$DEMO_ROOT/cortex&quot;
+export DEMO_CORTEX_BIN=&quot;$DEMO_CORTEX_REPO/bin/cortex&quot;
+export DEMO_CA_DIR=&quot;$DEMO_ROOT/ca&quot;
+export DEMO_CREDENTIALS=&quot;$DEMO_ROOT/gateway.env&quot;
+export DEMO_RESULTS=&quot;$DEMO_ROOT/run-$(date -u +%Y%m%dT%H%M%SZ)&quot;
+export UV_CACHE_DIR=&quot;$DEMO_ROOT/uv-cache&quot;
 
-git clone --depth 1 --single-branch --branch rossocortex \
-  https://github.com/vinodmut/kaizen.git "$DEMO_EVOLVE_REPO" &amp;&amp;
 git clone --depth 1 --single-branch --branch evolve-plugin \
-  https://github.com/vinodmut/cortex.git "$DEMO_CORTEX_REPO" &amp;&amp;
-cd "$DEMO_EVOLVE_REPO" &amp;&amp;
-test -f experiments/cortex_workflow_learning/bridge.py &amp;&amp;
-printf 'Demo root: %s\nEvolve checkout: %s\nCortex checkout: %s\nResults: %s\n' \
-  "$DEMO_ROOT" "$DEMO_EVOLVE_REPO" "$DEMO_CORTEX_REPO" "$DEMO_RESULTS" &amp;&amp;
-git -C "$DEMO_EVOLVE_REPO" branch --show-current &amp;&amp;
-git -C "$DEMO_CORTEX_REPO" branch --show-current</code></pre></div>
-  <div class="see"><strong>You should see</strong>Git reports <code>Cloning into …/kaizen</code> and <code>Cloning into …/cortex</code>, then prints your temporary paths. The final two lines are <code>rossocortex</code> and <code>evolve-plugin</code>. The bridge-file check succeeds silently. If cloning fails, resolve that error before continuing.</div>
+  https://github.com/vinodmut/cortex.git &quot;$DEMO_CORTEX_REPO&quot; &amp;&amp;
+cd &quot;$DEMO_ROOT&quot; &amp;&amp;
+printf &#x27;Demo root: %s\nEvolve install: %s\nCortex checkout: %s\nResults: %s\n&#x27; \
+  &quot;$DEMO_ROOT&quot; &quot;$DEMO_EVOLVE_SPEC&quot; &quot;$DEMO_CORTEX_REPO&quot; &quot;$DEMO_RESULTS&quot; &amp;&amp;
+git -C &quot;$DEMO_CORTEX_REPO&quot; branch --show-current</code></pre></div>
+  <div class="see"><strong>You should see</strong>Git reports <code>Cloning into …/cortex</code>, then prints your temporary paths and Evolve’s Git install specification. The final line is <code>evolve-plugin</code>. If cloning fails, resolve that error before continuing.</div>
   <pre class="output"><code>Your directory layout (the random suffix will differ):
 /tmp/cortex-evolve-photo.A1b2C3/
-├── kaizen/                 Evolve, rossocortex branch
 ├── cortex/                 Cortex, evolve-plugin branch
 ├── ca/                     created in step 5
 ├── gateway.env             created in step 5
-├── uv-cache/               dependency cache
+├── services.py             standalone helper, created in step 6
+├── uv-cache/               installed Evolve environment and dependency cache
 └── run-20261103T120000Z/    photo-session evidence and isolated Evolve storage</code></pre>
   <p>On macOS, the root may be under <code>/var/folders/…/T/</code> instead of <code>/tmp</code>; the variables handle either location. Later commands use these exported paths automatically. You only need to supply your gateway URL/key in step 5 and choose the freshly generated guidelines in step 13.</p>
-  <p>The helper in step 6 overrides the runner’s developer-specific defaults without editing source files. All checkouts, build output, credentials, and results for this run live under the printed <code>DEMO_ROOT</code>. To retain evidence beyond temporary-directory cleanup, copy your results to a lasting location after step 16.</p>
+  <p>The standalone helper in step 6 uses the paths above and imports Evolve from its installed package. Build output, credentials, the helper, cached packages, and results for this run live under the printed <code>DEMO_ROOT</code>. To retain evidence beyond temporary-directory cleanup, copy your results to a lasting location after step 16.</p>
 </section>
-<section class="step" id="step-3"><div class="step-head"><span class="number">3</span><h2 class="step-title">Install Evolve</h2><label class="done"><input type="checkbox" data-step="3"> Done</label></div><div class="codebox"><button type="button">Copy</button><pre id="install-evolve" data-shell="true"><code>cd &quot;$DEMO_EVOLVE_REPO&quot;
-uv sync
-uv run --no-sync evolve-mcp --help
-uv run --no-sync evolve sync cortex --help</code></pre></div><div class="see"><strong>You should see</strong>The environment installs successfully. The help screens show the MCP transport/port options and Cortex session-ingestion options.</div><pre class="output"><code>INFO:entities-mcp:Evolve UI dist directory not found. Skipping UI mount.</code></pre><p>This message is expected: the optional web frontend has not been built. This guide uses the Evolve CLI and saved JSON to inspect guidelines. Services start in step 8.</p><p>Installing Evolve does not configure its LLM. Step 5 sets its endpoint/key and step 7 selects and tests its model. The demo uses filesystem storage under <code>$DEMO_RESULTS/runtime/data</code> and bookkeeping at <code>runtime/entities.sqlite.db</code>.</p></section>
+<section class="step" id="step-3"><div class="step-head"><span class="number">3</span><h2 class="step-title">Install Evolve</h2><label class="done"><input type="checkbox" data-step="3"> Done</label></div><div class="codebox"><button type="button">Copy</button><pre id="install-evolve" data-shell="true"><code>cd &quot;$DEMO_ROOT&quot;
+uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; evolve-mcp --help
+
+# Record the installed Git commit so every later command uses this version.
+export DEMO_EVOLVE_COMMIT=&quot;$(uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; \
+  python -c &#x27;import json; from importlib.metadata import distribution; print(json.loads(distribution(&quot;altk-evolve-core&quot;).read_text(&quot;direct_url.json&quot;))[&quot;vcs_info&quot;][&quot;commit_id&quot;])&#x27;)&quot;
+if [ &quot;${#DEMO_EVOLVE_COMMIT}&quot; -eq 40 ]; then
+  export DEMO_EVOLVE_SPEC=&quot;altk-evolve-core[server,cli,sentence-transformers] @ git+https://github.com/vinodmut/kaizen.git@$DEMO_EVOLVE_COMMIT&quot;
+  printf &#x27;Pinned Evolve commit: %s\n&#x27; &quot;$DEMO_EVOLVE_COMMIT&quot;
+  uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; evolve sync cortex --help
+else
+  printf &#x27;Could not resolve the installed Evolve commit. Stop here and retry step 3.\n&#x27;
+fi</code></pre></div><div class="see"><strong>You should see</strong>uv fetches the Git source, builds Evolve’s package, and installs its runtime dependencies into the cache. The block prints <code>Pinned Evolve commit: …</code> and updates the install specification to that exact commit; later commands reuse this version and its cached environment. No Kaizen working checkout is created. The help screens show the MCP transport/port options and Cortex session-ingestion options.</div><pre class="output"><code>INFO:entities-mcp:Evolve UI dist directory not found. Skipping UI mount.</code></pre><p>This message is expected: the optional web frontend has not been built. This guide uses the Evolve CLI and saved JSON to inspect guidelines. Services start in step 8.</p><p>Installing Evolve does not configure its LLM. Step 5 sets its endpoint/key and step 7 selects and tests its model. The demo uses filesystem storage under <code>$DEMO_RESULTS/runtime/data</code> and bookkeeping at <code>runtime/entities.sqlite.db</code>.</p></section>
 <section class="step" id="step-4"><div class="step-head"><span class="number">4</span><h2 class="step-title">Build Cortex with the Evolve plugin</h2><label class="done"><input type="checkbox" data-step="4"> Done</label></div>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>git -C "$DEMO_CORTEX_REPO" log -1 --oneline
 make -C "$DEMO_CORTEX_REPO" cortex PROFILE=full &amp;&amp;
@@ -136,7 +142,7 @@ fi
 test -f "$DEMO_CA_DIR/tls.key"
 test -f "$DEMO_CA_DIR/tls.crt"
 openssl x509 -in "$DEMO_CA_DIR/ca.crt" -noout -subject</code></pre></div>
-  <div class="see"><strong>You should see</strong>OpenSSL may print key-generation progress, then the certificate subject. A newly generated CA has subject <code>Cortex Evolve Manual Demo CA</code>. An existing CA has its own subject. The runner configures the agent’s <code>NODE_EXTRA_CA_CERTS</code> for this CA; installing it into the OS trust store is unnecessary for this demo.</div>
+  <div class="see"><strong>You should see</strong>OpenSSL may print key-generation progress, then the certificate subject. A newly generated CA has subject <code>Cortex Evolve Manual Demo CA</code>. An existing CA has its own subject. The interactive launcher configures the agent’s <code>NODE_EXTRA_CA_CERTS</code> for this CA; installing it into the OS trust store is unnecessary for this demo.</div>
   <h3>Configure the gateway used by Evolve and the task agent</h3>
   <p>Evolve needs an LLM to generate, reconcile, and retrieve guidelines. In this demo, it calls your gateway’s <strong>OpenAI-compatible API</strong>; Claude Code calls the same gateway’s <strong>Anthropic-compatible API</strong>. Cortex’s proxy/MCP addresses are separate from this LLM endpoint.</p>
   <p>Paste the block below, then enter your gateway URL and key when prompted. The block normalizes a trailing <code>/v1</code>, hides key entry, and writes both clients’ configuration into the private <code>gateway.env</code> file.</p>
@@ -167,77 +173,318 @@ test -s "$DEMO_CREDENTIALS"
   <div class="see"><strong>You should see</strong>Two prompts followed by <code>Gateway configuration saved to …/gateway.env</code>. The file check succeeds silently; the key is never printed. The same key is used for the gateway’s Anthropic requests and Evolve’s OpenAI-compatible requests. Use the <code>ANTHROPIC_API_KEY</code> file created here for the interactive launcher.</div>
   <div class="scroll"><table><thead><tr><th>Evolve setting</th><th>Value / where it comes from</th><th>Purpose</th></tr></thead><tbody><tr><td><code>EVOLVE_CUSTOM_LLM_PROVIDER</code></td><td><code>openai</code>, saved by the block above</td><td>Use the OpenAI-compatible protocol through your gateway, even if the gateway’s model ID contains a provider prefix.</td></tr><tr><td><code>OPENAI_BASE_URL</code></td><td>Your gateway root plus <code>/v1</code></td><td>Evolve’s inference endpoint. It is not the local Cortex proxy or Evolve MCP URL.</td></tr><tr><td><code>OPENAI_API_KEY</code></td><td>The key you entered</td><td>Authenticate Evolve’s model calls.</td></tr><tr><td><code>EVOLVE_MODEL_NAME</code></td><td>The gateway-supported model selected in step 7</td><td>Default model for Evolve’s LLM operations.</td></tr><tr><td><code>EVOLVE_GUIDELINES_MODEL</code></td><td>Explicitly set to the same selected model in step 7</td><td>Model used to generate the guidelines you will inspect.</td></tr></tbody></table></div>
   <p>The <code>services</code> helper reads <code>gateway.env</code> and supplies these settings to Evolve subprocesses. You do not need to paste a key into a shell export or manually start a second server. Step 7 verifies the actual resolved Evolve settings and sends a small inference request.</p>
-  <p>Keep the credential file and CA private key in the private demo workspace. The runner reads credentials into subprocess environments; you do not need to print the file or paste a key into any command below.</p>
+  <p>Keep the credential file and CA private key in the private demo workspace. The service helper reads credentials into subprocess environments; you do not need to print the file or paste a key into any command below.</p>
 </section>
-<section class="step" id="step-6"><div class="step-head"><span class="number">6</span><h2 class="step-title">Define the service helper</h2><label class="done"><input type="checkbox" data-step="6"> Done</label></div><p>Paste this function into the same Bash or zsh terminal. It reuses the existing service-startup code with your temporary paths and dedicated photo namespaces. It handles only setup, the injection toggle, and cleanup. You launch Claude Code and enter every task prompt yourself.</p><div class="codebox"><button type="button">Copy</button><pre id="services-helper" data-shell="true"><code>services() {
-  (
-    cd &quot;$DEMO_EVOLVE_REPO&quot; || exit 1
-    uv run --no-sync python -u - &quot;$@&quot; &lt;&lt;&#x27;SERVICES_PY&#x27;
+<section class="step" id="step-6"><div class="step-head"><span class="number">6</span><h2 class="step-title">Define the service helper</h2><label class="done"><input type="checkbox" data-step="6"> Done</label></div><p>Paste the entire block into the same Bash or zsh terminal. It writes a standalone helper to <code>$DEMO_ROOT/services.py</code> and defines the <code>services</code> command. The helper uses your temporary paths and dedicated photo namespaces; it does not import any repository-only experiment code. It handles only setup, the injection toggle, and cleanup. You launch Claude Code and enter every task prompt yourself.</p><div class="codebox"><button type="button">Copy</button><pre id="services-helper" data-shell="true"><code>cat &gt; &quot;$DEMO_ROOT/services.py&quot; &lt;&lt;&#x27;SERVICES_PY&#x27;
+&quot;&quot;&quot;Standalone process setup for the interactive photo walkthrough.&quot;&quot;&quot;
+
+import argparse
+import json
 import os
-import sys
+import signal
+import subprocess
+import time
+from datetime import datetime, timezone
 from pathlib import Path
-from experiments.cortex_learning_demo import run as driver
-from experiments.cortex_workflow_learning import run as support
 
-driver.CORTEX = Path(os.environ[&quot;DEMO_CORTEX_BIN&quot;]).resolve()
-driver.CA_DIR = Path(os.environ[&quot;DEMO_CA_DIR&quot;]).resolve()
-driver.CREDENTIALS = Path(os.environ[&quot;DEMO_CREDENTIALS&quot;]).resolve()
-driver.ARTIFACTS = Path(os.environ[&quot;DEMO_RESULTS&quot;]).resolve()
-driver.STATE = driver.ARTIFACTS / &quot;state.json&quot;
-driver.LEARN_NS = &quot;photo-candidates&quot;
-driver.SERVE_NS = &quot;photo-reviewed&quot;
-driver.PROFILE = &quot;photo-demo&quot;
-driver.SOURCE = &quot;https://www.youtube.com/watch?v=XIlYA79pYp4&quot;
-driver.PROMPT = &quot;Read embedded EXIF metadata from a local photo.&quot;
-driver.CASES = {}
+import httpx
+import yaml
+from dotenv import dotenv_values
 
-commands = {
-    &quot;preflight&quot;: driver.preflight,
-    &quot;start&quot;: driver.start,
-    &quot;bridge-start&quot;: support.bridge_start,
-    &quot;injection-off&quot;: lambda: support.set_injection(False),
-    &quot;injection-on&quot;: lambda: support.set_injection(True),
-    &quot;stop&quot;: driver.stop,
-}
-if len(sys.argv) != 2 or sys.argv[1] not in commands:
-    print(&quot;Service commands: &quot; + &quot;, &quot;.join(commands))
-    if sys.argv[1:] != [&quot;--help&quot;]:
-        raise SystemExit(2)
-else:
-    commands[sys.argv[1]]()
+ROOT = Path(os.environ[&quot;DEMO_ROOT&quot;])
+RESULTS = Path(os.environ[&quot;DEMO_RESULTS&quot;])
+RUNTIME = RESULTS / &quot;runtime&quot;
+STATE = RESULTS / &quot;state.json&quot;
+API = &quot;http://127.0.0.1:47801&quot;
+MCP = &quot;http://127.0.0.1:18201/sse&quot;
+
+
+def load_state():
+    return json.loads(STATE.read_text())
+
+
+def save_state(state):
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(json.dumps(state, indent=2) + &quot;\n&quot;)
+
+
+def environment(model=None):
+    values = {k: v for k, v in dotenv_values(os.environ[&quot;DEMO_CREDENTIALS&quot;]).items() if v}
+    token = values.get(&quot;ANTHROPIC_API_KEY&quot;) or values.get(&quot;ANTHROPIC_AUTH_TOKEN&quot;)
+    if not token or not values.get(&quot;ANTHROPIC_BASE_URL&quot;):
+        raise RuntimeError(&quot;Complete the gateway URL/key setup before preflight.&quot;)
+    base = values[&quot;ANTHROPIC_BASE_URL&quot;].rstrip(&quot;/&quot;)
+    if base.endswith(&quot;/v1&quot;):
+        base = base[:-3]
+    env = os.environ.copy()
+    for name in (&quot;HTTP_PROXY&quot;, &quot;HTTPS_PROXY&quot;, &quot;ALL_PROXY&quot;, &quot;http_proxy&quot;, &quot;https_proxy&quot;, &quot;all_proxy&quot;):
+        env.pop(name, None)
+    env.update(values)
+    env.pop(&quot;ANTHROPIC_AUTH_TOKEN&quot;, None)
+    selected = model or env.get(&quot;EVOLVE_MODEL_NAME&quot;, &quot;Azure/gpt-4.1&quot;)
+    env.update(
+        ANTHROPIC_BASE_URL=base,
+        ANTHROPIC_API_KEY=token,
+        OPENAI_BASE_URL=base + &quot;/v1&quot;,
+        OPENAI_API_KEY=token,
+        EVOLVE_CUSTOM_LLM_PROVIDER=&quot;openai&quot;,
+        EVOLVE_MODEL_NAME=selected,
+        EVOLVE_GUIDELINES_MODEL=selected,
+        EVOLVE_BACKEND=&quot;filesystem&quot;,
+        EVOLVE_DATA_DIR=str(RUNTIME / &quot;data&quot;),
+        EVOLVE_SQLITE_PATH=str(RUNTIME / &quot;entities.sqlite.db&quot;),
+        EVOLVE_NAMESPACE_ID=&quot;photo-reviewed&quot;,
+        EVOLVE_GUIDELINES_MODE=&quot;consistency&quot;,
+        EVOLVE_INJECTION_MODE=&quot;retrieval&quot;,
+        EVOLVE_OTEL_ENABLED=&quot;false&quot;,
+        EVOLVE_RETENTION_SCHEDULER_ENABLED=&quot;false&quot;,
+        EVOLVE_HOOKS_CONFIG=&quot;&quot;,
+    )
+    return env
+
+
+def uv_command(*args):
+    return [&quot;uv&quot;, &quot;run&quot;, &quot;--no-project&quot;, &quot;--python&quot;, &quot;3.12&quot;, &quot;--with&quot;, os.environ[&quot;DEMO_EVOLVE_SPEC&quot;], *args]
+
+
+def preflight():
+    if STATE.exists():
+        raise RuntimeError(&quot;A run already exists. Choose a fresh DEMO_RESULTS directory.&quot;)
+    binary = Path(os.environ[&quot;DEMO_CORTEX_BIN&quot;])
+    ca = Path(os.environ[&quot;DEMO_CA_DIR&quot;])
+    if not binary.is_file() or not os.access(binary, os.X_OK) or not all((ca / n).is_file() for n in (&quot;ca.crt&quot;, &quot;tls.crt&quot;, &quot;tls.key&quot;)):
+        raise RuntimeError(&quot;Complete the Cortex build and CA setup before preflight.&quot;)
+    env = environment()
+    catalog = []
+    with httpx.Client(trust_env=False, timeout=25) as client:
+        for path in (&quot;/v1/models&quot;, &quot;/models&quot;):
+            response = client.get(env[&quot;ANTHROPIC_BASE_URL&quot;] + path, headers={&quot;Authorization&quot;: &quot;Bearer &quot; + env[&quot;OPENAI_API_KEY&quot;]})
+            if response.status_code == 200:
+                catalog = [m[&quot;id&quot;] for m in response.json().get(&quot;data&quot;, [])]
+                break
+    preferred = [&quot;Azure/gpt-4.1&quot;, &quot;gpt-4.1&quot;, &quot;claude-sonnet-4-5&quot;]
+    model = next((m for m in preferred if m in catalog), None)
+    model = model or next((m for m in catalog if &quot;gpt-4.1&quot; in m.lower() and &quot;mini&quot; not in m.lower()), None)
+    if not model:
+        raise RuntimeError(&quot;No supported task model was found in the gateway catalog.&quot;)
+    save_state({&quot;created_at&quot;: datetime.now(timezone.utc).isoformat(), &quot;model&quot;: model, &quot;services&quot;: {}})
+    print(json.dumps({&quot;model&quot;: model, &quot;task&quot;: &quot;Read embedded EXIF metadata from a local photo.&quot;}))
+
+
+def cortex_config():
+    return {
+        &quot;mode&quot;: &quot;proxy-sidecar&quot;,
+        &quot;listener&quot;: {
+            &quot;roles&quot;: [&quot;forward&quot;],
+            &quot;bind_loopback_only&quot;: True,
+            &quot;forward_proxy_addr&quot;: &quot;127.0.0.1:47800&quot;,
+            &quot;session_api_addr&quot;: &quot;127.0.0.1:47801&quot;,
+            &quot;transparent_proxy_addr&quot;: &quot;127.0.0.1:47803&quot;,
+            &quot;health_addr&quot;: &quot;127.0.0.1:47804&quot;,
+        },
+        &quot;stats&quot;: {&quot;address&quot;: &quot;127.0.0.1:47802&quot;},
+        &quot;tls_bridge&quot;: {&quot;mode&quot;: &quot;enabled&quot;, &quot;ca_dir&quot;: os.environ[&quot;DEMO_CA_DIR&quot;], &quot;generate_ca&quot;: False},
+        &quot;cost_ledger&quot;: {&quot;enabled&quot;: False},
+        &quot;pipeline&quot;: {
+            &quot;outbound&quot;: {
+                &quot;plugins&quot;: [
+                    {&quot;name&quot;: &quot;inference-parser&quot;},
+                    {&quot;name&quot;: &quot;mcp-parser&quot;},
+                    {&quot;name&quot;: &quot;a2a-parser&quot;},
+                    {
+                        &quot;name&quot;: &quot;evolve&quot;,
+                        &quot;config&quot;: {
+                            &quot;endpoint&quot;: MCP,
+                            &quot;agents&quot;: [&quot;claude-code&quot;],
+                            &quot;serve_namespace&quot;: &quot;photo-reviewed&quot;,
+                            &quot;learn_namespace&quot;: &quot;photo-candidates&quot;,
+                            &quot;processing_profile&quot;: &quot;photo-demo&quot;,
+                            &quot;learn&quot;: False,
+                            &quot;inject&quot;: False,
+                            &quot;idle_after_seconds&quot;: 60,
+                            &quot;cache_ttl_seconds&quot;: 30,
+                            &quot;timeout_ms&quot;: 15000,
+                            &quot;learn_timeout_seconds&quot;: 180,
+                        },
+                    },
+                ]
+            }
+        },
+    }
+
+
+def spawn(name, command, state, env):
+    RUNTIME.mkdir(parents=True, exist_ok=True)
+    with (RUNTIME / f&quot;{name}.log&quot;).open(&quot;w&quot;) as log:
+        child = subprocess.Popen(command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
+    state[&quot;services&quot;][name] = {&quot;pid&quot;: child.pid, &quot;command&quot;: command}
+    save_state(state)
+    return child
+
+
+def start():
+    state = load_state()
+    if state[&quot;services&quot;]:
+        raise RuntimeError(&quot;Services have already been started for this run.&quot;)
+    RUNTIME.mkdir(parents=True, exist_ok=True)
+    config = RUNTIME / &quot;cortex.yaml&quot;
+    config.write_text(yaml.safe_dump(cortex_config(), sort_keys=False))
+    env = environment(state[&quot;model&quot;])
+    children = [
+        spawn(&quot;evolve&quot;, uv_command(&quot;evolve-mcp&quot;, &quot;--transport&quot;, &quot;sse&quot;, &quot;--port&quot;, &quot;18201&quot;), state, env),
+        spawn(&quot;cortex&quot;, [os.environ[&quot;DEMO_CORTEX_BIN&quot;], &quot;--config&quot;, str(config)], state, env),
+    ]
+    with httpx.Client(trust_env=False, timeout=2) as client:
+        for _ in range(60):
+            if any(c.poll() is not None for c in children):
+                raise RuntimeError(&quot;A service exited. Inspect runtime/cortex.log and runtime/evolve.log; use services stop to clean up.&quot;)
+            try:
+                response = client.get(API + &quot;/v1/pipeline&quot;)
+                with client.stream(&quot;GET&quot;, MCP) as stream:
+                    if response.status_code == stream.status_code == 200:
+                        names = [p[&quot;name&quot;] for p in response.json()[&quot;outbound&quot;]]
+                        if &quot;evolve&quot; in names:
+                            print(json.dumps({&quot;started&quot;: [&quot;evolve&quot;, &quot;cortex&quot;], &quot;pipeline&quot;: names}))
+                            return
+            except httpx.HTTPError:
+                pass
+            time.sleep(1)
+    raise RuntimeError(&quot;Services were not ready within 60 seconds. Inspect the runtime logs and use services stop.&quot;)
+
+
+def bridge_start():
+    state = load_state()
+    if &quot;bridge&quot; in state[&quot;services&quot;]:
+        raise RuntimeError(&quot;The bridge is already running for this run.&quot;)
+    env = environment(state[&quot;model&quot;])
+    env[&quot;WORKFLOW_REAL_GATEWAY&quot;] = env[&quot;ANTHROPIC_BASE_URL&quot;]
+    child = spawn(&quot;bridge&quot;, uv_command(&quot;python&quot;, str(Path(__file__).resolve()), &quot;bridge&quot;), state, env)
+    with httpx.Client(trust_env=False, timeout=1) as client:
+        for _ in range(30):
+            if child.poll() is not None:
+                raise RuntimeError(&quot;The bridge exited. Inspect runtime/bridge.log.&quot;)
+            try:
+                if client.get(&quot;http://127.0.0.1:18202/openapi.json&quot;).status_code == 200:
+                    print(json.dumps({&quot;started&quot;: &quot;bridge&quot;, &quot;port&quot;: 18202}))
+                    return
+            except httpx.HTTPError:
+                pass
+            time.sleep(1)
+    raise RuntimeError(&quot;Bridge startup timed out. Inspect runtime/bridge.log.&quot;)
+
+
+def injection(enabled):
+    path = RUNTIME / &quot;cortex.yaml&quot;
+    config = yaml.safe_load(path.read_text())
+    plugin = next(p for p in config[&quot;pipeline&quot;][&quot;outbound&quot;][&quot;plugins&quot;] if p[&quot;name&quot;] == &quot;evolve&quot;)
+    if plugin[&quot;config&quot;][&quot;learn&quot;]:
+        raise RuntimeError(&quot;Automatic learning must remain off.&quot;)
+    plugin[&quot;config&quot;][&quot;inject&quot;] = enabled
+    path.write_text(yaml.safe_dump(config, sort_keys=False))
+    time.sleep(3)
+    print(json.dumps({&quot;inject&quot;: enabled, &quot;learn&quot;: False}))
+
+
+def stop():
+    state = load_state()
+    for service in state[&quot;services&quot;].values():
+        try:
+            os.killpg(service[&quot;pid&quot;], signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+    print(&quot;Stopped only the processes recorded for this demo.&quot;)
+
+
+def serve_bridge():
+    from fastapi import FastAPI, Request
+    from starlette.responses import StreamingResponse
+    import uvicorn
+
+    app = FastAPI()
+    hop = {&quot;host&quot;, &quot;content-length&quot;, &quot;connection&quot;, &quot;transfer-encoding&quot;, &quot;content-encoding&quot;}
+
+    @app.post(&quot;/v1/messages&quot;)
+    async def messages(request: Request):
+        body = await request.json()
+        system = body.get(&quot;system&quot;)
+        if isinstance(system, list):
+            if any(not isinstance(b, dict) or b.get(&quot;type&quot;) != &quot;text&quot; or not isinstance(b.get(&quot;text&quot;), str) for b in system):
+                raise ValueError(&quot;The bridge supports text system blocks only.&quot;)
+            body = {**body, &quot;system&quot;: &quot;\n\n&quot;.join(b[&quot;text&quot;] for b in system)}
+        headers = {k: v for k, v in request.headers.items() if k.lower() not in hop}
+        client = httpx.AsyncClient(trust_env=False, timeout=180)
+        upstream = client.build_request(
+            &quot;POST&quot;, os.environ[&quot;WORKFLOW_REAL_GATEWAY&quot;].rstrip(&quot;/&quot;) + &quot;/v1/messages&quot;, headers=headers, json=body
+        )
+        try:
+            response = await client.send(upstream, stream=True)
+        except BaseException:
+            await client.aclose()
+            raise
+
+        async def stream():
+            try:
+                async for chunk in response.aiter_bytes():
+                    yield chunk
+            finally:
+                await response.aclose()
+                await client.aclose()
+
+        returned = {k: v for k, v in response.headers.items() if k.lower() not in hop}
+        return StreamingResponse(stream(), status_code=response.status_code, headers=returned)
+
+    uvicorn.run(app, host=&quot;127.0.0.1&quot;, port=18202, log_level=&quot;warning&quot;, access_log=False)
+
+
+if __name__ == &quot;__main__&quot;:
+    commands = {
+        &quot;preflight&quot;: preflight,
+        &quot;start&quot;: start,
+        &quot;bridge-start&quot;: bridge_start,
+        &quot;injection-off&quot;: lambda: injection(False),
+        &quot;injection-on&quot;: lambda: injection(True),
+        &quot;stop&quot;: stop,
+        &quot;bridge&quot;: serve_bridge,
+    }
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(&quot;command&quot;, choices=commands)
+    commands[parser.parse_args().command]()
 SERVICES_PY
-  )
+
+services() {
+  uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; \
+    python &quot;$DEMO_ROOT/services.py&quot; &quot;$@&quot;
 }
 
-services --help</code></pre></div><div class="see"><strong>You should see</strong><code>Service commands: preflight, start, bridge-start, injection-off, injection-on, stop</code>. This help check starts no processes and makes no model calls.</div></section>
+services --help</code></pre></div><div class="see"><strong>You should see</strong>An argparse help screen listing <code>preflight</code>, <code>start</code>, <code>bridge-start</code>, <code>injection-off</code>, <code>injection-on</code>, and <code>stop</code>. The internal <code>bridge</code> command is launched by <code>bridge-start</code>. This help check starts no processes and makes no model calls.</div></section>
 <section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Select Evolve’s LLM and verify the connection</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
-  <p>Run from the Kaizen checkout in the same terminal as steps 2–6. This block checks the built Cortex binary, CA files, and fixed ports before calling preflight. It stops if a prerequisite is missing.</p>
-  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="preflight-check"><code>cd "$DEMO_EVOLVE_REPO" &amp;&amp;
-uv run --no-sync python - &lt;&lt;'PORTS_PY' &amp;&amp; services preflight
+  <p>Run from <code>$DEMO_ROOT</code> in the same terminal as steps 2–6. No Evolve checkout is needed. This block checks the built Cortex binary, CA files, and fixed ports before calling preflight. It stops if a prerequisite is missing.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="preflight-check"><code>cd &quot;$DEMO_ROOT&quot; &amp;&amp;
+uv run --no-project --python 3.12 python - &lt;&lt;&#x27;PORTS_PY&#x27; &amp;&amp; services preflight
 import os
 import socket
 from pathlib import Path
 
-binary = Path(os.environ["DEMO_CORTEX_BIN"])
-ca = Path(os.environ["DEMO_CA_DIR"])
-checks = [("Cortex binary (step 4)", binary, binary.is_file() and os.access(binary, os.X_OK))]
-checks += [("Cortex CA file (step 5)", ca / name, (ca / name).is_file())
-           for name in ("ca.crt", "tls.crt", "tls.key")]
+binary = Path(os.environ[&quot;DEMO_CORTEX_BIN&quot;])
+ca = Path(os.environ[&quot;DEMO_CA_DIR&quot;])
+checks = [(&quot;Cortex binary (step 4)&quot;, binary, binary.is_file() and os.access(binary, os.X_OK))]
+checks += [(&quot;Cortex CA file (step 5)&quot;, ca / name, (ca / name).is_file())
+           for name in (&quot;ca.crt&quot;, &quot;tls.crt&quot;, &quot;tls.key&quot;)]
 for label, path, ready in checks:
-    print(f"{'OK' if ready else 'MISSING'}: {label}: {path}")
+    print(f&quot;{&#x27;OK&#x27; if ready else &#x27;MISSING&#x27;}: {label}: {path}&quot;)
 if not all(ready for _, _, ready in checks):
-    raise SystemExit("Complete the indicated setup step, then paste this check again.")
+    raise SystemExit(&quot;Complete the indicated setup step, then paste this check again.&quot;)
 
 ports = [47800, 47801, 47802, 47803, 47804, 18201, 18202]
 busy = []
 for port in ports:
     with socket.socket() as sock:
         sock.settimeout(0.5)
-        if sock.connect_ex(("127.0.0.1", port)) == 0:
+        if sock.connect_ex((&quot;127.0.0.1&quot;, port)) == 0:
             busy.append(port)
-print("Busy ports:", busy)
+print(&quot;Busy ports:&quot;, busy)
 if busy:
-    raise SystemExit("Resolve these port conflicts before continuing.")
+    raise SystemExit(&quot;Resolve these port conflicts before continuing.&quot;)
 PORTS_PY</code></pre></div>
   <div class="see"><strong>You should see</strong>Four <code>OK</code> lines with the binary and CA paths, then <code>Busy ports: []</code>, followed by a JSON preflight report. A <code>MISSING</code> line identifies the exact path and setup step to complete. The recorded run selected <code>"model": "Azure/gpt-4.1"</code>. A supported alternative may be selected from your catalog. Preflight creates <code>$DEMO_RESULTS/state.json</code>; it does not run the task.</div>
   <pre class="output"><code>{"model": "Azure/gpt-4.1", "task": "Read embedded EXIF metadata from a local photo."}</code></pre>
@@ -251,40 +498,33 @@ printf 'Evolve default model: %s\nGuideline model: %s\n' \
   <div class="see"><strong>You should see</strong>The same model ID twice, for example <code>Azure/gpt-4.1</code>. These exports apply to subsequent <code>services start</code> and <code>demo_run</code> learning commands in this terminal. The interactive launcher uses that same model for every session.</div>
   <h3>Test Evolve’s actual LLM settings before starting services</h3>
   <p>A readable model catalog does not prove inference works. The following uses Evolve’s <code>LLMSettings</code> and the same LiteLLM completion function used for learning. It prints only the endpoint, provider, model, and whether a key is present, then makes <strong>one small model call</strong>.</p>
-  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="evolve-llm-check"><code>uv run --no-sync python - &lt;&lt;'LLM_CHECK_PY'
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="evolve-llm-check"><code>env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy \
+  uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; \
+    --env-file &quot;$DEMO_CREDENTIALS&quot; python - &lt;&lt;&#x27;LLM_CHECK_PY&#x27;
 import json
 import os
-from pathlib import Path
-from experiments.cortex_learning_demo import run as driver
-
-driver.CREDENTIALS = Path(os.environ["DEMO_CREDENTIALS"])
-driver.ARTIFACTS = Path(os.environ["DEMO_RESULTS"])
-state = json.loads((driver.ARTIFACTS / "state.json").read_text())
-environment = driver.base_env(state["model"])
-os.environ.update(environment)
-
 from altk_evolve.config.llm import LLMSettings
 from litellm import completion
 
 settings = LLMSettings()
 print(json.dumps({
-    "provider": settings.custom_llm_provider,
-    "guidelines_model": settings.guidelines_model,
-    "base_url": environment["OPENAI_BASE_URL"],
-    "api_key_configured": bool(environment["OPENAI_API_KEY"]),
+    &quot;provider&quot;: settings.custom_llm_provider,
+    &quot;guidelines_model&quot;: settings.guidelines_model,
+    &quot;base_url&quot;: os.environ[&quot;OPENAI_BASE_URL&quot;],
+    &quot;api_key_configured&quot;: bool(os.environ[&quot;OPENAI_API_KEY&quot;]),
 }, indent=2))
 response = completion(
     model=settings.guidelines_model,
     custom_llm_provider=settings.custom_llm_provider,
-    messages=[{"role": "user", "content": "Reply with exactly EVOLVE_LLM_OK."}],
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Reply with exactly EVOLVE_LLM_OK.&quot;}],
     max_tokens=32,
     temperature=0,
     timeout=45,
 )
 reply = response.choices[0].message.content
 if not reply:
-    raise SystemExit("The LLM returned an empty reply; inspect the gateway response.")
-print(json.dumps({"llm_connection": "ok", "reply": reply}, indent=2))
+    raise SystemExit(&quot;The LLM returned an empty reply; inspect the gateway response.&quot;)
+print(json.dumps({&quot;llm_connection&quot;: &quot;ok&quot;, &quot;reply&quot;: reply}, indent=2))
 LLM_CHECK_PY</code></pre></div>
   <div class="see"><strong>You should see</strong><code>provider: openai</code>, your selected guideline model, your gateway’s <code>/v1</code> URL, <code>api_key_configured: true</code>, and a reply such as <code>{"llm_connection": "ok", "reply": "EVOLVE_LLM_OK"}</code>. This confirms Evolve can make an inference request through the configured protocol; the learning step will exercise its longer prompts.</div>
   <p>If the call fails, check the OpenAI-compatible inference route, key permissions, exact model ID, and gateway logs before continuing. Model-not-found or authorization errors require fixing the gateway configuration, even when the catalog request succeeded. If you open a new terminal, restore the paths/helper and repeat the model exports before starting or learning.</p>
@@ -298,21 +538,37 @@ curl --noproxy &#x27;*&#x27; --fail --silent http://127.0.0.1:47801/v1/pipeline 
 curl --noproxy &#x27;*&#x27; --fail --silent http://127.0.0.1:18202/openapi.json \
   | jq &#x27;.paths | keys&#x27;
 cat &quot;$DEMO_RESULTS/runtime/cortex.yaml&quot;</code></pre></div><div class="see"><strong>You should see</strong>The services report readiness, the Cortex pipeline includes <code>evolve</code>, and the bridge exposes <code>/v1/messages</code>. The YAML has <code>learn: false</code>, <code>inject: false</code>, <code>learn_namespace: photo-candidates</code>, and <code>serve_namespace: photo-reviewed</code>.</div><table><thead><tr><th>Piece</th><th>Address / evidence</th></tr></thead><tbody><tr><td>Cortex forward proxy</td><td><code>127.0.0.1:47800</code></td></tr><tr><td>Cortex session API</td><td><code>127.0.0.1:47801</code></td></tr><tr><td>Evolve MCP</td><td><code>http://127.0.0.1:18201/sse</code></td></tr><tr><td>Compatibility bridge</td><td><code>http://127.0.0.1:18202</code></td></tr><tr><td>Logs / storage</td><td><code>$DEMO_RESULTS/runtime/</code></td></tr></tbody></table><p>Automatic learning stays off throughout. Only the training UUID supplied in step 12 goes to Evolve for reflection. The gateway bridge keeps every system text block, including Cortex's appended guidelines, in a format the gateway accepts.</p></section>
-<section class="step" id="step-9"><div class="step-head"><span class="number">9</span><h2 class="step-title">Prepare the photo copies and interactive launch commands</h2><label class="done"><input type="checkbox" data-step="9"> Done</label></div><p>Run from <code>$DEMO_EVOLVE_REPO</code>. Each session gets the same JPEG in its own directory. The first helper loads credentials and the same storage used by the server; the second launches the normal interactive <code>claude</code> CLI with Cortex routing. The third saves a session and its converted trajectory without learning.</p><div class="codebox"><button type="button">Copy</button><pre id="photo-helpers" data-shell="true"><code>cd &quot;$DEMO_EVOLVE_REPO&quot;
+<section class="step" id="step-9"><div class="step-head"><span class="number">9</span><h2 class="step-title">Prepare the photo copies and interactive launch commands</h2><label class="done"><input type="checkbox" data-step="9"> Done</label></div><p>Run from <code>$DEMO_ROOT</code>. The block downloads the sample JPEG directly from GitHub and checks its SHA-256. Each session gets the same JPEG in its own directory. The first helper loads credentials and the same storage used by the server; the second launches the normal interactive <code>claude</code> CLI with Cortex routing. The third saves a session and its converted trajectory without learning.</p><div class="codebox"><button type="button">Copy</button><pre id="photo-helpers" data-shell="true"><code>prepare_photo_demo() {
+cd &quot;$DEMO_ROOT&quot; || return
 export DEMO_PHOTOS=&quot;$DEMO_RESULTS/photos&quot;
-mkdir -p &quot;$DEMO_PHOTOS/baseline&quot; &quot;$DEMO_PHOTOS/training&quot; &quot;$DEMO_PHOTOS/guided&quot;
-cp &quot;$DEMO_EVOLVE_REPO/demo/workspace/sample.jpg&quot; &quot;$DEMO_PHOTOS/baseline/sample.jpg&quot;
-cp &quot;$DEMO_EVOLVE_REPO/demo/workspace/sample.jpg&quot; &quot;$DEMO_PHOTOS/training/sample.jpg&quot;
-cp &quot;$DEMO_EVOLVE_REPO/demo/workspace/sample.jpg&quot; &quot;$DEMO_PHOTOS/guided/sample.jpg&quot;
+curl --fail --location --silent --show-error \
+  https://raw.githubusercontent.com/vinodmut/kaizen/rossocortex/demo/workspace/sample.jpg \
+  --output &quot;$DEMO_ROOT/sample.jpg&quot; || return
+uv run --no-project --python 3.12 python - &lt;&lt;&#x27;PHOTO_HASH_PY&#x27; || return
+import hashlib
+import os
+from pathlib import Path
 
-export DEMO_BASELINE_SESSION=&quot;$(uv run --no-sync python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
-export DEMO_TRAIN_SESSION=&quot;$(uv run --no-sync python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
-export DEMO_GUIDED_SESSION=&quot;$(uv run --no-sync python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+photo = Path(os.environ[&quot;DEMO_ROOT&quot;]) / &quot;sample.jpg&quot;
+expected = &quot;15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353&quot;
+if hashlib.sha256(photo.read_bytes()).hexdigest() != expected:
+    raise SystemExit(&quot;Photo hash mismatch. Stop here and verify the fixture source.&quot;)
+print(&quot;Photo SHA-256 verified.&quot;)
+PHOTO_HASH_PY
+mkdir -p &quot;$DEMO_PHOTOS/baseline&quot; &quot;$DEMO_PHOTOS/training&quot; &quot;$DEMO_PHOTOS/guided&quot;
+cp &quot;$DEMO_ROOT/sample.jpg&quot; &quot;$DEMO_PHOTOS/baseline/sample.jpg&quot;
+cp &quot;$DEMO_ROOT/sample.jpg&quot; &quot;$DEMO_PHOTOS/training/sample.jpg&quot;
+cp &quot;$DEMO_ROOT/sample.jpg&quot; &quot;$DEMO_PHOTOS/guided/sample.jpg&quot;
+
+export DEMO_BASELINE_SESSION=&quot;$(uv run --no-project --python 3.12 python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+export DEMO_TRAIN_SESSION=&quot;$(uv run --no-project --python 3.12 python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+export DEMO_GUIDED_SESSION=&quot;$(uv run --no-project --python 3.12 python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
 printf &#x27;Baseline: %s\nTraining: %s\nGuided: %s\n&#x27; \
   &quot;$DEMO_BASELINE_SESSION&quot; &quot;$DEMO_TRAIN_SESSION&quot; &quot;$DEMO_GUIDED_SESSION&quot;
 
 demo_run() {
-  env EVOLVE_BACKEND=filesystem \
+  env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy \
+    EVOLVE_BACKEND=filesystem \
     EVOLVE_DATA_DIR=&quot;$DEMO_RESULTS/runtime/data&quot; \
     EVOLVE_SQLITE_PATH=&quot;$DEMO_RESULTS/runtime/entities.sqlite.db&quot; \
     EVOLVE_NAMESPACE_ID=photo-reviewed \
@@ -322,14 +578,16 @@ demo_run() {
     EVOLVE_INJECTION_MODE=retrieval \
     EVOLVE_OTEL_ENABLED=false EVOLVE_RETENTION_SCHEDULER_ENABLED=false \
     EVOLVE_HOOKS_CONFIG= \
-    uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; \
+    uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; \
       --env-file &quot;$DEMO_CREDENTIALS&quot; &quot;$@&quot;
 }
 
 photo_claude() {
   (
     cd &quot;$DEMO_PHOTOS/$1&quot; || exit 1
-    env HTTP_PROXY=http://127.0.0.1:47800 \
+    uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; \
+      --env-file &quot;$DEMO_CREDENTIALS&quot; \
+      env HTTP_PROXY=http://127.0.0.1:47800 \
       HTTPS_PROXY=http://127.0.0.1:47800 \
       http_proxy=http://127.0.0.1:47800 https_proxy=http://127.0.0.1:47800 \
       ALL_PROXY= all_proxy= NO_PROXY= no_proxy= \
@@ -340,9 +598,7 @@ photo_claude() {
       CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 \
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
       CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 \
-      uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; \
-        --env-file &quot;$DEMO_CREDENTIALS&quot; \
-        claude --bare --model &quot;$EVOLVE_MODEL_NAME&quot; --session-id &quot;$2&quot; \
+      claude --bare --model &quot;$EVOLVE_MODEL_NAME&quot; --session-id &quot;$2&quot; \
         --tools &quot;Bash,Read,Write,Edit&quot; \
         --strict-mcp-config --mcp-config &#x27;{&quot;mcpServers&quot;:{}}&#x27; \
         --setting-sources &quot;&quot;
@@ -358,13 +614,16 @@ capture_photo() {
   demo_run evolve sync cortex --cortex-url http://127.0.0.1:47801 \
     --namespace photo-candidates --session &quot;$2&quot; --idle-minutes 0 \
     --min-new-turns 1 --dry-run &gt; &quot;$DEMO_RESULTS/$1-trajectory.json&quot;
-}</code></pre></div><div class="see"><strong>You should see</strong>Three distinct UUIDs. Each directory contains only <code>sample.jpg</code>. The helpers are now available in this terminal; Claude has not started yet.</div><p><code>--bare</code> and a fresh <code>CLAUDE_CONFIG_DIR</code> keep Claude native memory and existing project customizations out of this comparison. This requires the API key saved in step 5. Ordinary tool-approval prompts still apply. The agent uses native file/shell tools; Cortex contacts Evolve over MCP.</p><p>The launcher uses <code>uv --project</code> to supply the installed Python environment while keeping Claude's working directory in the photo folder. The local bridge URL overrides the gateway URL only for Claude; Evolve continues to use the gateway's OpenAI-compatible endpoint.</p></section>
+}
+}
+
+prepare_photo_demo</code></pre></div><div class="see"><strong>You should see</strong><code>Photo SHA-256 verified.</code> followed by three distinct UUIDs. Each session directory contains only <code>sample.jpg</code>. The helpers are now available in this terminal; Claude has not started yet.</div><p><code>--bare</code> and a fresh <code>CLAUDE_CONFIG_DIR</code> keep Claude native memory and existing project customizations out of this comparison. This requires the API key saved in step 5. Ordinary tool-approval prompts still apply. The agent uses native file/shell tools; Cortex contacts Evolve over MCP.</p><p>The launcher uses <code>uv run --no-project --with</code> to supply the cached installed Python environment while keeping Claude's working directory in the photo folder. uv resolves the installed environment before applying proxy settings to Claude. The local bridge URL overrides the gateway URL only for Claude; Evolve continues to use the gateway's OpenAI-compatible endpoint.</p></section>
 <section class="step" id="step-10"><div class="step-head"><span class="number">10</span><h2 class="step-title">Run the focal-length baseline in Claude Code</h2><label class="done"><input type="checkbox" data-step="10"> Done</label></div><p>In your shell, launch the baseline:</p><div class="codebox"><button type="button">Copy</button><pre id="launch-baseline" data-shell="true"><code>services injection-off
 photo_claude baseline &quot;$DEMO_BASELINE_SESSION&quot;</code></pre></div><p>At the Claude Code input prompt, paste this task. <strong>This box contains a Claude prompt, not a shell command.</strong></p><div class="codebox"><button type="button">Copy</button><pre id="baseline-prompt" data-prompt="true"><code>What focal length was used to take sample.jpg? Use embedded EXIF metadata.
 Report both the actual focal length in mm and the 35 mm equivalent if present,
 and name the EXIF tags supporting each value. Preserve the stored numeric
 precision rather than rounding a formatted display value. Use local tools. If you use Python,
-run it with uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; python.
+run it with uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; python.
 Save the extracted metadata as photo-result.json using the tool&#x27;s native
 EXIF tag names and numeric values. In your answer, identify which tag is
 actual focal length and which is the equivalent. Report missing tags as
@@ -374,7 +633,7 @@ jq . &quot;$DEMO_PHOTOS/baseline/photo-result.json&quot;</code></pre></div><div 
 Show the raw GPS latitude/longitude values and their N/S/E/W references,
 then convert them to signed decimal coordinates. State what the metadata
 supports about the location. If you use Python, run it with
-uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; python.
+uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; python.
 Do not install packages. Show the successful extraction command so the
 procedure can be repeated with other photos.</code></pre></div><div class="see"><strong>You should see</strong>Claude finds the working metadata tool or inline Python approach and explains how it read the tags. The GPS references are <code>N</code> and <code>W</code>; the signed coordinates are approximately <code>51.4936083333, -0.0375611111</code>. A neighborhood or street address requires separate evidence.</div><p>If the answer is wrong, give this correction in the <strong>same training session</strong>:</p><div class="codebox"><button type="button">Copy</button><pre id="gps-feedback" data-prompt="true"><code>Re-check the raw GPSLatitudeRef and GPSLongitudeRef tags.
 For this fixture the references are N and W, so the longitude must be negative.
@@ -472,7 +731,7 @@ photo_claude guided &quot;$DEMO_GUIDED_SESSION&quot;</code></pre></div><p>In Cla
 Report both the actual focal length in mm and the 35 mm equivalent if present,
 and name the EXIF tags supporting each value. Preserve the stored numeric
 precision rather than rounding a formatted display value. Use local tools. If you use Python,
-run it with uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; python.
+run it with uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; python.
 Save the extracted metadata as photo-result.json using the tool&#x27;s native
 EXIF tag names and numeric values. In your answer, identify which tag is
 actual focal length and which is the equivalent. Report missing tags as

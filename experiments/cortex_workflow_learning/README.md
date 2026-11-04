@@ -5,6 +5,8 @@ For an **interactive Claude Code task**, open the
 linked on Evolve's website. You enter the GPS training and focal-length prompts
 yourself, inspect the captured session and generated guidelines, promote a
 reviewed selection, and repeat the focal-length task in a fresh session.
+It installs Evolve directly from Git with uv, downloads the photo separately,
+and uses a standalone service helper; only Cortex needs a source checkout/build.
 It includes copyable setup commands and a same-task baseline; it makes no claim
 that a fresh photo run will necessarily improve.
 
