@@ -8,7 +8,7 @@ case "${1:-help}" in
   setup)
     if [ ! -f .env ]; then
       cp .env.example .env
-      printf '%s\n' 'Created .env. Fill in the two API URLs, keys, and model names, then rerun ./demo setup.'
+      printf '%s\n' 'Created .env. Fill in the Anthropic API URL, key, and both model names, then rerun ./demo setup.'
       exit 1
     fi
     mkdir -p results

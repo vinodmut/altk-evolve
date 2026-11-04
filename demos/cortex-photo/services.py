@@ -46,11 +46,24 @@ def save_state(state):
 def environment():
     """Read the mounted credential file; never inherit the host's credentials/proxy."""
     values = dotenv_values(os.environ.get("DEMO_CREDENTIALS", "/run/secrets/demo.env"))
-    required = ("ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_MODEL", "OPENAI_BASE_URL", "OPENAI_API_KEY", "EVOLVE_MODEL_NAME")
+    provider = (
+        (
+            values.get("EVOLVE_CUSTOM_LLM_PROVIDER")
+            or ("openai" if values.get("OPENAI_BASE_URL") or values.get("OPENAI_API_KEY") else "anthropic")
+        )
+        .strip()
+        .lower()
+    )
+    if provider not in {"anthropic", "openai"}:
+        raise RuntimeError("This demo supports EVOLVE_CUSTOM_LLM_PROVIDER=anthropic or openai.")
+    required = ("ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_MODEL", "EVOLVE_MODEL_NAME")
+    if provider == "openai":
+        required += ("OPENAI_BASE_URL", "OPENAI_API_KEY")
     missing = [name for name in required if not values.get(name)]
     if missing:
         raise RuntimeError("Fill in .env: " + ", ".join(missing))
-    for name in ("ANTHROPIC_BASE_URL", "OPENAI_BASE_URL"):
+    urls = ("ANTHROPIC_BASE_URL", "OPENAI_BASE_URL") if provider == "openai" else ("ANTHROPIC_BASE_URL",)
+    for name in urls:
         url = httpx.URL(values[name])
         if url.scheme not in {"http", "https"} or not url.host or url.userinfo:
             raise RuntimeError(f"{name} must be an HTTP(S) URL without embedded credentials.")
@@ -61,8 +74,11 @@ def environment():
     }
     env.update({name: values[name] for name in (*required, "EVOLVE_CUSTOM_LLM_PROVIDER") if values.get(name)})
     env["ANTHROPIC_BASE_URL"] = env["ANTHROPIC_BASE_URL"].rstrip("/").removesuffix("/v1")
+    if provider == "anthropic":
+        # Evolve calls the provider directly; Claude Code uses the local bridge.
+        env["ANTHROPIC_API_BASE"] = env["ANTHROPIC_BASE_URL"]
     env.update(
-        EVOLVE_CUSTOM_LLM_PROVIDER=values.get("EVOLVE_CUSTOM_LLM_PROVIDER") or "openai",
+        EVOLVE_CUSTOM_LLM_PROVIDER=provider,
         EVOLVE_GUIDELINES_MODEL=env["EVOLVE_MODEL_NAME"],
         EVOLVE_BACKEND="filesystem",
         EVOLVE_DATA_DIR=str(RUNTIME / "data"),

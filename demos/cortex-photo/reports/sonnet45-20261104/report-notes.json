@@ -1,0 +1,10 @@
+{
+  "run_notes": [
+    "The live task and learner both used aws/claude-sonnet-4-5. The harness was interactive Claude Code 2.1.287, running with Cortex, Evolve, ExifTool 12.57, Python and Pillow in one Linux ARM64 Docker container on an Apple Silicon Mac with Colima. Model inference ran through remote APIs.",
+    "Baseline used four tool calls: check the photo, extract EXIF with Python, separately inspect rational-value precision, and read the saved JSON. It reported the correct values but converted Pillow's rational FocalLength to the string \"4.38\" when saving.",
+    "Guided also used four tool calls: check the photo, check ExifTool availability, extract EXIF with Python, and read the saved JSON. Its Python export used json.dump(..., default=str), again saving FocalLength as \"4.38\". The 35 mm equivalent was numeric 27 in both attempts. There was no correctness or tool-call improvement; one fewer assistant message is not evidence of a meaningful efficiency gain.",
+    "Evolve regenerated four candidates from the unchanged, separate GPS recording in a fresh guideline store. Codex reviewed them and promoted candidates 1 and 2 unchanged before the new guided attempt. The baseline and training recordings were reused from the preceding Sonnet-task experiment; only learning and the guided task were rerun for this comparison.",
+    "Native response-schema attempts failed on this gateway. The successful generation used Evolve's built-in JSON prompt path with local Pydantic validation, using an explicit process-local override of its advertised schema capability. Generation and conflict-resolution manifests both identify Sonnet 4.5 and the Anthropic provider. The workaround source and reproduction instructions are preserved in the accompanying readme.",
+    "Cortex recorded both promoted IDs as injected on the first guided main request, with the GPS session as their source. The final outbound API payload was not independently inspected. This is a single observed pair, and the captured trajectories exclude hidden reasoning and image bytes."
+  ]
+}

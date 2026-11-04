@@ -132,6 +132,14 @@ def build_report(results: Path, state):
         f"<article><p>Candidate {esc(row['candidate_id'])} → serving {esc(row['id'])}</p><blockquote>{esc(row['content'])}</blockquote><details><summary>Provenance and review metadata</summary><pre>{esc(json.dumps(row['metadata'], indent=2))}</pre></details></article>"
         for row in state.get("promoted", [])
     )
+    selected_candidates = {str(row["candidate_id"]) for row in state.get("promoted", [])}
+    other_guidelines = "".join(
+        f"<article><p>Candidate {esc(row['id'])} · not promoted</p><blockquote>{esc(row['content'])}</blockquote><details><summary>Generation metadata</summary><pre>{esc(json.dumps(row['metadata'], indent=2))}</pre></details></article>"
+        for row in load(results / "photo-candidates.json", [])
+        if str(row["id"]) not in selected_candidates
+    )
+    if other_guidelines:
+        other_guidelines = "<h3>Other generated candidates</h3>" + other_guidelines
     outputs = "".join(
         f"<article><h3>{arm.title()}</h3><pre>{esc((results / 'photos' / arm / 'photo-result.json').read_text() if (results / 'photos' / arm / 'photo-result.json').exists() else 'No photo-result.json was saved.')}</pre></article>"
         for arm in ("baseline", "guided")
@@ -141,14 +149,40 @@ def build_report(results: Path, state):
         for arm in ("baseline", "training", "guided")
         if arm in state["sessions"]
     )
+    recording_note = ""
+    if state.get("reused_recordings_from"):
+        recording_note = (
+            "<p>The baseline and GPS training recordings were reused unchanged from "
+            f"{esc(state['reused_recordings_from'])}. Guidelines were regenerated in a fresh store; "
+            "the guided task is a new live session.</p>"
+        )
+    reflection_note = ""
+    if state.get("learning_provider"):
+        reflection_note = f"<p>Reflection API format: {esc(state['learning_provider'])}. The model ID above identifies the learner.</p>"
+    if state.get("learning_output_mode"):
+        reflection_note += f"<p>Learning output mode: {esc(state['learning_output_mode'])}.</p>"
+    if state.get("reflection_attempts"):
+        reflection_note += (
+            "<details><summary>Recorded learning attempts, including failures</summary>"
+            f"<pre>{esc(json.dumps(state['reflection_attempts'], indent=2))}</pre></details>"
+        )
+    run_notes = "".join(f"<p>{esc(note)}</p>" for note in state.get("run_notes", []))
+    if run_notes:
+        run_notes = "<h2>What this run showed</h2>" + run_notes
+    review_note = ""
+    if state.get("review"):
+        review_note = f"<details><summary>Review decision made before the guided run</summary><pre>{esc(json.dumps(state['review'], indent=2))}</pre></details>"
     document = f"""<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cortex + Evolve photo comparison</title>
 <style>body{{overflow-wrap:anywhere;font:16px/1.6 system-ui,sans-serif;max-width:1080px;margin:40px auto;padding:0 24px;color:#172033;background:#f8fafc}}h1,h2,h3{{line-height:1.2}}h2{{margin-top:44px}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 ui-monospace,monospace;background:#eef2f6;padding:18px;border-radius:8px}}table{{width:100%;border-collapse:collapse;background:white}}td,th{{text-align:left;border-bottom:1px solid #ddd;padding:12px}}.verdict{{padding:22px;border-left:5px solid #0f62fe;background:#e8f0ff;font-size:20px}}.columns{{display:grid;grid-template-columns:1fr 1fr;gap:20px}}article{{background:white;padding:20px;border-radius:8px;margin:12px 0}}blockquote{{margin:12px 0;padding-left:16px;border-left:3px solid #0f62fe}}details{{margin:10px 0}}summary{{cursor:pointer;font-weight:600}}svg{{max-width:100%;height:auto}}a{{color:#0043ce}}@media(max-width:650px){{.columns{{display:block}}}}</style>
 <h1>Cortex + Evolve: local photo metadata</h1>
+<nav aria-label="Report sections"><a href="#results">Results</a> · <a href="#guidelines">Guidelines</a> · <a href="#trajectories">Before / training / after</a></nav>
 <p>Run created {esc(state["created_at"])}. Task model: {esc(state["model"])}. Reflection model: {esc(state["learning_model"])}.</p>
+{recording_note}{reflection_note}
 <p class="verdict">{esc(verdict)}</p>
 <p>This is one paired demonstration. Responses can vary. Elapsed time includes terminal interaction and approvals; it is not an isolated model-speed metric.</p>
+{run_notes}
 <h2>The task and learning boundary</h2>
 <p>Both comparison sessions receive the same original JPEG and focal-length prompt. The stored tags are FocalLength = 4.38 mm and FocalLengthIn35mmFormat = 27 mm (Pillow/spec name: FocalLengthIn35mmFilm). The JSON must contain numbers at stored precision; ExifTool's formatted display can round 4.38 to “4.4 mm”.</p>
 <pre>{esc(state["sessions"]["baseline"]["prompt"])}</pre>
@@ -157,17 +191,17 @@ def build_report(results: Path, state):
 <svg viewBox="0 0 980 300" role="img" aria-label="Claude Code sends requests through Cortex and a gateway bridge to an LLM. Cortex records trajectories and retrieves reviewed Evolve guidelines. Evolve learns candidates from the GPS trajectory, then a reviewer promotes them.">
 <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#0f62fe"/></marker></defs>
 <g fill="white" stroke="#9ab3d5" stroke-width="2"><rect x="10" y="25" width="190" height="65" rx="8"/><rect x="260" y="25" width="190" height="65" rx="8"/><rect x="510" y="25" width="190" height="65" rx="8"/><rect x="760" y="25" width="210" height="65" rx="8"/><rect x="250" y="175" width="240" height="75" rx="8"/><rect x="550" y="175" width="420" height="75" rx="8"/></g>
-<g font-family="system-ui" font-size="17" fill="#172033" text-anchor="middle"><text x="105" y="65">Claude Code + tools</text><text x="355" y="65">Cortex + Evolve plugin</text><text x="605" y="65">Gateway bridge</text><text x="865" y="65">Task LLM API</text><text x="370" y="205">Full Evolve MCP</text><text x="370" y="231">+ reflection LLM</text><text x="760" y="205">photo-candidates → human review</text><text x="760" y="231">→ photo-reviewed</text></g>
+<g font-family="system-ui" font-size="17" fill="#172033" text-anchor="middle"><text x="105" y="65">Claude Code + tools</text><text x="355" y="65">Cortex + Evolve plugin</text><text x="605" y="65">Gateway bridge</text><text x="865" y="65">Task LLM API</text><text x="370" y="205">Full Evolve MCP</text><text x="370" y="231">+ reflection LLM</text><text x="760" y="205">photo-candidates → review</text><text x="760" y="231">→ photo-reviewed</text></g>
 <g stroke="#0f62fe" stroke-width="2" fill="none" marker-end="url(#a)"><path d="M200,58 H250"/><path d="M450,58 H500"/><path d="M700,58 H750"/><path d="M355,90 V165"/><path d="M330,175 V100"/><path d="M490,210 H540"/><path d="M580,175 V135 H395 V100"/></g>
 <g font-family="system-ui" font-size="13" fill="#465770"><text x="365" y="122">GPS capture / retrieve</text><text x="590" y="128">reviewed guidelines injected on request</text><text x="12" y="290">Services and tools run in one container; only API calls leave it. Results are saved on the host.</text></g></svg>
-<h2>Measured output</h2><table><thead><tr><th>Check</th><th>Baseline</th><th>Guided</th></tr></thead><tbody>{"".join(rows)}</tbody></table>
+<h2 id="results">Measured output</h2><table><thead><tr><th>Check</th><th>Baseline</th><th>Guided</th></tr></thead><tbody>{"".join(rows)}</tbody></table>
 <p>The checker reads exact numeric values under the native EXIF keys. It does not grade the prose answer; review the assistant's tag interpretation below. Tool errors count structured isError observations, deduplicated by tool-use ID.</p>
 <div class="columns">{outputs}</div>
-<h2>Generated guidelines and promotion</h2><p><a href="photo-candidates.json">All candidates</a> · <a href="photo-promoted.json">Reviewed copies</a> · <a href="learning.json">Training processing result</a></p>{guidelines}
+<h2 id="guidelines">Generated guidelines and promotion</h2><p><a href="photo-candidates.json">All candidates</a> · <a href="photo-promoted.json">Reviewed copies</a> · <a href="learning.json">Training processing result</a></p><h3>Reviewed selection</h3>{guidelines}{other_guidelines}{review_note}
 <p>Candidate storage is separate from the namespace Cortex serves. Promotion preserves the generated content and source metadata. The selection is frozen before the guided attempt.</p>
 <h2>First-request attribution</h2><pre>{esc(json.dumps({"baseline": metrics["baseline"]["first_request_evolve"], "guided": metrics["guided"]["first_request_evolve"], "reviewed_ids_matched": injected, "identical_prompts": same_prompt}, indent=2))}</pre>
 <p><a href="photo-retrieval.json">MCP retrieval preview</a>. Preview retrieval alone does not prove injection; the request event above must contain injected=true and the promoted serving IDs.</p>
-<h2>Trajectories: before, training, and after</h2><p>Expand messages to inspect actual commands, arguments, output, corrections, and answers. JSON links also preserve system context and tool definitions. Cortex's parsed capture excludes image bytes and hidden reasoning; it sees tool output after Claude sends it in a later request.</p>{traces}
+<h2 id="trajectories">Trajectories: before, training, and after</h2><p>Expand messages to inspect actual commands, arguments, output, corrections, and answers. JSON links also preserve system context and tool definitions. Cortex's parsed capture excludes image bytes and hidden reasoning; it sees tool output after Claude sends it in a later request.</p>{traces}
 </html>"""
     (results / "comparison.html").write_text(document)
     return summary

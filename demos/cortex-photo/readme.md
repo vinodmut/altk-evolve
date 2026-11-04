@@ -6,6 +6,8 @@ You need Docker with Compose, Git, and API access for both Claude Code and Evolv
 
 The full step-by-step page is [walkthrough.html](walkthrough.html). Stay in this demo directory for every `./demo` command.
 
+The [recorded Sonnet 4.5 comparison](reports/sonnet45-20261104/comparison.html) includes the actual guidelines and before/training/after trajectories. Both task and learner used Sonnet 4.5; that pair showed no numeric JSON correctness or tool-call improvement. Its [evidence and regeneration instructions](reports/sonnet45-20261104/readme.md) are committed alongside the report.
+
 ## 1. Get the bundle in a separate temporary directory
 
 ```bash
@@ -20,24 +22,26 @@ This downloads the ready-made demo directory. Docker installs Evolve from its pi
 
 ## 2. Configure both LLM connections and start
 
-Edit `.env` and fill in these six values:
+Edit `.env` and configure these four values. The default connects both Claude Code and Evolve to Anthropic using one API key:
 
 | Value | Purpose | Direct provider example |
 | --- | --- | --- |
 | `ANTHROPIC_BASE_URL` | Claude's Anthropic-compatible API | `https://api.anthropic.com` |
 | `ANTHROPIC_API_KEY` | Claude's API key | Your Anthropic API key |
-| `ANTHROPIC_MODEL` | The task model | `claude-sonnet-4-5` |
-| `OPENAI_BASE_URL` | Evolve's reflection API | `https://api.openai.com/v1` |
-| `OPENAI_API_KEY` | Evolve's API key | Your OpenAI API key |
-| `EVOLVE_MODEL_NAME` | Evolve's reflection model | `gpt-4.1` |
+| `ANTHROPIC_MODEL` | The task model | `claude-sonnet-4-6` |
+| `EVOLVE_MODEL_NAME` | Evolve's reflection model | `claude-sonnet-4-6` |
 
-Leave `EVOLVE_CUSTOM_LLM_PROVIDER=openai` for an OpenAI-compatible reflection endpoint. A gateway can serve both APIs: use its base URL without `/v1` for Claude, its `/v1` URL for Evolve, and its model IDs and keys in both sets of fields. For the gateway used during development, both model fields were `Azure/gpt-4.1`. Native Anthropic and OpenAI endpoints can also be configured separately. The demo uses API keys; your host's Claude subscription/login is not copied into Docker.
+Leave `EVOLVE_CUSTOM_LLM_PROVIDER=anthropic` to use the same Anthropic connection for both models. Evolve uses `ANTHROPIC_BASE_URL` and `ANTHROPIC_API_KEY` directly; Claude Code goes through the local Cortex/bridge path. Keep the same Sonnet task model across baseline, training, and guided runs. Evolve can use that same Sonnet or a stronger available Opus model: change only `EVOLVE_MODEL_NAME` to select the learner. The demo uses API keys; your host's Claude subscription/login is not copied into Docker.
+
+For a gateway serving the Anthropic API, replace the Anthropic URL, key, and both model IDs with its values. To use the same Sonnet in both places, set `ANTHROPIC_MODEL=aws/claude-sonnet-4-5` and `EVOLVE_MODEL_NAME=aws/claude-sonnet-4-5` on a gateway offering that ID. If reflection instead uses the gateway's OpenAI-compatible API, set `EVOLVE_CUSTOM_LLM_PROVIDER=openai`, `OPENAI_BASE_URL=https://YOUR-GATEWAY/v1`, and `OPENAI_API_KEY` to its key. Keep `EVOLVE_MODEL_NAME` set to the gateway's Claude model ID. Here `openai` selects the API format; it does not require using a GPT model.
+
+Use a Claude model for the Claude Code task and keep that model identical across baseline, training, and guided runs. Evolve's reflection model is selected independently. The default is Sonnet 4.6. For an older-model experiment, Sonnet 4.5 is still available until November 30, 2026 on the Anthropic API: use `claude-sonnet-4-5-20250929`, or your gateway's corresponding ID (for example, `aws/claude-sonnet-4-5`). Sonnet 4 and Sonnet 3.7 have already retired on the Anthropic API. Check [Anthropic's model status](https://platform.claude.com/docs/en/about-claude/model-deprecations) before choosing an older model. When changing models, preserve the previous results and start a fresh comparison.
 
 ```bash
 ./demo setup
 ```
 
-The first build downloads tools, Go dependencies, Python packages, and the small CPU embedding model. Allow several minutes and several GB of disk space. Startup verifies the photo checksum and sends a short real request through Claude/Cortex and a separate request to Evolve's reflection LLM. Expect `live API OK` for both before starting tasks. These diagnostic calls have a small API cost and are excluded from task evidence.
+The first build downloads tools, Go dependencies, Python packages, and the small CPU embedding model. Allow several minutes and several GB of disk space. Startup verifies the photo checksum and sends a short real request through Claude/Cortex and a structured tool-call request to Evolve's reflection LLM. Expect `live API OK` for both before starting tasks. A reflection model that only supports ordinary text replies will fail this check before any tasks start. These diagnostic calls have a small API cost and are excluded from task evidence.
 
 Credentials are mounted read-only and excluded from the image. The local CA stays inside the demo; there is no host trust-store change and no published host port. Results live in `./results`.
 

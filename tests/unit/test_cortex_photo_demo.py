@@ -90,6 +90,57 @@ def test_credentials_override_inherited_empty_keys_and_proxies(bundle, monkeypat
     assert not any(name in env for name in ("ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "HTTPS_PROXY"))
 
 
+def test_anthropic_reflection_shares_connection_without_openai_credentials(bundle, monkeypatch):
+    credentials = bundle.root / "credentials.env"
+    credentials.write_text(
+        "ANTHROPIC_BASE_URL=https://anthropic.example/v1\nANTHROPIC_API_KEY=demo-key\nANTHROPIC_MODEL=claude-sonnet\nEVOLVE_CUSTOM_LLM_PROVIDER=anthropic\nEVOLVE_MODEL_NAME=claude-opus\n"
+    )
+    monkeypatch.setenv("DEMO_CREDENTIALS", str(credentials))
+    monkeypatch.setenv("ANTHROPIC_API_BASE", "https://inherited.example")
+    monkeypatch.setenv("OPENAI_API_KEY", "inherited-key")
+    env = bundle.services.environment()
+    assert env["EVOLVE_CUSTOM_LLM_PROVIDER"] == "anthropic"
+    assert env["EVOLVE_GUIDELINES_MODEL"] == "claude-opus"
+    assert env["ANTHROPIC_API_KEY"] == "demo-key"
+    assert env["ANTHROPIC_API_BASE"] == "https://anthropic.example"
+    assert "OPENAI_API_KEY" not in env
+    task_env = bundle.demo.claude_environment(bundle.root / "config")
+    assert task_env["ANTHROPIC_BASE_URL"] == bundle.services.BRIDGE
+    assert task_env["ANTHROPIC_API_BASE"] == "https://anthropic.example"
+
+
+def test_openai_reflection_requires_its_own_connection(bundle, monkeypatch):
+    credentials = bundle.root / "credentials.env"
+    credentials.write_text(
+        "ANTHROPIC_BASE_URL=https://anthropic.example\nANTHROPIC_API_KEY=demo-key\nANTHROPIC_MODEL=claude-sonnet\nEVOLVE_CUSTOM_LLM_PROVIDER=openai\nEVOLVE_MODEL_NAME=claude-opus\n"
+    )
+    monkeypatch.setenv("DEMO_CREDENTIALS", str(credentials))
+    with pytest.raises(RuntimeError, match="OPENAI_BASE_URL, OPENAI_API_KEY"):
+        bundle.services.environment()
+
+
+def test_reflection_check_requires_the_structured_output_used_by_learning(bundle, monkeypatch):
+    requests = []
+    call = SimpleNamespace(function=SimpleNamespace(name="evolve_ready", arguments='{"ready": true}'))
+
+    def completion(**kwargs):
+        requests.append(kwargs)
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(tool_calls=[call]))])
+
+    monkeypatch.setitem(sys.modules, "litellm", SimpleNamespace(completion=completion))
+    bundle.demo.check_reflection({"EVOLVE_MODEL_NAME": "claude-sonnet", "EVOLVE_CUSTOM_LLM_PROVIDER": "anthropic"})
+    assert requests[0]["model"] == "claude-sonnet"
+    assert requests[0]["custom_llm_provider"] == "anthropic"
+    assert requests[0]["tool_choice"]["function"]["name"] == "evolve_ready"
+
+
+def test_reflection_check_rejects_a_text_only_success(bundle, monkeypatch):
+    answer = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="EVOLVE_READY", tool_calls=[]))])
+    monkeypatch.setitem(sys.modules, "litellm", SimpleNamespace(completion=lambda **kwargs: answer))
+    with pytest.raises(RuntimeError, match="expected structured tool call"):
+        bundle.demo.check_reflection({"EVOLVE_MODEL_NAME": "claude-sonnet", "EVOLVE_CUSTOM_LLM_PROVIDER": "anthropic"})
+
+
 def test_bridge_preserves_all_system_text_and_tools(bundle):
     body = {
         "system": [{"type": "text", "text": "original constraints"}, {"type": "text", "text": "learned guideline"}],
@@ -143,6 +194,43 @@ def test_report_records_a_tie_instead_of_claiming_improvement(bundle):
     state = state_for(bundle)
     (bundle.root / "photos/baseline/photo-result.json").write_text('{"FocalLength":4.38,"FocalLengthIn35mmFormat":27}')
     assert "no correctness gain" in bundle.report.build_report(bundle.root, state)["verdict"]
+
+
+def test_report_discloses_reused_recordings_and_learning_workarounds(bundle):
+    state = state_for(bundle)
+    state.update(
+        reused_recordings_from="previous-run",
+        learning_provider="anthropic",
+        learning_output_mode="JSON with local validation",
+        reflection_attempts=[{"status": "failed", "error": "<schema error>"}],
+    )
+    bundle.report.build_report(bundle.root, state)
+    report = (bundle.root / "comparison.html").read_text()
+    assert "reused unchanged from previous-run" in report
+    assert "Reflection API format: anthropic" in report
+    assert "JSON with local validation" in report
+    assert "&lt;schema error&gt;" in report
+    assert "<schema error>" not in report
+
+
+def test_report_includes_unpromoted_guidelines_and_run_interpretation(bundle):
+    state = state_for(bundle)
+    state.update(run_notes=["No benefit from <extra advice>."], review={"reviewer": "Codex", "selected_candidate_ids": ["candidate-id"]})
+    (bundle.root / "photo-candidates.json").write_text(
+        json.dumps(
+            [
+                {"id": "candidate-id", "content": "Selected candidate", "metadata": {}},
+                {"id": "other-id", "content": "Unpromoted <advice>", "metadata": {"status": "candidate"}},
+            ]
+        )
+    )
+    bundle.report.build_report(bundle.root, state)
+    report = (bundle.root / "comparison.html").read_text()
+    assert "Candidate other-id · not promoted" in report
+    assert "Unpromoted &lt;advice&gt;" in report
+    assert "No benefit from &lt;extra advice&gt;." in report
+    assert "Review decision made before the guided run" in report
+    assert "Selected candidate" not in report  # Its reviewed copy is already shown.
 
 
 def test_attribution_uses_tool_manifest_when_request_has_no_tool_count(bundle):

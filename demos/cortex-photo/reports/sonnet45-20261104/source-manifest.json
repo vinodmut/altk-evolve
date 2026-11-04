@@ -1,0 +1,94 @@
+{
+  "source": "local completed Docker walkthrough results",
+  "copied_files": [
+    {
+      "file": "state.json",
+      "source_sha256": "12a99ddd6a97ae718f10bda0662f2991b10d36a8957789c79cead0e70ddb23ff",
+      "export_sha256": "12a99ddd6a97ae718f10bda0662f2991b10d36a8957789c79cead0e70ddb23ff"
+    },
+    {
+      "file": "learning.json",
+      "source_sha256": "b53673a273d20c9e1bda07c1104047fb46443d03cbbfe9a9c8a0f77d91e27bfe",
+      "export_sha256": "b53673a273d20c9e1bda07c1104047fb46443d03cbbfe9a9c8a0f77d91e27bfe"
+    },
+    {
+      "file": "photo-candidates.json",
+      "source_sha256": "b428af88c44314203a374660d0b93db7fbbcf2d3e75f40e6c149605455ead025",
+      "export_sha256": "b428af88c44314203a374660d0b93db7fbbcf2d3e75f40e6c149605455ead025"
+    },
+    {
+      "file": "photo-promoted.json",
+      "source_sha256": "87c0843123bd234bbf3e66ff9146324bf7d53d54589fcd2c256b3a2a654cf658",
+      "export_sha256": "87c0843123bd234bbf3e66ff9146324bf7d53d54589fcd2c256b3a2a654cf658"
+    },
+    {
+      "file": "photo-retrieval.json",
+      "source_sha256": "242394a30c7c08e86a23548cdfe11de6da18882ddae19c749772956844ee9192",
+      "export_sha256": "242394a30c7c08e86a23548cdfe11de6da18882ddae19c749772956844ee9192"
+    },
+    {
+      "file": "baseline-trajectory.json",
+      "source_sha256": "1021c11d7c2a170c6fd36bd99181af284cf6ec137f30cf98e723bc2d10b97518",
+      "export_sha256": "1021c11d7c2a170c6fd36bd99181af284cf6ec137f30cf98e723bc2d10b97518"
+    },
+    {
+      "file": "baseline-cortex-session.json",
+      "source_sha256": "fb7bb491a48239d1633e0a3d74ee0d1d48447228af33af4a97bfca4dcd88406d",
+      "export_sha256": "fb7bb491a48239d1633e0a3d74ee0d1d48447228af33af4a97bfca4dcd88406d"
+    },
+    {
+      "file": "training-trajectory.json",
+      "source_sha256": "edd63d38ecffd3cf54823581f37999b21e0acbcb32be3a0287e0e903f26c4ad6",
+      "export_sha256": "edd63d38ecffd3cf54823581f37999b21e0acbcb32be3a0287e0e903f26c4ad6"
+    },
+    {
+      "file": "training-cortex-session.json",
+      "source_sha256": "e5706d3f2d180a71db21ef8c889660c172f1a5ab7f0a5a5feb3401d454e1a3da",
+      "export_sha256": "e5706d3f2d180a71db21ef8c889660c172f1a5ab7f0a5a5feb3401d454e1a3da"
+    },
+    {
+      "file": "guided-trajectory.json",
+      "source_sha256": "10b7f508687fde2cfd1b3539ba5e1903543d15ba41f75a48c8d03cb2230d35d6",
+      "export_sha256": "10b7f508687fde2cfd1b3539ba5e1903543d15ba41f75a48c8d03cb2230d35d6"
+    },
+    {
+      "file": "guided-cortex-session.json",
+      "source_sha256": "7db3c89b3a9e72f33fcf46e7903e727c1712ad08e9f63239964a2f4216a9a256",
+      "export_sha256": "7db3c89b3a9e72f33fcf46e7903e727c1712ad08e9f63239964a2f4216a9a256"
+    },
+    {
+      "file": "photos/baseline/photo-result.json",
+      "source_sha256": "10ac992a0ffade7c1d2255011c3afd1dac921e4c41bf82c9b5848704d6c4d57e",
+      "export_sha256": "10ac992a0ffade7c1d2255011c3afd1dac921e4c41bf82c9b5848704d6c4d57e"
+    },
+    {
+      "file": "photos/training/gps-result.json",
+      "source_sha256": "987e2e0c07aae2dbb1269128822bfd4b9833e4ee62a350008e72f25e1087c616",
+      "export_sha256": "987e2e0c07aae2dbb1269128822bfd4b9833e4ee62a350008e72f25e1087c616"
+    },
+    {
+      "file": "photos/guided/photo-result.json",
+      "source_sha256": "4e79156d65b55b54e4e8b5eb496713bfe45d84a9ad66f24956715524324d945d",
+      "export_sha256": "4e79156d65b55b54e4e8b5eb496713bfe45d84a9ad66f24956715524324d945d"
+    }
+  ],
+  "photo_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+  "excluded": "Credential file, CA, Claude configuration, runtime directory, and prior experiment archives",
+  "photo_links": [
+    {
+      "file": "photos/baseline/sample.jpg",
+      "target": "../../../../sample.jpg",
+      "source_photo_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353"
+    },
+    {
+      "file": "photos/training/sample.jpg",
+      "target": "../../../../sample.jpg",
+      "source_photo_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353"
+    },
+    {
+      "file": "photos/guided/sample.jpg",
+      "target": "../../../../sample.jpg",
+      "source_photo_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353"
+    }
+  ]
+}

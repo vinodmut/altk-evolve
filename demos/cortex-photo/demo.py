@@ -94,6 +94,41 @@ def claude_command(session=None):
     return command
 
 
+def check_reflection(env):
+    from litellm import completion
+
+    # Learning requires forced structured tool output, not just a text reply.
+    try:
+        answer = completion(
+            model=env["EVOLVE_MODEL_NAME"],
+            custom_llm_provider=env["EVOLVE_CUSTOM_LLM_PROVIDER"],
+            messages=[{"role": "user", "content": "Call evolve_ready with ready set to true."}],
+            tools=[
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "evolve_ready",
+                        "description": "Confirm structured tool calling is supported.",
+                        "parameters": {"type": "object", "properties": {"ready": {"type": "boolean"}}, "required": ["ready"]},
+                    },
+                }
+            ],
+            tool_choice={"type": "function", "function": {"name": "evolve_ready"}},
+            max_tokens=128,
+            timeout=90,
+        )
+        valid = any(
+            call.function.name == "evolve_ready" and json.loads(call.function.arguments).get("ready") is True
+            for call in answer.choices[0].message.tool_calls or []
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            "Evolve's structured-output API check failed. Check its provider, URL, key, and model; learning requires forced tool-call support."
+        ) from exc
+    if not valid:
+        raise RuntimeError("Evolve did not return the expected structured tool call. Select a compatible reflection model.")
+
+
 def check():
     health()
     if hashlib.sha256((ROOT / "sample.jpg").read_bytes()).hexdigest() != PHOTO_SHA256:
@@ -122,21 +157,7 @@ def check():
         raise RuntimeError(
             "Claude's live API check failed. Check the Anthropic endpoint, key, and model in .env. Task runs have not started."
         )
-    from litellm import completion
-
-    # Reflection uses a different API; validate it before anyone spends time on tasks.
-    try:
-        answer = completion(
-            model=env["EVOLVE_MODEL_NAME"],
-            custom_llm_provider=env["EVOLVE_CUSTOM_LLM_PROVIDER"],
-            messages=[{"role": "user", "content": "Reply with exactly EVOLVE_READY."}],
-            max_tokens=32,
-            timeout=90,
-        )
-    except Exception as exc:
-        raise RuntimeError("Evolve's live API check failed. Check its OpenAI-compatible URL, key, and model in .env.") from exc
-    if "EVOLVE_READY" not in (answer.choices[0].message.content or ""):
-        raise RuntimeError("Evolve's live API check failed. Check its model and OpenAI-compatible credentials.")
+    check_reflection(env)
     state["checked_at"] = datetime.now(UTC).isoformat()
     save_state(state)
     print(

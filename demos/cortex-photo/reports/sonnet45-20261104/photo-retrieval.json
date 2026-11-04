@@ -1,0 +1,12 @@
+{
+  "text": "Guidelines learned from past task attempts (follow these carefully; they address the most common mistakes):\n\n\nAdditional task-specific guidelines retrieved from similar past tasks:\n- When extracting EXIF GPS data for machine-readable output, use the `-n` (numeric) flag with exiftool to obtain signed decimal coordinates directly, rather than parsing human-readable DMS (degrees/minutes/seconds) strings. The `-n` flag automatically applies N/S/E/W reference signs and preserves full precision.\n- When a task requires both human-readable presentation and machine-readable export of the same data, perform separate extractions optimized for each purpose rather than attempting to parse human-readable output for machine processing.",
+  "entity_ids": [
+    "1",
+    "2"
+  ],
+  "entity_revisions": {
+    "1": 1,
+    "2": 1
+  },
+  "namespace_id": "photo-reviewed"
+}
