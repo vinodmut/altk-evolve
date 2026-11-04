@@ -1,0 +1,15 @@
+services:
+  demo:
+    build:
+      context: .
+    init: true
+    volumes:
+      - ./.env:/run/secrets/demo.env:ro
+      - ./results:/results
+    healthcheck:
+      test: ["CMD", "uv", "run", "--offline", "--no-sync", "python", "services.py", "health"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
+      start_period: 20s
+    stop_grace_period: 15s

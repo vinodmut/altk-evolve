@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+DEMO_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$DEMO_DIR"
+COMPOSE_PROJECT_NAME="cortex-photo-$(printf '%s' "$DEMO_DIR" | cksum | awk '{print $1}')"
+export COMPOSE_PROJECT_NAME
+case "${1:-help}" in
+  setup)
+    if [ ! -f .env ]; then
+      cp .env.example .env
+      printf '%s\n' 'Created .env. Fill in the two API URLs, keys, and model names, then rerun ./demo setup.'
+      exit 1
+    fi
+    mkdir -p results
+    docker compose up --build --detach --wait --wait-timeout 360
+    docker compose exec -T demo uv run --offline --no-sync python demo.py check
+    ;;
+  stop) docker compose down ;;
+  logs) docker compose logs --tail 60 ;;
+  shell) docker compose exec demo bash ;;
+  baseline|training|guided|promote)
+    docker compose exec demo uv run --offline --no-sync python demo.py "$@"
+    ;;
+  learn|candidates|compare|check|capture|status)
+    docker compose exec -T demo uv run --offline --no-sync python demo.py "$@"
+    ;;
+  *)
+    printf '%s\n' 'Usage: ./demo setup|baseline|training|learn|candidates|promote [IDs...]|guided|compare|status|check|stop|logs|shell'
+    ;;
+esac

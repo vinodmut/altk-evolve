@@ -1,0 +1,118 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cortex + Evolve Docker photo walkthrough</title><style>body{overflow-wrap:anywhere;font:16px/1.65 system-ui,sans-serif;color:#172033;background:#f5f7fb;max-width:1020px;margin:40px auto;padding:0 24px}h1,h2{line-height:1.25}h1{font-size:36px}h2{margin-top:40px}pre{position:relative;background:#11233e;color:#e5efff;padding:44px 20px 20px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace}table{table-layout:fixed;border-collapse:collapse;background:white;width:100%;font-size:14px}th,td{padding:10px;border-bottom:1px solid #dae1ec;text-align:left}a{color:#0043ce}button{position:absolute;top:8px;right:10px;background:white;color:#172033;padding:5px 12px;border:0;border-radius:4px;cursor:pointer}.banner{padding:20px;background:#e6eeff;border-left:4px solid #0f62fe}strong{font-weight:650}@media(max-width:600px){body{padding:0 12px}table{font-size:12px}td,th{padding:5px}}</style></head><body><p class="banner">Default walkthrough: Docker installs the tools, runs the services, and captures evidence. You run Claude Code interactively and review the generated advice.</p><h1>Cortex + Evolve photo demo</h1>
+<p>Run three interactive Claude Code sessions in a single Docker container. Cortex records the conversations; full Evolve learns from the GPS session; you review and promote the generated advice; Cortex injects it into a fresh focal-length session. The helper captures the evidence and writes <code>results/comparison.html</code>.</p>
+<p>You need Docker with Compose, Git, and API access for both Claude Code and Evolve. On a Mac, Docker Desktop or a running Colima instance works. <strong>You do not need host installations of Claude, Cortex, Evolve, Go, uv, Python, or ExifTool.</strong> The image installs them. Both comparison arms get identical tools and the original sample photo.</p>
+<p>Stay in this demo directory for every <code>./demo</code> command.</p>
+<h2>1. Get the bundle in a separate temporary directory</h2>
+<pre><code class="language-bash">export DEMO_ROOT=&quot;$(mktemp -d &quot;${TMPDIR:-/tmp}/cortex-photo-docker.XXXXXX&quot;)&quot;
+git clone --depth 1 --single-branch --branch rossocortex \
+  https://github.com/vinodmut/kaizen.git &quot;$DEMO_ROOT/kaizen&quot;
+cd &quot;$DEMO_ROOT/kaizen/demos/cortex-photo&quot;
+cp .env.example .env
+</code></pre>
+<p>This downloads the ready-made demo directory. Docker installs Evolve from its pinned Git revision and downloads/builds Cortex from its pinned revision; you do not clone/build Cortex separately. Local development: start here with <code>cd demos/cortex-photo</code> in this checkout.</p>
+<h2>2. Configure both LLM connections and start</h2>
+<p>Edit <code>.env</code> and fill in these six values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Purpose</th>
+<th>Direct provider example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ANTHROPIC_BASE_URL</code></td>
+<td>Claude's Anthropic-compatible API</td>
+<td><code>https://api.anthropic.com</code></td>
+</tr>
+<tr>
+<td><code>ANTHROPIC_API_KEY</code></td>
+<td>Claude's API key</td>
+<td>Your Anthropic API key</td>
+</tr>
+<tr>
+<td><code>ANTHROPIC_MODEL</code></td>
+<td>The task model</td>
+<td><code>claude-sonnet-4-5</code></td>
+</tr>
+<tr>
+<td><code>OPENAI_BASE_URL</code></td>
+<td>Evolve's reflection API</td>
+<td><code>https://api.openai.com/v1</code></td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td>Evolve's API key</td>
+<td>Your OpenAI API key</td>
+</tr>
+<tr>
+<td><code>EVOLVE_MODEL_NAME</code></td>
+<td>Evolve's reflection model</td>
+<td><code>gpt-4.1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Leave <code>EVOLVE_CUSTOM_LLM_PROVIDER=openai</code> for an OpenAI-compatible reflection endpoint. A gateway can serve both APIs: use its base URL without <code>/v1</code> for Claude, its <code>/v1</code> URL for Evolve, and its model IDs and keys in both sets of fields. For the gateway used during development, both model fields were <code>Azure/gpt-4.1</code>. Native Anthropic and OpenAI endpoints can also be configured separately. The demo uses API keys; your host's Claude subscription/login is not copied into Docker.</p>
+<pre><code class="language-bash">./demo setup
+</code></pre>
+<p>The first build downloads tools, Go dependencies, Python packages, and the small CPU embedding model. Allow several minutes and several GB of disk space. Startup verifies the photo checksum and sends a short real request through Claude/Cortex and a separate request to Evolve's reflection LLM. Expect <code>live API OK</code> for both before starting tasks. These diagnostic calls have a small API cost and are excluded from task evidence.</p>
+<p>Credentials are mounted read-only and excluded from the image. The local CA stays inside the demo; there is no host trust-store change and no published host port. Results live in <code>./results</code>.</p>
+<h2>3. Baseline</h2>
+<pre><code class="language-bash">./demo baseline
+</code></pre>
+<p>Claude starts interactively with the focal-length task already entered. At the folder trust prompt, use the down arrow to select <strong>Yes, I trust this folder</strong>, then Enter (the default is No). Approve local tool calls when prompted; this Claude version can also approve them through its normal auto mode. It should answer and save <code>photo-result.json</code>. Enter <code>/exit</code> after its final answer. The helper then captures the actual Cortex events and converted trajectory, prints the saved task tags, and reports no guideline injection.</p>
+<p>The task requires numeric <code>FocalLength: 4.38</code> and numeric <code>FocalLengthIn35mmFormat: 27</code> (Pillow calls the latter <code>FocalLengthIn35mmFilm</code>). A formatted string such as <code>&quot;4.4 mm&quot;</code> fails the numeric-precision requirement. Keep the real baseline even if it already passes.</p>
+<h2>4. GPS training</h2>
+<pre><code class="language-bash">./demo training
+</code></pre>
+<p>Claude starts a fresh session with “Where was sample.jpg taken?” Accept this folder's trust prompt as above. It should read the GPS tags. The references are N/W and the signed coordinates are approximately <code>51.4936083333, -0.0375611111</code>. Correct actual mistakes in this session; do not claim an unverified street address.</p>
+<p>After the location answer, paste this follow-up <strong>into Claude Code</strong>:</p>
+<pre><code class="language-text">I also need machine-readable metadata for downstream processing.
+Export GPSLatitude and GPSLongitude as signed numeric values to gps-result.json,
+using the metadata tool's numeric/unformatted output. Preserve the stored
+precision rather than rounding a human-readable display or doing a rounded
+conversion. Verify the saved values against the metadata and reference tags.
+Show the extraction command, then summarize the verified procedure and any
+approaches that actually failed during this session. Keep the summary in
+this conversation; do not write a memory file.
+</code></pre>
+<p>Expect a numeric GPS export and a verified procedure visible in the conversation. Enter <code>/exit</code>; the helper saves the training trajectory. All three runs remain interactive, with ordinary permissions. There is no permission-bypass flag.</p>
+<h2>5. Learn, read the full guidelines, and promote your selection</h2>
+<pre><code class="language-bash">./demo learn
+./demo promote
+</code></pre>
+<p>Learning processes only the recorded GPS UUID and prints full candidate text and provenance. Baseline is excluded. Review reusable procedural advice, such as using a metadata tool's numeric JSON output. Exclude copied coordinates, focal-length answers, invented failures, or scripts available only in training. At the promotion prompt, enter the candidate IDs you selected, separated by spaces. <code>./demo candidates</code> prints them again if needed.</p>
+<p>Expect unchanged guideline text copied from <code>photo-candidates</code> into <code>photo-reviewed</code>, with source metadata and a candidate-to-serving ID mapping in <code>photo-promoted.json</code>. The selection is frozen for this comparison. Nothing is promoted automatically. If Evolve generates no useful guidelines, keep that outcome; there is nothing to promote.</p>
+<h2>6. Guided retry and comparison</h2>
+<pre><code class="language-bash">./demo guided
+</code></pre>
+<p>The helper verifies reviewed MCP retrieval and turns injection on. Claude receives exactly the baseline focal-length prompt, in a new session with only the same original photo. Accept the folder trust prompt, approve tool calls when prompted, and enter <code>/exit</code> after the final answer. Expect first-request <code>injected: true</code> with the promoted serving IDs; inspect the commands and result.</p>
+<pre><code class="language-bash">./demo compare
+./demo stop
+</code></pre>
+<p>Open <code>results/comparison.html</code> in your host browser (on macOS: <code>open results/comparison.html</code>). It contains the architecture, identical task prompt, numeric checks, actual outputs, complete generated/reviewed advice, attribution, and expandable before/training/after trajectories. Raw evidence JSON is alongside it. Stopping removes the demo container and network while keeping results and the cached image.</p>
+<p>The earlier development pair improved from <code>&quot;4.4 mm&quot;</code> to numeric <code>4.38</code> after learning the GPS export procedure, with the same tool-call count. <strong>A fresh pair can tie or regress.</strong> The report states the actual outcome; one pair does not establish a reliable average gain.</p>
+<h2>Inspect or recover</h2>
+<ul>
+<li><code>./demo status</code>: session IDs and progress, without API keys.</li>
+<li><code>./demo capture baseline</code> (or <code>training</code>/<code>guided</code>): capture a session after a terminal interruption.</li>
+<li><code>./demo logs</code>: supervisor startup errors. Detailed service logs are in <code>results/runtime/</code>.</li>
+<li><code>./demo check</code>: rerun both real API checks after correcting <code>.env</code>.</li>
+<li><code>./demo shell</code>: inspect the tools/files inside the container.</li>
+<li>For a fresh pair, run <code>./demo stop</code>, rename <code>results</code> to a unique saved name, and run <code>./demo setup</code>. Every task gets a new UUID. A completed arm cannot silently overwrite earlier evidence.</li>
+</ul>
+<p>To share evidence, share the report and selected task/guideline JSON files. Keep <code>.env</code> and <code>results/runtime/</code> private: runtime includes the CA key and Claude configuration. The JPEG is copied unchanged from <code>demo/workspace/sample.jpg</code>, SHA-256 <code>15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353</code>.</p>
+<p>Pins: Evolve <code>161238de15b1d62f55638091c5ed5629b5b46397</code> on <code>vinodmut/kaizen:rossocortex</code>; Cortex <code>4262d0a84c37589e8d7907cfb70c46f6e08694d4</code> on <code>vinodmut/cortex:evolve-plugin</code>; Claude Code <code>2.1.287</code>; Python <code>3.12.8</code>; uv <code>0.9.5</code>. Python dependencies are locked. ExifTool is the Debian package installed equally for all arms. The gateway bridge preserves text system blocks in order, tool schemas, messages, and streaming; it flattens system text for gateway compatibility.</p>
+<script>document.querySelectorAll('pre').forEach(pre=>{
+  const button=document.createElement('button');button.textContent='Copy';
+  button.onclick=async()=>{
+    const value=pre.querySelector('code').textContent;
+    try {await navigator.clipboard.writeText(value)} catch {
+      const area=document.createElement('textarea');area.value=value;
+      area.style.position='fixed';area.style.opacity='0';document.body.append(area);
+      area.select();document.execCommand('copy');area.remove();
+    }
+    button.textContent='Copied';setTimeout(()=>button.textContent='Copy',1500);
+  };pre.append(button);
+});</script></body></html>

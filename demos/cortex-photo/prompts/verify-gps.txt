@@ -1,0 +1,8 @@
+I also need machine-readable metadata for downstream processing.
+Export GPSLatitude and GPSLongitude as signed numeric values to gps-result.json,
+using the metadata tool's numeric/unformatted output. Preserve the stored
+precision rather than rounding a human-readable display or doing a rounded
+conversion. Verify the saved values against the metadata and reference tags.
+Show the extraction command, then summarize the verified procedure and any
+approaches that actually failed during this session. Keep the summary in
+this conversation; do not write a memory file.

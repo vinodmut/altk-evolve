@@ -1,0 +1,190 @@
+"""Demo invariants: credential isolation, source selection, and evidence grading."""
+
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+pytestmark = pytest.mark.unit
+DEMO = Path(__file__).resolve().parents[2] / "demos" / "cortex-photo"
+
+
+@pytest.fixture
+def bundle(monkeypatch, tmp_path):
+    modules = {}
+    for name in ("services", "report", "demo"):
+        spec = importlib.util.spec_from_file_location(name, DEMO / f"{name}.py")
+        module = importlib.util.module_from_spec(spec)
+        monkeypatch.setitem(sys.modules, name, module)
+        spec.loader.exec_module(module)
+        modules[name] = module
+        monkeypatch.setattr(module, "RESULTS", tmp_path, raising=False)
+        monkeypatch.setattr(module, "RUNTIME", tmp_path / "runtime", raising=False)
+        monkeypatch.setattr(module, "STATE", tmp_path / "state.json", raising=False)
+    return SimpleNamespace(**modules, root=tmp_path)
+
+
+def state_for(bundle, guided_correct=True):
+    state = {
+        "created_at": "2026-11-04T00:00:00Z",
+        "model": "task-model",
+        "learning_model": "reflection-model",
+        "sessions": {
+            "baseline": {"id": "baseline-id", "prompt": "same prompt", "captured": True, "first_request_evolve": {"injected": False}},
+            "training": {"id": "training-id", "prompt": "GPS task", "captured": True},
+            "guided": {
+                "id": "guided-id",
+                "prompt": "same prompt",
+                "captured": True,
+                "first_request_evolve": {"injected": True, "ids": ["served-id"]},
+            },
+        },
+        "promoted": [
+            {
+                "candidate_id": "candidate-id",
+                "id": "served-id",
+                "content": "Use numeric output <script>alert(1)</script>",
+                "metadata": {"session_id": "training-id"},
+            }
+        ],
+    }
+    for arm in ("baseline", "guided"):
+        output = bundle.root / "photos" / arm
+        output.mkdir(parents=True)
+        data = {"FocalLength": 4.38 if arm == "guided" and guided_correct else "4.4 mm", "FocalLengthIn35mmFormat": 27}
+        (output / "photo-result.json").write_text(json.dumps([data]))
+        (bundle.root / f"{arm}-cortex-session.json").write_text(
+            json.dumps(
+                {
+                    "events": [
+                        {
+                            "seq": 1,
+                            "phase": "request",
+                            "inference": {"agentRole": "main", "tools": [{"name": "Bash"}]},
+                            "plugins": {"evolve": state["sessions"][arm]["first_request_evolve"]},
+                        }
+                    ]
+                }
+            )
+        )
+    return state
+
+
+def test_credentials_override_inherited_empty_keys_and_proxies(bundle, monkeypatch):
+    credentials = bundle.root / "credentials.env"
+    credentials.write_text(
+        "ANTHROPIC_BASE_URL=https://gateway.example/v1\nANTHROPIC_API_KEY=demo-key\nANTHROPIC_MODEL=task\nOPENAI_BASE_URL=https://gateway.example/v1\nOPENAI_API_KEY=reflection-key\nEVOLVE_MODEL_NAME=reflect\n"
+    )
+    monkeypatch.setenv("DEMO_CREDENTIALS", str(credentials))
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+    monkeypatch.setenv("ANTHROPIC_AUTH_TOKEN", "inherited-token")
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "inherited-oauth")
+    monkeypatch.setenv("HTTPS_PROXY", "http://old-proxy")
+    env = bundle.services.environment()
+    assert env["ANTHROPIC_API_KEY"] == "demo-key"
+    assert env["OPENAI_API_KEY"] == "reflection-key"
+    assert env["ANTHROPIC_BASE_URL"] == "https://gateway.example"
+    assert not any(name in env for name in ("ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "HTTPS_PROXY"))
+
+
+def test_bridge_preserves_all_system_text_and_tools(bundle):
+    body = {
+        "system": [{"type": "text", "text": "original constraints"}, {"type": "text", "text": "learned guideline"}],
+        "tools": [{"name": "Bash"}],
+        "messages": [{"role": "user", "content": "task"}],
+        "stream": True,
+    }
+    forwarded = bundle.services.flatten_system(body)
+    assert forwarded["system"] == "original constraints\n\nlearned guideline"
+    for name in ("tools", "messages", "stream"):
+        assert forwarded[name] == body[name]
+    with pytest.raises(ValueError):
+        bundle.services.flatten_system({"system": [{"type": "image"}]})
+
+
+@pytest.mark.parametrize(
+    "data,passed",
+    [
+        ([{"FocalLength": 4.38, "FocalLengthIn35mmFormat": 27}], True),
+        ({"FocalLength": 4.38, "FocalLengthIn35mmFilm": 27}, True),
+        ({"FocalLength": "4.4 mm", "FocalLengthIn35mmFormat": "27 mm"}, False),
+        ({"FocalLength": 4.4, "FocalLengthIn35mmFormat": 27}, False),
+        ({"FocalLength": True, "FocalLengthIn35mmFormat": 27}, False),
+    ],
+)
+def test_numeric_checker_uses_precision_and_native_tags(bundle, data, passed):
+    path = bundle.root / "metadata.json"
+    path.write_text(json.dumps(data))
+    assert bundle.report.metadata_check(path)["numeric_correct"] is passed
+
+
+def test_report_requires_actual_injection_and_escapes_guidelines(bundle):
+    state = state_for(bundle)
+    summary = bundle.report.build_report(bundle.root, state)
+    assert "improved" in summary["verdict"]
+    report = (bundle.root / "comparison.html").read_text()
+    assert "<script>alert(1)</script>" not in report
+    assert "&lt;script&gt;" in report
+    path = bundle.root / "guided-cortex-session.json"
+    evidence = json.loads(path.read_text())
+    evidence["events"][0]["plugins"]["evolve"]["ids"] = ["wrong-id"]
+    path.write_text(json.dumps(evidence))
+    assert "does not establish" in bundle.report.build_report(bundle.root, state)["verdict"]
+    evidence["events"][0]["plugins"]["evolve"]["ids"] = ["served-id"]
+    path.write_text(json.dumps(evidence))
+    state["sessions"]["guided"]["prompt"] = "changed prompt"
+    assert "does not establish" in bundle.report.build_report(bundle.root, state)["verdict"]
+
+
+def test_report_records_a_tie_instead_of_claiming_improvement(bundle):
+    state = state_for(bundle)
+    (bundle.root / "photos/baseline/photo-result.json").write_text('{"FocalLength":4.38,"FocalLengthIn35mmFormat":27}')
+    assert "no correctness gain" in bundle.report.build_report(bundle.root, state)["verdict"]
+
+
+def test_attribution_uses_tool_manifest_when_request_has_no_tool_count(bundle):
+    event = {
+        "seq": 3,
+        "phase": "request",
+        "inference": {"agentRole": "main", "tools": [{"name": "Bash"}]},
+        "plugins": {"evolve": {"injected": True, "ids": ["reviewed"]}},
+    }
+    side = {"seq": 1, "phase": "request", "inference": {"agentRole": "main"}}
+    assert bundle.report.first_request_attribution({"events": [side, event]}) == event["plugins"]["evolve"]
+
+
+def test_learning_processes_only_the_selected_training_capture(bundle, monkeypatch):
+    state = {"sessions": {"baseline": {"id": "do-not-learn"}, "training": {"id": "selected-training", "captured": True}}}
+    bundle.services.save_state(state)
+    trajectory = {"batch": {"conversation_id": "selected-training"}, "messages": [{"role": "user", "content": "verified GPS procedure"}]}
+    (bundle.root / "training-trajectory.json").write_text(json.dumps({"trajectories": [trajectory]}))
+    calls = []
+    client = SimpleNamespace(
+        ensure_namespace=lambda _: None,
+        process_trajectory=lambda t, **kw: calls.append((t, kw)) or SimpleNamespace(model_dump=lambda **_: {"updates": []}),
+    )
+    monkeypatch.setattr("altk_evolve.frontend.client.evolve_client.EvolveClient", lambda: client)
+    monkeypatch.setattr(bundle.demo, "candidates", lambda: [])
+    bundle.demo.learn()
+    assert calls == [(trajectory, {"namespace_id": "photo-candidates"})]
+    assert bundle.services.load_state()["learned"] is True
+    bundle.demo.learn()
+    assert len(calls) == 1
+
+
+def test_learning_rejects_a_mismatched_source_before_processing(bundle):
+    bundle.services.save_state({"sessions": {"training": {"id": "selected-training", "captured": True}}})
+    (bundle.root / "training-trajectory.json").write_text(json.dumps({"trajectories": [{"batch": {"conversation_id": "baseline-id"}}]}))
+    with pytest.raises(RuntimeError, match="does not match"):
+        bundle.demo.learn()
+
+
+def test_interactive_arms_are_fresh_and_have_the_same_prompt(bundle):
+    bundle.services.save_state({"model": "task-model"})
+    command = bundle.demo.claude_command("fresh-id")
+    assert "-p" not in command and "--dangerously-skip-permissions" not in command
+    assert "--resume" not in command
+    assert bundle.demo.prompt("baseline") == bundle.demo.prompt("guided")

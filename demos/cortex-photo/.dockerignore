@@ -1,0 +1,10 @@
+*
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!demo.py
+!services.py
+!report.py
+!prompts/
+!prompts/**
+!sample.jpg

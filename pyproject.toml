@@ -300,6 +300,7 @@ exclude = [
     "platform-integrations/",
     "plugin-source/",
     "examples/",
+    "demos/cortex-photo/results/",
     "experiments/cortex_learning_demo/artifacts/",
     "experiments/cortex_workflow_learning/artifacts[^/]*/",
     "explorations/agent-wiki/wikis/",

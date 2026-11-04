@@ -10,7 +10,7 @@
     @media(max-width:950px){.layout{grid-template-columns:1fr}aside{position:static}aside nav{display:flex;flex-wrap:wrap;gap:4px}aside a{background:white;border:1px solid var(--border);padding:5px 8px}.progress{max-width:400px}.grid{grid-template-columns:1fr}}@media(max-width:600px){header{padding:28px 18px}.layout{padding:18px 10px}.intro,.step,.extra{padding:18px 14px}.step-head{flex-wrap:wrap}.done{margin-left:50px}.codebox pre{font-size:.76rem}td,th{padding:8px;font-size:.82rem}}@media print{aside,.codebox button,.done,#status{display:none}.layout{display:block;padding:0}header{background:white;color:black;padding:0}header p{color:black}.tags span{background:#eee;color:black}.intro,.step,.extra{break-inside:avoid;border:1px solid #ddd}pre{background:#f4f4f4;color:black}details>*{display:block!important}}
   </style>
 </head>
-<body><header><div class="eyebrow">Hands-on Cortex + Evolve</div><h1>Learn a photo-metadata workflow in interactive Claude Code</h1><p>Enter the prompts yourself. Inspect the learning, promotion, and fresh-session behavior at every boundary.</p><div class="tags"><span>Interactive Claude Code</span><span>Real EXIF fixture</span><span>Full Evolve + Cortex</span><span>Same-task before/after</span></div></header>
+<body><header><div class="eyebrow">Hands-on Cortex + Evolve · advanced host setup</div><h1>Learn a photo-metadata workflow in interactive Claude Code</h1><p>Enter the prompts yourself. Inspect the learning, promotion, and fresh-session behavior at every boundary.</p><div class="tags"><span>Interactive Claude Code</span><span>Real EXIF fixture</span><span>Full Evolve + Cortex</span><span>Same-task before/after</span></div><p><strong>Start with the simpler <a style="color:#fff" href="../../demos/cortex-photo/WALKTHROUGH.html">Docker photo walkthrough</a>.</strong> Its bundled scripts install the tools, start the services, capture trajectories, and generate your comparison report. This page retains the detailed host setup as an advanced reference.</p></header>
 <div class="layout"><aside><div class="progress"><strong id="progress-text">0 of 16 steps complete</strong><progress id="progress" max="16" value="0"></progress><button id="reset" type="button">Reset checklist</button></div><nav><a href="#overview">Read this first</a><a href="#step-1">1. Gather the prerequisites</a>
 <a href="#step-2">2. Create a fresh temporary directory and clone Cortex</a>
 <a href="#step-3">3. Install Evolve</a>
@@ -175,7 +175,7 @@ test -s "$DEMO_CREDENTIALS"
   <p>The <code>services</code> helper reads <code>gateway.env</code> and supplies these settings to Evolve subprocesses. You do not need to paste a key into a shell export or manually start a second server. Step 7 verifies the actual resolved Evolve settings and sends a small inference request.</p>
   <p>Keep the credential file and CA private key in the private demo workspace. The service helper reads credentials into subprocess environments; you do not need to print the file or paste a key into any command below.</p>
 </section>
-<section class="step" id="step-6"><div class="step-head"><span class="number">6</span><h2 class="step-title">Define the service helper</h2><label class="done"><input type="checkbox" data-step="6"> Done</label></div><p>Paste the entire block into the same Bash or zsh terminal. It writes a standalone helper to <code>$DEMO_ROOT/services.py</code> and defines the <code>services</code> command. The helper uses your temporary paths and dedicated photo namespaces; it does not import any repository-only experiment code. It handles only setup, the injection toggle, and cleanup. You launch Claude Code and enter every task prompt yourself.</p><div class="codebox"><button type="button">Copy</button><pre id="services-helper" data-shell="true"><code>cat &gt; &quot;$DEMO_ROOT/services.py&quot; &lt;&lt;&#x27;SERVICES_PY&#x27;
+<section class="step" id="step-6"><div class="step-head"><span class="number">6</span><h2 class="step-title">Define the service helper</h2><label class="done"><input type="checkbox" data-step="6"> Done</label></div><p>Paste the entire block into the same Bash or zsh terminal. It writes a standalone helper to <code>$DEMO_ROOT/services.py</code> and defines the <code>services</code> command. The helper uses your temporary paths and dedicated photo namespaces; it does not import any repository-only experiment code. It manages setup, the injection toggle, cleanup, and the configured interactive Claude launch. You launch Claude Code and enter every task prompt yourself.</p><div class="codebox"><button type="button">Copy</button><pre id="services-helper" data-shell="true"><code>cat &gt; &quot;$DEMO_ROOT/services.py&quot; &lt;&lt;&#x27;SERVICES_PY&#x27;
 &quot;&quot;&quot;Standalone process setup for the interactive photo walkthrough.&quot;&quot;&quot;
 
 import argparse
@@ -395,6 +395,50 @@ def stop():
     print(&quot;Stopped only the processes recorded for this demo.&quot;)
 
 
+def launch_claude(arm, session):
+    if arm not in {&quot;baseline&quot;, &quot;training&quot;, &quot;guided&quot;}:
+        raise RuntimeError(&quot;Choose baseline, training, or guided.&quot;)
+    target = RESULTS / &quot;photos&quot; / arm
+    if not (target / &quot;sample.jpg&quot;).is_file():
+        raise RuntimeError(&quot;Prepare the photo copies before launching Claude.&quot;)
+    env = environment(load_state()[&quot;model&quot;])
+    env.pop(&quot;CLAUDE_CODE_OAUTH_TOKEN&quot;, None)
+    env.update(
+        HTTP_PROXY=&quot;http://127.0.0.1:47800&quot;,
+        HTTPS_PROXY=&quot;http://127.0.0.1:47800&quot;,
+        http_proxy=&quot;http://127.0.0.1:47800&quot;,
+        https_proxy=&quot;http://127.0.0.1:47800&quot;,
+        ALL_PROXY=&quot;&quot;,
+        all_proxy=&quot;&quot;,
+        NO_PROXY=&quot;&quot;,
+        no_proxy=&quot;&quot;,
+        NODE_EXTRA_CA_CERTS=str(Path(os.environ[&quot;DEMO_CA_DIR&quot;]) / &quot;ca.crt&quot;),
+        ANTHROPIC_BASE_URL=&quot;http://127.0.0.1:18202&quot;,
+        CLAUDE_CONFIG_DIR=str(RESULTS / &quot;claude-config&quot; / arm),
+        CLAUDE_CODE_DISABLE_AUTO_MEMORY=&quot;1&quot;,
+        CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=&quot;1&quot;,
+        CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=&quot;1&quot;,
+    )
+    command = [
+        &quot;claude&quot;,
+        &quot;--bare&quot;,
+        &quot;--model&quot;,
+        env[&quot;EVOLVE_MODEL_NAME&quot;],
+        &quot;--session-id&quot;,
+        session,
+        &quot;--tools&quot;,
+        &quot;Bash,Read,Write,Edit&quot;,
+        &quot;--strict-mcp-config&quot;,
+        &quot;--mcp-config&quot;,
+        &#x27;{&quot;mcpServers&quot;:{}}&#x27;,
+        &quot;--setting-sources&quot;,
+        &quot;&quot;,
+    ]
+    os.chdir(target)
+    # Keep stdin attached to the terminal; load credentials from the file, then replace this process.
+    os.execvpe(&quot;claude&quot;, command, env)
+
+
 def serve_bridge():
     from fastapi import FastAPI, Request
     from starlette.responses import StreamingResponse
@@ -447,8 +491,17 @@ if __name__ == &quot;__main__&quot;:
         &quot;bridge&quot;: serve_bridge,
     }
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(&quot;command&quot;, choices=commands)
-    commands[parser.parse_args().command]()
+    parser.add_argument(&quot;command&quot;, choices=[*commands, &quot;claude&quot;])
+    parser.add_argument(&quot;arguments&quot;, nargs=&quot;*&quot;, help=&quot;For claude: ARM SESSION_UUID&quot;)
+    args = parser.parse_args()
+    if args.command == &quot;claude&quot;:
+        if len(args.arguments) != 2:
+            parser.error(&quot;claude requires ARM SESSION_UUID&quot;)
+        launch_claude(*args.arguments)
+    else:
+        if args.arguments:
+            parser.error(&quot;Unexpected command arguments&quot;)
+        commands[args.command]()
 SERVICES_PY
 
 services() {
@@ -456,7 +509,7 @@ services() {
     python &quot;$DEMO_ROOT/services.py&quot; &quot;$@&quot;
 }
 
-services --help</code></pre></div><div class="see"><strong>You should see</strong>An argparse help screen listing <code>preflight</code>, <code>start</code>, <code>bridge-start</code>, <code>injection-off</code>, <code>injection-on</code>, and <code>stop</code>. The internal <code>bridge</code> command is launched by <code>bridge-start</code>. This help check starts no processes and makes no model calls.</div></section>
+services --help</code></pre></div><div class="see"><strong>You should see</strong>An argparse help screen listing <code>preflight</code>, <code>start</code>, <code>bridge-start</code>, <code>injection-off</code>, <code>injection-on</code>, and <code>stop</code>. The internal <code>bridge</code> command is launched by <code>bridge-start</code>. The <code>claude ARM SESSION_UUID</code> command launches the interactive agent with credentials read directly from <code>gateway.env</code>. This help check starts no processes and makes no model calls.</div></section>
 <section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Select Evolve’s LLM and verify the connection</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
   <p>Run from <code>$DEMO_ROOT</code> in the same terminal as steps 2–6. No Evolve checkout is needed. This block checks the built Cortex binary, CA files, and fixed ports before calling preflight. It stops if a prerequisite is missing.</p>
   <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="preflight-check"><code>cd &quot;$DEMO_ROOT&quot; &amp;&amp;
@@ -583,26 +636,7 @@ demo_run() {
 }
 
 photo_claude() {
-  (
-    cd &quot;$DEMO_PHOTOS/$1&quot; || exit 1
-    uv run --no-project --python 3.12 --with &quot;$DEMO_EVOLVE_SPEC&quot; \
-      --env-file &quot;$DEMO_CREDENTIALS&quot; \
-      env HTTP_PROXY=http://127.0.0.1:47800 \
-      HTTPS_PROXY=http://127.0.0.1:47800 \
-      http_proxy=http://127.0.0.1:47800 https_proxy=http://127.0.0.1:47800 \
-      ALL_PROXY= all_proxy= NO_PROXY= no_proxy= \
-      NODE_EXTRA_CA_CERTS=&quot;$DEMO_CA_DIR/ca.crt&quot; \
-      ANTHROPIC_BASE_URL=http://127.0.0.1:18202 \
-      ANTHROPIC_AUTH_TOKEN= \
-      CLAUDE_CONFIG_DIR=&quot;$DEMO_RESULTS/claude-config/$1&quot; \
-      CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 \
-      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
-      CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 \
-      claude --bare --model &quot;$EVOLVE_MODEL_NAME&quot; --session-id &quot;$2&quot; \
-        --tools &quot;Bash,Read,Write,Edit&quot; \
-        --strict-mcp-config --mcp-config &#x27;{&quot;mcpServers&quot;:{}}&#x27; \
-        --setting-sources &quot;&quot;
-  )
+  services claude &quot;$1&quot; &quot;$2&quot;
 }
 
 capture_photo() {
@@ -617,9 +651,11 @@ capture_photo() {
 }
 }
 
-prepare_photo_demo</code></pre></div><div class="see"><strong>You should see</strong><code>Photo SHA-256 verified.</code> followed by three distinct UUIDs. Each session directory contains only <code>sample.jpg</code>. The helpers are now available in this terminal; Claude has not started yet.</div><p><code>--bare</code> and a fresh <code>CLAUDE_CONFIG_DIR</code> keep Claude native memory and existing project customizations out of this comparison. This requires the API key saved in step 5. Ordinary tool-approval prompts still apply. The agent uses native file/shell tools; Cortex contacts Evolve over MCP.</p><p>The launcher uses <code>uv run --no-project --with</code> to supply the cached installed Python environment while keeping Claude's working directory in the photo folder. uv resolves the installed environment before applying proxy settings to Claude. The local bridge URL overrides the gateway URL only for Claude; Evolve continues to use the gateway's OpenAI-compatible endpoint.</p></section>
+prepare_photo_demo</code></pre></div><div class="see"><strong>You should see</strong><code>Photo SHA-256 verified.</code> followed by three distinct UUIDs. Each session directory contains only <code>sample.jpg</code>. The helpers are now available in this terminal; Claude has not started yet.</div><p><code>--bare</code> and a fresh <code>CLAUDE_CONFIG_DIR</code> keep Claude native memory and existing project customizations out of this comparison. This requires the API key saved in step 5. Ordinary tool-approval prompts still apply. The agent uses native file/shell tools; Cortex contacts Evolve over MCP.</p><p>The launcher calls <code>services claude</code> in the cached installed Python environment. The helper reads <code>gateway.env</code> directly and starts Claude in the selected photo folder with the gateway key and Cortex routing. uv resolves the installed environment before applying proxy settings to Claude. The local bridge URL overrides the gateway URL only for Claude; Evolve continues to use the gateway's OpenAI-compatible endpoint.</p></section>
 <section class="step" id="step-10"><div class="step-head"><span class="number">10</span><h2 class="step-title">Run the focal-length baseline in Claude Code</h2><label class="done"><input type="checkbox" data-step="10"> Done</label></div><p>In your shell, launch the baseline:</p><div class="codebox"><button type="button">Copy</button><pre id="launch-baseline" data-shell="true"><code>services injection-off
-photo_claude baseline &quot;$DEMO_BASELINE_SESSION&quot;</code></pre></div><p>At the Claude Code input prompt, paste this task. <strong>This box contains a Claude prompt, not a shell command.</strong></p><div class="codebox"><button type="button">Copy</button><pre id="baseline-prompt" data-prompt="true"><code>What focal length was used to take sample.jpg? Use embedded EXIF metadata.
+photo_claude baseline &quot;$DEMO_BASELINE_SESSION&quot;</code></pre></div>
+<div class="note"><strong>Complete the first-run prompts before pasting the task</strong>If Claude asks whether you trust the temporary photo folder, select <code>Yes, I trust this folder</code>. If it says <code>Detected a custom API key in your environment</code> and asks <code>Do you want to use this API key?</code>, select <strong>Yes</strong> using the arrow keys, then press Enter. The default is <code>No (recommended)</code>. Wait for the normal Claude input prompt. Each fresh baseline, training, and guided configuration can ask these questions. The helper reads the gateway key directly from <code>gateway.env</code>, validates it, and supplies it to Claude. It preserves the terminal input and overrides inherited authentication settings.</div>
+<p>At the Claude Code input prompt, paste this task. <strong>This box contains a Claude prompt, not a shell command.</strong></p><div class="codebox"><button type="button">Copy</button><pre id="baseline-prompt" data-prompt="true"><code>What focal length was used to take sample.jpg? Use embedded EXIF metadata.
 Report both the actual focal length in mm and the 35 mm equivalent if present,
 and name the EXIF tags supporting each value. Preserve the stored numeric
 precision rather than rounding a formatted display value. Use local tools. If you use Python,
@@ -786,10 +822,15 @@ printf &#x27;Keep your evidence from: %s\n&#x27; &quot;$DEMO_RESULTS&quot;</code
 <section class="extra" id="troubleshooting"><h2>If something does not match</h2><ul>
 <li><strong>No Cortex session:</strong> check the UUID, proxy variables, empty NO_PROXY, and bridge URL. Capture requires an actual model request. Use the session API rather than assuming a successful terminal answer proves capture.</li>
 <li><strong>Missing tool output:</strong> Cortex sees results when Claude sends them with a later model request. Complete the verification exchange before syncing. Text EXIF extraction is visible; the photo's image bytes and hidden reasoning are not preserved in the converted trajectory.</li>
-<li><strong>Claude asks you to log in:</strong> the launcher uses API-key mode. Recheck step 5, the gateway API key, and your CLI's support for --bare. It intentionally does not use your everyday Claude login.</li>
+<li><strong>Not logged in after submitting a task:</strong> the helper reads <code>gateway.env</code> directly before launching Claude. This avoids relying on uv’s environment-file precedence when inherited authentication settings are empty or stale. Update <code>services.py</code> with step 6 and redefine <code>photo_claude</code> with step 9 before using the retry block below. When Claude offers to use the gateway key, select <strong>Yes</strong>.</li>
+<li><strong>Session ID is already in use:</strong> an earlier Claude process still owns that UUID. Exit that process with <code>/exit</code> when possible. The retry block below assigns a new UUID; subsequent baseline capture uses the updated <code>DEMO_BASELINE_SESSION</code>. Cortex and Evolve can keep running.</li>
 <li><strong>Tool approval prompts:</strong> approve commands you understand that inspect the local fixture. The walkthrough retains ordinary permissions. An unavailable tool is a useful observation, but do not uninstall working tools to force a gain.</li>
 <li><strong>Guidelines arrive but behavior is unchanged:</strong> injection proves availability. Compare the actual commands and output to establish whether Claude used them and whether they helped.</li>
-</ul><p>Sources: <a href="https://www.youtube.com/watch?v=XIlYA79pYp4">linked video</a>, <a href="../../docs/examples/hello_world/claude.md">website starter-example source</a>, <a href="../../docs/integrations/cortex.md">Cortex integration</a>, <a href="../../altk_evolve/sync/cortex_sync.py">trajectory converter</a>, and <a href="../../demo/workspace/sample.jpg">the supplied JPEG</a>. The demo changes no Evolve library implementation.</p></section>
+</ul><p>To retry the baseline in the same shell after an authentication or session-ID error, paste this block, then enter the original focal-length prompt in Claude Code:</p>
+<div class="codebox"><button type="button">Copy</button><pre id="retry-baseline" data-shell="true"><code>unset ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN
+export DEMO_BASELINE_SESSION=&quot;$(uv run --no-project --python 3.12 python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+photo_claude baseline &quot;$DEMO_BASELINE_SESSION&quot;</code></pre></div>
+<p>Sources: <a href="https://www.youtube.com/watch?v=XIlYA79pYp4">linked video</a>, <a href="../../docs/examples/hello_world/claude.md">website starter-example source</a>, <a href="../../docs/integrations/cortex.md">Cortex integration</a>, <a href="../../altk_evolve/sync/cortex_sync.py">trajectory converter</a>, and <a href="../../demo/workspace/sample.jpg">the supplied JPEG</a>. The demo changes no Evolve library implementation.</p></section>
 </main></div><div id="status" role="status" aria-live="polite"></div><script>
 (() => {
   const key = 'cortex-evolve-interactive-photo-v1';

@@ -1,0 +1,9 @@
+What focal length was used to take sample.jpg? Use embedded EXIF metadata.
+Report both the actual focal length in mm and the 35 mm equivalent if present,
+and name the EXIF tags supporting each value. Preserve the stored numeric
+precision rather than rounding a formatted display value. Use local tools.
+If you use Python, run it with uv run --offline --no-sync --project /opt/demo python.
+Save the extracted metadata as photo-result.json using the tool's native
+EXIF tag names and numeric values. In your answer, identify which tag is
+actual focal length and which is the equivalent. Report missing tags as
+missing rather than guessing. Do not install packages.

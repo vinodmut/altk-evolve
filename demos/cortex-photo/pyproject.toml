@@ -1,0 +1,20 @@
+[project]
+name = "cortex-photo-demo"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "altk-evolve-core[server,cli,fastembed] @ git+https://github.com/vinodmut/kaizen.git@161238de15b1d62f55638091c5ed5629b5b46397",
+    "httpx",
+    "pillow",
+    "python-dotenv",
+    "pyyaml",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = []
+
+[tool.ruff]
+line-length = 140

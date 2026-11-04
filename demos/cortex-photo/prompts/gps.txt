@@ -1,0 +1,7 @@
+Where was sample.jpg taken? Use embedded EXIF metadata and local tools.
+Show the raw GPS latitude/longitude values and their N/S/E/W references,
+then convert them to signed decimal coordinates. State what the metadata
+supports about the location. If you use Python, run it with
+uv run --offline --no-sync --project /opt/demo python.
+Do not install packages. Show the successful extraction command so the
+procedure can be repeated with other photos.
