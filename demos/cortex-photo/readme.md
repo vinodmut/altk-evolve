@@ -4,7 +4,7 @@ Run three interactive Claude Code sessions in a single Docker container. Cortex 
 
 You need Docker with Compose, Git, and API access for both Claude Code and Evolve. On a Mac, Docker Desktop or a running Colima instance works. **You do not need host installations of Claude, Cortex, Evolve, Go, uv, Python, or ExifTool.** The image installs them. Both comparison arms get identical tools and the original sample photo.
 
-The full step-by-step page is [WALKTHROUGH.html](WALKTHROUGH.html). Stay in this demo directory for every `./demo` command.
+The full step-by-step page is [walkthrough.html](walkthrough.html). Stay in this demo directory for every `./demo` command.
 
 ## 1. Get the bundle in a separate temporary directory
 

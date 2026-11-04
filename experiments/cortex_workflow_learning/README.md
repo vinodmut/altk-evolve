@@ -1,7 +1,7 @@
 # Learning billing workflows with Cortex + Evolve
 
 For an **interactive Claude Code task**, open the
-[photo-metadata walkthrough](CLAUDE-CODE-PHOTO.html), adapted from the video
+[photo-metadata walkthrough](claude-code-photo.html), adapted from the video
 linked on Evolve's website. You enter the GPS training and focal-length prompts
 yourself, inspect the captured session and generated guidelines, promote a
 reviewed selection, and repeat the focal-length task in a fresh session.
