@@ -1,5 +1,20 @@
 # Learning billing workflows with Cortex + Evolve
 
+For an **interactive Claude Code task**, open the
+[photo-metadata walkthrough](CLAUDE-CODE-PHOTO.html), adapted from the video
+linked on Evolve's website. You enter the GPS training and focal-length prompts
+yourself, inspect the captured session and generated guidelines, promote a
+reviewed selection, and repeat the focal-length task in a fresh session.
+It includes copyable setup commands and a same-task baseline; it makes no claim
+that a fresh photo run will necessarily improve.
+
+The [recorded photo development check](photo-live-check.json) learned ExifTool's
+numeric JSON flags from a GPS export, then applied them to focal-length
+extraction. Baseline saved the formatted `"4.4 mm"`; the guided run saved the
+original numeric `4.38`. Both used three agent turns and two tool calls.
+The audit includes the guideline, actual saved outputs, tool calls/results,
+and first-request injection attribution. This is one pair after task exploration.
+
 For a fresh manual run, open the [HTML end-to-end walkthrough](MANUAL-E2E.html).
 It includes copyable commands to clone `vinodmut/kaizen` (`rossocortex`) and
 `vinodmut/cortex` (`evolve-plugin`) into a fresh temporary directory, then covers

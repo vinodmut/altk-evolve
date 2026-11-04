@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive Claude Code photo task — Cortex + Evolve</title>
+  <style>
+    :root{--ink:#16243b;--muted:#52647d;--blue:#2456c6;--border:#d8e1ed;--page:#f2f5fa;--ok:#136a48;--amber:#85550a;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--page);line-height:1.65}
+    *{box-sizing:border-box}body{margin:0}a{color:var(--blue);text-underline-offset:3px}header{background:#14284a;color:white;padding:40px max(24px,calc((100vw - 1240px)/2))}header p{max-width:850px;color:#d9e5ff}h1{font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.15;max-width:900px;margin:12px 0 20px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.78rem}.tags{display:flex;flex-wrap:wrap;gap:8px}.tags span{background:#28416b;padding:5px 12px;border-radius:20px;font-size:.82rem}.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:30px;max-width:1280px;margin:auto;padding:28px 20px 65px}aside{position:sticky;top:16px;align-self:start;font-size:.85rem}aside nav{display:grid;gap:4px}aside a{padding:5px 9px;text-decoration:none;border-radius:5px}aside a:hover{background:#e3ebfa}main{min-width:0}.intro,.step,.extra{background:white;border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:22px;scroll-margin-top:20px}h2{font-size:1.35rem;line-height:1.35;margin:0 0 14px}h3{font-size:1rem;margin:22px 0 8px}p{margin:10px 0 14px}ul,ol{padding-left:24px}li{margin:6px 0}.step-head{display:flex;gap:12px;align-items:start}.number{background:#e8efff;color:var(--blue);border-radius:8px;min-width:38px;text-align:center;padding:5px;font-weight:700}.step-title{flex:1}.done{white-space:nowrap;font-size:.8rem;color:var(--muted)}.done input{accent-color:var(--blue);width:16px;height:16px;vertical-align:middle}.step.complete{border-left:5px solid var(--ok)}.see{background:#edf7f1;border-left:4px solid #2a8a60;padding:12px 16px;margin:16px 0}.note{background:#fff6e6;border-left:4px solid #d99b31;padding:12px 16px;margin:16px 0}.see strong,.note strong{display:block;margin-bottom:4px}.codebox{position:relative;margin:12px 0}.codebox button{position:absolute;right:8px;top:8px;background:#fff;border:1px solid #b8c9e4;color:var(--ink);border-radius:5px;padding:5px 10px;cursor:pointer;font-size:.75rem}.codebox pre{padding-top:40px}pre{background:#10213b;color:#e5edf9;border-radius:8px;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:.82rem;tab-size:2;overflow:auto}pre.output{background:#f0f4fa;color:var(--ink);padding-top:16px}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}p code,li code,td code{font-size:.9em;background:#eef2f8;padding:1px 4px;border-radius:3px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid>div{border:1px solid var(--border);border-radius:8px;padding:15px}.muted{color:var(--muted)}table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}th{background:#edf2fb}.scroll{overflow-x:auto}details{margin:16px 0}summary{cursor:pointer;color:var(--blue);font-weight:600}.progress{margin:10px 0 16px;padding:12px;border:1px solid var(--border);border-radius:8px;background:white}progress{width:100%;accent-color:var(--blue)}#reset{background:white;border:1px solid var(--border);padding:6px 10px;border-radius:5px;cursor:pointer;color:var(--muted)}svg{width:100%;height:auto;display:block}.caption{font-size:.86rem;color:var(--muted)}footer{font-size:.82rem;color:var(--muted);margin:25px 4px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0)}
+    @media(max-width:950px){.layout{grid-template-columns:1fr}aside{position:static}aside nav{display:flex;flex-wrap:wrap;gap:4px}aside a{background:white;border:1px solid var(--border);padding:5px 8px}.progress{max-width:400px}.grid{grid-template-columns:1fr}}@media(max-width:600px){header{padding:28px 18px}.layout{padding:18px 10px}.intro,.step,.extra{padding:18px 14px}.step-head{flex-wrap:wrap}.done{margin-left:50px}.codebox pre{font-size:.76rem}td,th{padding:8px;font-size:.82rem}}@media print{aside,.codebox button,.done,#status{display:none}.layout{display:block;padding:0}header{background:white;color:black;padding:0}header p{color:black}.tags span{background:#eee;color:black}.intro,.step,.extra{break-inside:avoid;border:1px solid #ddd}pre{background:#f4f4f4;color:black}details>*{display:block!important}}
+  </style>
+</head>
+<body><header><div class="eyebrow">Hands-on Cortex + Evolve</div><h1>Learn a photo-metadata workflow in interactive Claude Code</h1><p>Enter the prompts yourself. Inspect the learning, promotion, and fresh-session behavior at every boundary.</p><div class="tags"><span>Interactive Claude Code</span><span>Real EXIF fixture</span><span>Full Evolve + Cortex</span><span>Same-task before/after</span></div></header>
+<div class="layout"><aside><div class="progress"><strong id="progress-text">0 of 16 steps complete</strong><progress id="progress" max="16" value="0"></progress><button id="reset" type="button">Reset checklist</button></div><nav><a href="#overview">Read this first</a><a href="#step-1">1. Gather the prerequisites</a>
+<a href="#step-2">2. Clone both branches into a fresh temporary directory</a>
+<a href="#step-3">3. Install Evolve</a>
+<a href="#step-4">4. Build Cortex with the Evolve plugin</a>
+<a href="#step-5">5. Prepare the Cortex CA and configure the LLM gateway</a>
+<a href="#step-6">6. Define the service helper</a>
+<a href="#step-7">7. Select Evolve’s LLM and verify the connection</a>
+<a href="#step-8">8. Start the three services with injection off</a>
+<a href="#step-9">9. Prepare the photo copies and interactive launch commands</a>
+<a href="#step-10">10. Run the focal-length baseline in Claude Code</a>
+<a href="#step-11">11. Run the GPS training task in a separate Claude session</a>
+<a href="#step-12">12. Inspect the trajectory and ask Evolve to learn</a>
+<a href="#step-13">13. Read the generated guidelines, promote a selection, and preview retrieval</a>
+<a href="#step-14">14. Run the identical focal-length prompt with Evolve guidelines</a>
+<a href="#step-15">15. Compare the actual trajectories and outputs</a>
+<a href="#step-16">16. Stop the services and keep the evidence</a></nav><p><a href="MANUAL-E2E.html">Billing benchmark walkthrough</a></p></aside><main><section class="intro" id="overview"><h2>A photo task you can run yourself in Claude Code</h2>
+<p>Use the photo-metadata example from <a href="https://www.youtube.com/watch?v=XIlYA79pYp4">Evolve's linked Claude Code video</a>: work out where a photo was taken from EXIF, then reuse the working approach to answer a focal-length question in a fresh session.</p>
+<p>This adaptation uses full Evolve with Cortex capture, explicit reflection, review, promotion, and proxy injection. The current <a href="https://agenttoolkit.github.io/evolve/examples/hello_world/claude/">website starter example</a> uses Evolve Lite and Claude native memory; its plugin commands are a different learning route.</p>
+<p><strong>You run normal interactive Claude Code.</strong> You type the tasks, watch and approve tool calls, inspect answers, and exit each session yourself. The service helper manages the local processes. All agent tasks below are interactive.</p>
+<ol><li>Run a focal-length baseline with injection off.</li><li>Run and verify a separate GPS task; Evolve learns its successful extraction procedure.</li><li>Review and promote generated guidelines.</li><li>Repeat the identical focal-length prompt in a fresh session and inspect the injected guidelines and actual tool behavior.</li></ol>
+<p>The useful behavior to look for is reuse of a verified local EXIF command or interpreter environment, with fewer failed or exploratory commands and correct tag interpretation. The guide preserves whatever actually happens. A model with an available EXIF tool may solve both attempts equally well.</p>
+<div class="see"><strong>Observed improvement in the live development check</strong>The baseline saved the human-formatted focal length <code>"4.4 mm"</code>. After learning the GPS export procedure, the fresh guided run used <code>exiftool -n -j</code> and saved the original numeric value <code>4.38</code>. Both identified the 35mm equivalent as 27 mm. Both used three agent turns and two tool calls. <a href="photo-live-check.json">Read the recorded task, guideline, output files, trajectories, and injection evidence.</a></div>
+<div class="scroll"><table><thead><tr><th>Recorded trajectory</th><th>Baseline</th><th>With Evolve</th></tr></thead><tbody><tr><td>Extract and save</td><td><code>exiftool -json sample.jpg &gt; photo-result.json</code></td><td><code>exiftool -n -j sample.jpg &gt; photo-result.json</code></td></tr><tr><td>Inspect</td><td>Read <code>photo-result.json</code></td><td>Read <code>photo-result.json</code></td></tr><tr><td>Saved actual focal length</td><td><code>"4.4 mm"</code>, formatted and rounded</td><td><code>4.38</code>, numeric with stored precision</td></tr><tr><td>Saved 35mm equivalent</td><td><code>"27 mm"</code></td><td><code>27</code></td></tr><tr><td>Numeric-output requirement</td><td>Fail</td><td>Pass</td></tr></tbody></table></div>
+<svg class="diagram" viewBox="0 0 960 275" role="img" aria-label="Claude Code sends inference through Cortex and a compatibility bridge to the LLM. Cortex stores the trajectory. Evolve calls the LLM to learn candidates, reviewed guidelines are promoted, and Cortex injects them into a fresh session.">
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#53719c"/></marker></defs>
+<g fill="#edf2fb" stroke="#b8c9e4"><rect x="10" y="15" width="180" height="70" rx="8"/><rect x="245" y="15" width="180" height="70" rx="8"/><rect x="480" y="15" width="180" height="70" rx="8"/><rect x="715" y="15" width="215" height="70" rx="8"/><rect x="245" y="145" width="190" height="70" rx="8"/><rect x="525" y="145" width="235" height="70" rx="8"/></g>
+<g fill="#16243b" font-family="system-ui,sans-serif" text-anchor="middle"><text x="100" y="43">Claude Code</text><text x="100" y="65" font-size="12">You type prompts and approve tools</text><text x="335" y="43">Cortex</text><text x="335" y="65" font-size="12">Capture + guideline injection</text><text x="570" y="43">Gateway bridge</text><text x="570" y="65" font-size="12">Preserve system text</text><text x="822" y="43">LLM gateway</text><text x="822" y="65" font-size="12">Claude tasks + Evolve reflection</text><text x="340" y="174">Evolve</text><text x="340" y="196" font-size="12">Explicitly sync training UUID</text><text x="642" y="174">Review and promote</text><text x="642" y="196" font-size="12">Candidates → serving namespace</text></g>
+<g stroke="#53719c" stroke-width="2" fill="none" marker-end="url(#arrow)"><path d="M190 50 H245"/><path d="M425 50 H480"/><path d="M660 50 H715"/><path d="M335 85 V145"/><path d="M435 180 H525"/><path d="M642 145 V110 H380 V85"/></g>
+<path d="M340 215 V252 H822 V85" stroke="#53719c" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#arrow)"/><text x="475" y="245" fill="#52647d" font-family="system-ui,sans-serif" font-size="12">Evolve calls the LLM for reflection</text>
+<text x="445" y="133" fill="#52647d" font-family="system-ui,sans-serif" font-size="12">Guidelines for the fresh task</text></svg><p class="caption">Three fresh conversations. One explicitly selected training UUID. Separate candidate and serving namespaces. The guided folder starts with the same photo and installed tools as baseline.</p>
+<p>Keep one Bash or zsh terminal for all shell commands and helpers. The prompt boxes explicitly say when to paste into Claude Code. Setup needs a gateway supporting both Anthropic and OpenAI-compatible APIs, as in the existing Cortex walkthrough. Expect three interactive task calls, a short LLM probe, Evolve reflection, and retrieval; interactive Claude sessions have no automatic experiment-runner timeout or budget cap.</p>
+</section><section class="step" id="step-1"><div class="step-head"><span class="number">1</span><h2 class="step-title">Gather the prerequisites</h2><label class="done"><input type="checkbox" data-step="1"> Done</label></div>
+  <p>You need this <strong>Evolve integration checkout</strong>, a matching <strong>Cortex checkout with the Evolve plugin</strong>, <code>uv</code>, <code>git</code>, <code>make</code>, <code>go</code>, a C/C++ compiler for the Cortex build, <code>openssl</code>, <code>curl</code>, <code>jq</code>, and a recent <code>claude</code> CLI.</p>
+  <p>Step 2 clones the exact integration branches: <a href="https://github.com/vinodmut/kaizen/tree/rossocortex">Evolve: <code>vinodmut/kaizen</code>, branch <code>rossocortex</code></a> and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">Cortex: <code>vinodmut/cortex</code>, branch <code>evolve-plugin</code></a>. The commands create both checkouts for you; no existing checkout or path editing is needed.</p>
+  <p><strong>Photo-task requirement for the recorded example:</strong> <code>exiftool</code> must be installed and available on the shell's <code>PATH</code>. The full development check ran on macOS with ExifTool installed. The photo task itself also works on other platforms that provide ExifTool. A Pillow-based Python extractor can perform the task, but its commands and generated guidelines will differ from the recorded ExifTool example.</p>
+  <p>On macOS with Homebrew, install ExifTool if it is missing:</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>brew install exiftool</code></pre></div>
+  <p>Verify that the terminal can find it before continuing. The same installed tools remain available during baseline, training, and guided sessions.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>command -v exiftool
+exiftool -ver
+uv --version
+git --version
+make --version
+go version
+openssl version
+jq --version
+claude --version</code></pre></div>
+  <div class="see"><strong>You should see</strong>An ExifTool executable path and version, followed by version output from every other command. Evolve requires Python 3.12 or later; <code>uv sync</code> creates its managed environment. Use the Go toolchain required by the Cortex checkout’s <code>cmd/cortex/go.mod</code> (1.26.10 in the checked snapshot). The recorded rerun used Claude Code 2.1.287.</div>
+  <p>If <code>uv</code> is missing, install it from <a href="https://docs.astral.sh/uv/getting-started/installation/">the uv installation guide</a>. Install the Claude Code CLI using <a href="https://code.claude.com/docs/en/setup">its setup instructions</a>. On macOS, the Cortex build may require the Xcode Command Line Tools; on Linux, install your distribution’s compiler/build tools.</p>
+  <div class="note"><strong>Gateway requirement</strong>This setup expects one gateway and credential that support Anthropic <code>/v1/messages</code>, OpenAI-compatible <code>/v1/chat/completions</code>, and a model catalog at <code>/v1/models</code> or <code>/models</code>. Its service setup selects a supported GPT-4.1 model or <code>claude-sonnet-4-5</code>. A direct endpoint supporting only one of those APIs needs runner adaptation before using this guide.</div>
+</section>
+<section class="step" id="step-2"><div class="step-head"><span class="number">2</span><h2 class="step-title">Clone both branches into a fresh temporary directory</h2><label class="done"><input type="checkbox" data-step="2"> Done</label></div>
+  <p>Open Bash or zsh and paste this entire block unchanged. It creates a unique private directory under your system’s temporary directory, clones both branches side by side, and sets every path used later. Keep using this terminal so the exported paths and helper function remain available.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="clone-setup"><code>umask 077
+export DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/cortex-evolve-photo.XXXXXX")"
+export DEMO_EVOLVE_REPO="$DEMO_ROOT/kaizen"
+export DEMO_CORTEX_REPO="$DEMO_ROOT/cortex"
+export DEMO_CORTEX_BIN="$DEMO_CORTEX_REPO/bin/cortex"
+export DEMO_CA_DIR="$DEMO_ROOT/ca"
+export DEMO_CREDENTIALS="$DEMO_ROOT/gateway.env"
+export DEMO_RESULTS="$DEMO_ROOT/run-$(date -u +%Y%m%dT%H%M%SZ)"
+export UV_CACHE_DIR="$DEMO_ROOT/uv-cache"
+
+git clone --depth 1 --single-branch --branch rossocortex \
+  https://github.com/vinodmut/kaizen.git "$DEMO_EVOLVE_REPO" &amp;&amp;
+git clone --depth 1 --single-branch --branch evolve-plugin \
+  https://github.com/vinodmut/cortex.git "$DEMO_CORTEX_REPO" &amp;&amp;
+cd "$DEMO_EVOLVE_REPO" &amp;&amp;
+test -f experiments/cortex_workflow_learning/bridge.py &amp;&amp;
+printf 'Demo root: %s\nEvolve checkout: %s\nCortex checkout: %s\nResults: %s\n' \
+  "$DEMO_ROOT" "$DEMO_EVOLVE_REPO" "$DEMO_CORTEX_REPO" "$DEMO_RESULTS" &amp;&amp;
+git -C "$DEMO_EVOLVE_REPO" branch --show-current &amp;&amp;
+git -C "$DEMO_CORTEX_REPO" branch --show-current</code></pre></div>
+  <div class="see"><strong>You should see</strong>Git reports <code>Cloning into …/kaizen</code> and <code>Cloning into …/cortex</code>, then prints your temporary paths. The final two lines are <code>rossocortex</code> and <code>evolve-plugin</code>. The bridge-file check succeeds silently. If cloning fails, resolve that error before continuing.</div>
+  <pre class="output"><code>Your directory layout (the random suffix will differ):
+/tmp/cortex-evolve-photo.A1b2C3/
+├── kaizen/                 Evolve, rossocortex branch
+├── cortex/                 Cortex, evolve-plugin branch
+├── ca/                     created in step 5
+├── gateway.env             created in step 5
+├── uv-cache/               dependency cache
+└── run-20261103T120000Z/    photo-session evidence and isolated Evolve storage</code></pre>
+  <p>On macOS, the root may be under <code>/var/folders/…/T/</code> instead of <code>/tmp</code>; the variables handle either location. Later commands use these exported paths automatically. You only need to supply your gateway URL/key in step 5 and choose the freshly generated guidelines in step 13.</p>
+  <p>The helper in step 6 overrides the runner’s developer-specific defaults without editing source files. All checkouts, build output, credentials, and results for this run live under the printed <code>DEMO_ROOT</code>. To retain evidence beyond temporary-directory cleanup, copy your results to a lasting location after step 16.</p>
+</section>
+<section class="step" id="step-3"><div class="step-head"><span class="number">3</span><h2 class="step-title">Install Evolve</h2><label class="done"><input type="checkbox" data-step="3"> Done</label></div><div class="codebox"><button type="button">Copy</button><pre id="install-evolve" data-shell="true"><code>cd &quot;$DEMO_EVOLVE_REPO&quot;
+uv sync
+uv run --no-sync evolve-mcp --help
+uv run --no-sync evolve sync cortex --help</code></pre></div><div class="see"><strong>You should see</strong>The environment installs successfully. The help screens show the MCP transport/port options and Cortex session-ingestion options.</div><pre class="output"><code>INFO:entities-mcp:Evolve UI dist directory not found. Skipping UI mount.</code></pre><p>This message is expected: the optional web frontend has not been built. This guide uses the Evolve CLI and saved JSON to inspect guidelines. Services start in step 8.</p><p>Installing Evolve does not configure its LLM. Step 5 sets its endpoint/key and step 7 selects and tests its model. The demo uses filesystem storage under <code>$DEMO_RESULTS/runtime/data</code> and bookkeeping at <code>runtime/entities.sqlite.db</code>.</p></section>
+<section class="step" id="step-4"><div class="step-head"><span class="number">4</span><h2 class="step-title">Build Cortex with the Evolve plugin</h2><label class="done"><input type="checkbox" data-step="4"> Done</label></div>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>git -C "$DEMO_CORTEX_REPO" log -1 --oneline
+make -C "$DEMO_CORTEX_REPO" cortex PROFILE=full &amp;&amp;
+test -x "$DEMO_CORTEX_BIN" &amp;&amp;
+printf 'Ready Cortex binary: %s\n' "$DEMO_CORTEX_BIN"</code></pre></div>
+  <div class="see"><strong>You should see</strong>The Cortex log shows the latest commit on <code>evolve-plugin</code> (the recorded run used upstream merge <code>4262d0a8</code>). The build prints its <code>full</code> profile tag list, which must include <code>evolve</code>, creates <code>bin/cortex</code>, and ends with <code>Ready Cortex binary: …/cortex/bin/cortex</code>. Continue when that confirmation appears. If the build reports an error, resolve it before preflight in step 7.</div>
+  <p><code>lite</code> and <code>local</code> profiles do not include this plugin in the checked integration source. If you already have a matching full-profile binary, set <code>DEMO_CORTEX_BIN</code> to it and skip rebuilding. Step 8 confirms that the running pipeline actually contains <code>evolve</code>.</p>
+</section>
+<section class="step" id="step-5"><div class="step-head"><span class="number">5</span><h2 class="step-title">Prepare the Cortex CA and configure the LLM gateway</h2><label class="done"><input type="checkbox" data-step="5"> Done</label></div>
+  <p>Cortex requires a signing certificate, private key, and trust certificate named <code>tls.crt</code>, <code>tls.key</code>, and <code>ca.crt</code>. If you chose an existing Cortex CA, check that all three exist and skip the generation block.</p>
+  <p><strong>For a new demo CA directory only:</strong></p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true"><code>mkdir -p "$DEMO_CA_DIR"
+chmod 700 "$DEMO_CA_DIR"
+if [ -e "$DEMO_CA_DIR/tls.key" ] || [ -e "$DEMO_CA_DIR/tls.crt" ]; then
+  printf 'A CA already exists here; reuse it or choose a new DEMO_CA_DIR.\n'
+else
+  cat &gt; "$DEMO_CA_DIR/ca.cnf" &lt;&lt;'CA_CONFIG'
+[req]
+prompt = no
+distinguished_name = dn
+x509_extensions = v3_ca
+[dn]
+CN = Cortex Evolve Manual Demo CA
+[v3_ca]
+basicConstraints = critical,CA:TRUE
+keyUsage = critical,keyCertSign,cRLSign
+CA_CONFIG
+  openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 30 \
+    -config "$DEMO_CA_DIR/ca.cnf" \
+    -keyout "$DEMO_CA_DIR/tls.key" -out "$DEMO_CA_DIR/tls.crt"
+  cp "$DEMO_CA_DIR/tls.crt" "$DEMO_CA_DIR/ca.crt"
+  chmod 600 "$DEMO_CA_DIR/tls.key"
+fi
+test -f "$DEMO_CA_DIR/tls.key"
+test -f "$DEMO_CA_DIR/tls.crt"
+openssl x509 -in "$DEMO_CA_DIR/ca.crt" -noout -subject</code></pre></div>
+  <div class="see"><strong>You should see</strong>OpenSSL may print key-generation progress, then the certificate subject. A newly generated CA has subject <code>Cortex Evolve Manual Demo CA</code>. An existing CA has its own subject. The runner configures the agent’s <code>NODE_EXTRA_CA_CERTS</code> for this CA; installing it into the OS trust store is unnecessary for this demo.</div>
+  <h3>Configure the gateway used by Evolve and the task agent</h3>
+  <p>Evolve needs an LLM to generate, reconcile, and retrieve guidelines. In this demo, it calls your gateway’s <strong>OpenAI-compatible API</strong>; Claude Code calls the same gateway’s <strong>Anthropic-compatible API</strong>. Cortex’s proxy/MCP addresses are separate from this LLM endpoint.</p>
+  <p>Paste the block below, then enter your gateway URL and key when prompted. The block normalizes a trailing <code>/v1</code>, hides key entry, and writes both clients’ configuration into the private <code>gateway.env</code> file.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="gateway-credentials"><code>{
+printf 'Gateway root URL: '
+IFS= read -r DEMO_GATEWAY_URL
+printf 'Gateway API key (hidden): '
+IFS= read -r -s DEMO_GATEWAY_KEY
+printf '\n'
+
+if [ -z "$DEMO_GATEWAY_URL" ] || [ -z "$DEMO_GATEWAY_KEY" ]; then
+  printf 'Both values are required. Paste this block again to retry.\n'
+else
+  DEMO_GATEWAY_URL="${DEMO_GATEWAY_URL%/}"
+  DEMO_GATEWAY_URL="${DEMO_GATEWAY_URL%/v1}"
+  (
+    umask 077
+    printf 'ANTHROPIC_BASE_URL=%s\nANTHROPIC_API_KEY=%s\nOPENAI_BASE_URL=%s/v1\nOPENAI_API_KEY=%s\nEVOLVE_CUSTOM_LLM_PROVIDER=openai\n' \
+      "$DEMO_GATEWAY_URL" "$DEMO_GATEWAY_KEY" \
+      "$DEMO_GATEWAY_URL" "$DEMO_GATEWAY_KEY" &gt; "$DEMO_CREDENTIALS"
+  )
+  chmod 600 "$DEMO_CREDENTIALS"
+  printf 'Gateway configuration saved to %s\n' "$DEMO_CREDENTIALS"
+fi
+unset DEMO_GATEWAY_KEY DEMO_GATEWAY_URL
+test -s "$DEMO_CREDENTIALS"
+}</code></pre></div>
+  <div class="see"><strong>You should see</strong>Two prompts followed by <code>Gateway configuration saved to …/gateway.env</code>. The file check succeeds silently; the key is never printed. The same key is used for the gateway’s Anthropic requests and Evolve’s OpenAI-compatible requests. Use the <code>ANTHROPIC_API_KEY</code> file created here for the interactive launcher.</div>
+  <div class="scroll"><table><thead><tr><th>Evolve setting</th><th>Value / where it comes from</th><th>Purpose</th></tr></thead><tbody><tr><td><code>EVOLVE_CUSTOM_LLM_PROVIDER</code></td><td><code>openai</code>, saved by the block above</td><td>Use the OpenAI-compatible protocol through your gateway, even if the gateway’s model ID contains a provider prefix.</td></tr><tr><td><code>OPENAI_BASE_URL</code></td><td>Your gateway root plus <code>/v1</code></td><td>Evolve’s inference endpoint. It is not the local Cortex proxy or Evolve MCP URL.</td></tr><tr><td><code>OPENAI_API_KEY</code></td><td>The key you entered</td><td>Authenticate Evolve’s model calls.</td></tr><tr><td><code>EVOLVE_MODEL_NAME</code></td><td>The gateway-supported model selected in step 7</td><td>Default model for Evolve’s LLM operations.</td></tr><tr><td><code>EVOLVE_GUIDELINES_MODEL</code></td><td>Explicitly set to the same selected model in step 7</td><td>Model used to generate the guidelines you will inspect.</td></tr></tbody></table></div>
+  <p>The <code>services</code> helper reads <code>gateway.env</code> and supplies these settings to Evolve subprocesses. You do not need to paste a key into a shell export or manually start a second server. Step 7 verifies the actual resolved Evolve settings and sends a small inference request.</p>
+  <p>Keep the credential file and CA private key in the private demo workspace. The runner reads credentials into subprocess environments; you do not need to print the file or paste a key into any command below.</p>
+</section>
+<section class="step" id="step-6"><div class="step-head"><span class="number">6</span><h2 class="step-title">Define the service helper</h2><label class="done"><input type="checkbox" data-step="6"> Done</label></div><p>Paste this function into the same Bash or zsh terminal. It reuses the existing service-startup code with your temporary paths and dedicated photo namespaces. It handles only setup, the injection toggle, and cleanup. You launch Claude Code and enter every task prompt yourself.</p><div class="codebox"><button type="button">Copy</button><pre id="services-helper" data-shell="true"><code>services() {
+  (
+    cd &quot;$DEMO_EVOLVE_REPO&quot; || exit 1
+    uv run --no-sync python -u - &quot;$@&quot; &lt;&lt;&#x27;SERVICES_PY&#x27;
+import os
+import sys
+from pathlib import Path
+from experiments.cortex_learning_demo import run as driver
+from experiments.cortex_workflow_learning import run as support
+
+driver.CORTEX = Path(os.environ[&quot;DEMO_CORTEX_BIN&quot;]).resolve()
+driver.CA_DIR = Path(os.environ[&quot;DEMO_CA_DIR&quot;]).resolve()
+driver.CREDENTIALS = Path(os.environ[&quot;DEMO_CREDENTIALS&quot;]).resolve()
+driver.ARTIFACTS = Path(os.environ[&quot;DEMO_RESULTS&quot;]).resolve()
+driver.STATE = driver.ARTIFACTS / &quot;state.json&quot;
+driver.LEARN_NS = &quot;photo-candidates&quot;
+driver.SERVE_NS = &quot;photo-reviewed&quot;
+driver.PROFILE = &quot;photo-demo&quot;
+driver.SOURCE = &quot;https://www.youtube.com/watch?v=XIlYA79pYp4&quot;
+driver.PROMPT = &quot;Read embedded EXIF metadata from a local photo.&quot;
+driver.CASES = {}
+
+commands = {
+    &quot;preflight&quot;: driver.preflight,
+    &quot;start&quot;: driver.start,
+    &quot;bridge-start&quot;: support.bridge_start,
+    &quot;injection-off&quot;: lambda: support.set_injection(False),
+    &quot;injection-on&quot;: lambda: support.set_injection(True),
+    &quot;stop&quot;: driver.stop,
+}
+if len(sys.argv) != 2 or sys.argv[1] not in commands:
+    print(&quot;Service commands: &quot; + &quot;, &quot;.join(commands))
+    if sys.argv[1:] != [&quot;--help&quot;]:
+        raise SystemExit(2)
+else:
+    commands[sys.argv[1]]()
+SERVICES_PY
+  )
+}
+
+services --help</code></pre></div><div class="see"><strong>You should see</strong><code>Service commands: preflight, start, bridge-start, injection-off, injection-on, stop</code>. This help check starts no processes and makes no model calls.</div></section>
+<section class="step" id="step-7"><div class="step-head"><span class="number">7</span><h2 class="step-title">Select Evolve’s LLM and verify the connection</h2><label class="done"><input type="checkbox" data-step="7"> Done</label></div>
+  <p>Run from the Kaizen checkout in the same terminal as steps 2–6. This block checks the built Cortex binary, CA files, and fixed ports before calling preflight. It stops if a prerequisite is missing.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="preflight-check"><code>cd "$DEMO_EVOLVE_REPO" &amp;&amp;
+uv run --no-sync python - &lt;&lt;'PORTS_PY' &amp;&amp; services preflight
+import os
+import socket
+from pathlib import Path
+
+binary = Path(os.environ["DEMO_CORTEX_BIN"])
+ca = Path(os.environ["DEMO_CA_DIR"])
+checks = [("Cortex binary (step 4)", binary, binary.is_file() and os.access(binary, os.X_OK))]
+checks += [("Cortex CA file (step 5)", ca / name, (ca / name).is_file())
+           for name in ("ca.crt", "tls.crt", "tls.key")]
+for label, path, ready in checks:
+    print(f"{'OK' if ready else 'MISSING'}: {label}: {path}")
+if not all(ready for _, _, ready in checks):
+    raise SystemExit("Complete the indicated setup step, then paste this check again.")
+
+ports = [47800, 47801, 47802, 47803, 47804, 18201, 18202]
+busy = []
+for port in ports:
+    with socket.socket() as sock:
+        sock.settimeout(0.5)
+        if sock.connect_ex(("127.0.0.1", port)) == 0:
+            busy.append(port)
+print("Busy ports:", busy)
+if busy:
+    raise SystemExit("Resolve these port conflicts before continuing.")
+PORTS_PY</code></pre></div>
+  <div class="see"><strong>You should see</strong>Four <code>OK</code> lines with the binary and CA paths, then <code>Busy ports: []</code>, followed by a JSON preflight report. A <code>MISSING</code> line identifies the exact path and setup step to complete. The recorded run selected <code>"model": "Azure/gpt-4.1"</code>. A supported alternative may be selected from your catalog. Preflight creates <code>$DEMO_RESULTS/state.json</code>; it does not run the task.</div>
+  <pre class="output"><code>{"model": "Azure/gpt-4.1", "task": "Read embedded EXIF metadata from a local photo."}</code></pre>
+  <p>Preflight records the selected model without running a task. If it fails, inspect the binary/CA paths, gateway reachability, API compatibility, and model permissions. Use a fresh results directory if a state file already exists.</p>
+  <h3>Set the model Evolve will use</h3>
+  <p>Preflight checks the model catalog and stores the selected model ID in <code>state.json</code>. Paste this block to use that exact ID for Evolve’s default model and guideline generator. No model-name editing is needed.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="evolve-model-config"><code>export EVOLVE_MODEL_NAME="$(jq -er '.model' "$DEMO_RESULTS/state.json")"
+export EVOLVE_GUIDELINES_MODEL="$EVOLVE_MODEL_NAME"
+printf 'Evolve default model: %s\nGuideline model: %s\n' \
+  "$EVOLVE_MODEL_NAME" "$EVOLVE_GUIDELINES_MODEL"</code></pre></div>
+  <div class="see"><strong>You should see</strong>The same model ID twice, for example <code>Azure/gpt-4.1</code>. These exports apply to subsequent <code>services start</code> and <code>demo_run</code> learning commands in this terminal. The interactive launcher uses that same model for every session.</div>
+  <h3>Test Evolve’s actual LLM settings before starting services</h3>
+  <p>A readable model catalog does not prove inference works. The following uses Evolve’s <code>LLMSettings</code> and the same LiteLLM completion function used for learning. It prints only the endpoint, provider, model, and whether a key is present, then makes <strong>one small model call</strong>.</p>
+  <div class="codebox"><button type="button">Copy</button><pre data-shell="true" id="evolve-llm-check"><code>uv run --no-sync python - &lt;&lt;'LLM_CHECK_PY'
+import json
+import os
+from pathlib import Path
+from experiments.cortex_learning_demo import run as driver
+
+driver.CREDENTIALS = Path(os.environ["DEMO_CREDENTIALS"])
+driver.ARTIFACTS = Path(os.environ["DEMO_RESULTS"])
+state = json.loads((driver.ARTIFACTS / "state.json").read_text())
+environment = driver.base_env(state["model"])
+os.environ.update(environment)
+
+from altk_evolve.config.llm import LLMSettings
+from litellm import completion
+
+settings = LLMSettings()
+print(json.dumps({
+    "provider": settings.custom_llm_provider,
+    "guidelines_model": settings.guidelines_model,
+    "base_url": environment["OPENAI_BASE_URL"],
+    "api_key_configured": bool(environment["OPENAI_API_KEY"]),
+}, indent=2))
+response = completion(
+    model=settings.guidelines_model,
+    custom_llm_provider=settings.custom_llm_provider,
+    messages=[{"role": "user", "content": "Reply with exactly EVOLVE_LLM_OK."}],
+    max_tokens=32,
+    temperature=0,
+    timeout=45,
+)
+reply = response.choices[0].message.content
+if not reply:
+    raise SystemExit("The LLM returned an empty reply; inspect the gateway response.")
+print(json.dumps({"llm_connection": "ok", "reply": reply}, indent=2))
+LLM_CHECK_PY</code></pre></div>
+  <div class="see"><strong>You should see</strong><code>provider: openai</code>, your selected guideline model, your gateway’s <code>/v1</code> URL, <code>api_key_configured: true</code>, and a reply such as <code>{"llm_connection": "ok", "reply": "EVOLVE_LLM_OK"}</code>. This confirms Evolve can make an inference request through the configured protocol; the learning step will exercise its longer prompts.</div>
+  <p>If the call fails, check the OpenAI-compatible inference route, key permissions, exact model ID, and gateway logs before continuing. Model-not-found or authorization errors require fixing the gateway configuration, even when the catalog request succeeded. If you open a new terminal, restore the paths/helper and repeat the model exports before starting or learning.</p>
+</section>
+<section class="step" id="step-8"><div class="step-head"><span class="number">8</span><h2 class="step-title">Start the three services with injection off</h2><label class="done"><input type="checkbox" data-step="8"> Done</label></div><div class="codebox"><button type="button">Copy</button><pre id="start-services" data-shell="true"><code>services start
+services bridge-start
+services injection-off
+
+curl --noproxy &#x27;*&#x27; --fail --silent http://127.0.0.1:47801/v1/pipeline \
+  | jq &#x27;.outbound | map(.name)&#x27;
+curl --noproxy &#x27;*&#x27; --fail --silent http://127.0.0.1:18202/openapi.json \
+  | jq &#x27;.paths | keys&#x27;
+cat &quot;$DEMO_RESULTS/runtime/cortex.yaml&quot;</code></pre></div><div class="see"><strong>You should see</strong>The services report readiness, the Cortex pipeline includes <code>evolve</code>, and the bridge exposes <code>/v1/messages</code>. The YAML has <code>learn: false</code>, <code>inject: false</code>, <code>learn_namespace: photo-candidates</code>, and <code>serve_namespace: photo-reviewed</code>.</div><table><thead><tr><th>Piece</th><th>Address / evidence</th></tr></thead><tbody><tr><td>Cortex forward proxy</td><td><code>127.0.0.1:47800</code></td></tr><tr><td>Cortex session API</td><td><code>127.0.0.1:47801</code></td></tr><tr><td>Evolve MCP</td><td><code>http://127.0.0.1:18201/sse</code></td></tr><tr><td>Compatibility bridge</td><td><code>http://127.0.0.1:18202</code></td></tr><tr><td>Logs / storage</td><td><code>$DEMO_RESULTS/runtime/</code></td></tr></tbody></table><p>Automatic learning stays off throughout. Only the training UUID supplied in step 12 goes to Evolve for reflection. The gateway bridge keeps every system text block, including Cortex's appended guidelines, in a format the gateway accepts.</p></section>
+<section class="step" id="step-9"><div class="step-head"><span class="number">9</span><h2 class="step-title">Prepare the photo copies and interactive launch commands</h2><label class="done"><input type="checkbox" data-step="9"> Done</label></div><p>Run from <code>$DEMO_EVOLVE_REPO</code>. Each session gets the same JPEG in its own directory. The first helper loads credentials and the same storage used by the server; the second launches the normal interactive <code>claude</code> CLI with Cortex routing. The third saves a session and its converted trajectory without learning.</p><div class="codebox"><button type="button">Copy</button><pre id="photo-helpers" data-shell="true"><code>cd &quot;$DEMO_EVOLVE_REPO&quot;
+export DEMO_PHOTOS=&quot;$DEMO_RESULTS/photos&quot;
+mkdir -p &quot;$DEMO_PHOTOS/baseline&quot; &quot;$DEMO_PHOTOS/training&quot; &quot;$DEMO_PHOTOS/guided&quot;
+cp &quot;$DEMO_EVOLVE_REPO/demo/workspace/sample.jpg&quot; &quot;$DEMO_PHOTOS/baseline/sample.jpg&quot;
+cp &quot;$DEMO_EVOLVE_REPO/demo/workspace/sample.jpg&quot; &quot;$DEMO_PHOTOS/training/sample.jpg&quot;
+cp &quot;$DEMO_EVOLVE_REPO/demo/workspace/sample.jpg&quot; &quot;$DEMO_PHOTOS/guided/sample.jpg&quot;
+
+export DEMO_BASELINE_SESSION=&quot;$(uv run --no-sync python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+export DEMO_TRAIN_SESSION=&quot;$(uv run --no-sync python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+export DEMO_GUIDED_SESSION=&quot;$(uv run --no-sync python -c &#x27;import uuid; print(uuid.uuid4())&#x27;)&quot;
+printf &#x27;Baseline: %s\nTraining: %s\nGuided: %s\n&#x27; \
+  &quot;$DEMO_BASELINE_SESSION&quot; &quot;$DEMO_TRAIN_SESSION&quot; &quot;$DEMO_GUIDED_SESSION&quot;
+
+demo_run() {
+  env EVOLVE_BACKEND=filesystem \
+    EVOLVE_DATA_DIR=&quot;$DEMO_RESULTS/runtime/data&quot; \
+    EVOLVE_SQLITE_PATH=&quot;$DEMO_RESULTS/runtime/entities.sqlite.db&quot; \
+    EVOLVE_NAMESPACE_ID=photo-reviewed \
+    EVOLVE_MODEL_NAME=&quot;$EVOLVE_MODEL_NAME&quot; \
+    EVOLVE_GUIDELINES_MODEL=&quot;$EVOLVE_GUIDELINES_MODEL&quot; \
+    EVOLVE_GUIDELINES_MODE=consistency \
+    EVOLVE_INJECTION_MODE=retrieval \
+    EVOLVE_OTEL_ENABLED=false EVOLVE_RETENTION_SCHEDULER_ENABLED=false \
+    EVOLVE_HOOKS_CONFIG= \
+    uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; \
+      --env-file &quot;$DEMO_CREDENTIALS&quot; &quot;$@&quot;
+}
+
+photo_claude() {
+  (
+    cd &quot;$DEMO_PHOTOS/$1&quot; || exit 1
+    env HTTP_PROXY=http://127.0.0.1:47800 \
+      HTTPS_PROXY=http://127.0.0.1:47800 \
+      http_proxy=http://127.0.0.1:47800 https_proxy=http://127.0.0.1:47800 \
+      ALL_PROXY= all_proxy= NO_PROXY= no_proxy= \
+      NODE_EXTRA_CA_CERTS=&quot;$DEMO_CA_DIR/ca.crt&quot; \
+      ANTHROPIC_BASE_URL=http://127.0.0.1:18202 \
+      ANTHROPIC_AUTH_TOKEN= \
+      CLAUDE_CONFIG_DIR=&quot;$DEMO_RESULTS/claude-config/$1&quot; \
+      CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 \
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
+      CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 \
+      uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; \
+        --env-file &quot;$DEMO_CREDENTIALS&quot; \
+        claude --bare --model &quot;$EVOLVE_MODEL_NAME&quot; --session-id &quot;$2&quot; \
+        --tools &quot;Bash,Read,Write,Edit&quot; \
+        --strict-mcp-config --mcp-config &#x27;{&quot;mcpServers&quot;:{}}&#x27; \
+        --setting-sources &quot;&quot;
+  )
+}
+
+capture_photo() {
+  curl --noproxy &#x27;*&#x27; --fail --silent \
+    &quot;http://127.0.0.1:47801/v1/sessions/$2&quot; \
+    &gt; &quot;$DEMO_RESULTS/$1-cortex-session.json&quot; || return
+  jq &#x27;.events | map(select(.phase == &quot;request&quot; and .inference)) | first | {seq, evolve: .plugins.evolve}&#x27; \
+    &quot;$DEMO_RESULTS/$1-cortex-session.json&quot;
+  demo_run evolve sync cortex --cortex-url http://127.0.0.1:47801 \
+    --namespace photo-candidates --session &quot;$2&quot; --idle-minutes 0 \
+    --min-new-turns 1 --dry-run &gt; &quot;$DEMO_RESULTS/$1-trajectory.json&quot;
+}</code></pre></div><div class="see"><strong>You should see</strong>Three distinct UUIDs. Each directory contains only <code>sample.jpg</code>. The helpers are now available in this terminal; Claude has not started yet.</div><p><code>--bare</code> and a fresh <code>CLAUDE_CONFIG_DIR</code> keep Claude native memory and existing project customizations out of this comparison. This requires the API key saved in step 5. Ordinary tool-approval prompts still apply. The agent uses native file/shell tools; Cortex contacts Evolve over MCP.</p><p>The launcher uses <code>uv --project</code> to supply the installed Python environment while keeping Claude's working directory in the photo folder. The local bridge URL overrides the gateway URL only for Claude; Evolve continues to use the gateway's OpenAI-compatible endpoint.</p></section>
+<section class="step" id="step-10"><div class="step-head"><span class="number">10</span><h2 class="step-title">Run the focal-length baseline in Claude Code</h2><label class="done"><input type="checkbox" data-step="10"> Done</label></div><p>In your shell, launch the baseline:</p><div class="codebox"><button type="button">Copy</button><pre id="launch-baseline" data-shell="true"><code>services injection-off
+photo_claude baseline &quot;$DEMO_BASELINE_SESSION&quot;</code></pre></div><p>At the Claude Code input prompt, paste this task. <strong>This box contains a Claude prompt, not a shell command.</strong></p><div class="codebox"><button type="button">Copy</button><pre id="baseline-prompt" data-prompt="true"><code>What focal length was used to take sample.jpg? Use embedded EXIF metadata.
+Report both the actual focal length in mm and the 35 mm equivalent if present,
+and name the EXIF tags supporting each value. Preserve the stored numeric
+precision rather than rounding a formatted display value. Use local tools. If you use Python,
+run it with uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; python.
+Save the extracted metadata as photo-result.json using the tool&#x27;s native
+EXIF tag names and numeric values. In your answer, identify which tag is
+actual focal length and which is the equivalent. Report missing tags as
+missing rather than guessing. Do not install packages.</code></pre></div><div class="see"><strong>You should see</strong>Claude investigates the JPEG, shows tool calls in the terminal, writes <code>photo-result.json</code>, and answers. Allow the local read/EXIF commands when prompted. Note any failed commands, repeated attempts, and the time taken.</div><p>Once the answer finishes, enter <code>/exit</code> in Claude. Back at the shell, save the evidence:</p><div class="codebox"><button type="button">Copy</button><pre id="capture-baseline" data-shell="true"><code>capture_photo baseline &quot;$DEMO_BASELINE_SESSION&quot;
+jq . &quot;$DEMO_PHOTOS/baseline/photo-result.json&quot;</code></pre></div><div class="see"><strong>You should see</strong>A nonempty captured trajectory. On the first request, <code>evolve</code> is absent or <code>injected</code> is false. The expected focal values are <code>4.38</code> mm and <code>27</code> mm; the tags are <code>FocalLength</code> and <code>FocalLengthIn35mmFilm</code> (ExifTool calls the latter <code>FocalLengthIn35mmFormat</code>). Keep the real baseline output, including any failure.</div><p>ExifTool can format <code>4.38</code> mm as <code>4.4 mm</code> in human-readable output. This task requires the stored numeric precision for JSON; judge both arms by that explicit requirement. Numeric output such as ExifTool's <code>-n</code> avoids presentation rounding.</p><p>Do not ingest this UUID for learning or feed its answer back to the training session. <code>capture_photo</code> uses <code>--dry-run</code>, which saves the conversion without processing it.</p></section>
+<section class="step" id="step-11"><div class="step-head"><span class="number">11</span><h2 class="step-title">Run the GPS training task in a separate Claude session</h2><label class="done"><input type="checkbox" data-step="11"> Done</label></div><div class="codebox"><button type="button">Copy</button><pre id="launch-training" data-shell="true"><code>photo_claude training &quot;$DEMO_TRAIN_SESSION&quot;</code></pre></div><p>In Claude Code, paste:</p><div class="codebox"><button type="button">Copy</button><pre id="training-prompt" data-prompt="true"><code>Where was sample.jpg taken? Use embedded EXIF metadata and local tools.
+Show the raw GPS latitude/longitude values and their N/S/E/W references,
+then convert them to signed decimal coordinates. State what the metadata
+supports about the location. If you use Python, run it with
+uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; python.
+Do not install packages. Show the successful extraction command so the
+procedure can be repeated with other photos.</code></pre></div><div class="see"><strong>You should see</strong>Claude finds the working metadata tool or inline Python approach and explains how it read the tags. The GPS references are <code>N</code> and <code>W</code>; the signed coordinates are approximately <code>51.4936083333, -0.0375611111</code>. A neighborhood or street address requires separate evidence.</div><p>If the answer is wrong, give this correction in the <strong>same training session</strong>:</p><div class="codebox"><button type="button">Copy</button><pre id="gps-feedback" data-prompt="true"><code>Re-check the raw GPSLatitudeRef and GPSLongitudeRef tags.
+For this fixture the references are N and W, so the longitude must be negative.
+Use the raw EXIF values to verify the conversion and correct your answer.</code></pre></div><p>If Claude names an unverified landmark, remind it that the EXIF establishes coordinates; a precise place name needs independent evidence.</p><p>When the location answer is correct, extend the workflow to a machine-readable export. Paste this in Claude:</p><div class="codebox"><button type="button">Copy</button><pre id="verify-training" data-prompt="true"><code>I also need machine-readable metadata for downstream processing.
+Export GPSLatitude and GPSLongitude as signed numeric values to gps-result.json,
+using the metadata tool&#x27;s numeric/unformatted output. Preserve the stored
+precision rather than rounding a human-readable display or doing a rounded
+conversion. Verify the saved values against the metadata and reference tags.
+Show the extraction command, then summarize the verified procedure and any
+approaches that actually failed during this session. Keep the summary in
+this conversation; do not write a memory file.</code></pre></div><p>This final round trip makes the tool result visible to Cortex and gives Evolve a verified procedure to study. After the answer, enter <code>/exit</code>. Then, in the shell:</p><div class="codebox"><button type="button">Copy</button><pre id="capture-training" data-shell="true"><code>capture_photo training &quot;$DEMO_TRAIN_SESSION&quot;</code></pre></div><div class="see"><strong>You should see</strong><code>training-cortex-session.json</code> and <code>training-trajectory.json</code> under <code>$DEMO_RESULTS</code>. The latter should contain the task, commands, tool results, exact numeric-export procedure, and any actual recovery. The signed GPS numbers should be approximately <code>51.4936083333</code> and <code>-0.0375611111</code> without prematurely rounding to six decimals.</div><div class="note"><strong>Use the actual tags</strong>The inspected JPEG's longitude is west. The current Evolve Lite documentation includes an illustrative east-longitude transcript; the fixture's EXIF values are the check for this example.</div></section>
+<section class="step" id="step-12"><div class="step-head"><span class="number">12</span><h2 class="step-title">Inspect the trajectory and ask Evolve to learn</h2><label class="done"><input type="checkbox" data-step="12"> Done</label></div><p>You are back in your shell, with Claude exited. First inspect what the converter preserved:</p><div class="codebox"><button type="button">Copy</button><pre id="learn-photo" data-shell="true"><code>jq &#x27;.trajectories[] | {messages: (.messages | length), tool_calls: ([.messages[].tool_calls[]?] | length), tool_results: ([.messages[] | select(.role == &quot;tool&quot;)] | length)}&#x27; \
+  &quot;$DEMO_RESULTS/training-trajectory.json&quot;
+jq -r &#x27;.trajectories[].messages[] | select(.role == &quot;tool&quot;) | .content&#x27; \
+  &quot;$DEMO_RESULTS/training-trajectory.json&quot;
+
+demo_run evolve sync cortex --cortex-url http://127.0.0.1:47801 \
+  --namespace photo-candidates --session &quot;$DEMO_TRAIN_SESSION&quot; \
+  --idle-minutes 0 --min-new-turns 1
+
+demo_run evolve entities list photo-candidates --type guideline</code></pre></div><div class="see"><strong>You should see</strong>Nonzero tool-call/result counts for a session that used tools. Evolve reports <code>processed</code> and the number of guideline changes, then lists candidate IDs. Learning makes model calls and can take a few minutes.</div><p><code>demo_run</code> sets <code>EVOLVE_GUIDELINES_MODE=consistency</code>: Evolve extracts a procedure from the successful training conversation. The sync CLI receives no external grade; the source of correctness here is your tag verification and correction in the captured conversation.</p><div class="note"><strong>If no guidelines are generated</strong>A successful sync can produce zero guidelines. Inspect the captured tool output and verified procedure, then stop the services if there is nothing useful to promote. Keep this result; do not substitute hand-written instructions and describe them as Evolve-generated. Repeating an unchanged sync can report <code>up-to-date</code>.</div></section>
+<section class="step" id="step-13"><div class="step-head"><span class="number">13</span><h2 class="step-title">Read the generated guidelines, promote a selection, and preview retrieval</h2><label class="done"><input type="checkbox" data-step="13"> Done</label></div><p>The CLI table truncates content. Read the full text and provenance before choosing:</p><div class="codebox"><button type="button">Copy</button><pre id="inspect-candidates" data-shell="true"><code>demo_run python - &lt;&lt;&#x27;CANDIDATES_PY&#x27;
+import json
+import os
+from pathlib import Path
+from altk_evolve.frontend.client.evolve_client import EvolveClient
+
+client = EvolveClient()
+entities = client.get_all_entities(&quot;photo-candidates&quot;, filters={&quot;type&quot;: &quot;guideline&quot;})
+rows = [{&quot;id&quot;: e.id, &quot;content&quot;: e.content, &quot;metadata&quot;: e.metadata} for e in entities]
+path = Path(os.environ[&quot;DEMO_RESULTS&quot;]) / &quot;photo-candidates.json&quot;
+path.write_text(json.dumps(rows, indent=2) + &quot;\n&quot;)
+print(json.dumps(rows, indent=2))
+CANDIDATES_PY</code></pre></div><p>The live development run generated this guideline from the GPS export. It contains no focal-length value:</p><blockquote>When extracting GPS coordinates for machine processing, use extraction tool flags that output numeric, machine-readable formats (such as exiftool's -n and -j options) and save results directly to a file.</blockquote><p>Your fresh wording and IDs can differ. Review the actual candidates produced by your session.</p><p>A useful candidate names the working tool or interpreter environment, how to extract raw tags, or how to interpret them. Review it against the actual training commands. Select procedural advice that applies to another photo task. Exclude copied coordinates, focal-length answers, invented failures, and references to a script that exists only in the training folder.</p><p>Paste the next block, then enter the candidate IDs you selected. It copies the original text and metadata into the serving namespace with active status and records the ID mapping:</p><div class="codebox"><button type="button">Copy</button><pre id="promote-photo" data-shell="true"><code>{
+printf &#x27;Reviewed candidate IDs to promote (space-separated): &#x27;
+IFS= read -r DEMO_SELECTED_IDS
+demo_run python - &quot;$DEMO_SELECTED_IDS&quot; &lt;&lt;&#x27;PROMOTE_PY&#x27;
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from altk_evolve.frontend.client.evolve_client import EvolveClient
+from altk_evolve.schema.core import Entity
+
+ids = list(dict.fromkeys(sys.argv[1].split()))
+if not ids:
+    raise SystemExit(&quot;No selection. Review candidates before promoting.&quot;)
+path = Path(os.environ[&quot;DEMO_RESULTS&quot;]) / &quot;photo-promoted.json&quot;
+if path.exists():
+    raise SystemExit(&quot;Promotion is already recorded; inspect photo-promoted.json.&quot;)
+client = EvolveClient()
+selected = [client.get_entity_by_id(&quot;photo-candidates&quot;, identifier) for identifier in ids]
+if any(e is None or e.type != &quot;guideline&quot; for e in selected):
+    raise SystemExit(&quot;An ID is not a guideline in photo-candidates. Nothing was copied.&quot;)
+client.ensure_namespace(&quot;photo-reviewed&quot;)
+rows = []
+for e in selected:
+    metadata = {
+        **e.metadata,
+        &quot;status&quot;: &quot;active&quot;,
+        &quot;candidate_id&quot;: e.id,
+        &quot;reviewed_at&quot;: datetime.now(timezone.utc).isoformat(),
+        &quot;reviewed_for&quot;: &quot;Reusable local EXIF extraction procedure; no photo-specific answers&quot;,
+    }
+    updates = client.update_entities(
+        &quot;photo-reviewed&quot;, [Entity(type=&quot;guideline&quot;, content=e.content, metadata=metadata)],
+        enable_conflict_resolution=False,
+    )
+    rows.extend({&quot;candidate_id&quot;: e.id, &quot;id&quot;: u.id, &quot;content&quot;: e.content} for u in updates)
+path.write_text(json.dumps(rows, indent=2) + &quot;\n&quot;)
+print(json.dumps(rows, indent=2))
+PROMOTE_PY
+unset DEMO_SELECTED_IDS
+}</code></pre></div><div class="see"><strong>You should see</strong><code>photo-promoted.json</code> contains candidate IDs, serving IDs, and unchanged guideline text. Only these reviewed copies are available to Cortex.</div><p>Preview the actual Evolve MCP retrieval:</p><div class="codebox"><button type="button">Copy</button><pre id="preview-retrieval" data-shell="true"><code>demo_run python - &lt;&lt;&#x27;RETRIEVE_PY&#x27;
+import asyncio
+import os
+from pathlib import Path
+from fastmcp import Client
+
+async def main():
+    async with Client(&quot;http://127.0.0.1:18201/sse&quot;) as client:
+        result = await client.call_tool(&quot;get_guidelines_with_attribution&quot;, {
+            &quot;task&quot;: &quot;What focal length was used to take sample.jpg? Use embedded EXIF metadata.&quot;,
+            &quot;namespace_id&quot;: &quot;photo-reviewed&quot;,
+        }, timeout=90)
+    text = &quot;\n&quot;.join(block.text for block in result.content if hasattr(block, &quot;text&quot;))
+    (Path(os.environ[&quot;DEMO_RESULTS&quot;]) / &quot;photo-retrieval.json&quot;).write_text(text + &quot;\n&quot;)
+    print(text)
+
+asyncio.run(main())
+RETRIEVE_PY</code></pre></div><div class="see"><strong>You should see</strong>A JSON response with nonempty <code>entity_ids</code>, <code>namespace_id: photo-reviewed</code>, and the selected guideline text. Stop here if no text is retrieved. Check the selected IDs, namespace, server log, or a first-use embedding-model download before launching the guided session.</div><p>The current MCP retrieval path does not filter candidates by lifecycle status. The separate serving namespace therefore matters. Promotion here is a reviewed copy; the source candidates remain in <code>photo-candidates</code>. Review and freeze this selection before seeing the guided result.</p></section>
+<section class="step" id="step-14"><div class="step-head"><span class="number">14</span><h2 class="step-title">Run the identical focal-length prompt with Evolve guidelines</h2><label class="done"><input type="checkbox" data-step="14"> Done</label></div><p>The guided directory still contains only the original JPEG. Launch a fresh interactive session:</p><div class="codebox"><button type="button">Copy</button><pre id="launch-guided" data-shell="true"><code>services injection-on
+photo_claude guided &quot;$DEMO_GUIDED_SESSION&quot;</code></pre></div><p>In Claude Code, paste exactly the baseline prompt:</p><div class="codebox"><button type="button">Copy</button><pre id="guided-prompt" data-prompt="true"><code>What focal length was used to take sample.jpg? Use embedded EXIF metadata.
+Report both the actual focal length in mm and the 35 mm equivalent if present,
+and name the EXIF tags supporting each value. Preserve the stored numeric
+precision rather than rounding a formatted display value. Use local tools. If you use Python,
+run it with uv run --no-sync --project &quot;$DEMO_EVOLVE_REPO&quot; python.
+Save the extracted metadata as photo-result.json using the tool&#x27;s native
+EXIF tag names and numeric values. In your answer, identify which tag is
+actual focal length and which is the equivalent. Report missing tags as
+missing rather than guessing. Do not install packages.</code></pre></div><div class="see"><strong>You should see</strong>The normal Claude Code terminal and tool approvals. Look for immediate use of the verified extraction method. The correct values remain <code>4.38</code> mm actual and <code>27</code> mm equivalent. Claude may still use a different approach or take more steps; preserve that outcome.</div><p>Enter <code>/exit</code> once the answer finishes. Then, in the shell:</p><div class="codebox"><button type="button">Copy</button><pre id="capture-guided" data-shell="true"><code>capture_photo guided &quot;$DEMO_GUIDED_SESSION&quot;
+jq . &quot;$DEMO_PHOTOS/guided/photo-result.json&quot;
+jq &#x27;.events | map(select(.phase == &quot;request&quot; and .inference)) | first | .plugins.evolve&#x27; \
+  &quot;$DEMO_RESULTS/guided-cortex-session.json&quot;</code></pre></div><div class="see"><strong>You should see</strong>The first main request should have <code>injected: true</code>, nonempty serving <code>ids</code>, and training source attribution when provided. Match those IDs against <code>photo-promoted.json</code>. If injection is absent, do not attribute the behavior to Evolve; inspect <code>runtime/cortex.log</code>, the config toggle, model route, and plugin errors.</div><p>This is a new session, not a resume or <code>/clear</code>. It shares neither conversation history nor output files with training or baseline. All three arms use the same interpreter/tools and gateway bridge.</p></section>
+<section class="step" id="step-15"><div class="step-head"><span class="number">15</span><h2 class="step-title">Compare the actual trajectories and outputs</h2><label class="done"><input type="checkbox" data-step="15"> Done</label></div><p>Print the before/after tool names and arguments side by side in your terminal:</p><div class="codebox"><button type="button">Copy</button><pre id="compare-photo" data-shell="true"><code>printf &#x27;BASELINE tool calls\n&#x27;
+jq -r &#x27;.trajectories[].messages[].tool_calls[]? | [.function.name, .function.arguments] | @tsv&#x27; \
+  &quot;$DEMO_RESULTS/baseline-trajectory.json&quot;
+printf &#x27;GUIDED tool calls\n&#x27;
+jq -r &#x27;.trajectories[].messages[].tool_calls[]? | [.function.name, .function.arguments] | @tsv&#x27; \
+  &quot;$DEMO_RESULTS/guided-trajectory.json&quot;
+
+demo_run python - &lt;&lt;&#x27;COMPARE_PY&#x27;
+import json
+import math
+import os
+from pathlib import Path
+
+root = Path(os.environ[&quot;DEMO_RESULTS&quot;])
+rows = []
+for arm in (&quot;baseline&quot;, &quot;guided&quot;):
+    batches = json.loads((root / f&quot;{arm}-trajectory.json&quot;).read_text())[&quot;trajectories&quot;]
+    messages = [m for t in batches for m in t[&quot;messages&quot;]]
+    calls = [c for m in messages for c in (m.get(&quot;tool_calls&quot;) or [])]
+    path = root / &quot;photos&quot; / arm / &quot;photo-result.json&quot;
+    try:
+        answer = json.loads(path.read_text())
+    except (OSError, ValueError):
+        answer = {}
+    # ExifTool returns a one-image list; a Python extractor may return an object.
+    row = answer[0] if isinstance(answer, list) and len(answer) == 1 else answer
+    if not isinstance(row, dict):
+        row = {}
+    def matches(keys, expected):
+        value = next((row[k] for k in keys if k in row), None)
+        return type(value) in (int, float) and math.isclose(value, expected, abs_tol=0.001)
+    rows.append({
+        &quot;arm&quot;: arm,
+        &quot;focal_values_correct&quot;: matches((&quot;FocalLength&quot;,), 4.38) and matches((&quot;FocalLengthIn35mmFormat&quot;, &quot;FocalLengthIn35mmFilm&quot;), 27),
+        &quot;tool_calls&quot;: len(calls),
+        &quot;tool_results&quot;: sum(m[&quot;role&quot;] == &quot;tool&quot; for m in messages),
+        &quot;answer&quot;: answer,
+    })
+(root / &quot;photo-comparison.json&quot;).write_text(json.dumps(rows, indent=2) + &quot;\n&quot;)
+print(json.dumps(rows, indent=2))
+COMPARE_PY</code></pre></div><div class="see"><strong>You should see</strong>The actual numeric correctness and tool counts for both attempts. Read the final answers to check that actual and 35mm-equivalent tags were identified correctly. Full arguments and tool output remain in the trajectory JSON files.</div><table><thead><tr><th>Question</th><th>Evidence</th></tr></thead><tbody><tr><td>Did Evolve receive the successful procedure?</td><td>Training trajectory: commands, output, correction, verification.</td></tr><tr><td>What did Evolve learn?</td><td>Full candidate text and source metadata.</td></tr><tr><td>Was it served?</td><td>Serving ID mapping, retrieval response, first-request injection.</td></tr><tr><td>Did Claude apply it?</td><td>Guided tool arguments and actual output.</td></tr><tr><td>Did the task improve?</td><td>Correctness, failed/repeated commands, tool counts, and your measured time.</td></tr></tbody></table><p>Compare the same focal-length task in baseline and guided. The GPS training task demonstrates learning and transfer, but its duration is not a comparable baseline. A single paired run is illustrative; repeat with fresh directories/sessions and the frozen guideline selection to assess consistency.</p><p>This guide does not add a shared helper script or copy training output into the guided folder. If you extend it to script reuse as in the website example, give both comparison arms the same script and report that artifact availability separately from guideline recall.</p><div class="note"><strong>What has been validated</strong>The fixture tags, shell/Python snippets, environment routing, and inspection/promotion mechanics are checked. A live development pair preserved the exact numeric focal length with Evolve after baseline saved the rounded display value. Both used three agent turns and two tool calls. See <a href="photo-live-check.json">the task, generated guideline, before/after calls and outputs, and first-request attribution</a>. The probe used bounded noninteractive launches; this guide launches interactive Claude Code. One pair follows exploratory task development and does not establish a reliable average gain. Fresh responses can differ.</div></section>
+<section class="step" id="step-16"><div class="step-head"><span class="number">16</span><h2 class="step-title">Stop the services and keep the evidence</h2><label class="done"><input type="checkbox" data-step="16"> Done</label></div><div class="codebox"><button type="button">Copy</button><pre id="stop-photo" data-shell="true"><code>services injection-off
+services stop
+printf &#x27;Keep your evidence from: %s\n&#x27; &quot;$DEMO_RESULTS&quot;</code></pre></div><div class="see"><strong>You should see</strong>The recorded demo processes are stopped. Your photo files, result JSON, trajectories, candidates, promotion mapping, retrieval response, and comparison remain under the printed results path.</div><p>Copy the results to durable storage if you want to retain them. The demo root also contains the private credential file and CA key; share the selected evidence files rather than the entire temporary workspace.</p></section>
+<section class="extra" id="troubleshooting"><h2>If something does not match</h2><ul>
+<li><strong>No Cortex session:</strong> check the UUID, proxy variables, empty NO_PROXY, and bridge URL. Capture requires an actual model request. Use the session API rather than assuming a successful terminal answer proves capture.</li>
+<li><strong>Missing tool output:</strong> Cortex sees results when Claude sends them with a later model request. Complete the verification exchange before syncing. Text EXIF extraction is visible; the photo's image bytes and hidden reasoning are not preserved in the converted trajectory.</li>
+<li><strong>Claude asks you to log in:</strong> the launcher uses API-key mode. Recheck step 5, the gateway API key, and your CLI's support for --bare. It intentionally does not use your everyday Claude login.</li>
+<li><strong>Tool approval prompts:</strong> approve commands you understand that inspect the local fixture. The walkthrough retains ordinary permissions. An unavailable tool is a useful observation, but do not uninstall working tools to force a gain.</li>
+<li><strong>Guidelines arrive but behavior is unchanged:</strong> injection proves availability. Compare the actual commands and output to establish whether Claude used them and whether they helped.</li>
+</ul><p>Sources: <a href="https://www.youtube.com/watch?v=XIlYA79pYp4">linked video</a>, <a href="../../docs/examples/hello_world/claude.md">website starter-example source</a>, <a href="../../docs/integrations/cortex.md">Cortex integration</a>, <a href="../../altk_evolve/sync/cortex_sync.py">trajectory converter</a>, and <a href="../../demo/workspace/sample.jpg">the supplied JPEG</a>. The demo changes no Evolve library implementation.</p></section>
+</main></div><div id="status" role="status" aria-live="polite"></div><script>
+(() => {
+  const key = 'cortex-evolve-interactive-photo-v1';
+  const checks = Array.from(document.querySelectorAll('input[data-step]'));
+  let saved = {};
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '{}');
+    if (parsed && typeof parsed === 'object') saved = parsed;
+  } catch (_) {}
+  function update() {
+    const state = {};
+    checks.forEach(check => {
+      state[check.dataset.step] = check.checked;
+      check.closest('.step').classList.toggle('complete', check.checked);
+    });
+    const count = checks.filter(check => check.checked).length;
+    document.getElementById('progress').value = count;
+    document.getElementById('progress-text').textContent = `${count} of ${checks.length} steps complete`;
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (_) {}
+  }
+  checks.forEach(check => { check.checked = Boolean(saved[check.dataset.step]); check.addEventListener('change', update); });
+  document.getElementById('reset').addEventListener('click', () => { checks.forEach(check => { check.checked = false; }); update(); });
+  document.querySelectorAll('.codebox button').forEach(button => {
+    button.addEventListener('click', async () => {
+      const text = button.parentElement.querySelector('code').textContent;
+      try {
+        if (!navigator.clipboard) throw new Error('Clipboard API unavailable');
+        await navigator.clipboard.writeText(text);
+      } catch (_) {
+        const area = document.createElement('textarea');
+        area.value = text; area.style.position = 'fixed'; area.style.opacity = '0';
+        document.body.appendChild(area); area.focus(); area.select();
+        const copied = document.execCommand('copy'); area.remove();
+        if (!copied) { button.textContent = 'Select text to copy'; return; }
+      }
+      button.textContent = 'Copied';
+      document.getElementById('status').textContent = button.parentElement.querySelector('pre').dataset.prompt ? 'Prompt copied. Paste it into Claude Code.' : 'Command copied. Paste it into your shell.';
+      setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+    });
+  });
+  update();
+})();
+</script>
+</body>
+</html>
