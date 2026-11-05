@@ -241,7 +241,8 @@ def isolated_driver(tmp_path, monkeypatch, state):
     return driver
 
 
-def test_accurate_learning_captures_explicit_plan_and_reuses_only_training(tmp_path, monkeypatch):
+@pytest.mark.parametrize("mode,method", [("standard", "accurate"), ("consistency", "fast"), ("consistency", "accurate")])
+def test_learning_captures_explicit_mode_and_reuses_only_training(tmp_path, monkeypatch, mode, method):
     state = {
         "sessions": {"training": {"id": "training-uuid", "captured": True}},
         "learning_model": "same-sonnet",
@@ -271,24 +272,32 @@ def test_accurate_learning_captures_explicit_plan_and_reuses_only_training(tmp_p
     from altk_evolve.config.guidelines import guidelines_settings
 
     monkeypatch.setattr(guidelines_settings, "debug_dir", None)
+    monkeypatch.setattr(guidelines_settings, "guidelines_mode", "consistency")
     monkeypatch.setattr(driver, "candidates", lambda: [])
-    driver.learn(consistency_method="accurate")
-    assert definitions[0]["processors"][0]["config"] == {"guidelines_mode": "consistency", "consistency_method": "accurate"}
+    driver.learn(consistency_method=method, mode=mode)
+    expected = {"guidelines_mode": mode}
+    if mode == "consistency":
+        expected["consistency_method"] = method
+    assert definitions[0]["processors"][0]["config"] == expected
     assert calls[0][0] == trajectory and calls[0][1]["namespace_id"] == "isolated-candidates"
     assert calls[0][1]["plan"].manifest() == definitions[0]
-    assert guidelines_settings.debug_dir == tmp_path / "analysis"
+    assert guidelines_settings.debug_dir == (tmp_path / "analysis" if mode == "consistency" and method == "accurate" else None)
     manifest = json.loads((tmp_path / "learning.json").read_text())
-    assert manifest["consistency_method"] == "accurate"
+    assert manifest["guidelines_mode"] == state["guidelines_mode"] == mode
+    assert manifest["consistency_method"] == (method if mode == "consistency" else None)
     assert manifest["training_provenance"] == state["training_provenance"]
     with pytest.raises(RuntimeError, match="unlearned"):
-        driver.learn(consistency_method="accurate")
+        driver.learn(consistency_method=method, mode=mode)
 
 
 @pytest.mark.parametrize("change_guidelines", [False, True])
-def test_repeat_plan_is_frozen_before_batch_tasks_and_detects_guide_changes(tmp_path, monkeypatch, change_guidelines):
+@pytest.mark.parametrize("mode", ["standard", "consistency"])
+def test_repeat_plan_is_frozen_before_batch_tasks_and_detects_guide_changes(tmp_path, monkeypatch, change_guidelines, mode):
     state = {
         "sessions": {"training": {"id": "reused"}},
-        "consistency_method": "accurate",
+        "learned": True,
+        "guidelines_mode": mode,
+        "consistency_method": "accurate" if mode == "consistency" else None,
         "promoted": [{"id": "1", "content": "Frozen advice"}],
     }
     driver = isolated_driver(tmp_path, monkeypatch, state)
@@ -296,6 +305,7 @@ def test_repeat_plan_is_frozen_before_batch_tasks_and_detects_guide_changes(tmp_
 
     def task(arm, number, batch, repeat):
         assert state["repetition_plan"]["repetitions"] == [1, 2, 3]
+        assert state["repetition_plan"]["guidelines_mode"] == mode
         assert len(state["trial_order"]) == 6
         assert batch
         label = driver.label_for(arm, number, repeat)

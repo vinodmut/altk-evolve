@@ -27,9 +27,9 @@ case "${1:-help}" in
   check|capture|learn|candidates|status|repeat-trials)
     docker compose exec -T demo uv run --offline --no-sync python driver.py "$@"
     ;;
-  feedback|report|consistency-report|reuse-training)
+  feedback|report|repetition-report|consistency-report|reuse-training)
     case "$1" in
-      consistency-report) shift; set -- consistency.py report "$@" ;;
+      repetition-report|consistency-report) shift; set -- consistency.py report "$@" ;;
       reuse-training) shift; set -- consistency.py prepare "$@" ;;
       *) set -- evaluate.py "$@" ;;
     esac
@@ -43,5 +43,5 @@ case "${1:-help}" in
   stop) docker compose down ;;
   logs) docker compose logs --tail 60 ;;
   shell) docker compose exec demo bash ;;
-  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|reuse-training|learn [--json-output] [--consistency-method fast|accurate]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|repeat-trials|report|consistency-report|status|stop' ;;
+  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|reuse-training|learn [--json-output] [--mode standard|consistency] [--consistency-method fast|accurate]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|repeat-trials|report|repetition-report|consistency-report|status|stop' ;;
 esac

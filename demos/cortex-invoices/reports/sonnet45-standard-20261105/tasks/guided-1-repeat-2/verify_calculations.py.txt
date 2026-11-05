@@ -1,0 +1,22 @@
+from decimal import Decimal
+
+# Invoice 002093 line items
+items = [
+    Decimal('448.50'),
+    Decimal('145.80'),
+    Decimal('74.50'),
+    Decimal('75.80'),
+    Decimal('57.00'),
+    Decimal('-26.00'),
+]
+
+line_sum = sum(items)
+print(f"Invoice 002093:")
+print(f"Sum of line items: {line_sum}")
+print(f"Tax: 90.64")
+print(f"Computed total: {line_sum + Decimal('90.64')}")
+print(f"Printed total: 866.26")
+print(f"Difference: {line_sum + Decimal('90.64') - Decimal('866.26')}")
+print()
+print(f"Individual items: {', '.join(str(x) for x in items)}")
+print(f"Line sum calculation: {' + '.join(str(x) for x in items)} = {line_sum}")

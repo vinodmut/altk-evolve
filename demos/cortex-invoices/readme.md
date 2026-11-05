@@ -10,6 +10,8 @@ The [recorded Sonnet 4.5 report](reports/sonnet45-20261105/summary.html) include
 
 The [accurate-consistency follow-up](reports/sonnet45-consistency-20261105/summary.html) reused the original training and ran three new same-input batch pairs with four reviewed guides. Every packet passed. Baseline calls were 17, 17 and 16; guided calls were 16, 39 and 17. Both medians were 17, while range width increased from 1 to 23. This set did not show reduced variation or fewer calls. The report preserves the generated candidates, review decision, resampling evidence and all six trajectories.
 
+The [standard-guideline follow-up](reports/sonnet45-standard-20261105/summary.html) reused the same training and ran three new same-input batch pairs with two reviewed guides. Every packet passed. Baseline calls were 18, 15 and 17; guided calls were 17, 17 and 19, totaling 50 versus 53. Both medians were 17. Standard guidelines did not improve correctness or reduce calls in this set. The report includes all four generated candidates, the two rejected candidates' review rationale, and all six trajectories. This was standard reflection without consistency resampling.
+
 ## 1. Get the bundle and configure both model connections
 
 ```bash
@@ -49,13 +51,13 @@ The evaluator prints reference-based feedback and saves it to `results/training-
 ## 3. Learn, review the generated text, and promote
 
 ```bash
-./demo learn --json-output
+./demo learn --json-output --mode standard
 ./demo candidates
 ```
 
 Learning processes only the training UUID. Expect full generated guideline text and the source session ID; complete provenance is saved in invoice-candidates.json. The command uses Evolve's existing JSON generation with local Pydantic validation, which also works with the gateway used in the recorded experiment. Native response-schema generation was incompatible with that gateway. The flag changes no library source; omit it only if you want to test native schema support on your endpoint.
 
-The default is Evolve's **fast consistency** method. To resample recorded decisions and compute uncertainty instead, use `./demo learn --json-output --consistency-method accurate`. Accurate generation defaults to five samples for each of the first 15 replayable steps, temperature 0.5, and a threshold of 0.15 for marking high uncertainty. It can make up to 75 sampling completions plus guideline-generation calls. Analysis artifacts are saved under `results/analysis/`; generation is skipped if every renderable decision has zero or undefined uncertainty. Cortex's converted recording omits PDF images and hidden reasoning, so visual decisions cannot be replayed with complete fidelity.
+The default is Evolve's **standard** generator: it reflects on the recorded training conversation and tool interactions without resampling decisions. To select fast consistency instead, use `./demo learn --json-output --mode consistency --consistency-method fast`. To resample recorded decisions and compute uncertainty, use `./demo learn --json-output --mode consistency --consistency-method accurate`. Accurate generation defaults to five samples for each of the first 15 replayable steps, temperature 0.5, and a threshold of 0.15 for marking high uncertainty. It can make up to 75 sampling completions plus guideline-generation calls. Analysis artifacts are saved under `results/analysis/`; generation is skipped if every renderable decision has zero or undefined uncertainty. Cortex's converted recording omits PDF images and hidden reasoning, so the learner lacks complete visual context and visual decisions cannot be replayed with complete fidelity.
 
 Review the candidates. Select reusable, evidenced procedures; leave invoice-specific answers, invented failures, and unjustified advice unpromoted. Then run:
 
@@ -104,29 +106,32 @@ To use Claude Code interactively, omit `--batch` consistently from both arms. Ac
 
 Fixture maintenance is optional and requires uv: `uv run --project demos/cortex-invoices python demos/cortex-invoices/build_fixtures.py` from the repository root. It regenerates PDFs from the author-side catalog and writes reference data and SHA-256 hashes. Normal walkthrough users use the bundled PDFs. The Docker task environment uses the shared locked runtime; this directory's `pyproject.toml` and `uv.lock` are only for fixture generation.
 
-## Optional: isolate an accurate-consistency comparison
+## Optional: isolate three pairs on identical PDFs
 
 Run these from `demos/cortex-invoices`, after configuring `.env` with `aws/claude-sonnet-4-5` for both models on an endpoint that serves that model ID. The bundled training snapshot used that deployment; model equality is checked before reuse.
 
 ```bash
-export DEMO_RESULTS_DIR="$PWD/results-consistency-manual"
-export DEMO_SERVE_NAMESPACE=invoice-consistency-reviewed
-export DEMO_LEARN_NAMESPACE=invoice-consistency-candidates
-export DEMO_PROCESSING_PROFILE=invoice-consistency-demo
+export DEMO_RESULTS_DIR="$PWD/results-standard-manual"
+export DEMO_SERVE_NAMESPACE=invoice-standard-reviewed
+export DEMO_LEARN_NAMESPACE=invoice-standard-candidates
+export DEMO_PROCESSING_PROFILE=invoice-standard-demo
+export DEMO_GUIDELINES_MODE=standard
 ./demo setup
 ./demo reuse-training
-./demo learn --json-output --consistency-method accurate
+./demo learn --json-output --mode standard
 ./demo candidates
 ```
 
 `reuse-training` runs offline in the separate evaluator container. It copies only the bundled training recording, feedback and evaluation, records their SHA-256 hashes, and preserves the original UUID. It does not import previous evaluation sessions, generated guidelines, or runtime storage. The copied training is not recaptured from the new Cortex instance. To use another model, run fresh training and feedback instead of `reuse-training`.
 
-Review the generated candidates before evaluating. Use your chosen IDs with `./demo promote ID1 ID2 --batch`; no stdin is needed. If the uncertainty gate produces no candidates, there is no guided comparison to run. Once the selection is promoted, run:
+Review the generated candidates before evaluating. Use your chosen IDs with `./demo promote ID1 ID2 --batch`; no stdin is needed. If learning produces no candidates, there is no guided comparison to run. Once the selection is promoted, run:
 
 ```bash
 ./demo repeat-trials
-./demo consistency-report
+./demo repetition-report
 ./demo stop
 ```
 
-`repeat-trials` registers three pairs on identical trial-1 PDFs before starting any evaluation task. It runs baseline/guided, guided/baseline, then baseline/guided with batch mode throughout. It checks the frozen guide hash before each run and never relearns from evaluation. Expect six fresh UUIDs, then `trial-run.json` with `status: complete`. Read `results-consistency-manual/summary.html` for final correctness, call counts, median, range and sample standard deviation, as well as all guidelines, analyzer artifacts and before/after trajectories. These are three exploratory observations on one packet, not a broad reliability estimate.
+`repeat-trials` registers three pairs on identical trial-1 PDFs before starting any evaluation task. It runs baseline/guided, guided/baseline, then baseline/guided with batch mode throughout. It checks the frozen guide hash before each run and never relearns from evaluation. Expect six fresh UUIDs, then `trial-run.json` with `status: complete`. Read `results-standard-manual/summary.html` for final correctness, call counts, median, range and sample standard deviation, as well as all guidelines and before/after trajectories. These are three exploratory observations on one packet, not a broad reliability estimate.
+
+For a separate accurate-consistency set, use a new results directory and namespaces, set `DEMO_GUIDELINES_MODE=consistency`, and replace the learning command with `./demo learn --json-output --mode consistency --consistency-method accurate`. The same repetition report then also includes analyzer artifacts. Keep every completed experiment unchanged.

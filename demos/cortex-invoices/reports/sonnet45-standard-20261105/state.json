@@ -1,0 +1,1457 @@
+{
+  "created_at": "2026-11-05T20:46:10.361401+00:00",
+  "model": "aws/claude-sonnet-4-5",
+  "learning_model": "aws/claude-sonnet-4-5",
+  "sessions": {
+    "training": {
+      "id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+      "packet": "training",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T12:35:05.850982+00:00",
+      "input_hashes_before": {
+        "001071.pdf": "e3dcc214231e100d95bb8b68932f6adfe4994c54573906d07c936a345328aff8",
+        "001082.pdf": "88490662d3e18b028a44b4af96f09fc4e5712460f68672498764593a47965594",
+        "001093.pdf": "3391322fb70d9164c5800ac7885be9136d7c11dfe2180aa44c4d7e94e320c351"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 3422.68,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "001071.pdf": "e3dcc214231e100d95bb8b68932f6adfe4994c54573906d07c936a345328aff8",
+        "001082.pdf": "88490662d3e18b028a44b4af96f09fc4e5712460f68672498764593a47965594",
+        "001093.pdf": "3391322fb70d9164c5800ac7885be9136d7c11dfe2180aa44c4d7e94e320c351"
+      },
+      "harness": {
+        "mode": "interactive",
+        "flags": [],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 1,
+      "reused_recording": true
+    },
+    "baseline-1": {
+      "id": "c76db565-84fc-4583-b184-49b0d4b34031",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T20:48:06.076315+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 1,
+      "launches": [
+        {
+          "started_at": "2026-11-05T20:48:06.089439+00:00",
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "resume": false
+        }
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 122.29,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "guided-1": {
+      "id": "f2e68542-5d1e-48aa-a305-b8a4bc6f04b2",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T20:50:12.181753+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 1,
+      "launches": [
+        {
+          "started_at": "2026-11-05T20:50:12.197609+00:00",
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "resume": false
+        }
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 110.06,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+          "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-05T20:50:12.541805559Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "guided-1-repeat-2": {
+      "id": "658a8e28-7849-42ba-a999-dbda9d11d19e",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T20:52:02.579113+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 2,
+      "launches": [
+        {
+          "started_at": "2026-11-05T20:52:02.592744+00:00",
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "resume": false
+        }
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 97.01,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+          "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-05T20:52:02.918161975Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "baseline-1-repeat-2": {
+      "id": "8f9084db-b868-489d-954b-4e252457ccc5",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T20:53:40.324539+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 2,
+      "launches": [
+        {
+          "started_at": "2026-11-05T20:53:40.341467+00:00",
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "resume": false
+        }
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 96.38,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "baseline-1-repeat-3": {
+      "id": "e33fafef-ff94-4c06-8a2a-6e3e6e480846",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T20:55:16.906151+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 3,
+      "launches": [
+        {
+          "started_at": "2026-11-05T20:55:16.919757+00:00",
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "resume": false
+        }
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 120.48,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "guided-1-repeat-3": {
+      "id": "15a1fcec-ae6f-453c-b05f-d0fdbe9f95d5",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "started_at": "2026-11-05T20:57:18.282616+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "repetition": 3,
+      "launches": [
+        {
+          "started_at": "2026-11-05T20:57:18.298499+00:00",
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "resume": false
+        }
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 116.0,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+          "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-05T20:57:18.673644646Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    }
+  },
+  "promoted": [
+    {
+      "candidate_id": "1",
+      "id": "1",
+      "content": "When reading PDF files with the Read tool, always use absolute paths from the current working directory rather than relative paths, even if the relative path appears correct in directory listings.",
+      "metadata": {
+        "status": "active",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+        "cortex_capture": {
+          "adapter_revision": 2,
+          "excluded_events": 22,
+          "subagent_seqs": [],
+          "turns": [
+            {
+              "seq": 7,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 12834,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 1683,
+                "completionTokens": 350,
+                "totalTokens": 2033,
+                "inputTokens": 10,
+                "cacheWriteTokens": 1673,
+                "outputTokens": 350,
+                "reasoningTokens": 240,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 9,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 8266,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2202,
+                "completionTokens": 198,
+                "totalTokens": 2400,
+                "inputTokens": 6,
+                "cacheReadTokens": 1673,
+                "cacheWriteTokens": 523,
+                "outputTokens": 198,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 12,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 3083,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2536,
+                "completionTokens": 80,
+                "totalTokens": 2616,
+                "inputTokens": 7,
+                "cacheReadTokens": 2196,
+                "cacheWriteTokens": 333,
+                "outputTokens": 80,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 14,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 5353,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2633,
+                "completionTokens": 161,
+                "totalTokens": 2794,
+                "inputTokens": 6,
+                "cacheReadTokens": 2529,
+                "cacheWriteTokens": 98,
+                "outputTokens": 161,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 16,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 32343,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 11427,
+                "completionTokens": 1494,
+                "totalTokens": 12921,
+                "inputTokens": 7,
+                "cacheReadTokens": 2627,
+                "cacheWriteTokens": 8793,
+                "outputTokens": 1494,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 18,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 7320,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 12939,
+                "completionTokens": 96,
+                "totalTokens": 13035,
+                "inputTokens": 5,
+                "cacheReadTokens": 11420,
+                "cacheWriteTokens": 1514,
+                "outputTokens": 96,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 20,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 7237,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13074,
+                "completionTokens": 99,
+                "totalTokens": 13173,
+                "inputTokens": 6,
+                "cacheReadTokens": 12934,
+                "cacheWriteTokens": 134,
+                "outputTokens": 99,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 22,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 13879,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13670,
+                "completionTokens": 77,
+                "totalTokens": 13747,
+                "inputTokens": 6,
+                "cacheReadTokens": 13068,
+                "cacheWriteTokens": 596,
+                "outputTokens": 77,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 24,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 9968,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13859,
+                "completionTokens": 104,
+                "totalTokens": 13963,
+                "inputTokens": 6,
+                "cacheReadTokens": 13664,
+                "cacheWriteTokens": 189,
+                "outputTokens": 104,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 26,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 5613,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13994,
+                "completionTokens": 79,
+                "totalTokens": 14073,
+                "inputTokens": 6,
+                "cacheReadTokens": 13853,
+                "cacheWriteTokens": 135,
+                "outputTokens": 79,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 28,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 14836,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 14165,
+                "completionTokens": 360,
+                "totalTokens": 14525,
+                "inputTokens": 6,
+                "cacheReadTokens": 13988,
+                "cacheWriteTokens": 171,
+                "outputTokens": 360,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 30,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 7852,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 14619,
+                "completionTokens": 340,
+                "totalTokens": 14959,
+                "inputTokens": 6,
+                "cacheReadTokens": 14159,
+                "cacheWriteTokens": 454,
+                "outputTokens": 340,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 32,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 4917,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 15134,
+                "completionTokens": 92,
+                "totalTokens": 15226,
+                "inputTokens": 5,
+                "cacheWriteTokens": 15129,
+                "outputTokens": 92,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 34,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 6086,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 15371,
+                "completionTokens": 121,
+                "totalTokens": 15492,
+                "inputTokens": 6,
+                "cacheReadTokens": 15129,
+                "cacheWriteTokens": 236,
+                "outputTokens": 121,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 36,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 13739,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 15712,
+                "completionTokens": 439,
+                "totalTokens": 16151,
+                "inputTokens": 6,
+                "cacheReadTokens": 15365,
+                "cacheWriteTokens": 341,
+                "outputTokens": 439,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 38,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 25846,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 15991,
+                "completionTokens": 878,
+                "totalTokens": 16869,
+                "inputTokens": 10,
+                "cacheWriteTokens": 15981,
+                "outputTokens": 878,
+                "reasoningTokens": 262,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            }
+          ],
+          "limits": [
+            "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+            "Subagents are separate supporting observations; tool-less side calls are excluded.",
+            "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+          ]
+        },
+        "source_task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+        "task_description": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+        "support": 1,
+        "rationale": "The Read tool failed with 'File does not exist' when given relative paths like '/tmp/tmp.qtTJoOx4O2/input/001071.pdf', but succeeded immediately when given the absolute path from pwd ('/results/tasks/training/input/001071.pdf'). This prevents wasted tool calls and ensures reliable file access.",
+        "category": "recovery",
+        "trigger": "When attempting to read files (especially PDFs) after confirming their existence via ls or similar commands, and the first read attempt fails with a file-not-found error.",
+        "implementation_steps": [
+          "Run 'pwd' to get the current working directory",
+          "Construct absolute paths by combining pwd output with the relative path",
+          "Use the absolute path in the Read tool call",
+          "Avoid assumptions about working directory based on command output locations"
+        ],
+        "generation_method": "standard",
+        "processing": {
+          "operation_id": "f410d6aa-d62d-447c-b237-76c310a4fbb4",
+          "profile_id": null,
+          "revision": null,
+          "digest": "1da563e41ce9a49de67118bb6a795ce789ad88047e214e2e2058bb46151ced0c",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "aws/claude-sonnet-4-5",
+              "custom_llm_provider": "anthropic"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "anthropic",
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "aws/claude-sonnet-4-5",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+            "batch_id": "7-38",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+            "task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-05T20:47:20.769350+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1,
+        "candidate_id": "1",
+        "reviewed_at": "2026-11-05T20:47:53.368753+00:00"
+      }
+    },
+    {
+      "candidate_id": "4",
+      "id": "2",
+      "content": "Use Python's Decimal type for all financial calculations and reconciliations to detect small discrepancies like 0.01 differences that would be masked by floating-point arithmetic.",
+      "metadata": {
+        "status": "active",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+        "cortex_capture": {
+          "adapter_revision": 2,
+          "excluded_events": 22,
+          "subagent_seqs": [],
+          "turns": [
+            {
+              "seq": 7,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 12834,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 1683,
+                "completionTokens": 350,
+                "totalTokens": 2033,
+                "inputTokens": 10,
+                "cacheWriteTokens": 1673,
+                "outputTokens": 350,
+                "reasoningTokens": 240,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 9,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 8266,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2202,
+                "completionTokens": 198,
+                "totalTokens": 2400,
+                "inputTokens": 6,
+                "cacheReadTokens": 1673,
+                "cacheWriteTokens": 523,
+                "outputTokens": 198,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 12,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 3083,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2536,
+                "completionTokens": 80,
+                "totalTokens": 2616,
+                "inputTokens": 7,
+                "cacheReadTokens": 2196,
+                "cacheWriteTokens": 333,
+                "outputTokens": 80,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 14,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 5353,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2633,
+                "completionTokens": 161,
+                "totalTokens": 2794,
+                "inputTokens": 6,
+                "cacheReadTokens": 2529,
+                "cacheWriteTokens": 98,
+                "outputTokens": 161,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 16,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 32343,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 11427,
+                "completionTokens": 1494,
+                "totalTokens": 12921,
+                "inputTokens": 7,
+                "cacheReadTokens": 2627,
+                "cacheWriteTokens": 8793,
+                "outputTokens": 1494,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 18,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 7320,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 12939,
+                "completionTokens": 96,
+                "totalTokens": 13035,
+                "inputTokens": 5,
+                "cacheReadTokens": 11420,
+                "cacheWriteTokens": 1514,
+                "outputTokens": 96,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 20,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 7237,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13074,
+                "completionTokens": 99,
+                "totalTokens": 13173,
+                "inputTokens": 6,
+                "cacheReadTokens": 12934,
+                "cacheWriteTokens": 134,
+                "outputTokens": 99,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 22,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 13879,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13670,
+                "completionTokens": 77,
+                "totalTokens": 13747,
+                "inputTokens": 6,
+                "cacheReadTokens": 13068,
+                "cacheWriteTokens": 596,
+                "outputTokens": 77,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 24,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 9968,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13859,
+                "completionTokens": 104,
+                "totalTokens": 13963,
+                "inputTokens": 6,
+                "cacheReadTokens": 13664,
+                "cacheWriteTokens": 189,
+                "outputTokens": 104,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 26,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 5613,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 13994,
+                "completionTokens": 79,
+                "totalTokens": 14073,
+                "inputTokens": 6,
+                "cacheReadTokens": 13853,
+                "cacheWriteTokens": 135,
+                "outputTokens": 79,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 28,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 14836,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 14165,
+                "completionTokens": 360,
+                "totalTokens": 14525,
+                "inputTokens": 6,
+                "cacheReadTokens": 13988,
+                "cacheWriteTokens": 171,
+                "outputTokens": 360,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 30,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 7852,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 14619,
+                "completionTokens": 340,
+                "totalTokens": 14959,
+                "inputTokens": 6,
+                "cacheReadTokens": 14159,
+                "cacheWriteTokens": 454,
+                "outputTokens": 340,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 32,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 4917,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 15134,
+                "completionTokens": 92,
+                "totalTokens": 15226,
+                "inputTokens": 5,
+                "cacheWriteTokens": 15129,
+                "outputTokens": 92,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 34,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 6086,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 15371,
+                "completionTokens": 121,
+                "totalTokens": 15492,
+                "inputTokens": 6,
+                "cacheReadTokens": 15129,
+                "cacheWriteTokens": 236,
+                "outputTokens": 121,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 36,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 13739,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 15712,
+                "completionTokens": 439,
+                "totalTokens": 16151,
+                "inputTokens": 6,
+                "cacheReadTokens": 15365,
+                "cacheWriteTokens": 341,
+                "outputTokens": 439,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 38,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 25846,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 15991,
+                "completionTokens": 878,
+                "totalTokens": 16869,
+                "inputTokens": 10,
+                "cacheWriteTokens": 15981,
+                "outputTokens": 878,
+                "reasoningTokens": 262,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            }
+          ],
+          "limits": [
+            "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+            "Subagents are separate supporting observations; tool-less side calls are excluded.",
+            "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+          ]
+        },
+        "source_task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+        "task_description": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+        "support": 1,
+        "rationale": "The reconciliation correctly identified a -0.01 discrepancy in invoice 001093 (computed: 843.24, printed: 843.25) by using Decimal type throughout. The calculation 753.60 + 89.64 = 843.24 was performed with exact precision, and the difference was detected and reported as required.",
+        "category": "strategy",
+        "trigger": "When performing financial reconciliation where penny-level discrepancies must be detected and reported, especially when comparing computed totals against printed totals from invoices.",
+        "implementation_steps": [
+          "Import Decimal from decimal module",
+          "Convert all monetary amounts to Decimal type when reading from strings",
+          "Perform all arithmetic operations using Decimal values",
+          "Format output with explicit precision (e.g., f'{amount:.2f}')",
+          "Compare differences against zero for exact matching, flagging any non-zero difference as a discrepancy"
+        ],
+        "generation_method": "standard",
+        "processing": {
+          "operation_id": "f410d6aa-d62d-447c-b237-76c310a4fbb4",
+          "profile_id": null,
+          "revision": null,
+          "digest": "1da563e41ce9a49de67118bb6a795ce789ad88047e214e2e2058bb46151ced0c",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "aws/claude-sonnet-4-5",
+              "custom_llm_provider": "anthropic"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "anthropic",
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "aws/claude-sonnet-4-5",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+            "batch_id": "7-38",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+            "task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-05T20:47:20.769350+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1,
+        "candidate_id": "4",
+        "reviewed_at": "2026-11-05T20:47:53.385509+00:00"
+      }
+    }
+  ],
+  "checked_at": "2026-11-05T20:46:36.457273+00:00",
+  "task_family": "invoice-extraction",
+  "trial_order": [
+    "baseline-1",
+    "guided-1",
+    "guided-1-repeat-2",
+    "baseline-1-repeat-2",
+    "baseline-1-repeat-3",
+    "guided-1-repeat-3"
+  ],
+  "training_provenance": {
+    "reused_at": "2026-11-05T20:46:48.690059+00:00",
+    "source_snapshot": "sonnet45-20261105",
+    "training_session": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+    "method": "Byte-identical reuse of recorded training; no new training run or recapture from the new Cortex instance.",
+    "sha256": {
+      "training-trajectory.json": "8688657cf6315191f150ea077ebca73c9de8ec7e1501db0cc5aa33ce962fa6d5",
+      "training-cortex-session.json": "6a65e63da5db0ae16438751456232ff3441ab27255a7b21bd07ff68311e0324d",
+      "training-feedback.txt": "fa061f1dbebf08516263cc0a127d3103b720f487d68e8fa30d65e058a3e94020",
+      "training-evaluation.json": "37188cbe567c5fbccdeac561b7cc389b18ecce36db4891c0545414f4d0245e6c"
+    },
+    "excluded": "No source evaluation trajectories, outputs, guidelines, or runtime databases are imported for learning.",
+    "replay_limit": "Parsed Cortex recordings omit PDF image bytes and hidden reasoning; replay prefixes are approximate."
+  },
+  "learned": true,
+  "learning_output_mode": "existing JSON generation with local Pydantic validation",
+  "guidelines_mode": "standard",
+  "consistency_method": null,
+  "repetition_plan": {
+    "registered_at": "2026-11-05T20:48:05.944234+00:00",
+    "packet": "trial-1",
+    "repetitions": [
+      1,
+      2,
+      3
+    ],
+    "additional_order": [
+      "guided-1-repeat-2",
+      "baseline-1-repeat-2",
+      "baseline-1-repeat-3",
+      "guided-1-repeat-3"
+    ],
+    "reason": "Three fresh same-input batch pairs selected before evaluation; reviewed guidelines remain frozen.",
+    "guidelines_mode": "standard",
+    "consistency_method": null
+  },
+  "frozen_guidelines_sha256": "114852561c9ccaa4d3fddd139fc8fb4990faa9279135b6a7f876896cceb314f1"
+}

@@ -1,0 +1,12 @@
+{
+  "text": "Guidelines learned from past task attempts (follow these carefully; they address the most common mistakes):\n\n\nAdditional task-specific guidelines retrieved from similar past tasks:\n- When reading PDF files with the Read tool, always use absolute paths from the current working directory rather than relative paths, even if the relative path appears correct in directory listings.\n- Use Python's Decimal type for all financial calculations and reconciliations to detect small discrepancies like 0.01 differences that would be masked by floating-point arithmetic.",
+  "entity_ids": [
+    "1",
+    "2"
+  ],
+  "entity_revisions": {
+    "1": 1,
+    "2": 1
+  },
+  "namespace_id": "invoice-standard-reviewed"
+}

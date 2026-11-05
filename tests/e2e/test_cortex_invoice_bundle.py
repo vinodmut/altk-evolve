@@ -103,11 +103,18 @@ def test_completed_invoice_learning_and_three_pairs():
     assert (root / "summary.html").is_file()
 
 
-def test_accurate_consistency_recording_has_three_fresh_frozen_pairs():
+@pytest.mark.parametrize(
+    "mode,env_name,snapshot,namespace",
+    [
+        ("consistency", "CORTEX_INVOICE_CONSISTENCY_RESULTS", "sonnet45-consistency-20261105", "invoice-consistency-reviewed"),
+        ("standard", "CORTEX_INVOICE_STANDARD_RESULTS", "sonnet45-standard-20261105", "invoice-standard-reviewed"),
+    ],
+)
+def test_recording_has_three_fresh_frozen_pairs(mode, env_name, snapshot, namespace):
     base = Path(__file__).resolve().parents[2] / "demos/cortex-invoices"
-    root = Path(os.environ.get("CORTEX_INVOICE_CONSISTENCY_RESULTS", base / "reports/sonnet45-consistency-20261105"))
+    root = Path(os.environ.get(env_name, base / "reports" / snapshot))
     if not (root / "summary.json").is_file():
-        pytest.skip("Complete the accurate-consistency experiment first.")
+        pytest.skip(f"Complete the {mode} experiment first.")
 
     def read(name):
         path = root / name
@@ -117,12 +124,17 @@ def test_accurate_consistency_recording_has_three_fresh_frozen_pairs():
             return json.load(stream)
 
     summary, state, learning = (read(name) for name in ("summary.json", "state.json", "learning.json"))
-    assert learning["consistency_method"] == "accurate"
     config = learning["processing_plan"]["processors"][0]["config"]
-    assert config["guidelines_mode"] == "consistency" and config["consistency_method"] == "accurate"
-    assert config["analysis_config"]["max_samples"] == 5
-    assert config["analysis_config"]["max_steps"] == 15
-    assert config["analysis_config"]["skip_on_no_uncertainty"] is True
+    assert config["guidelines_mode"] == mode
+    if mode == "consistency":
+        assert learning["consistency_method"] == config["consistency_method"] == "accurate"
+        assert config["analysis_config"]["max_samples"] == 5
+        assert config["analysis_config"]["max_steps"] == 15
+        assert config["analysis_config"]["skip_on_no_uncertainty"] is True
+    else:
+        assert learning["guidelines_mode"] == summary["guidelines_mode"] == "standard"
+        assert learning["consistency_method"] is None and summary["analysis"] is None
+        assert not list((root / "analysis").glob("*"))
     assert state["model"] == state["learning_model"] == "aws/claude-sonnet-4-5"
     assert summary["all_comparisons_valid"] and summary["same_tool_schemas"] and summary["frozen_selection_unchanged"]
     assert len(summary["pairs"]) == 3 and len(state["sessions"]) == 7
@@ -131,12 +143,13 @@ def test_accurate_consistency_recording_has_three_fresh_frozen_pairs():
     assert read("trial-run.json")["order"] == state["trial_order"]
     candidates = {str(row["id"]): row for row in read("invoice-candidates.json")}
     promoted = read("invoice-promoted.json")
+    assert all(row["metadata"]["generation_method"] == mode for row in candidates.values())
     assert state["promoted"] == promoted
     assert hashlib.sha256(json.dumps(promoted, sort_keys=True).encode()).hexdigest() == state["frozen_guidelines_sha256"]
     training = state["sessions"]["training"]["id"]
     for row in promoted:
         assert row["content"] == candidates[str(row["candidate_id"])]["content"]
-        assert row["metadata"]["generation_method"] == "consistency"
+        assert row["metadata"]["generation_method"] == mode
         assert row["metadata"]["session_id"] == training
     for name, digest in read("training-provenance.json")["sha256"].items():
         assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest
@@ -154,6 +167,12 @@ def test_accurate_consistency_recording_has_three_fresh_frozen_pairs():
             all_hashes.append(hashes)
             trajectory = read(f"{label}-trajectory.json")["trajectories"][0]
             assert trajectory["batch"]["conversation_id"] == session["id"]
+            requests = [
+                event
+                for event in read(f"{label}-cortex-session.json")["events"]
+                if event.get("phase") == "request" and (event.get("inference") or {}).get("tools")
+            ]
+            assert requests and {event["inference"]["model"] for event in requests} == {state["model"]}
             calls = [call for message in trajectory["messages"] for call in (message.get("tool_calls") or [])]
             assert len(calls) == pair["metrics"][arm]["tool_calls"]
             assert len({call["id"] for call in calls}) == len(calls)
@@ -162,7 +181,7 @@ def test_accurate_consistency_recording_has_three_fresh_frozen_pairs():
             assert not cli.get("is_error") and not cli.get("permission_denials")
             if arm == "guided":
                 retrieval = read(f"{label}-retrieval.json")
-                assert retrieval["namespace_id"] == "invoice-consistency-reviewed"
+                assert retrieval["namespace_id"] == namespace
                 assert set(map(str, retrieval["entity_ids"])) == {str(row["id"]) for row in promoted}
                 assert all(row["content"] in retrieval["text"] for row in promoted)
     assert all(value == all_hashes[0] for value in all_hashes)

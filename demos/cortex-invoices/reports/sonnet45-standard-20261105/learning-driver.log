@@ -1,0 +1,37 @@
+Learning only from training UUID c7a2fb03-8761-4ed8-9027-47878a44a5cb
+20:46:56 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+20:47:20 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+20:47:20 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+20:47:24 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+
+Candidate 1
+When reading PDF files with the Read tool, always use absolute paths from the current working directory rather than relative paths, even if the relative path appears correct in directory listings.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 2
+For invoice extraction tasks requiring exact decimal precision and reconciliation, manually extract data from PDF text into structured Python data rather than attempting automated PDF parsing or OCR.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 3
+When creating CSV output files with specific column requirements, embed the complete data structure directly in the Python script rather than attempting to parse or transform data dynamically.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 4
+Use Python's Decimal type for all financial calculations and reconciliations to detect small discrepancies like 0.01 differences that would be masked by floating-point arithmetic.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Full provenance saved in invoice-candidates.json.

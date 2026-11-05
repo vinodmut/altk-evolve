@@ -252,7 +252,7 @@ def candidates():
     return rows
 
 
-def learn(json_output=False, consistency_method="fast"):
+def learn(json_output=False, consistency_method="fast", mode="standard"):
     from altk_evolve.frontend.client.evolve_client import EvolveClient
 
     state = services.load_state()
@@ -262,25 +262,29 @@ def learn(json_output=False, consistency_method="fast"):
     if json_output:
         # Existing generation fallback for the gateway's unsupported strict schema.
         # The model, prompts, evidence and local Pydantic validation stay intact.
-        from altk_evolve.llm.guidelines import consistency_guidelines
+        from altk_evolve.llm.guidelines import consistency_guidelines, guidelines
 
         consistency_guidelines.supports_response_schema = lambda **kwargs: False
+        guidelines.supports_response_schema = lambda **kwargs: False
     trajectories = json.loads((services.RESULTS / "training-trajectory.json").read_text())["trajectories"]
     assert all(trajectory["batch"]["conversation_id"] == training["id"] for trajectory in trajectories)
     client = EvolveClient()
     client.ensure_namespace(CANDIDATES)
+    config = {"guidelines_mode": mode}
+    if mode == "consistency":
+        config["consistency_method"] = consistency_method
     plan = client.processing.validate(
         {
             "processors": [
                 {
                     "id": "guidelines",
                     "plugin": "evolve.guidelines",
-                    "config": {"guidelines_mode": "consistency", "consistency_method": consistency_method},
+                    "config": config,
                 }
             ]
         }
     )
-    if consistency_method == "accurate":
+    if mode == "consistency" and consistency_method == "accurate":
         from altk_evolve.config.guidelines import guidelines_settings
 
         guidelines_settings.debug_dir = services.RESULTS / "analysis"
@@ -294,12 +298,18 @@ def learn(json_output=False, consistency_method="fast"):
         "model": state["learning_model"],
         "api_format": services.environment()["EVOLVE_CUSTOM_LLM_PROVIDER"],
         "output_mode": "existing JSON generation with local Pydantic validation" if json_output else "native response schema",
-        "consistency_method": consistency_method,
+        "guidelines_mode": mode,
+        "consistency_method": consistency_method if mode == "consistency" else None,
         "processing_plan": plan.manifest(),
         "training_provenance": state.get("training_provenance"),
     }
     services.write_json(services.RESULTS / "learning.json", manifest)
-    state.update(learned=True, learning_output_mode=manifest["output_mode"], consistency_method=consistency_method)
+    state.update(
+        learned=True,
+        learning_output_mode=manifest["output_mode"],
+        guidelines_mode=mode,
+        consistency_method=manifest["consistency_method"],
+    )
     services.save_state(state)
     candidates()
 
@@ -307,8 +317,8 @@ def learn(json_output=False, consistency_method="fast"):
 def repeat_trials():
     """Freeze three same-input pairs before running any evaluation sessions."""
     state = services.load_state()
-    if state.get("consistency_method") != "accurate" or not state.get("promoted"):
-        raise RuntimeError("Generate accurate consistency guidelines and promote a frozen selection first.")
+    if not state.get("learned") or not state.get("promoted"):
+        raise RuntimeError("Generate guidelines and promote a frozen selection first.")
     if any(label != "training" for label in state["sessions"]):
         raise RuntimeError("Use a fresh results directory; no evaluation session may already exist.")
     order = ["baseline-1", "guided-1", "guided-1-repeat-2", "baseline-1-repeat-2", "baseline-1-repeat-3", "guided-1-repeat-3"]
@@ -317,7 +327,9 @@ def repeat_trials():
         "packet": "trial-1",
         "repetitions": [1, 2, 3],
         "additional_order": order[2:],
-        "reason": "Three fresh same-input batch pairs selected before evaluation; accurate consistency guides remain frozen.",
+        "reason": "Three fresh same-input batch pairs selected before evaluation; reviewed guidelines remain frozen.",
+        "guidelines_mode": state.get("guidelines_mode", "consistency"),
+        "consistency_method": state.get("consistency_method"),
     }
     state["trial_order"] = order
     state["frozen_guidelines_sha256"] = hashlib.sha256(json.dumps(state["promoted"], sort_keys=True).encode()).hexdigest()
@@ -397,6 +409,9 @@ def main():
     )
     parser.add_argument("--repeat", type=int, help="Fresh repetition of the same packet, starting at 2; preserve earlier evidence.")
     parser.add_argument(
+        "--mode", choices=("standard", "consistency"), default="standard", help="Explicit guideline generation mode; default standard."
+    )
+    parser.add_argument(
         "--consistency-method", choices=("fast", "accurate"), default="fast", help="Accurate resamples decisions; saves analysis artifacts."
     )
     args = parser.parse_args()
@@ -413,7 +428,7 @@ def main():
     elif args.command == "capture":
         capture(args.arguments[0])
     elif args.command == "learn":
-        learn(args.json_output, args.consistency_method)
+        learn(args.json_output, args.consistency_method, args.mode)
     elif args.command == "repeat-trials":
         repeat_trials()
     elif args.command == "candidates":

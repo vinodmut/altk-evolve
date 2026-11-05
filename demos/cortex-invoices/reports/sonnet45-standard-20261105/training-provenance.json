@@ -1,0 +1,14 @@
+{
+  "reused_at": "2026-11-05T20:46:48.690059+00:00",
+  "source_snapshot": "sonnet45-20261105",
+  "training_session": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+  "method": "Byte-identical reuse of recorded training; no new training run or recapture from the new Cortex instance.",
+  "sha256": {
+    "training-trajectory.json": "8688657cf6315191f150ea077ebca73c9de8ec7e1501db0cc5aa33ce962fa6d5",
+    "training-cortex-session.json": "6a65e63da5db0ae16438751456232ff3441ab27255a7b21bd07ff68311e0324d",
+    "training-feedback.txt": "fa061f1dbebf08516263cc0a127d3103b720f487d68e8fa30d65e058a3e94020",
+    "training-evaluation.json": "37188cbe567c5fbccdeac561b7cc389b18ecce36db4891c0545414f4d0245e6c"
+  },
+  "excluded": "No source evaluation trajectories, outputs, guidelines, or runtime databases are imported for learning.",
+  "replay_limit": "Parsed Cortex recordings omit PDF image bytes and hidden reasoning; replay prefixes are approximate."
+}

@@ -1,0 +1,451 @@
+{
+  "model": "aws/claude-sonnet-4-5",
+  "learning_model": "aws/claude-sonnet-4-5",
+  "guidelines_mode": "standard",
+  "consistency_method": null,
+  "pairs": [
+    {
+      "repetition": 1,
+      "labels": {
+        "baseline": "baseline-1",
+        "guided": "guided-1"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 18,
+          "assistant_messages": 15,
+          "observed_tool_errors": 4,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 17,
+          "assistant_messages": 14,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T20:50:12.541805559Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    },
+    {
+      "repetition": 2,
+      "labels": {
+        "baseline": "baseline-1-repeat-2",
+        "guided": "guided-1-repeat-2"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 15,
+          "assistant_messages": 12,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 17,
+          "assistant_messages": 13,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T20:52:02.918161975Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    },
+    {
+      "repetition": 3,
+      "labels": {
+        "baseline": "baseline-1-repeat-3",
+        "guided": "guided-1-repeat-3"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 17,
+          "assistant_messages": 13,
+          "observed_tool_errors": 2,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 19,
+          "assistant_messages": 14,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T20:57:18.673644646Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    }
+  ],
+  "distributions": {
+    "baseline": {
+      "runs": 3,
+      "correct_packets": 3,
+      "tool_calls": [
+        18,
+        15,
+        17
+      ],
+      "total_tool_calls": 50,
+      "tool_errors": [
+        4,
+        3,
+        2
+      ],
+      "min_tool_calls": 15,
+      "max_tool_calls": 18,
+      "mean_tool_calls": 16.666666666666668,
+      "median_tool_calls": 17,
+      "range_tool_calls": 3,
+      "sample_stddev_tool_calls": 1.5275252316519468
+    },
+    "guided": {
+      "runs": 3,
+      "correct_packets": 3,
+      "tool_calls": [
+        17,
+        17,
+        19
+      ],
+      "total_tool_calls": 53,
+      "tool_errors": [
+        3,
+        3,
+        3
+      ],
+      "min_tool_calls": 17,
+      "max_tool_calls": 19,
+      "mean_tool_calls": 17.666666666666668,
+      "median_tool_calls": 17,
+      "range_tool_calls": 2,
+      "sample_stddev_tool_calls": 1.1547005383792515
+    }
+  },
+  "all_comparisons_valid": true,
+  "same_tool_schemas": true,
+  "tool_schema_sha256": {
+    "baseline-1": "694fa38c2f2e72ccf765b928d08b4aca437f4444b2d74b06e7d6e4728b4eaa95",
+    "guided-1": "694fa38c2f2e72ccf765b928d08b4aca437f4444b2d74b06e7d6e4728b4eaa95",
+    "baseline-1-repeat-2": "694fa38c2f2e72ccf765b928d08b4aca437f4444b2d74b06e7d6e4728b4eaa95",
+    "guided-1-repeat-2": "694fa38c2f2e72ccf765b928d08b4aca437f4444b2d74b06e7d6e4728b4eaa95",
+    "baseline-1-repeat-3": "694fa38c2f2e72ccf765b928d08b4aca437f4444b2d74b06e7d6e4728b4eaa95",
+    "guided-1-repeat-3": "694fa38c2f2e72ccf765b928d08b4aca437f4444b2d74b06e7d6e4728b4eaa95"
+  },
+  "frozen_selection_unchanged": true,
+  "training_provenance": {
+    "reused_at": "2026-11-05T20:46:48.690059+00:00",
+    "source_snapshot": "sonnet45-20261105",
+    "training_session": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+    "method": "Byte-identical reuse of recorded training; no new training run or recapture from the new Cortex instance.",
+    "sha256": {
+      "training-trajectory.json": "8688657cf6315191f150ea077ebca73c9de8ec7e1501db0cc5aa33ce962fa6d5",
+      "training-cortex-session.json": "6a65e63da5db0ae16438751456232ff3441ab27255a7b21bd07ff68311e0324d",
+      "training-feedback.txt": "fa061f1dbebf08516263cc0a127d3103b720f487d68e8fa30d65e058a3e94020",
+      "training-evaluation.json": "37188cbe567c5fbccdeac561b7cc389b18ecce36db4891c0545414f4d0245e6c"
+    },
+    "excluded": "No source evaluation trajectories, outputs, guidelines, or runtime databases are imported for learning.",
+    "replay_limit": "Parsed Cortex recordings omit PDF image bytes and hidden reasoning; replay prefixes are approximate."
+  },
+  "analysis": null,
+  "limits": "Three pairs on one synthetic packet are exploratory. Call-count stability is separate from output correctness; no causal or population-level claim."
+}

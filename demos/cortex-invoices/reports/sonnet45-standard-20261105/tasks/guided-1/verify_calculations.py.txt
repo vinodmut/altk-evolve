@@ -1,0 +1,36 @@
+from decimal import Decimal
+
+print("Manual verification of calculations:\n")
+
+# Invoice 002071
+print("Invoice 002071:")
+items_002071 = [Decimal('112.05'), Decimal('32.40'), Decimal('36.90'), Decimal('-9.80')]
+subtotal_002071 = sum(items_002071)
+print(f"  Line items: {' + '.join(str(x) for x in items_002071)} = {subtotal_002071}")
+print(f"  Subtotal: {subtotal_002071}")
+print(f"  Tax: 22.17")
+print(f"  Computed total: {subtotal_002071 + Decimal('22.17')}")
+print(f"  Printed total: 193.72")
+print(f"  Match: {subtotal_002071 + Decimal('22.17') == Decimal('193.72')}\n")
+
+# Invoice 002082
+print("Invoice 002082:")
+items_002082 = [Decimal('2525.20'), Decimal('129.60'), Decimal('149.25'), Decimal('30.63'), Decimal('42.50'), Decimal('-36.00')]
+subtotal_002082 = sum(items_002082)
+print(f"  Line items sum: {subtotal_002082}")
+print(f"  Tax: 154.28")
+print(f"  Computed total: {subtotal_002082 + Decimal('154.28')}")
+print(f"  Printed total: 2995.46")
+print(f"  Match: {subtotal_002082 + Decimal('154.28') == Decimal('2995.46')}\n")
+
+# Invoice 002093
+print("Invoice 002093:")
+items_002093 = [Decimal('448.50'), Decimal('145.80'), Decimal('74.50'), Decimal('75.80'), Decimal('57.00'), Decimal('-26.00')]
+subtotal_002093 = sum(items_002093)
+print(f"  Line items sum: {subtotal_002093}")
+print(f"  Tax: 90.64")
+print(f"  Computed total: {subtotal_002093 + Decimal('90.64')}")
+print(f"  Printed total: 866.26")
+difference = (subtotal_002093 + Decimal('90.64')) - Decimal('866.26')
+print(f"  Difference: {difference}")
+print(f"  Status: {'DISCREPANCY' if difference != 0 else 'matched'}")

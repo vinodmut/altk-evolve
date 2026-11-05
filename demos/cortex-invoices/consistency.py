@@ -1,4 +1,4 @@
-"""Reuse frozen training evidence and report three accurate-consistency pairs offline."""
+"""Reuse frozen training evidence and report three standard or consistency pairs offline."""
 
 import argparse
 import hashlib
@@ -56,6 +56,7 @@ def spread(rows):
     result = evaluate.distribution(rows)
     calls = result["tool_calls"]
     result.update(
+        total_tool_calls=sum(calls),
         range_tool_calls=max(calls) - min(calls) if calls else None,
         sample_stddev_tool_calls=statistics.stdev(calls) if len(calls) > 1 else None,
     )
@@ -88,13 +89,13 @@ def analysis_summary(results, config):
     }
 
 
-def architecture_svg():
+def architecture_svg(mode="consistency", method="accurate"):
     diagram = '<svg viewBox="0 0 1000 180" role="img" aria-label="Recorded training goes from Cortex to Evolve, reviewed advice returns through Cortex"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#0f62fe"/></marker></defs>'
     for x, title, detail in (
         (5, "Invoice PDFs", "Same trial-1 inputs"),
         (205, "Claude Code", "Sonnet 4.5 + tools"),
         (405, "Cortex", "Records calls/results"),
-        (605, "Evolve", "Resamples training"),
+        (605, "Evolve", "Resamples training" if mode == "consistency" and method == "accurate" else "Reflects on training"),
         (805, "Reviewed guides", "Frozen before trials"),
     ):
         diagram += f'<rect x="{x}" y="15" width="185" height="75" rx="8" fill="#e8f0ff" stroke="#0f62fe"/><text x="{x + 92}" y="44" text-anchor="middle" font-size="15">{title}</text><text x="{x + 92}" y="68" text-anchor="middle" font-size="12">{detail}</text>'
@@ -112,6 +113,10 @@ def report(results):
     promoted = evaluate.load(results / "invoice-promoted.json")
     candidates = evaluate.load(results / "invoice-candidates.json")
     learning = evaluate.load(results / "learning.json")
+    config = learning["processing_plan"]["processors"][0]["config"]
+    mode = config["guidelines_mode"]
+    method = learning.get("consistency_method")
+    title = "standard" if mode == "standard" else f"{method} consistency"
     served = {str(row["id"]) for row in promoted}
     pairs = []
     schemas = {}
@@ -126,11 +131,12 @@ def report(results):
             tools = evaluate.load(results / f"{label}-trajectory.json")["trajectories"][0].get("tools")
             schemas[label] = hashlib.sha256(json.dumps(tools, sort_keys=True).encode()).hexdigest()
     distributions = {arm: spread([pair["metrics"][arm] for pair in pairs]) for arm in ("baseline", "guided")}
-    analysis = analysis_summary(results, learning["processing_plan"]["processors"][0]["config"]["analysis_config"])
+    analysis = analysis_summary(results, config["analysis_config"]) if mode == "consistency" and method == "accurate" else None
     summary = {
         "model": state["model"],
         "learning_model": state["learning_model"],
-        "consistency_method": learning["consistency_method"],
+        "guidelines_mode": mode,
+        "consistency_method": method,
         "pairs": pairs,
         "distributions": distributions,
         "all_comparisons_valid": all(pair["valid_comparison"] for pair in pairs),
@@ -147,6 +153,7 @@ def report(results):
     verdict = (
         f"Correct packets: {before['correct_packets']}/3 baseline → {after['correct_packets']}/3 guided. "
         f"Tool calls: {before['tool_calls']} → {after['tool_calls']}. "
+        f"Total: {before['total_tool_calls']} → {after['total_tool_calls']}. "
         f"Median: {before['median_tool_calls']} → {after['median_tool_calls']}; "
         f"range width: {before['range_tool_calls']} → {after['range_tool_calls']}."
     )
@@ -158,7 +165,8 @@ def report(results):
             f"<tr><td>{pair['repetition']}</td><td>{a['all_correct']} → {b['all_correct']}</td>"
             f"<td>{a['items']['exact_rows']}/16 → {b['items']['exact_rows']}/16</td>"
             f"<td>{a['reconciliation']['exact_rows']}/3 → {b['reconciliation']['exact_rows']}/3</td>"
-            f"<td>{a['tool_calls']} → {b['tool_calls']}</td><td>{pair['valid_comparison']}</td></tr>"
+            f"<td>{a['tool_calls']} → {b['tool_calls']}</td><td>{a['observed_tool_errors']} → {b['observed_tool_errors']}</td>"
+            f"<td>{pair['valid_comparison']}</td></tr>"
         )
         for arm, label in pair["labels"].items():
             outputs = "".join(
@@ -191,22 +199,36 @@ def report(results):
     )
     notes = evaluate.load(results / "report-notes.json", {})
     interpretation = "".join(f"<p>{esc(line)}</p>" for line in notes.get("interpretation", []))
-    document = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invoice accurate-consistency experiment</title><style>body{{max-width:1100px;margin:32px auto;padding:0 22px;font:16px/1.6 system-ui;color:#172033;background:#f8fafc;overflow-wrap:anywhere}}article{{background:white;padding:20px;margin:20px 0}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef2f6;padding:16px;font-size:13px}}blockquote{{border-left:4px solid #0f62fe;padding-left:16px}}table{{border-collapse:collapse;width:100%}}td,th{{text-align:left;padding:10px;border-bottom:1px solid #ccd}}.verdict{{padding:20px;background:#e8f0ff;font-size:20px}}summary{{cursor:pointer}}svg{{width:100%;height:auto}}a{{color:#0043ce}}</style></head><body>
-<h1>Invoice extraction with accurate consistency guidelines</h1><p class="verdict">{esc(verdict)}</p>{interpretation}
+    if mode == "standard":
+        learning_description = "Evolve's standard generator reflects on the original byte-identical, verified training trajectory and its tool calls/results. It does not resample decisions or compute consistency uncertainty. No evaluation recording or feedback is used for learning."
+        recording_limit = "Cortex recordings lack PDF image bytes and hidden reasoning. The learner therefore sees parsed text and recorded tool interactions rather than the complete visual context. Fresh CSV grading establishes correctness."
+    elif method == "accurate":
+        learning_description = "The previous guides used fast consistency generation. This experiment reuses its byte-identical, verified training trajectory with accurate generation: five samples on each of the first 15 replayable steps, default temperature 0.5, high uncertainty threshold 0.15, and the default skip-on-no-uncertainty gate. No evaluation recording or feedback is used for learning."
+        recording_limit = "Cortex recordings lack PDF image bytes and hidden reasoning. Resampled prefixes therefore approximate the original decisions where visual input mattered. Resampling observes decision variation; fresh CSV grading establishes correctness."
+    else:
+        learning_description = "Evolve's fast consistency generator reflects on the original verified training trajectory without decision resampling. No evaluation recording or feedback is used for learning."
+        recording_limit = "Cortex recordings lack PDF image bytes and hidden reasoning. Fresh CSV grading establishes correctness."
+    analysis_html = (
+        f"<details><summary>Resampling counts and uncertainty scores</summary><pre>{esc(json.dumps(analysis, indent=2))}</pre></details>"
+        if analysis is not None
+        else "<p>No resampling was performed; no analyzer scores were generated.</p>"
+    )
+    document = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invoice {esc(title)} experiment</title><style>body{{max-width:1100px;margin:32px auto;padding:0 22px;font:16px/1.6 system-ui;color:#172033;background:#f8fafc;overflow-wrap:anywhere}}article{{background:white;padding:20px;margin:20px 0}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef2f6;padding:16px;font-size:13px}}blockquote{{border-left:4px solid #0f62fe;padding-left:16px}}table{{border-collapse:collapse;width:100%}}td,th{{text-align:left;padding:10px;border-bottom:1px solid #ccd}}.verdict{{padding:20px;background:#e8f0ff;font-size:20px}}summary{{cursor:pointer}}svg{{width:100%;height:auto}}a{{color:#0043ce}}</style></head><body>
+<h1>Invoice extraction with {esc(title)} guidelines</h1><p class="verdict">{esc(verdict)}</p>{interpretation}
 <p>Task and Evolve models: <code>{esc(state["model"])}</code> and <code>{esc(state["learning_model"])}</code>. Claude Code 2.1.287, Cortex, Evolve, Poppler and Tesseract run inside Docker; inference uses the remote API.</p>
-<h2>Architecture</h2>{architecture_svg()}
+<h2>Architecture</h2>{architecture_svg(mode, method)}
 <h2>Task</h2><p>Three invoices, five PDF pages, 16 items: text extraction, repeated table headings, a description continuing across a page boundary, an image-only second page, signed credits, a three-decimal price and a deliberately mismatched printed total. Every pair and repetition receives the same trial-1 PDF bytes and task text.</p><pre>{esc(state["sessions"]["training"]["prompt"])}</pre>
-<h2>Learning and isolation</h2><p>The previous guides used fast consistency generation. This experiment reuses its byte-identical, verified training trajectory with accurate generation: five samples on each of the first 15 replayable steps, default temperature 0.5, high uncertainty threshold 0.15, and the default skip-on-no-uncertainty gate. No evaluation recording or feedback is used for learning. Selection is frozen before six fresh batch sessions, ordered baseline/guided, guided/baseline, baseline/guided. Each has a fresh UUID, workspace and Claude configuration. Bash, Read, Write and Edit are permitted with no stdin or interactive permission prompts.</p>
-<p>Cortex recordings lack PDF image bytes and hidden reasoning. Resampled prefixes therefore approximate the original decisions where visual input mattered. Resampling observes decision variation; fresh CSV grading establishes correctness. All tasks share a container/results volume, so filesystem permissions do not isolate sibling workspaces. The author-side oracle is absent from the task container.</p>
+<h2>Learning and isolation</h2><p>{esc(learning_description)} Selection is frozen before six fresh batch sessions, ordered baseline/guided, guided/baseline, baseline/guided. Each has a fresh UUID, workspace and Claude configuration. Bash, Read, Write and Edit are permitted with no stdin or interactive permission prompts.</p>
+<p>{esc(recording_limit)} All tasks share a container/results volume, so filesystem permissions do not isolate sibling workspaces. The author-side oracle is absent from the task container.</p>
 <details><summary>Frozen processing configuration</summary><pre>{esc(json.dumps(learning["processing_plan"], indent=2))}</pre></details><p><a href="training-provenance.json">Training hashes and provenance</a> · <a href="learning.json">Learning manifest</a> · <a href="review.json">Selection rationale</a></p><p>{analysis_links}</p>
-<details><summary>Resampling counts and uncertainty scores</summary><pre>{esc(json.dumps(analysis, indent=2))}</pre></details>
+{analysis_html}
 <h2>Generated guidelines</h2>{guides}<p><a href="invoice-promoted.json">Frozen candidate-to-serving mapping</a> · <a href="invoice-candidates.json">All generated candidates</a></p>
-<h2>Three fresh pairs</h2><table><thead><tr><th>Pair</th><th>Packet correct</th><th>Item rows</th><th>Reconciliation rows</th><th>Tool calls</th><th>Valid comparison</th></tr></thead><tbody>{"".join(rows)}</tbody></table><pre>{esc(json.dumps(distributions, indent=2))}</pre>
+<h2>Three fresh pairs</h2><table><thead><tr><th>Pair</th><th>Packet correct</th><th>Item rows</th><th>Reconciliation rows</th><th>Tool calls</th><th>Tool errors</th><th>Valid comparison</th></tr></thead><tbody>{"".join(rows)}</tbody></table><pre>{esc(json.dumps(distributions, indent=2))}</pre>
 <p>Range width is maximum minus minimum calls. Sample standard deviation describes these three observations, without estimating a reliable population effect. Correctness requires all 16 complete item rows and all three exact monetary reconciliations; duplicate or extra rows fail. Whitespace and numeric formatting are normalized. All comparisons retain failures.</p>
 <details><summary>Input, schema, injection and frozen-selection checks</summary><pre>{esc(json.dumps({key: summary[key] for key in ("all_comparisons_valid", "same_tool_schemas", "frozen_selection_unchanged")}, indent=2))}</pre></details>
 <h2>Before and after trajectories</h2>{"".join(traces)}
 <h2>Reused training trajectory</h2><p><a href="training-trajectory.json">Converted training</a> · <a href="training-cortex-session.json">Original training events</a></p>{evaluate.trajectory_html(results, "training")}
-<h2>Limits</h2><p>{esc(summary["limits"])} Cortex first-request attribution establishes recorded injection; the final outbound payload is not independently inspected. Counted calls are recorded main-agent tool calls, including errors and retries; hidden reasoning is unavailable. The result does not separate advice content from the extra context it adds or compare fast and accurate guides on simultaneous identical cohorts.</p><p><a href="summary.json">Computed metrics</a> · <a href="state.json">Session identities and plan</a></p></body></html>"""
+<h2>Limits</h2><p>{esc(summary["limits"])} Cortex first-request attribution establishes recorded injection; the final outbound payload is not independently inspected. Counted calls are recorded main-agent tool calls, including errors and retries; hidden reasoning is unavailable. The result does not separate advice content from the extra context it adds or compare generation modes on simultaneous identical cohorts.</p><p><a href="summary.json">Computed metrics</a> · <a href="state.json">Session identities and plan</a></p></body></html>"""
     (results / "summary.html").write_text(document)
     print(verdict)
     print("Report:", results / "summary.html")

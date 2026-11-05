@@ -1,0 +1,15 @@
+{
+  "reviewed_at": "2026-11-05T20:47:52.602411+00:00",
+  "selected_candidate_ids": [
+    "1",
+    "4"
+  ],
+  "timing": "Selection before any new evaluation session; all promoted content is copied unchanged.",
+  "rationale": {
+    "1": "Promote: original training shows relative Read paths failing and absolute paths succeeding; reusable environment advice.",
+    "2": "Reject: blanket avoidance of automated parsing or OCR is not justified by one successful manual extraction; this task includes image-only content.",
+    "3": "Reject: always embedding complete data instead of dynamic parsing/transformation is an unjustified general rule and does not improve scalability.",
+    "4": "Promote: exact decimal arithmetic is appropriate for fractional prices, signed credits and monetary reconciliation. The wording about floats masking 0.01 is broader than demonstrated; content is preserved unchanged."
+  },
+  "limits": "Human-reviewed candidates are not independently validated by learning. These two procedural themes also appeared in earlier fast-consistency advice; this is a new standard-generation run, not a distinct-task benchmark."
+}

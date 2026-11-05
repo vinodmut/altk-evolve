@@ -169,6 +169,21 @@ def test_shared_runtime_can_isolate_another_task_family(bundle, monkeypatch):
     assert config["inject"] is True and config["learn"] is False
 
 
+@pytest.mark.parametrize("mode", [None, "standard", "consistency"])
+def test_shared_runtime_selects_explicit_learning_mode(bundle, monkeypatch, mode):
+    credentials = bundle.root / "credentials.env"
+    credentials.write_text(
+        "ANTHROPIC_BASE_URL=https://gateway.example\nANTHROPIC_API_KEY=demo-key\nANTHROPIC_MODEL=task\nEVOLVE_MODEL_NAME=reflect\nEVOLVE_CUSTOM_LLM_PROVIDER=anthropic\n"
+    )
+    monkeypatch.setenv("DEMO_CREDENTIALS", str(credentials))
+    monkeypatch.setenv("EVOLVE_GUIDELINES_MODE", "all")
+    if mode is None:
+        monkeypatch.delenv("DEMO_GUIDELINES_MODE", raising=False)
+    else:
+        monkeypatch.setenv("DEMO_GUIDELINES_MODE", mode)
+    assert bundle.services.environment()["EVOLVE_GUIDELINES_MODE"] == (mode or "consistency")
+
+
 @pytest.mark.parametrize(
     "data,passed",
     [

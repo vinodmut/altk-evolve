@@ -1,0 +1,11 @@
+{
+  "interpretation": [
+    "This is the first standard-guideline Sonnet invoice experiment. Earlier Sonnet invoice guides were generated with fast or accurate consistency methods.",
+    "Every baseline and guided packet passed: all 16 complete item rows and all three monetary reconciliations. Tool calls totaled 50 baseline versus 53 guided, a 6% increase. Both medians were 17. Standard guidelines did not improve correctness or reduce calls in this set.",
+    "Call-count range width narrowed from 3 to 2, but three exploratory observations do not establish improved reliability. Recorded tool errors totaled nine in each arm.",
+    "All three guided runs tried three incorrect /tmp PDF paths before checking pwd, despite the absolute-path guideline. Baselines 1 and 2 made the same path errors; baseline 3 used a different route and recovered from two script/edit errors.",
+    "All six runs included Decimal in their extraction/reconciliation commands. The arithmetic guideline reinforced behavior already present in the baselines. These two procedural themes also appeared in earlier fast-consistency advice; the generated standard wording is preserved unchanged.",
+    "Standard learning generated four candidates. Two reusable candidates were promoted unchanged before evaluation; blanket advice against parsing/OCR and dynamic data handling was rejected. The full selection rationale is linked below.",
+    "The learning log records two LiteLLM completion invocations. Standard mode performed no decision resampling and produced no analyzer scores. Learning-token usage and cost were not separately captured."
+  ]
+}

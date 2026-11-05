@@ -1,0 +1,114 @@
+Noninteractive Claude Code: baseline-1, UUID c76db565-84fc-4583-b184-49b0d4b34031.
+{
+  "session": "baseline-1",
+  "id": "c76db565-84fc-4583-b184-49b0d4b34031",
+  "tool_calls": 18,
+  "first_request_evolve": {}
+}
+Saved outputs: tasks/baseline-1/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.
+INFO:httpx2:HTTP Request: GET http://127.0.0.1:18201/sse "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=3c76ca649ed441cf9ede2f6cd62ba365 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=3c76ca649ed441cf9ede2f6cd62ba365 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=3c76ca649ed441cf9ede2f6cd62ba365 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=3c76ca649ed441cf9ede2f6cd62ba365 "HTTP/1.1 202 Accepted"
+Reviewed retrieval: ['1', '2']
+Noninteractive Claude Code: guided-1, UUID f2e68542-5d1e-48aa-a305-b8a4bc6f04b2.
+{
+  "session": "guided-1",
+  "id": "f2e68542-5d1e-48aa-a305-b8a4bc6f04b2",
+  "tool_calls": 17,
+  "first_request_evolve": {
+    "injected": true,
+    "ids": [
+      "1",
+      "2"
+    ],
+    "revisions": [
+      1,
+      1
+    ],
+    "sources": [
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+    ],
+    "cached": false,
+    "fetchedAt": "2026-11-05T20:50:12.541805559Z"
+  }
+}
+Saved outputs: tasks/guided-1/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.
+INFO:httpx2:HTTP Request: GET http://127.0.0.1:18201/sse "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=1b8aa3eb58ce44138b0cbf9f85daef50 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=1b8aa3eb58ce44138b0cbf9f85daef50 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=1b8aa3eb58ce44138b0cbf9f85daef50 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=1b8aa3eb58ce44138b0cbf9f85daef50 "HTTP/1.1 202 Accepted"
+Reviewed retrieval: ['1', '2']
+Noninteractive Claude Code: guided-1-repeat-2, UUID 658a8e28-7849-42ba-a999-dbda9d11d19e.
+{
+  "session": "guided-1-repeat-2",
+  "id": "658a8e28-7849-42ba-a999-dbda9d11d19e",
+  "tool_calls": 17,
+  "first_request_evolve": {
+    "injected": true,
+    "ids": [
+      "1",
+      "2"
+    ],
+    "revisions": [
+      1,
+      1
+    ],
+    "sources": [
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+    ],
+    "cached": false,
+    "fetchedAt": "2026-11-05T20:52:02.918161975Z"
+  }
+}
+Saved outputs: tasks/guided-1-repeat-2/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.
+Noninteractive Claude Code: baseline-1-repeat-2, UUID 8f9084db-b868-489d-954b-4e252457ccc5.
+{
+  "session": "baseline-1-repeat-2",
+  "id": "8f9084db-b868-489d-954b-4e252457ccc5",
+  "tool_calls": 15,
+  "first_request_evolve": {}
+}
+Saved outputs: tasks/baseline-1-repeat-2/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.
+Noninteractive Claude Code: baseline-1-repeat-3, UUID e33fafef-ff94-4c06-8a2a-6e3e6e480846.
+{
+  "session": "baseline-1-repeat-3",
+  "id": "e33fafef-ff94-4c06-8a2a-6e3e6e480846",
+  "tool_calls": 17,
+  "first_request_evolve": {}
+}
+Saved outputs: tasks/baseline-1-repeat-3/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.
+INFO:httpx2:HTTP Request: GET http://127.0.0.1:18201/sse "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=f2cc52570bf943bb809450fa56547454 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=f2cc52570bf943bb809450fa56547454 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=f2cc52570bf943bb809450fa56547454 "HTTP/1.1 202 Accepted"
+INFO:httpx2:HTTP Request: POST http://127.0.0.1:18201/messages/?session_id=f2cc52570bf943bb809450fa56547454 "HTTP/1.1 202 Accepted"
+Reviewed retrieval: ['1', '2']
+Noninteractive Claude Code: guided-1-repeat-3, UUID 15a1fcec-ae6f-453c-b05f-d0fdbe9f95d5.
+{
+  "session": "guided-1-repeat-3",
+  "id": "15a1fcec-ae6f-453c-b05f-d0fdbe9f95d5",
+  "tool_calls": 19,
+  "first_request_evolve": {
+    "injected": true,
+    "ids": [
+      "1",
+      "2"
+    ],
+    "revisions": [
+      1,
+      1
+    ],
+    "sources": [
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+    ],
+    "cached": false,
+    "fetchedAt": "2026-11-05T20:57:18.673644646Z"
+  }
+}
+Saved outputs: tasks/guided-1-repeat-3/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.

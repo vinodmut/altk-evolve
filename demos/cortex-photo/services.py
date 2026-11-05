@@ -87,7 +87,7 @@ def environment():
         EVOLVE_DATA_DIR=str(RUNTIME / "data"),
         EVOLVE_SQLITE_PATH=str(RUNTIME / "entities.sqlite.db"),
         EVOLVE_NAMESPACE_ID=SERVE_NAMESPACE,
-        EVOLVE_GUIDELINES_MODE="consistency",
+        EVOLVE_GUIDELINES_MODE=os.environ.get("DEMO_GUIDELINES_MODE", "consistency"),
         EVOLVE_INJECTION_MODE="retrieval",
         EVOLVE_EMBEDDING_PROVIDER="fastembed",
         EVOLVE_OTEL_ENABLED="false",
