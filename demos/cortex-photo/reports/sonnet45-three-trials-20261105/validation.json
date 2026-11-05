@@ -1,0 +1,12 @@
+{
+  "fresh_task_sessions": 6,
+  "requested_model_ids": [
+    "aws/claude-sonnet-4-5"
+  ],
+  "identical_prompts_and_photos": true,
+  "fixed_guidelines_and_retrieval": true,
+  "baseline_injection_absent": true,
+  "guided_first_request_injection_recorded": true,
+  "html_local_links_checked": 52,
+  "e2e_evidence_checks_passed": 3
+}

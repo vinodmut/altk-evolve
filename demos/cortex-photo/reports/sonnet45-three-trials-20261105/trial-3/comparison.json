@@ -1,0 +1,64 @@
+{
+  "verdict": "This pair improved numeric JSON correctness with reviewed Evolve guidelines injected.",
+  "reviewed_ids_injected": true,
+  "identical_prompts": true,
+  "baseline_uninjected": true,
+  "metrics": {
+    "baseline": {
+      "actual": "4.38",
+      "equivalent": 27,
+      "numeric_correct": false,
+      "tag_paths": {
+        "actual": [
+          "/FocalLength"
+        ],
+        "equivalent": [
+          "/FocalLengthIn35mmFilm"
+        ]
+      },
+      "error": null,
+      "tool_calls": 4,
+      "tool_results": 4,
+      "observed_tool_errors": 0,
+      "assistant_messages": 5,
+      "elapsed_seconds": 553.91,
+      "first_request_evolve": {}
+    },
+    "guided": {
+      "actual": 4.38,
+      "equivalent": 27,
+      "numeric_correct": true,
+      "tag_paths": {
+        "actual": [
+          "/0/FocalLength"
+        ],
+        "equivalent": [
+          "/0/FocalLengthIn35mmFormat"
+        ]
+      },
+      "error": null,
+      "tool_calls": 3,
+      "tool_results": 3,
+      "observed_tool_errors": 0,
+      "assistant_messages": 3,
+      "elapsed_seconds": 371.6,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:01dfd7cf-8d28-457d-81a3-9348111dcc82:28",
+          "cortex:01dfd7cf-8d28-457d-81a3-9348111dcc82:28"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-05T11:58:05.990633716Z"
+      }
+    }
+  }
+}

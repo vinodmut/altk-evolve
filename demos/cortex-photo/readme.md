@@ -8,6 +8,8 @@ The full step-by-step page is [walkthrough.html](walkthrough.html). Stay in this
 
 The [recorded Sonnet 4.5 comparison](reports/sonnet45-20261104/comparison.html) includes the actual guidelines and before/training/after trajectories. Both task and learner used Sonnet 4.5; that pair showed no numeric JSON correctness or tool-call improvement. Its [evidence and regeneration instructions](reports/sonnet45-20261104/readme.md) are committed alongside the report.
 
+The [three fresh Sonnet 4.5 pairs](reports/sonnet45-three-trials-20261105/summary.html) reuse those frozen guidelines. Numeric exports passed in 0/3 baseline attempts and 1/3 guided attempts; total tool calls were 9 → 10. [Pair 3](reports/sonnet45-three-trials-20261105/trial-3/comparison.html) improved correctness and used one fewer tool call, while the first two pairs still failed. The [export readme](reports/sonnet45-three-trials-20261105/readme.md) explains the evidence and offline regeneration.
+
 ## 1. Get the bundle in a separate temporary directory
 
 ```bash

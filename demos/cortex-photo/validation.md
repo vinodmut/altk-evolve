@@ -1,6 +1,6 @@
 # Validation of the Docker photo bundle
 
-The original GPT-4.1 validation and the Sonnet/GPT-4.1 follow-up are retained below. The final section records the matching Sonnet 4.5 experiment; the current local `results/comparison.html` describes that experiment. Earlier reports remain in the archived results directories.
+The original GPT-4.1 validation, Sonnet/GPT-4.1 follow-up, and matching Sonnet 4.5 experiment are retained below. The final section records three fresh Sonnet 4.5 pairs with frozen guidelines. Committed reports are linked from the relevant sections; original runtime results remain in ignored local directories.
 
 Validated on 2026-11-04 using an Apple Silicon Mac, Colima/Docker, and a gateway serving `Azure/gpt-4.1` through both API formats.
 
@@ -104,3 +104,23 @@ The guided first main request recorded `injected: true`, serving IDs `1` and `2`
 Final checks: **18 unit tests passed; 1 real-run E2E evidence test passed; scoped Ruff formatting/checking and HTML local-link checks passed.** The E2E check verifies the learning/injection loop against real artifacts and does not require improvement. Services were stopped after validation, preserving evidence. The public defaults now select the same Sonnet 4.6 for both roles and support a shared Anthropic API connection; direct Anthropic-hosted Sonnet 4.6 execution was not tested in this gateway experiment.
 
 The committed [matching Sonnet report](reports/sonnet45-20261104/comparison.html) includes all four generated candidates inline and the complete before/training/after trajectories. Selected source JSON files are copied byte for byte, with SHA-256 hashes in `reports/sonnet45-20261104/source-manifest.json`. The [report readme](reports/sonnet45-20261104/readme.md) explains offline regeneration and preserves the learning workaround source. Report packaging validation passed 19 unit tests and the E2E evidence check against the committed export; local links, source hashes, deterministic regeneration, and the Chromium layout were checked.
+
+## Three fresh Sonnet 4.5 pairs
+
+Ran six fresh interactive Claude Code sessions on 2026-11-04 through the same Docker Cortex/Evolve setup and gateway, using `aws/claude-sonnet-4-5` for all task requests. Reused the unchanged GPS recording and the two reviewed Sonnet-generated guidelines from the matching-model experiment. No trial supplied new learning or corrective coaching.
+
+| Pair | Baseline numeric JSON | Guided numeric JSON | Baseline tool calls | Guided tool calls |
+| --- | --- | --- | --- | --- |
+| 1 | Fail | Fail | 3 | 4 |
+| 2 | Fail | Fail | 2 | 3 |
+| 3 | Fail | Pass | 4 | 3 |
+
+Correct numeric exports increased from **0/3 to 1/3**. Total tool calls increased from **9 to 10**, and assistant messages decreased from **12 to 11**. In pair 3, the guided session used `exiftool -j -n sample.jpg > photo-result.json && cat photo-result.json`, saving numeric `4.38` and `27`. The other five attempts saved focal length as string `"4.38"`. One pair showed a correctness improvement and one fewer tool call; the first two pairs each used an extra guided call without fixing the value type. This is an inconsistent observed benefit, with no aggregate tool-call reduction. Ordinary model variation remains a possible explanation.
+
+The numeric evaluator accepts native EXIF keys inside wrappers, since the identical prompt did not require a top-level shape. It requires numeric `4.38` and numeric `27`, rejects strings and booleans, and records the discovered tag paths. Pair 1's baseline used an `exif_by_tag_name` wrapper. Elapsed time includes approvals and a terminal interruption and is excluded from efficiency comparisons.
+
+Verified six distinct new session UUIDs, identical baseline/guided prompts and photo hashes, the same requested Sonnet ID, unchanged promoted text and retrieval, no baseline injection, and both reviewed IDs (`1`, `2`), revisions (`1`), and GPS sources on all guided first main requests. Source GPS UUID: `01dfd7cf-8d28-457d-81a3-9348111dcc82`. This checks recorded plugin attribution; the final outbound payload was not independently inspected.
+
+The [aggregate report](reports/sonnet45-three-trials-20261105/summary.html) preserves all successes and failures, with links to all trajectories and pair reports. The [export readme](reports/sonnet45-three-trials-20261105/readme.md) explains offline regeneration and the archived interactive driver. `source-manifest.json` preserves evidence hashes and shared-file link targets. The original batch's validation recorded 52 resolved HTML links/anchors and three passing real-run E2E evidence checks. The invoice-PDF alternative is an unrun proposal. Services were stopped after the trials.
+
+Export checks on 2026-11-05: all three real-run E2E evidence checks passed against the committed-location trial directories; all 61 evidence hashes and shared links matched the original batch; all 52 HTML links/anchors resolved; offline regeneration preserved the reports and computed metrics exactly; scoped Ruff checks passed. Secret-scan findings were reviewed as nonsecret tool-call identifiers and file/metadata digests, with only those findings added to the existing audited baseline. No new model calls were made while packaging.

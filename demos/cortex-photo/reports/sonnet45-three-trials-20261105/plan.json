@@ -1,0 +1,662 @@
+{
+  "created_at": "2026-11-04T22:17:09.873340+00:00",
+  "pairs": 3,
+  "task_model": "aws/claude-sonnet-4-5",
+  "guideline_model": "aws/claude-sonnet-4-5",
+  "source_training_session": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+  "selected_candidates": [
+    {
+      "candidate_id": "1",
+      "id": "1",
+      "content": "When extracting EXIF GPS data for machine-readable output, use the `-n` (numeric) flag with exiftool to obtain signed decimal coordinates directly, rather than parsing human-readable DMS (degrees/minutes/seconds) strings. The `-n` flag automatically applies N/S/E/W reference signs and preserves full precision.",
+      "metadata": {
+        "status": "active",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+        "cortex_capture": {
+          "adapter_revision": 2,
+          "excluded_events": 18,
+          "subagent_seqs": [],
+          "turns": [
+            {
+              "seq": 7,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 9382,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 1541,
+                "completionTokens": 408,
+                "totalTokens": 1949,
+                "inputTokens": 10,
+                "cacheWriteTokens": 1531,
+                "outputTokens": 408,
+                "reasoningTokens": 206,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 10,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 3821,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2099,
+                "completionTokens": 150,
+                "totalTokens": 2249,
+                "inputTokens": 44,
+                "cacheReadTokens": 1531,
+                "cacheWriteTokens": 524,
+                "outputTokens": 150,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 12,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 11676,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2450,
+                "completionTokens": 672,
+                "totalTokens": 3122,
+                "inputTokens": 6,
+                "cacheReadTokens": 2055,
+                "cacheWriteTokens": 389,
+                "outputTokens": 672,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 14,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 13429,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 3347,
+                "completionTokens": 285,
+                "totalTokens": 3632,
+                "inputTokens": 5,
+                "cacheReadTokens": 2444,
+                "cacheWriteTokens": 898,
+                "outputTokens": 285,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 17,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 6064,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 3547,
+                "completionTokens": 335,
+                "totalTokens": 3882,
+                "inputTokens": 10,
+                "cacheReadTokens": 1531,
+                "cacheWriteTokens": 2006,
+                "outputTokens": 335,
+                "reasoningTokens": 166,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 20,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 4484,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 4007,
+                "completionTokens": 268,
+                "totalTokens": 4275,
+                "inputTokens": 6,
+                "cacheReadTokens": 3537,
+                "cacheWriteTokens": 464,
+                "outputTokens": 268,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 22,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 2519,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 4323,
+                "completionTokens": 78,
+                "totalTokens": 4401,
+                "inputTokens": 5,
+                "cacheReadTokens": 4001,
+                "cacheWriteTokens": 317,
+                "outputTokens": 78,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 24,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 22616,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 4449,
+                "completionTokens": 1090,
+                "totalTokens": 5539,
+                "inputTokens": 5,
+                "cacheReadTokens": 4318,
+                "cacheWriteTokens": 126,
+                "outputTokens": 1090,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 26,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 5050,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 5833,
+                "completionTokens": 292,
+                "totalTokens": 6125,
+                "inputTokens": 6,
+                "cacheReadTokens": 4444,
+                "cacheWriteTokens": 1383,
+                "outputTokens": 292,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 28,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 9729,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 6313,
+                "completionTokens": 428,
+                "totalTokens": 6741,
+                "inputTokens": 6,
+                "cacheReadTokens": 5827,
+                "cacheWriteTokens": 480,
+                "outputTokens": 428,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            }
+          ],
+          "limits": [
+            "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+            "Subagents are separate supporting observations; tool-less side calls are excluded.",
+            "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+          ]
+        },
+        "source_task_id": "cortex:01dfd7cf-8d28-457d-81a3-9348111dcc82:28",
+        "task_description": "Where was sample.jpg taken? Use embedded EXIF metadata and local tools.\nShow the raw GPS latitude/longitude values and their N/S/E/W references,\nthen convert them to signed decimal coordinates. State what the metadata\nsupports about the location. If you use Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nDo not install packages. Show the successful extraction command so the\nprocedure can be repeated with other photos.",
+        "support": 1,
+        "rationale": "The trajectory demonstrates that exiftool without `-n` outputs human-readable strings like '51 deg 29' 36.99\" N' which require manual parsing and conversion. Using `-n` eliminates this conversion step, prevents sign-application errors, and preserves the stored precision. The verification showed the numeric output matched manual DMS conversion within floating-point precision limits, confirming this approach is both accurate and efficient.",
+        "category": "strategy",
+        "trigger": "When extracting GPS coordinates from EXIF metadata for downstream processing or numeric computation, especially when precision preservation is required",
+        "implementation_steps": [
+          "Use `exiftool -n` flag to request numeric/unformatted output",
+          "Combine with `-json` for structured machine-readable format: `exiftool -n -json -GPSLatitude -GPSLongitude <file>`",
+          "Verify that latitude values are positive for North/negative for South, and longitude values are positive for East/negative for West"
+        ],
+        "generation_method": "consistency-fast",
+        "processing": {
+          "operation_id": "dd845f1c-c657-4be9-9293-097db8cfd6b6",
+          "profile_id": null,
+          "revision": null,
+          "digest": "3e9b08e3597a7f7cb15b405adcf39a57f90a1424f2ae52362cee01b92b63f9af",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "aws/claude-sonnet-4-5",
+              "custom_llm_provider": "anthropic"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "anthropic",
+                  "guidelines_mode": "consistency",
+                  "guidelines_model": "aws/claude-sonnet-4-5",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+            "batch_id": "7-28",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+            "task_id": "cortex:01dfd7cf-8d28-457d-81a3-9348111dcc82:28",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-04T21:57:11.284544+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1,
+        "candidate_id": "1",
+        "reviewed_at": "2026-11-04T21:57:54.645337+00:00"
+      }
+    },
+    {
+      "candidate_id": "2",
+      "id": "2",
+      "content": "When a task requires both human-readable presentation and machine-readable export of the same data, perform separate extractions optimized for each purpose rather than attempting to parse human-readable output for machine processing.",
+      "metadata": {
+        "status": "active",
+        "creation_mode": "auto-cortex",
+        "agent_id": "claude-code",
+        "session_id": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+        "cortex_capture": {
+          "adapter_revision": 2,
+          "excluded_events": 18,
+          "subagent_seqs": [],
+          "turns": [
+            {
+              "seq": 7,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 9382,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 1541,
+                "completionTokens": 408,
+                "totalTokens": 1949,
+                "inputTokens": 10,
+                "cacheWriteTokens": 1531,
+                "outputTokens": 408,
+                "reasoningTokens": 206,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 10,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 3821,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2099,
+                "completionTokens": 150,
+                "totalTokens": 2249,
+                "inputTokens": 44,
+                "cacheReadTokens": 1531,
+                "cacheWriteTokens": 524,
+                "outputTokens": 150,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 12,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 11676,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 2450,
+                "completionTokens": 672,
+                "totalTokens": 3122,
+                "inputTokens": 6,
+                "cacheReadTokens": 2055,
+                "cacheWriteTokens": 389,
+                "outputTokens": 672,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 14,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 13429,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 3347,
+                "completionTokens": 285,
+                "totalTokens": 3632,
+                "inputTokens": 5,
+                "cacheReadTokens": 2444,
+                "cacheWriteTokens": 898,
+                "outputTokens": 285,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 17,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 6064,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 3547,
+                "completionTokens": 335,
+                "totalTokens": 3882,
+                "inputTokens": 10,
+                "cacheReadTokens": 1531,
+                "cacheWriteTokens": 2006,
+                "outputTokens": 335,
+                "reasoningTokens": 166,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 20,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 4484,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 4007,
+                "completionTokens": 268,
+                "totalTokens": 4275,
+                "inputTokens": 6,
+                "cacheReadTokens": 3537,
+                "cacheWriteTokens": 464,
+                "outputTokens": 268,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 22,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 2519,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 4323,
+                "completionTokens": 78,
+                "totalTokens": 4401,
+                "inputTokens": 5,
+                "cacheReadTokens": 4001,
+                "cacheWriteTokens": 317,
+                "outputTokens": 78,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 24,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 22616,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 4449,
+                "completionTokens": 1090,
+                "totalTokens": 5539,
+                "inputTokens": 5,
+                "cacheReadTokens": 4318,
+                "cacheWriteTokens": 126,
+                "outputTokens": 1090,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 26,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 5050,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "tool_use",
+                "promptTokens": 5833,
+                "completionTokens": 292,
+                "totalTokens": 6125,
+                "inputTokens": 6,
+                "cacheReadTokens": 4444,
+                "cacheWriteTokens": 1383,
+                "outputTokens": 292,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            },
+            {
+              "seq": 28,
+              "phase": "response",
+              "statusCode": 200,
+              "durationMs": 9729,
+              "inference": {
+                "model": "aws/claude-sonnet-4-5",
+                "maxTokens": 32000,
+                "stream": true,
+                "agentRole": "main",
+                "streamedResponse": true,
+                "finishReason": "end_turn",
+                "promptTokens": 6313,
+                "completionTokens": 428,
+                "totalTokens": 6741,
+                "inputTokens": 6,
+                "cacheReadTokens": 5827,
+                "cacheWriteTokens": 480,
+                "outputTokens": 428,
+                "presentKinds": 31,
+                "isAction": true
+              }
+            }
+          ],
+          "limits": [
+            "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+            "Subagents are separate supporting observations; tool-less side calls are excluded.",
+            "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+          ]
+        },
+        "source_task_id": "cortex:01dfd7cf-8d28-457d-81a3-9348111dcc82:28",
+        "task_description": "Where was sample.jpg taken? Use embedded EXIF metadata and local tools.\nShow the raw GPS latitude/longitude values and their N/S/E/W references,\nthen convert them to signed decimal coordinates. State what the metadata\nsupports about the location. If you use Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nDo not install packages. Show the successful extraction command so the\nprocedure can be repeated with other photos.",
+        "support": 1,
+        "rationale": "The trajectory first extracted GPS data without `-n` for human display (showing DMS format with cardinal directions), then performed a second extraction with `-n -json` for machine-readable export. This two-pass approach avoided the complexity and error risk of parsing formatted strings. The human-readable output clearly showed '51\u00b0 29' 36.99\" N' while the machine output provided '51.4936083333333', serving different consumption needs effectively.",
+        "category": "strategy",
+        "trigger": "When a task explicitly requests both human-readable display (with units, formatting, or cardinal directions) and machine-readable numeric output of metadata or structured data",
+        "implementation_steps": [
+          "Identify which outputs are for human consumption versus machine processing",
+          "Use appropriate formatting flags for each purpose (e.g., default formatted output for humans, `-n` numeric output for machines)",
+          "Extract each format separately using the tool's native capabilities rather than converting between formats"
+        ],
+        "generation_method": "consistency-fast",
+        "processing": {
+          "operation_id": "dd845f1c-c657-4be9-9293-097db8cfd6b6",
+          "profile_id": null,
+          "revision": null,
+          "digest": "3e9b08e3597a7f7cb15b405adcf39a57f90a1424f2ae52362cee01b92b63f9af",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "aws/claude-sonnet-4-5",
+              "custom_llm_provider": "anthropic"
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": "anthropic",
+                  "guidelines_mode": "consistency",
+                  "guidelines_model": "aws/claude-sonnet-4-5",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+            "batch_id": "7-28",
+            "revision": "2",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "01dfd7cf-8d28-457d-81a3-9348111dcc82",
+            "task_id": "cortex:01dfd7cf-8d28-457d-81a3-9348111dcc82:28",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-04T21:57:11.284544+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1,
+        "candidate_id": "2",
+        "reviewed_at": "2026-11-04T21:57:54.661883+00:00"
+      }
+    }
+  ],
+  "method": "Three fresh baseline/guided pairs. Identical focal prompts, photo, tools and model. Fixed reviewed guidelines; no retraining, editing or corrective coaching. Baseline then guided in each pair.",
+  "checks": [
+    "numeric focal JSON correctness",
+    "tool calls",
+    "structured errors",
+    "prompt and photo equality",
+    "baseline uninjected and guided reviewed IDs injected"
+  ],
+  "numeric_evaluator": "Locate exact native EXIF focal tag names in final JSON, including inside harmless wrappers. Require all reported FocalLength values to be numeric 4.38 and all reported 35mm equivalent values numeric 27. Do not impose an unstated top-level JSON shape requirement."
+}

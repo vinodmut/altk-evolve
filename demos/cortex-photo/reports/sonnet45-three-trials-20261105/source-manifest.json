@@ -1,0 +1,312 @@
+{
+  "source_batch": "three-trials-20261104T221709Z",
+  "records": [
+    {
+      "file": "plan.json",
+      "source_sha256": "264856b6883f3af68d853934c8aad272b65d6235aaf6eb69ba097049fde729f8",
+      "linked_to": null
+    },
+    {
+      "file": "summary.json",
+      "source_sha256": "aa6896208ba858bbea6e95fbe09ad8e4b960cbf624ec919904f306e736750178",
+      "linked_to": null
+    },
+    {
+      "file": "summary.html",
+      "source_sha256": "f676758e7469c1fe6a5388e2663ed4cd63362c61b74026fa54b89a259d6a7e88",
+      "linked_to": null
+    },
+    {
+      "file": "validation.json",
+      "source_sha256": "0321b3c871251df9ee67fe683acb2264a0bb844e433397a6649389dee7816a62",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/state.json",
+      "source_sha256": "cd6818883cade6a2b83593e6cf29324965d5c5f9e53f0662bd627c444da73f8b",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/comparison.json",
+      "source_sha256": "b61820ed8fed49378ea4f81decb94c8a8de7053046133e88c83f73e56649eb43",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/comparison.html",
+      "source_sha256": "75d23b51526a55f25d3038780b30af6ef391f42e823d131fda5a04b9a15c8bc8",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/photo-retrieval.json",
+      "source_sha256": "242394a30c7c08e86a23548cdfe11de6da18882ddae19c749772956844ee9192",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/baseline-trajectory.json",
+      "source_sha256": "e0de44a52e085f5b970406f91ca72196097a1c8a585b1d58fdc741eb5d395c3e",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/baseline-cortex-session.json",
+      "source_sha256": "847e54b8d8d3c88c74fe11d5df86609afe4713dd315f16408d42d12435afbdd8",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/guided-trajectory.json",
+      "source_sha256": "0c14a28c426ad721870d765a482237515cd5e3a3ec52b36a3e3dae2e157b197f",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/guided-cortex-session.json",
+      "source_sha256": "81cf6398d02c072d2eaf3c1586dda20fc42a73655ae56a74d06171121c69c9b8",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/training-trajectory.json",
+      "source_sha256": "edd63d38ecffd3cf54823581f37999b21e0acbcb32be3a0287e0e903f26c4ad6",
+      "linked_to": "../../sonnet45-20261104/training-trajectory.json"
+    },
+    {
+      "file": "trial-1/training-cortex-session.json",
+      "source_sha256": "e5706d3f2d180a71db21ef8c889660c172f1a5ab7f0a5a5feb3401d454e1a3da",
+      "linked_to": "../../sonnet45-20261104/training-cortex-session.json"
+    },
+    {
+      "file": "trial-1/learning.json",
+      "source_sha256": "b53673a273d20c9e1bda07c1104047fb46443d03cbbfe9a9c8a0f77d91e27bfe",
+      "linked_to": "../../sonnet45-20261104/learning.json"
+    },
+    {
+      "file": "trial-1/photo-candidates.json",
+      "source_sha256": "b428af88c44314203a374660d0b93db7fbbcf2d3e75f40e6c149605455ead025",
+      "linked_to": "../../sonnet45-20261104/photo-candidates.json"
+    },
+    {
+      "file": "trial-1/photo-promoted.json",
+      "source_sha256": "87c0843123bd234bbf3e66ff9146324bf7d53d54589fcd2c256b3a2a654cf658",
+      "linked_to": "../../sonnet45-20261104/photo-promoted.json"
+    },
+    {
+      "file": "trial-1/photos/baseline/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-1/photos/guided/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-1/photos/training/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-1/photos/baseline/photo-result.json",
+      "source_sha256": "e1f8165364e5604552a82952e9059b5c801a8aa4305334606fdf45721db2b1a0",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/photos/guided/photo-result.json",
+      "source_sha256": "4e79156d65b55b54e4e8b5eb496713bfe45d84a9ad66f24956715524324d945d",
+      "linked_to": null
+    },
+    {
+      "file": "trial-1/photos/training/gps-result.json",
+      "source_sha256": "987e2e0c07aae2dbb1269128822bfd4b9833e4ee62a350008e72f25e1087c616",
+      "linked_to": "../../../../sonnet45-20261104/photos/training/gps-result.json"
+    },
+    {
+      "file": "trial-2/state.json",
+      "source_sha256": "08991eaba2618f5f1d98b42a221830c350acb2fb86f05967b4ceced5fd3dd725",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/comparison.json",
+      "source_sha256": "e9d617d7a74e58af32495e781b48807936b80e7eaa71904f576445d2a5f3b7a9",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/comparison.html",
+      "source_sha256": "b22d43536cbc1abed2d7eace852bc77a81f03a1a75841f72de63e738a181c897",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/photo-retrieval.json",
+      "source_sha256": "242394a30c7c08e86a23548cdfe11de6da18882ddae19c749772956844ee9192",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/baseline-trajectory.json",
+      "source_sha256": "e635f7b529d78d4f94449c1e367f3153ba2d18c34e771dd0f54db83257920c2d",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/baseline-cortex-session.json",
+      "source_sha256": "f89f10eae680b9f0bb68ecc1fd5108e617e1be6758a77b71ea407b0924a7aeb1",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/guided-trajectory.json",
+      "source_sha256": "05862e8e908c280a58b7ce38db2c752677d85b7186ffd0d5c9bbd54313495182",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/guided-cortex-session.json",
+      "source_sha256": "a7f014d7e23f5ca3b783454c3199a1b1a33148ea7648b8992ea152b3d64e08e2",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/training-trajectory.json",
+      "source_sha256": "edd63d38ecffd3cf54823581f37999b21e0acbcb32be3a0287e0e903f26c4ad6",
+      "linked_to": "../../sonnet45-20261104/training-trajectory.json"
+    },
+    {
+      "file": "trial-2/training-cortex-session.json",
+      "source_sha256": "e5706d3f2d180a71db21ef8c889660c172f1a5ab7f0a5a5feb3401d454e1a3da",
+      "linked_to": "../../sonnet45-20261104/training-cortex-session.json"
+    },
+    {
+      "file": "trial-2/learning.json",
+      "source_sha256": "b53673a273d20c9e1bda07c1104047fb46443d03cbbfe9a9c8a0f77d91e27bfe",
+      "linked_to": "../../sonnet45-20261104/learning.json"
+    },
+    {
+      "file": "trial-2/photo-candidates.json",
+      "source_sha256": "b428af88c44314203a374660d0b93db7fbbcf2d3e75f40e6c149605455ead025",
+      "linked_to": "../../sonnet45-20261104/photo-candidates.json"
+    },
+    {
+      "file": "trial-2/photo-promoted.json",
+      "source_sha256": "87c0843123bd234bbf3e66ff9146324bf7d53d54589fcd2c256b3a2a654cf658",
+      "linked_to": "../../sonnet45-20261104/photo-promoted.json"
+    },
+    {
+      "file": "trial-2/photos/baseline/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-2/photos/guided/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-2/photos/training/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-2/photos/baseline/photo-result.json",
+      "source_sha256": "4e79156d65b55b54e4e8b5eb496713bfe45d84a9ad66f24956715524324d945d",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/photos/guided/photo-result.json",
+      "source_sha256": "4e79156d65b55b54e4e8b5eb496713bfe45d84a9ad66f24956715524324d945d",
+      "linked_to": null
+    },
+    {
+      "file": "trial-2/photos/training/gps-result.json",
+      "source_sha256": "987e2e0c07aae2dbb1269128822bfd4b9833e4ee62a350008e72f25e1087c616",
+      "linked_to": "../../../../sonnet45-20261104/photos/training/gps-result.json"
+    },
+    {
+      "file": "trial-3/state.json",
+      "source_sha256": "905d1184f445d3033e6afacdffafb514bec3dd6dfe8dd535a61271da43992c4c",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/comparison.json",
+      "source_sha256": "e83d250164b1edc84945c2d42cf34fe30a1fe2fce80a5c5442b627e3e8610a13",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/comparison.html",
+      "source_sha256": "d8307bf3baa417d8cb00126d31f63a4872559cd9411079a6a0118c784423278f",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/photo-retrieval.json",
+      "source_sha256": "242394a30c7c08e86a23548cdfe11de6da18882ddae19c749772956844ee9192",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/baseline-trajectory.json",
+      "source_sha256": "7265acc5a999a266b4f2431ff94cd94fac8a7a527f9049ec1064075787becf10",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/baseline-cortex-session.json",
+      "source_sha256": "d32801cdd1cd111612f45408410cbe82d8d751c95175d0eb5ec7dc41f92b8b31",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/guided-trajectory.json",
+      "source_sha256": "efea746fbe76f067328d902bcba8108e6c715fd48cb8cdca8b8ff2b8c1b0e7a4",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/guided-cortex-session.json",
+      "source_sha256": "2974fb189600ff1285e76477fcfe6efe874565bfaafece8639a215752043d8c0",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/training-trajectory.json",
+      "source_sha256": "edd63d38ecffd3cf54823581f37999b21e0acbcb32be3a0287e0e903f26c4ad6",
+      "linked_to": "../../sonnet45-20261104/training-trajectory.json"
+    },
+    {
+      "file": "trial-3/training-cortex-session.json",
+      "source_sha256": "e5706d3f2d180a71db21ef8c889660c172f1a5ab7f0a5a5feb3401d454e1a3da",
+      "linked_to": "../../sonnet45-20261104/training-cortex-session.json"
+    },
+    {
+      "file": "trial-3/learning.json",
+      "source_sha256": "b53673a273d20c9e1bda07c1104047fb46443d03cbbfe9a9c8a0f77d91e27bfe",
+      "linked_to": "../../sonnet45-20261104/learning.json"
+    },
+    {
+      "file": "trial-3/photo-candidates.json",
+      "source_sha256": "b428af88c44314203a374660d0b93db7fbbcf2d3e75f40e6c149605455ead025",
+      "linked_to": "../../sonnet45-20261104/photo-candidates.json"
+    },
+    {
+      "file": "trial-3/photo-promoted.json",
+      "source_sha256": "87c0843123bd234bbf3e66ff9146324bf7d53d54589fcd2c256b3a2a654cf658",
+      "linked_to": "../../sonnet45-20261104/photo-promoted.json"
+    },
+    {
+      "file": "trial-3/photos/baseline/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-3/photos/guided/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-3/photos/training/sample.jpg",
+      "source_sha256": "15f46ed3db89d27635c4a1f1c85616bdcac2ae96d3245e53426ee1e7c55d6353",
+      "linked_to": "../../../../../sample.jpg"
+    },
+    {
+      "file": "trial-3/photos/baseline/photo-result.json",
+      "source_sha256": "4e79156d65b55b54e4e8b5eb496713bfe45d84a9ad66f24956715524324d945d",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/photos/guided/photo-result.json",
+      "source_sha256": "2c4041b9f0e38311c69fbbdefee932bfdf50645a7746aedcb20120ddc1202ddf",
+      "linked_to": null
+    },
+    {
+      "file": "trial-3/photos/training/gps-result.json",
+      "source_sha256": "987e2e0c07aae2dbb1269128822bfd4b9833e4ee62a350008e72f25e1087c616",
+      "linked_to": "../../../../sonnet45-20261104/photos/training/gps-result.json"
+    }
+  ],
+  "excluded": "Private .env, runtime credentials, CA files, Claude configurations and unrelated archives",
+  "shared_evidence": "The unchanged GPS training/generation/promotion evidence links to the previous committed Sonnet report. All three photos link to the existing byte-identical sample."
+}
