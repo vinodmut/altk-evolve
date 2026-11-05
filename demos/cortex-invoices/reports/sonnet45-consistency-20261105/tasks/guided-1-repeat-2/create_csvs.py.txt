@@ -1,0 +1,83 @@
+import csv
+from decimal import Decimal
+
+# Manually extracted data from PDFs (including image-based page 2 of 002093)
+items = [
+    # Invoice 002071
+    {'invoice_id': '002071', 'vendor': 'Delta Studio Supply', 'description': 'Archive cartons, reinforced - batch 2', 'quantity': '9', 'unit_price': '12.45', 'line_amount': '112.05'},
+    {'invoice_id': '002071', 'vendor': 'Delta Studio Supply', 'description': 'Labels "Handle with care", roll 2', 'quantity': '3', 'unit_price': '10.80', 'line_amount': '32.40'},
+    {'invoice_id': '002071', 'vendor': 'Delta Studio Supply', 'description': 'Cut-to-length protective liner, grade 2', 'quantity': '2.5', 'unit_price': '14.76', 'line_amount': '36.90'},
+    {'invoice_id': '002071', 'vendor': 'Delta Studio Supply', 'description': 'Returned labels credit, order 2', 'quantity': '1', 'unit_price': '-9.80', 'line_amount': '-9.80'},
+    # Invoice 002082
+    {'invoice_id': '002082', 'vendor': 'Elm Fabrication Ltd', 'description': 'Bench assembly, series 2', 'quantity': '2', 'unit_price': '1262.60', 'line_amount': '2525.20'},
+    {'invoice_id': '002082', 'vendor': 'Elm Fabrication Ltd', 'description': 'Alignment service, station 2', 'quantity': '1.5', 'unit_price': '86.40', 'line_amount': '129.60'},
+    {'invoice_id': '002082', 'vendor': 'Elm Fabrication Ltd', 'description': 'Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate', 'quantity': '3', 'unit_price': '49.75', 'line_amount': '149.25'},
+    {'invoice_id': '002082', 'vendor': 'Elm Fabrication Ltd', 'description': 'Precision shims, pack 2', 'quantity': '7', 'unit_price': '4.375', 'line_amount': '30.63'},
+    {'invoice_id': '002082', 'vendor': 'Elm Fabrication Ltd', 'description': 'Freight and handling, zone 2', 'quantity': '1', 'unit_price': '42.50', 'line_amount': '42.50'},
+    {'invoice_id': '002082', 'vendor': 'Elm Fabrication Ltd', 'description': 'Volume discount, agreement 2', 'quantity': '1', 'unit_price': '-36.00', 'line_amount': '-36.00'},
+    # Invoice 002093
+    {'invoice_id': '002093', 'vendor': 'Firth Survey Services', 'description': 'Site survey, area 2', 'quantity': '1', 'unit_price': '448.50', 'line_amount': '448.50'},
+    {'invoice_id': '002093', 'vendor': 'Firth Survey Services', 'description': 'Travel time, route 2', 'quantity': '2.25', 'unit_price': '64.80', 'line_amount': '145.80'},
+    {'invoice_id': '002093', 'vendor': 'Firth Survey Services', 'description': 'Calibration standard, set 2', 'quantity': '2', 'unit_price': '37.25', 'line_amount': '74.50'},
+    {'invoice_id': '002093', 'vendor': 'Firth Survey Services', 'description': 'Additional sensor mounts, revised scope 2', 'quantity': '4', 'unit_price': '18.95', 'line_amount': '75.80'},
+    {'invoice_id': '002093', 'vendor': 'Firth Survey Services', 'description': 'Cable assemblies, shielded, length 2 m', 'quantity': '5', 'unit_price': '11.40', 'line_amount': '57.00'},
+    {'invoice_id': '002093', 'vendor': 'Firth Survey Services', 'description': 'Previously billed visit credit, ticket 2', 'quantity': '1', 'unit_price': '-26.00', 'line_amount': '-26.00'},
+]
+
+# Invoice totals
+invoices = {
+    '002071': {'subtotal': Decimal('171.55'), 'tax': Decimal('22.17'), 'total': Decimal('193.72')},
+    '002082': {'subtotal': Decimal('2841.18'), 'tax': Decimal('154.28'), 'total': Decimal('2995.46')},
+    '002093': {'subtotal': Decimal('775.60'), 'tax': Decimal('90.64'), 'total': Decimal('866.26')},
+}
+
+# Write items.csv
+with open('items.csv', 'w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+    writer.writeheader()
+    for item in items:
+        writer.writerow(item)
+
+print(f"Wrote {len(items)} items to items.csv")
+
+# Calculate reconciliation
+reconciliation = []
+for invoice_id in sorted(invoices.keys()):
+    invoice_items = [item for item in items if item['invoice_id'] == invoice_id]
+    computed_subtotal = sum(Decimal(item['line_amount']) for item in invoice_items)
+    tax = invoices[invoice_id]['tax']
+    printed_total = invoices[invoice_id]['total']
+    computed_total = computed_subtotal + tax
+    difference = computed_total - printed_total
+    status = 'matched' if difference == 0 else 'discrepancy'
+    
+    reconciliation.append({
+        'invoice_id': invoice_id,
+        'subtotal': computed_subtotal,
+        'tax': tax,
+        'printed_total': printed_total,
+        'computed_total': computed_total,
+        'difference': difference,
+        'status': status
+    })
+    
+    if status == 'discrepancy':
+        print(f"WARNING: Discrepancy in {invoice_id}: difference = {difference}")
+
+# Write reconciliation.csv
+with open('reconciliation.csv', 'w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+    writer.writeheader()
+    for rec in reconciliation:
+        writer.writerow(rec)
+
+print(f"Wrote {len(reconciliation)} reconciliation records to reconciliation.csv")
+
+# Summary
+discrepancies = [r for r in reconciliation if r['status'] == 'discrepancy']
+if discrepancies:
+    print(f"\n{len(discrepancies)} DISCREPANCY(IES) FOUND:")
+    for d in discrepancies:
+        print(f"  Invoice {d['invoice_id']}: difference = {d['difference']}")
+else:
+    print("\nAll invoices reconciled successfully!")

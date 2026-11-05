@@ -8,6 +8,8 @@ The task is printed in [prompt.txt](prompt.txt). It asks for `items.csv` and `re
 
 The [recorded Sonnet 4.5 report](reports/sonnet45-20261105/summary.html) includes the original three pairs and a same-input follow-up. The original pairs all passed, with 52 baseline tool calls versus 53 guided calls; they did not show an overall improvement. Two further batch pairs on identical PDFs used 36 and 68 baseline calls versus 12 and 16 guided calls. The 68-call baseline lost a description continuation; both guided runs passed. This is a small observed benefit with substantial baseline variation. The report records the interactive-to-batch switch and separates comparisons with matching harnesses. The commands below use batch mode consistently for new runs.
 
+The [accurate-consistency follow-up](reports/sonnet45-consistency-20261105/summary.html) reused the original training and ran three new same-input batch pairs with four reviewed guides. Every packet passed. Baseline calls were 17, 17 and 16; guided calls were 16, 39 and 17. Both medians were 17, while range width increased from 1 to 23. This set did not show reduced variation or fewer calls. The report preserves the generated candidates, review decision, resampling evidence and all six trajectories.
+
 ## 1. Get the bundle and configure both model connections
 
 ```bash
@@ -53,6 +55,8 @@ The evaluator prints reference-based feedback and saves it to `results/training-
 
 Learning processes only the training UUID. Expect full generated guideline text and the source session ID; complete provenance is saved in invoice-candidates.json. The command uses Evolve's existing JSON generation with local Pydantic validation, which also works with the gateway used in the recorded experiment. Native response-schema generation was incompatible with that gateway. The flag changes no library source; omit it only if you want to test native schema support on your endpoint.
 
+The default is Evolve's **fast consistency** method. To resample recorded decisions and compute uncertainty instead, use `./demo learn --json-output --consistency-method accurate`. Accurate generation defaults to five samples for each of the first 15 replayable steps, temperature 0.5, and a threshold of 0.15 for marking high uncertainty. It can make up to 75 sampling completions plus guideline-generation calls. Analysis artifacts are saved under `results/analysis/`; generation is skipped if every renderable decision has zero or undefined uncertainty. Cortex's converted recording omits PDF images and hidden reasoning, so visual decisions cannot be replayed with complete fidelity.
+
 Review the candidates. Select reusable, evidenced procedures; leave invoice-specific answers, invented failures, and unjustified advice unpromoted. Then run:
 
 ```bash
@@ -94,8 +98,35 @@ Repeat numbers preserve the earlier UUIDs, recordings and outputs. All three rep
 
 Open `results/summary.html` in your host browser. It includes the architecture, task, all generated guidelines, training feedback, before/after trajectories, exact CSV outputs, reference-based checks, tool calls, harness modes, and injection attribution. It reports ties and regressions as well as improvements. Correctness is the primary measure; fewer tool calls are useful when correctness is preserved. Terminal interaction and harness changes make elapsed time unsuitable as a speed comparison.
 
-Raw Cortex events, converted trajectories, and outputs are saved beside the report. `.env` and `results/runtime/` are private and ignored; runtime includes credentials/configuration and CA material. `./demo capture baseline-1` can recover evidence after a terminal interruption. A completed arm cannot overwrite its earlier evidence. For a new experiment, stop services and rename `results` before setup.
+Raw Cortex events, converted trajectories, and outputs are saved beside the report. `.env` and `results/runtime/` are private and ignored; runtime includes credentials/configuration and CA material. `./demo capture baseline-1` can recover evidence after a terminal interruption. A completed arm cannot overwrite its earlier evidence. For a new experiment, stop services and choose a fresh `DEMO_RESULTS_DIR` before setup.
 
 To use Claude Code interactively, omit `--batch` consistently from both arms. Accept the folder trust prompt, approve local tools, and enter `/exit` after the answer. For interactive training feedback, paste `results/training-feedback.txt` into `./demo resume training`. If an evaluation session is interrupted, `./demo resume baseline 2 --batch` resumes that UUID with only a neutral request to finish the original task; the report flags a changed harness. Completed evaluation sessions and learned training cannot be resumed by the driver.
 
 Fixture maintenance is optional and requires uv: `uv run --project demos/cortex-invoices python demos/cortex-invoices/build_fixtures.py` from the repository root. It regenerates PDFs from the author-side catalog and writes reference data and SHA-256 hashes. Normal walkthrough users use the bundled PDFs. The Docker task environment uses the shared locked runtime; this directory's `pyproject.toml` and `uv.lock` are only for fixture generation.
+
+## Optional: isolate an accurate-consistency comparison
+
+Run these from `demos/cortex-invoices`, after configuring `.env` with `aws/claude-sonnet-4-5` for both models on an endpoint that serves that model ID. The bundled training snapshot used that deployment; model equality is checked before reuse.
+
+```bash
+export DEMO_RESULTS_DIR="$PWD/results-consistency-manual"
+export DEMO_SERVE_NAMESPACE=invoice-consistency-reviewed
+export DEMO_LEARN_NAMESPACE=invoice-consistency-candidates
+export DEMO_PROCESSING_PROFILE=invoice-consistency-demo
+./demo setup
+./demo reuse-training
+./demo learn --json-output --consistency-method accurate
+./demo candidates
+```
+
+`reuse-training` runs offline in the separate evaluator container. It copies only the bundled training recording, feedback and evaluation, records their SHA-256 hashes, and preserves the original UUID. It does not import previous evaluation sessions, generated guidelines, or runtime storage. The copied training is not recaptured from the new Cortex instance. To use another model, run fresh training and feedback instead of `reuse-training`.
+
+Review the generated candidates before evaluating. Use your chosen IDs with `./demo promote ID1 ID2 --batch`; no stdin is needed. If the uncertainty gate produces no candidates, there is no guided comparison to run. Once the selection is promoted, run:
+
+```bash
+./demo repeat-trials
+./demo consistency-report
+./demo stop
+```
+
+`repeat-trials` registers three pairs on identical trial-1 PDFs before starting any evaluation task. It runs baseline/guided, guided/baseline, then baseline/guided with batch mode throughout. It checks the frozen guide hash before each run and never relearns from evaluation. Expect six fresh UUIDs, then `trial-run.json` with `status: complete`. Read `results-consistency-manual/summary.html` for final correctness, call counts, median, range and sample standard deviation, as well as all guidelines, analyzer artifacts and before/after trajectories. These are three exploratory observations on one packet, not a broad reliability estimate.

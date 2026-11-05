@@ -1,0 +1,208 @@
+import csv
+import re
+import subprocess
+from decimal import Decimal
+from pathlib import Path
+
+def parse_amount(amount_str):
+    """Parse amount string, handling parentheses for credits"""
+    amount_str = amount_str.strip()
+    is_negative = amount_str.startswith('(') and amount_str.endswith(')')
+    if is_negative:
+        amount_str = amount_str[1:-1]
+    # Remove commas
+    amount_str = amount_str.replace(',', '')
+    try:
+        value = Decimal(amount_str)
+        return -value if is_negative else value
+    except:
+        return Decimal('0')
+
+def extract_text_from_pdf(pdf_path):
+    """Extract text from PDF using pdftotext - try to get all pages"""
+    result = subprocess.run(['pdftotext', '-layout', str(pdf_path), '-'], 
+                          capture_output=True, text=True)
+    text = result.stdout
+    
+    # If the PDF seems incomplete (no totals), try extracting each page separately
+    if 'Subtotal' not in text or 'Total due' not in text:
+        # Get number of pages
+        info_result = subprocess.run(['pdfinfo', str(pdf_path)], 
+                                   capture_output=True, text=True)
+        pages_match = re.search(r'Pages:\s+(\d+)', info_result.stdout)
+        if pages_match:
+            num_pages = int(pages_match.group(1))
+            all_text = []
+            for page_num in range(1, num_pages + 1):
+                page_result = subprocess.run(['pdftotext', '-layout', '-f', str(page_num), '-l', str(page_num), str(pdf_path), '-'], 
+                                           capture_output=True, text=True)
+                all_text.append(page_result.stdout)
+            text = '\n'.join(all_text)
+    
+    return text
+
+def extract_invoice_data(pdf_path):
+    """Extract invoice line items and totals from a PDF"""
+    invoice_id = pdf_path.stem
+    
+    # Extract text from PDF
+    all_text = extract_text_from_pdf(pdf_path)
+    
+    # Extract vendor name (first line)
+    lines = all_text.split('\n')
+    vendor = lines[0].strip() if lines else 'Unknown'
+    
+    # Extract subtotal, tax, and total
+    subtotal_match = re.search(r'Subtotal\s+([\d,]+\.?\d*)', all_text)
+    tax_match = re.search(r'Tax\s+([\d,]+\.?\d*)', all_text)
+    total_match = re.search(r'Total due\s+([\d,]+\.?\d*)', all_text)
+    
+    subtotal = parse_amount(subtotal_match.group(1)) if subtotal_match else Decimal('0')
+    tax = parse_amount(tax_match.group(1)) if tax_match else Decimal('0')
+    total_due = parse_amount(total_match.group(1)) if total_match else Decimal('0')
+    
+    # Extract line items
+    items = []
+    
+    in_items_section = False
+    current_item = None
+    
+    for i, line in enumerate(lines):
+        line = line.strip()
+        
+        # Skip header lines
+        if 'Description' in line and 'Qty' in line:
+            in_items_section = True
+            continue
+        
+        # Stop at subtotal line
+        if line.startswith('Subtotal'):
+            if current_item:
+                items.append(current_item)
+            break
+        
+        if not in_items_section:
+            continue
+        
+        # Skip continuation notices and other metadata
+        if any(skip in line for skip in [
+            'Invoice continues', 'Totals are on the final page',
+            'Continuation of line items', 'SYNTHETIC DEMO',
+            'INVOICE', 'Bill to:', 'Currency:', 'Page '
+        ]):
+            continue
+        
+        # Skip empty lines
+        if not line:
+            continue
+        
+        # Try to match a line item with qty, price, and amount
+        # More flexible pattern to handle various formats
+        match = re.match(r'^(.+?)\s+(\d+(?:\.\d+)?)\s+([\d,]+\.?\d*|\(\d+\.?\d*\))\s+([\d,]+\.?\d*|\([\d,]+\.?\d*\))$', line)
+        
+        if match:
+            # Save previous item if exists
+            if current_item:
+                items.append(current_item)
+            
+            description = match.group(1).strip()
+            qty = Decimal(match.group(2))
+            unit_price = parse_amount(match.group(3))
+            line_amount = parse_amount(match.group(4))
+            
+            current_item = {
+                'invoice_id': invoice_id,
+                'vendor': vendor,
+                'description': description,
+                'quantity': qty,
+                'unit_price': unit_price,
+                'line_amount': line_amount
+            }
+        elif current_item and line:
+            # This might be a continuation of the description
+            # Add it if it doesn't look like metadata
+            if not any(x in line.lower() for x in ['invoice', 'page', 'bill to', 'synthetic', 'currency']):
+                current_item['description'] += ' ' + line
+    
+    # Don't forget the last item
+    if current_item:
+        items.append(current_item)
+    
+    return {
+        'vendor': vendor,
+        'items': items,
+        'subtotal': subtotal,
+        'tax': tax,
+        'total_due': total_due
+    }
+
+def main():
+    input_dir = Path('input')
+    pdf_files = sorted(input_dir.glob('*.pdf'))
+    
+    all_items = []
+    reconciliation = []
+    
+    for pdf_path in pdf_files:
+        print(f"Processing {pdf_path.name}...")
+        data = extract_invoice_data(pdf_path)
+        
+        print(f"  Found {len(data['items'])} items")
+        
+        # Add items
+        all_items.extend(data['items'])
+        
+        # Reconciliation
+        computed_subtotal = sum(item['line_amount'] for item in data['items'])
+        computed_total = computed_subtotal + data['tax']
+        difference = computed_total - data['total_due']
+        status = 'matched' if difference == 0 else 'discrepancy'
+        
+        reconciliation.append({
+            'invoice_id': pdf_path.stem,
+            'subtotal': computed_subtotal,
+            'tax': data['tax'],
+            'printed_total': data['total_due'],
+            'computed_total': computed_total,
+            'difference': difference,
+            'status': status
+        })
+        
+        if status == 'discrepancy':
+            print(f"  WARNING: Discrepancy found in {pdf_path.stem}!")
+            print(f"    Computed subtotal: {computed_subtotal}")
+            print(f"    Printed subtotal: {data['subtotal']}")
+            print(f"    Tax: {data['tax']}")
+            print(f"    Computed total: {computed_total}")
+            print(f"    Printed total: {data['total_due']}")
+            print(f"    Difference: {difference}")
+    
+    # Write items.csv
+    with open('items.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+        writer.writeheader()
+        for item in all_items:
+            writer.writerow(item)
+    
+    print(f"\nWrote {len(all_items)} items to items.csv")
+    
+    # Write reconciliation.csv
+    with open('reconciliation.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+        writer.writeheader()
+        for rec in reconciliation:
+            writer.writerow(rec)
+    
+    print(f"Wrote {len(reconciliation)} reconciliation records to reconciliation.csv")
+    
+    # Report discrepancies
+    discrepancies = [r for r in reconciliation if r['status'] == 'discrepancy']
+    if discrepancies:
+        print(f"\n{len(discrepancies)} DISCREPANCY(IES) FOUND:")
+        for d in discrepancies:
+            print(f"  Invoice {d['invoice_id']}: difference = {d['difference']}")
+    else:
+        print("\nAll invoices reconciled successfully!")
+
+if __name__ == '__main__':
+    main()

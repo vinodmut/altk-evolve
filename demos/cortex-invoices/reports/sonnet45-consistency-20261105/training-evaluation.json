@@ -1,0 +1,22 @@
+{
+  "items": {
+    "expected_rows": 16,
+    "actual_rows": 16,
+    "exact_rows": 16,
+    "row_accuracy": 1.0,
+    "missing_or_incorrect": [],
+    "unexpected_or_incorrect": [],
+    "correct": true
+  },
+  "reconciliation": {
+    "expected_rows": 3,
+    "actual_rows": 3,
+    "exact_rows": 3,
+    "row_accuracy": 1.0,
+    "missing_or_incorrect": [],
+    "unexpected_or_incorrect": [],
+    "correct": true
+  },
+  "format_errors": [],
+  "all_correct": true
+}

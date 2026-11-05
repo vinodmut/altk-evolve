@@ -1,0 +1,24 @@
+from decimal import Decimal
+
+# Invoice 002093 line items
+items = [
+    Decimal('448.50'),
+    Decimal('145.80'),
+    Decimal('74.50'),
+    Decimal('75.80'),
+    Decimal('57.00'),
+    Decimal('-26.00')
+]
+
+subtotal = sum(items)
+tax = Decimal('90.64')
+computed_total = subtotal + tax
+printed_total = Decimal('866.26')
+
+print("Invoice 002093 Verification:")
+print(f"Line items sum: {items}")
+print(f"Subtotal: {subtotal}")
+print(f"Tax: {tax}")
+print(f"Computed total (subtotal + tax): {computed_total}")
+print(f"Printed total: {printed_total}")
+print(f"Difference: {computed_total - printed_total}")

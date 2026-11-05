@@ -1,0 +1,20 @@
+{
+  "reviewed_at": "2026-11-05T18:51:38.279608+00:00",
+  "stage": "Before all six fresh evaluation sessions; no new evaluation feedback or outputs inspected.",
+  "selected_candidates": [
+    "1",
+    "3",
+    "4",
+    "5"
+  ],
+  "unchanged": true,
+  "rationale": {
+    "1": "Use the actual working directory to resolve task inputs; supported by the recorded path handling.",
+    "2": "Rejected: a blanket recommendation to avoid parsing libraries and manually embed data is broader than this training evidence supports.",
+    "3": "Use Decimal and verify discrepant reconciliations; supported by correct recorded financial checks.",
+    "4": "Check CSV shape, item counts and reconciliation outputs; a supported consistency procedure, with potential extra tool-call cost. These checks alone cannot prove descriptions are complete.",
+    "5": "Use the installed uv project for file-based scripts and inline verification; supported by successful recorded execution."
+  },
+  "learning_input": "Only the byte-identical original training trajectory; accurate consistency with default controls.",
+  "frozen_policy": "No later guideline edits, promotions, evaluation feedback, or relearning during these trials."
+}

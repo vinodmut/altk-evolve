@@ -4,12 +4,12 @@ services:
       context: .
     init: true
     environment:
-      DEMO_SERVE_NAMESPACE: invoice-reviewed
-      DEMO_LEARN_NAMESPACE: invoice-candidates
-      DEMO_PROCESSING_PROFILE: invoice-demo
+      DEMO_SERVE_NAMESPACE: ${DEMO_SERVE_NAMESPACE:-invoice-reviewed}
+      DEMO_LEARN_NAMESPACE: ${DEMO_LEARN_NAMESPACE:-invoice-candidates}
+      DEMO_PROCESSING_PROFILE: ${DEMO_PROCESSING_PROFILE:-invoice-demo}
     volumes:
       - ./.env:/run/secrets/demo.env:ro
-      - ./results:/results
+      - ${DEMO_RESULTS_DIR:-./results}:/results
     healthcheck:
       test: ["CMD", "uv", "run", "--offline", "--no-sync", "python", "services.py", "health"]
       interval: 5s

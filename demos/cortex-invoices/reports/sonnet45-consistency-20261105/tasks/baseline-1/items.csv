@@ -1,0 +1,17 @@
+invoice_id,vendor,description,quantity,unit_price,line_amount
+002071,Delta Studio Supply,"Archive cartons, reinforced - batch 2",9,12.45,112.05
+002071,Delta Studio Supply,"Labels ""Handle with care"", roll 2",3,10.8,32.4
+002071,Delta Studio Supply,"Cut-to-length protective liner, grade 2",2.5,14.76,36.9
+002071,Delta Studio Supply,"Returned labels credit, order 2",1,-9.8,-9.8
+002082,Elm Fabrication Ltd,"Bench assembly, series 2",2,1262.6,2525.2
+002082,Elm Fabrication Ltd,"Alignment service, station 2",1.5,86.4,129.6
+002082,Elm Fabrication Ltd,"Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",3,49.75,149.25
+002082,Elm Fabrication Ltd,"Precision shims, pack 2",7,4.375,30.63
+002082,Elm Fabrication Ltd,"Freight and handling, zone 2",1,42.5,42.5
+002082,Elm Fabrication Ltd,"Volume discount, agreement 2",1,-36.0,-36.0
+002093,Firth Survey Services,"Site survey, area 2",1,448.5,448.5
+002093,Firth Survey Services,"Travel time, route 2",2.25,64.8,145.8
+002093,Firth Survey Services,"Calibration standard, set 2",2,37.25,74.5
+002093,Firth Survey Services,"Additional sensor mounts, revised scope 2",4,18.95,75.8
+002093,Firth Survey Services,"Cable assemblies, shielded, length 2 m",5,11.4,57.0
+002093,Firth Survey Services,"Previously billed visit credit, ticket 2",1,-26.0,-26.0

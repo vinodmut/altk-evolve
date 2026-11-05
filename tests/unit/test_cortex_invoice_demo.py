@@ -214,3 +214,126 @@ def test_batch_repetition_is_fresh_preserves_evidence_and_uses_no_stdin(tmp_path
     assert len(commands) == 1
     with pytest.raises(RuntimeError, match="Completed evaluation sessions are frozen"):
         driver.task("baseline", 1, resume=True, batch=True)
+
+
+def isolated_driver(tmp_path, monkeypatch, state):
+    services = types.ModuleType("services")
+    services.RESULTS = tmp_path
+    services.LEARN_NAMESPACE = "isolated-candidates"
+    services.SERVE_NAMESPACE = "isolated-reviewed"
+    services.load_state = lambda: copy.deepcopy(state)
+
+    def save(value):
+        state.clear()
+        state.update(copy.deepcopy(value))
+
+    services.save_state = save
+    services.write_json = lambda path, value: path.write_text(json.dumps(value))
+    services.environment = lambda: {"EVOLVE_CUSTOM_LLM_PROVIDER": "anthropic"}
+    shared = types.ModuleType("demo")
+    report = types.ModuleType("report")
+    report.first_request_attribution = lambda evidence: {}
+    for name, module in (("services", services), ("demo", shared), ("report", report)):
+        monkeypatch.setitem(sys.modules, name, module)
+    spec = importlib.util.spec_from_file_location("isolated_invoice_driver", ROOT / "driver.py")
+    driver = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(driver)
+    return driver
+
+
+def test_accurate_learning_captures_explicit_plan_and_reuses_only_training(tmp_path, monkeypatch):
+    state = {
+        "sessions": {"training": {"id": "training-uuid", "captured": True}},
+        "learning_model": "same-sonnet",
+        "training_provenance": {"source_snapshot": "original"},
+    }
+    trajectory = {"batch": {"conversation_id": "training-uuid"}, "messages": [{"role": "user", "content": "original training"}]}
+    (tmp_path / "training-trajectory.json").write_text(json.dumps({"trajectories": [trajectory]}))
+    driver = isolated_driver(tmp_path, monkeypatch, state)
+    calls, definitions = [], []
+
+    class Client:
+        def __init__(self):
+            self.processing = self
+
+        def ensure_namespace(self, namespace):
+            assert namespace == "isolated-candidates"
+
+        def validate(self, definition):
+            definitions.append(definition)
+            return types.SimpleNamespace(manifest=lambda: definition)
+
+        def process_trajectory(self, value, **kwargs):
+            calls.append((value, kwargs))
+            return types.SimpleNamespace(model_dump=lambda **kwargs: {"entities": []})
+
+    monkeypatch.setattr("altk_evolve.frontend.client.evolve_client.EvolveClient", Client)
+    from altk_evolve.config.guidelines import guidelines_settings
+
+    monkeypatch.setattr(guidelines_settings, "debug_dir", None)
+    monkeypatch.setattr(driver, "candidates", lambda: [])
+    driver.learn(consistency_method="accurate")
+    assert definitions[0]["processors"][0]["config"] == {"guidelines_mode": "consistency", "consistency_method": "accurate"}
+    assert calls[0][0] == trajectory and calls[0][1]["namespace_id"] == "isolated-candidates"
+    assert calls[0][1]["plan"].manifest() == definitions[0]
+    assert guidelines_settings.debug_dir == tmp_path / "analysis"
+    manifest = json.loads((tmp_path / "learning.json").read_text())
+    assert manifest["consistency_method"] == "accurate"
+    assert manifest["training_provenance"] == state["training_provenance"]
+    with pytest.raises(RuntimeError, match="unlearned"):
+        driver.learn(consistency_method="accurate")
+
+
+@pytest.mark.parametrize("change_guidelines", [False, True])
+def test_repeat_plan_is_frozen_before_batch_tasks_and_detects_guide_changes(tmp_path, monkeypatch, change_guidelines):
+    state = {
+        "sessions": {"training": {"id": "reused"}},
+        "consistency_method": "accurate",
+        "promoted": [{"id": "1", "content": "Frozen advice"}],
+    }
+    driver = isolated_driver(tmp_path, monkeypatch, state)
+    calls = []
+
+    def task(arm, number, batch, repeat):
+        assert state["repetition_plan"]["repetitions"] == [1, 2, 3]
+        assert len(state["trial_order"]) == 6
+        assert batch
+        label = driver.label_for(arm, number, repeat)
+        calls.append(label)
+        state["sessions"][label] = {"exit_code": 0}
+        if change_guidelines:
+            state["promoted"][0]["content"] = "Changed advice"
+
+    monkeypatch.setattr(driver, "task", task)
+    if change_guidelines:
+        with pytest.raises(RuntimeError, match="guidelines changed"):
+            driver.repeat_trials()
+        assert len(calls) == 1
+        assert json.loads((tmp_path / "trial-run.json").read_text())["status"] == "failed"
+    else:
+        driver.repeat_trials()
+        assert calls == state["trial_order"]
+        assert json.loads((tmp_path / "trial-run.json").read_text())["status"] == "complete"
+        with pytest.raises(RuntimeError, match="fresh results"):
+            driver.repeat_trials()
+
+
+def test_reuse_imports_byte_identical_training_and_rejects_overwrites(tmp_path, monkeypatch):
+    monkeypatch.setitem(sys.modules, "evaluate", EVALUATOR)
+    spec = importlib.util.spec_from_file_location("invoice_consistency", ROOT / "consistency.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    source = ROOT / "reports/sonnet45-20261105"
+    old = EVALUATOR.load(source / "state.json")
+    state = {"sessions": {}, "checked_at": "verified", "model": old["model"], "learning_model": old["learning_model"]}
+    (tmp_path / "state.json").write_text(json.dumps(state))
+    module.prepare(tmp_path, source)
+    imported = EVALUATOR.load(tmp_path / "state.json")
+    assert list(imported["sessions"]) == ["training"]
+    assert not (tmp_path / "invoice-promoted.json").exists()
+    assert not list(tmp_path.glob("baseline*"))
+    for name, digest in imported["training_provenance"]["sha256"].items():
+        assert (tmp_path / name).read_bytes() == (source / name).read_bytes()
+        assert hashlib.sha256((tmp_path / name).read_bytes()).hexdigest() == digest
+    with pytest.raises(RuntimeError, match="new, checked"):
+        module.prepare(tmp_path, source)

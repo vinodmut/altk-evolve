@@ -1,0 +1,77 @@
+[
+  {
+    "task_description": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+    "guidelines": [
+      {
+        "content": "When reading files from a relative path mentioned in a task description (e.g., 'PDFs in input/'), always construct the full path using the current working directory from the system message or by checking pwd first. Do not attempt to read from absolute paths that include temporary directory prefixes (like /tmp/...) unless explicitly confirmed.",
+        "rationale": "Step 2 shows the agent attempted to read files from '/tmp/tmp.qtTJoOx4O2/input/' which failed, then corrected to '/results/tasks/training/input/' in Step 4 after checking pwd. This pattern of initial path confusion followed by correction indicates uncertainty about path resolution. Starting with pwd or using CWD from the system message prevents wasted attempts.",
+        "category": "strategy",
+        "trigger": "When task instructions reference files in relative paths like 'input/' or similar directory names",
+        "implementation_steps": [
+          "Check the CWD field in the system message or run pwd to establish current directory",
+          "Construct file paths by joining CWD with the relative path from instructions",
+          "Verify the path exists with ls before attempting file reads if uncertain"
+        ],
+        "support": 1,
+        "evidence": null
+      },
+      {
+        "content": "When extracting structured data from PDFs where precise decimal amounts, multi-line descriptions, and signed values (credits/discounts) must be preserved, embed the extracted data directly in a Python script rather than attempting to use intermediate parsing libraries. Manual extraction from PDF text content ensures complete control over continuation text, sign preservation, and decimal precision.",
+        "rationale": "Step 5 shows the agent successfully embedded all invoice data directly in Python dictionaries within the script, preserving multi-line descriptions, negative values for credits (-9.80, -35.00, -25.00), and exact decimal amounts. This approach avoided potential parsing issues with PDF libraries and gave complete control over what constitutes a 'line item' versus excluded elements (headings, subtotals, tax, totals). The high uncertainty score (0.4312) at this step suggests alternative approaches were considered, but the chosen method successfully met all requirements.",
+        "category": "strategy",
+        "trigger": "When extracting invoice line items or similar structured financial data from PDFs with requirements for exact decimal preservation, signed values, complete descriptions including continuation text, and exclusion of specific row types",
+        "implementation_steps": [
+          "Read the PDF files to examine their text content structure",
+          "Manually identify each line item, preserving complete descriptions across line breaks",
+          "Record credits and discounts as negative signed values",
+          "Embed the extracted data as Python data structures (lists/dicts) directly in the processing script",
+          "Process the embedded data to generate required CSV outputs with exact decimal formatting"
+        ],
+        "support": 1,
+        "evidence": null
+      },
+      {
+        "content": "When computing financial reconciliations involving decimal arithmetic (subtotals, tax, totals), use Python's Decimal class rather than float to preserve exact precision and detect genuine rounding discrepancies. Verify reconciliation logic by re-computing specific discrepant cases with explicit Decimal operations.",
+        "rationale": "Step 5 shows the agent imported and used Decimal for all monetary calculations. Step 11 (uncertainty 0.2946) demonstrates explicit verification of the discrepancy using Decimal arithmetic, confirming the 0.01 difference was a genuine rounding discrepancy in the source document (computed 843.24 vs printed 843.25), not a calculation error. This verification step provided confidence in the reconciliation output.",
+        "category": "strategy",
+        "trigger": "When performing financial reconciliations that require exact decimal precision and detection of rounding discrepancies",
+        "implementation_steps": [
+          "Import Decimal from the decimal module",
+          "Convert all monetary values to Decimal objects for arithmetic operations",
+          "Compute subtotals, add tax, and compare against printed totals using Decimal arithmetic",
+          "When discrepancies are found, write verification code that explicitly re-computes the math to confirm the discrepancy is genuine"
+        ],
+        "support": 1,
+        "evidence": null
+      },
+      {
+        "content": "After generating CSV output files from extracted data, immediately verify the output with multiple spot-checks: display sample rows with head, count rows with wc -l, verify line counts per category with grep, and display the complete reconciliation file. This multi-faceted verification catches formatting errors, missing data, and incorrect filtering.",
+        "rationale": "Steps 7-10 and 12-14 show systematic verification: head to inspect formatting and sample content, wc -l to verify row counts match expectations (16 items + 1 header = 17 lines), grep with wc -l to verify per-invoice counts, and full display of the smaller reconciliation file. This caught no errors in this run, but the thoroughness of checking (multiple commands, different aspects) provides confidence that the extraction met requirements before user validation.",
+        "category": "strategy",
+        "trigger": "After generating CSV files from data extraction, especially when specific inclusion/exclusion rules apply (like excluding headers, subtotals, tax rows)",
+        "implementation_steps": [
+          "Use head to display first 10-20 rows to verify column structure and sample content",
+          "Use wc -l to count total rows and verify against expected counts",
+          "Use grep with specific identifiers to verify row counts per category",
+          "Display the complete output for smaller result files (reconciliation summaries)",
+          "Verify key requirements: decimal precision, signed values, complete descriptions"
+        ],
+        "support": 1,
+        "evidence": null
+      },
+      {
+        "content": "When running Python scripts via 'uv run --offline --no-sync --project /opt/demo python', first write the script to a file, then execute it. For verification calculations or one-off checks, use 'uv run --offline --no-sync --project /opt/demo python' with a heredoc to execute inline Python without creating persistent files.",
+        "rationale": "Step 5 created extract_invoices.py as a persistent script file and Step 6 executed it with the required uv command. Step 11 (uncertainty 0.2946) used the same uv command with inline Python via heredoc for verification without creating another file. Both approaches succeeded, showing the correct pattern: persistent script for main extraction logic, inline execution for verification. This follows the instruction to 'not write persistent memory files' (for memory/notes) while still creating necessary working scripts.",
+        "category": "strategy",
+        "trigger": "When executing Python code with specific runtime requirements (like uv with --offline --no-sync flags) and instructions to avoid unnecessary persistent files",
+        "implementation_steps": [
+          "For main processing logic, write a script file and execute with the required uv command",
+          "For verification, debugging, or one-off calculations, use uv command with heredoc (<<'EOF' ... EOF) for inline Python execution",
+          "Ensure both approaches use the exact command structure specified in requirements"
+        ],
+        "support": 1,
+        "evidence": null
+      }
+    ]
+  }
+]

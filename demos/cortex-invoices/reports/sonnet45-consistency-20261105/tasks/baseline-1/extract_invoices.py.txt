@@ -1,0 +1,97 @@
+import csv
+from decimal import Decimal
+
+# Define invoice data
+invoices = {
+    '002071': {
+        'vendor': 'Delta Studio Supply',
+        'items': [
+            ('Archive cartons, reinforced - batch 2', 9, 12.45, 112.05),
+            ('Labels "Handle with care", roll 2', 3, 10.80, 32.40),
+            ('Cut-to-length protective liner, grade 2', 2.5, 14.76, 36.90),
+            ('Returned labels credit, order 2', 1, -9.80, -9.80),
+        ],
+        'tax': 22.17,
+        'total': 193.72
+    },
+    '002082': {
+        'vendor': 'Elm Fabrication Ltd',
+        'items': [
+            ('Bench assembly, series 2', 2, 1262.60, 2525.20),
+            ('Alignment service, station 2', 1.5, 86.40, 129.60),
+            ('Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate', 3, 49.75, 149.25),
+            ('Precision shims, pack 2', 7, 4.375, 30.63),
+            ('Freight and handling, zone 2', 1, 42.50, 42.50),
+            ('Volume discount, agreement 2', 1, -36.00, -36.00),
+        ],
+        'tax': 154.28,
+        'total': 2995.46
+    },
+    '002093': {
+        'vendor': 'Firth Survey Services',
+        'items': [
+            ('Site survey, area 2', 1, 448.50, 448.50),
+            ('Travel time, route 2', 2.25, 64.80, 145.80),
+            ('Calibration standard, set 2', 2, 37.25, 74.50),
+            ('Additional sensor mounts, revised scope 2', 4, 18.95, 75.80),
+            ('Cable assemblies, shielded, length 2 m', 5, 11.40, 57.00),
+            ('Previously billed visit credit, ticket 2', 1, -26.00, -26.00),
+        ],
+        'tax': 90.64,
+        'total': 866.26
+    }
+}
+
+# Write items.csv
+with open('items.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+    
+    for invoice_id, data in sorted(invoices.items()):
+        for item in data['items']:
+            description, qty, unit_price, line_amount = item
+            writer.writerow([invoice_id, data['vendor'], description, qty, unit_price, line_amount])
+
+# Perform reconciliation
+reconciliation = []
+for invoice_id, data in sorted(invoices.items()):
+    # Calculate subtotal from line items
+    subtotal = sum(Decimal(str(item[3])) for item in data['items'])
+    tax = Decimal(str(data['tax']))
+    printed_total = Decimal(str(data['total']))
+    computed_total = subtotal + tax
+    difference = computed_total - printed_total
+    status = 'matched' if difference == 0 else 'discrepancy'
+    
+    reconciliation.append({
+        'invoice_id': invoice_id,
+        'subtotal': float(subtotal),
+        'tax': float(tax),
+        'printed_total': float(printed_total),
+        'computed_total': float(computed_total),
+        'difference': float(difference),
+        'status': status
+    })
+
+# Write reconciliation.csv
+with open('reconciliation.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+    
+    for rec in reconciliation:
+        writer.writerow([
+            rec['invoice_id'],
+            rec['subtotal'],
+            rec['tax'],
+            rec['printed_total'],
+            rec['computed_total'],
+            rec['difference'],
+            rec['status']
+        ])
+
+print("Extraction complete!")
+print("\nReconciliation Summary:")
+for rec in reconciliation:
+    print(f"Invoice {rec['invoice_id']}: {rec['status'].upper()}")
+    if rec['status'] == 'discrepancy':
+        print(f"  Difference: ${rec['difference']:.2f}")

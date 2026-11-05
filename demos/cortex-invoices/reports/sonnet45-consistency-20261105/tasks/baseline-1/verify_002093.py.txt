@@ -1,0 +1,24 @@
+from decimal import Decimal
+
+items = [
+    ('Site survey, area 2', 1, 448.50, 448.50),
+    ('Travel time, route 2', 2.25, 64.80, 145.80),
+    ('Calibration standard, set 2', 2, 37.25, 74.50),
+    ('Additional sensor mounts, revised scope 2', 4, 18.95, 75.80),
+    ('Cable assemblies, shielded, length 2 m', 5, 11.40, 57.00),
+    ('Previously billed visit credit, ticket 2', 1, -26.00, -26.00),
+]
+
+print("Invoice 002093 - Line by line verification:")
+total = Decimal('0')
+for desc, qty, unit_price, amount in items:
+    item_total = Decimal(str(amount))
+    total += item_total
+    print(f"{amount:>10.2f} - {desc}")
+
+print(f"\n{'='*60}")
+print(f"Subtotal: {total}")
+print(f"Tax:      90.64")
+print(f"Total:    {total + Decimal('90.64')}")
+print(f"Printed:  866.26")
+print(f"Diff:     {(total + Decimal('90.64')) - Decimal('866.26')}")

@@ -1,0 +1,98 @@
+{
+  "task": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+  "total_steps": 16,
+  "aggregation": "mean",
+  "aggregate_trajectory_uncertainty": 0.10412788498795811,
+  "steps": [
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 1,
+      "step_uncertainty": 0.0515,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 2,
+      "step_uncertainty": 0.0,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 3,
+      "step_uncertainty": 0.0,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 4,
+      "step_uncertainty": 0.0,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 5,
+      "step_uncertainty": 0.4312,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 6,
+      "step_uncertainty": 0.1886,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 7,
+      "step_uncertainty": 0.0725,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 8,
+      "step_uncertainty": 0.075,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 9,
+      "step_uncertainty": 0.0998,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 10,
+      "step_uncertainty": 0.0429,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 11,
+      "step_uncertainty": 0.2946,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 12,
+      "step_uncertainty": 0.1759,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 13,
+      "step_uncertainty": 0.0,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_tool_calls",
+      "step_number": 14,
+      "step_uncertainty": 0.0895,
+      "metric": "mixed"
+    },
+    {
+      "name": "OpenAIAgent_content",
+      "step_number": 15,
+      "step_uncertainty": 0.0403,
+      "metric": "sbert_small"
+    }
+  ]
+}

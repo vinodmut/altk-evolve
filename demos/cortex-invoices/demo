@@ -2,8 +2,10 @@
 set -eu
 DEMO_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$DEMO_DIR"
-COMPOSE_PROJECT_NAME="cortex-invoices-$(printf '%s' "$DEMO_DIR" | cksum | awk '{print $1}')"
-export COMPOSE_PROJECT_NAME
+: "${DEMO_RESULTS_DIR:=$DEMO_DIR/results}"
+case "$DEMO_RESULTS_DIR" in /*) ;; *) DEMO_RESULTS_DIR="$DEMO_DIR/$DEMO_RESULTS_DIR" ;; esac
+COMPOSE_PROJECT_NAME="cortex-invoices-$(printf '%s' "$DEMO_RESULTS_DIR" | cksum | awk '{print $1}')"
+export COMPOSE_PROJECT_NAME DEMO_RESULTS_DIR
 case "${1:-help}" in
   setup)
     if [ ! -f .env ]; then
@@ -11,7 +13,7 @@ case "${1:-help}" in
       printf '%s\n' 'Created .env. Configure both LLM connections and rerun ./demo setup.'
       exit 1
     fi
-    mkdir -p results
+    mkdir -p "$DEMO_RESULTS_DIR"
     docker build --tag cortex-invoice-runtime:local ../cortex-photo
     docker compose up --build --detach --wait --wait-timeout 360
     docker compose exec -T demo uv run --offline --no-sync python driver.py check
@@ -22,17 +24,24 @@ case "${1:-help}" in
       *) docker compose exec demo uv run --offline --no-sync python driver.py "$@" ;;
     esac
     ;;
-  check|capture|learn|candidates|status)
+  check|capture|learn|candidates|status|repeat-trials)
     docker compose exec -T demo uv run --offline --no-sync python driver.py "$@"
     ;;
-  feedback|report)
+  feedback|report|consistency-report|reuse-training)
+    case "$1" in
+      consistency-report) shift; set -- consistency.py report "$@" ;;
+      reuse-training) shift; set -- consistency.py prepare "$@" ;;
+      *) set -- evaluate.py "$@" ;;
+    esac
+    evaluator="$1"
+    shift
     docker run --rm --network none \
-      -v "$DEMO_DIR:/evaluation:ro" -v "$DEMO_DIR/results:/results" \
+      -v "$DEMO_DIR:/evaluation:ro" -v "$DEMO_RESULTS_DIR:/results" \
       cortex-invoice-runtime:local \
-      uv run --offline --no-sync python /evaluation/evaluate.py "$@"
+      uv run --offline --no-sync python "/evaluation/$evaluator" "$@"
     ;;
   stop) docker compose down ;;
   logs) docker compose logs --tail 60 ;;
   shell) docker compose exec demo bash ;;
-  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|learn [--json-output]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|report|status|stop' ;;
+  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|reuse-training|learn [--json-output] [--consistency-method fast|accurate]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|repeat-trials|report|consistency-report|status|stop' ;;
 esac

@@ -1,0 +1,748 @@
+Learning only from training UUID c7a2fb03-8761-4ed8-9027-47878a44a5cb
+INFO:altk_evolve.llm.guidelines.consistency_guidelines:Created trajectory IR for Trajectory cortex:c
+INFO:altk_evolve.llm.guidelines.consistency_guidelines:Resampling trajectory IR
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling trajectory (Trajectory cortex:c)
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (1/16)
+18:47:57 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:47:57 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:47:57 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:47:57 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+
+
+18:47:59 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:47:59 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:47:59 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:00 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:00 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:02 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (2/16)
+18:48:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:48:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:48:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:48:05 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:05 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:48:05 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:06 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:08 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:09 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (3/16)
+18:48:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+18:48:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+18:48:11 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:48:12 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:12 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:13 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (4/16)
+18:48:13 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:13 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0mINFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:13 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+18:48:13 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:48:17 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:17 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:48:18 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:20 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:23 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:24 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (5/16)
+18:48:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+18:48:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+
+18:48:29 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:29 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:48:29 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:45 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:50 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:48:58 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (6/16)
+18:48:58 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:58 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:48:58 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:48:58 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+18:49:01 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:01 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:01 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:01 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:01 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:03 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (7/16)
+18:49:03 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:03 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:03 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+18:49:03 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0mINFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+18:49:06 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:06 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:06 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:06 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:07 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:09 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (8/16)
+18:49:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:49:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:09 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:11 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:12 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (9/16)
+18:49:12 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:12 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:12 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:49:12 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+
+18:49:15 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:15 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:16 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:17 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:17 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:19 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (10/16)
+18:49:19 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+18:49:19 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+18:49:19 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:49:19 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+18:49:22 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:22 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:22 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:22 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:24 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:24 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (11/16)
+18:49:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:24 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+18:49:29 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:29 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:29 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:29 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:31 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:34 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (12/16)
+18:49:34 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:34 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:49:34 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+18:49:34 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+
+18:49:39 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:39 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:39 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:39 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:40 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:41 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (13/16)
+18:49:41 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:41 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:41 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:41 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0mINFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0mINFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+18:49:43 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:43 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:44 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:44 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:44 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:52 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_tool_calls (14/16)
+18:49:52 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:52 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0mINFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:49:52 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+18:49:52 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:57 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:57 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:49:57 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:57 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:49:58 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:50:01 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+WARNING:altk_evolve.llm.guidelines.consistency_analyzer.resampling:Step OpenAIAgent_tool_calls: dropped 1 of 5 samples whose response kind (content vs tool_calls) did not match the recorded response type 'tool_calls'. 4 remain; step scores as consistency undefined if none remain.
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.resampling:+++ Resampling step: OpenAIAgent_content (15/16)
+18:50:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:50:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m18:50:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+18:50:02 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+
+
+18:50:10 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:50:10 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:50:10 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:50:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:50:11 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:50:12 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+INFO:altk_evolve.llm.guidelines.consistency_guidelines:Computing consistency score card for Trajectory cortex:c
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.consistency_analysis:
++++ Step 1: Pre-processing to parse samples +++
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.consistency_analysis:
++++ Step 2: Compute step consistencies +++
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.single_step_consistency:
+
++++ [Mixed Consistency] Computing step consistencies for trajectory Trajectory cortex:c
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.consistency_analysis:
++++ Step 3: Compute aggregate trajectory consistency +++
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.consistency_aggregator:+++ [Consistency] Aggregating trajectory consistency for (1/1) with mean aggregation
+INFO:altk_evolve.llm.guidelines.consistency_analyzer.consistency_analysis:
++++ Step 4: Create consistency score card +++
+18:50:13 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:50:52 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+18:50:52 - LiteLLM:INFO: utils.py:4852 - 
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+INFO:LiteLLM:
+LiteLLM completion() model= aws/claude-sonnet-4-5; provider = anthropic
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+18:50:58 - LiteLLM:INFO: utils.py:1950 - Wrapper: Completed Call, calling success_handler
+INFO:LiteLLM:Wrapper: Completed Call, calling success_handler
+
+Candidate 1
+When reading files from a relative path mentioned in a task description (e.g., 'PDFs in input/'), always construct the full path using the current working directory from the system message or by checking pwd first. Do not attempt to read from absolute paths that include temporary directory prefixes (like /tmp/...) unless explicitly confirmed.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 2
+When extracting structured data from PDFs where precise decimal amounts, multi-line descriptions, and signed values (credits/discounts) must be preserved, embed the extracted data directly in a Python script rather than attempting to use intermediate parsing libraries. Manual extraction from PDF text content ensures complete control over continuation text, sign preservation, and decimal precision.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 3
+When computing financial reconciliations involving decimal arithmetic (subtotals, tax, totals), use Python's Decimal class rather than float to preserve exact precision and detect genuine rounding discrepancies. Verify reconciliation logic by re-computing specific discrepant cases with explicit Decimal operations.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 4
+After generating CSV output files from extracted data, immediately verify the output with multiple spot-checks: display sample rows with head, count rows with wc -l, verify line counts per category with grep, and display the complete reconciliation file. This multi-faceted verification catches formatting errors, missing data, and incorrect filtering.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Candidate 5
+When running Python scripts via 'uv run --offline --no-sync --project /opt/demo python', first write the script to a file, then execute it. For verification calculations or one-off checks, use 'uv run --offline --no-sync --project /opt/demo python' with a heredoc to execute inline Python without creating persistent files.
+Training session: c7a2fb03-8761-4ed8-9027-47878a44a5cb
+
+Full provenance saved in invoice-candidates.json.

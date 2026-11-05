@@ -1,0 +1,10 @@
+{
+  "interpretation": [
+    "These reviewed accurate-consistency guidelines did not reduce variation in this three-pair set. All baseline and guided packets passed; neither arm had a final-output failure, so the earlier intermittent failure did not recur here.",
+    "Baseline calls were 17, 17 and 16 (50 total); guided calls were 16, 39 and 17 (72 total). Both medians were 17. The observed range width increased from 1 to 23 calls. These are descriptive results on one synthetic packet, without a reliable estimate of population reliability or a causal comparison with the earlier fast-guideline cohort.",
+    "The 39-call guided run first tried three nonexistent temporary paths, despite the path guideline. It then tried pypdf, PyPDF2, pdfplumber and pymupdf, none installed in the task environment; switched to pdftotext; investigated missing image-page text; and finally manually embedded the extracted data. It produced correct CSVs, but the extraction strategy and tool-selection detours remained variable.",
+    "All four reviewed guidelines were present in each guided retrieval, and Cortex recorded their serving IDs and original training source in the first request. The frozen selection and input PDF hashes remained unchanged. Native library source was not changed; the demo selects the existing accurate consistency processor explicitly.",
+    "Candidate 2, which recommends manual embedding rather than parsing libraries, was rejected before evaluation because it overgeneralizes from one successful training session. It might have discouraged the observed library detour in this constrained environment, but this experiment does not test that unpromoted candidate. Selection was not changed after seeing results.",
+    "A useful next experiment would learn from actual failed or detoured traces with explicit feedback about unavailable libraries and description preservation, then test fresh invoice packets. Replaying one passing training trajectory produced reusable bookkeeping advice but did not establish a reliable extraction procedure."
+  ]
+}

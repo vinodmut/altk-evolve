@@ -19,8 +19,8 @@ import services
 from report import first_request_attribution
 
 ROOT = Path(__file__).resolve().parent
-CANDIDATES = "invoice-candidates"
-REVIEWED = "invoice-reviewed"
+CANDIDATES = getattr(services, "LEARN_NAMESPACE", "invoice-candidates")
+REVIEWED = getattr(services, "SERVE_NAMESPACE", "invoice-reviewed")
 
 
 def prompt():
@@ -252,7 +252,7 @@ def candidates():
     return rows
 
 
-def learn(json_output=False):
+def learn(json_output=False, consistency_method="fast"):
     from altk_evolve.frontend.client.evolve_client import EvolveClient
 
     state = services.load_state()
@@ -269,19 +269,74 @@ def learn(json_output=False):
     assert all(trajectory["batch"]["conversation_id"] == training["id"] for trajectory in trajectories)
     client = EvolveClient()
     client.ensure_namespace(CANDIDATES)
+    plan = client.processing.validate(
+        {
+            "processors": [
+                {
+                    "id": "guidelines",
+                    "plugin": "evolve.guidelines",
+                    "config": {"guidelines_mode": "consistency", "consistency_method": consistency_method},
+                }
+            ]
+        }
+    )
+    if consistency_method == "accurate":
+        from altk_evolve.config.guidelines import guidelines_settings
+
+        guidelines_settings.debug_dir = services.RESULTS / "analysis"
     print("Learning only from training UUID", training["id"], flush=True)
-    updates = [client.process_trajectory(trajectory, namespace_id=CANDIDATES).model_dump(mode="json") for trajectory in trajectories]
+    updates = [
+        client.process_trajectory(trajectory, namespace_id=CANDIDATES, plan=plan).model_dump(mode="json") for trajectory in trajectories
+    ]
     manifest = {
         "training_session": training["id"],
         "results": updates,
         "model": state["learning_model"],
         "api_format": services.environment()["EVOLVE_CUSTOM_LLM_PROVIDER"],
         "output_mode": "existing JSON generation with local Pydantic validation" if json_output else "native response schema",
+        "consistency_method": consistency_method,
+        "processing_plan": plan.manifest(),
+        "training_provenance": state.get("training_provenance"),
     }
     services.write_json(services.RESULTS / "learning.json", manifest)
-    state.update(learned=True, learning_output_mode=manifest["output_mode"])
+    state.update(learned=True, learning_output_mode=manifest["output_mode"], consistency_method=consistency_method)
     services.save_state(state)
     candidates()
+
+
+def repeat_trials():
+    """Freeze three same-input pairs before running any evaluation sessions."""
+    state = services.load_state()
+    if state.get("consistency_method") != "accurate" or not state.get("promoted"):
+        raise RuntimeError("Generate accurate consistency guidelines and promote a frozen selection first.")
+    if any(label != "training" for label in state["sessions"]):
+        raise RuntimeError("Use a fresh results directory; no evaluation session may already exist.")
+    order = ["baseline-1", "guided-1", "guided-1-repeat-2", "baseline-1-repeat-2", "baseline-1-repeat-3", "guided-1-repeat-3"]
+    state["repetition_plan"] = {
+        "registered_at": datetime.now(UTC).isoformat(),
+        "packet": "trial-1",
+        "repetitions": [1, 2, 3],
+        "additional_order": order[2:],
+        "reason": "Three fresh same-input batch pairs selected before evaluation; accurate consistency guides remain frozen.",
+    }
+    state["trial_order"] = order
+    state["frozen_guidelines_sha256"] = hashlib.sha256(json.dumps(state["promoted"], sort_keys=True).encode()).hexdigest()
+    services.save_state(state)
+    services.write_json(services.RESULTS / "trial-run.json", {"status": "running", "order": order})
+    try:
+        for label in order:
+            arm = label.split("-")[0]
+            repetition = int(label.rsplit("-", 1)[1]) if "repeat" in label else None
+            current = services.load_state()
+            if hashlib.sha256(json.dumps(current["promoted"], sort_keys=True).encode()).hexdigest() != state["frozen_guidelines_sha256"]:
+                raise RuntimeError("Reviewed guidelines changed during evaluation.")
+            task(arm, 1, batch=True, repeat=repetition)
+            if services.load_state()["sessions"][label]["exit_code"] != 0:
+                raise RuntimeError(f"Claude exited unsuccessfully in {label}; preserve its evidence before continuing.")
+    except Exception as error:
+        services.write_json(services.RESULTS / "trial-run.json", {"status": "failed", "error": str(error), "order": order})
+        raise
+    services.write_json(services.RESULTS / "trial-run.json", {"status": "complete", "order": order})
 
 
 def promote(ids):
@@ -320,7 +375,20 @@ def promote(ids):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "command", choices=["check", "training", "baseline", "guided", "resume", "capture", "learn", "candidates", "promote", "status"]
+        "command",
+        choices=[
+            "check",
+            "training",
+            "baseline",
+            "guided",
+            "resume",
+            "capture",
+            "learn",
+            "candidates",
+            "promote",
+            "repeat-trials",
+            "status",
+        ],
     )
     parser.add_argument("arguments", nargs="*")
     parser.add_argument("--json-output", action="store_true", help="Use Evolve's JSON fallback for gateways without native schema support.")
@@ -328,6 +396,9 @@ def main():
         "--batch", action="store_true", help="Run without stdin using explicitly allowed local tools; save Claude's JSON result."
     )
     parser.add_argument("--repeat", type=int, help="Fresh repetition of the same packet, starting at 2; preserve earlier evidence.")
+    parser.add_argument(
+        "--consistency-method", choices=("fast", "accurate"), default="fast", help="Accurate resamples decisions; saves analysis artifacts."
+    )
     args = parser.parse_args()
     services.configure_process()
     if args.command == "check":
@@ -342,7 +413,9 @@ def main():
     elif args.command == "capture":
         capture(args.arguments[0])
     elif args.command == "learn":
-        learn(args.json_output)
+        learn(args.json_output, args.consistency_method)
+    elif args.command == "repeat-trials":
+        repeat_trials()
     elif args.command == "candidates":
         candidates()
     elif args.command == "promote":
