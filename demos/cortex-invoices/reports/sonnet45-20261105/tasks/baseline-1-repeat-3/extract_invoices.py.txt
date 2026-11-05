@@ -1,0 +1,283 @@
+import csv
+import re
+import subprocess
+from decimal import Decimal
+import os
+import tempfile
+
+def parse_amount(amount_str):
+    """Parse amount string, handling parentheses for negative values"""
+    amount_str = amount_str.strip()
+    # Remove commas
+    amount_str = amount_str.replace(',', '')
+    # Check if it's in parentheses (credit/negative)
+    if amount_str.startswith('(') and amount_str.endswith(')'):
+        return Decimal(amount_str[1:-1]) * -1
+    return Decimal(amount_str)
+
+def extract_text_from_pdf(pdf_path):
+    """Extract text from PDF using pdftotext and OCR if needed"""
+    # First try regular text extraction
+    result = subprocess.run(['pdftotext', '-layout', pdf_path, '-'], 
+                          capture_output=True, text=True, check=True)
+    text = result.stdout
+    
+    # Check if we got totals - if not, pages might be images
+    if 'Total due' not in text:
+        # Try OCR on all pages
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Convert PDF to images
+            subprocess.run(['pdftoppm', pdf_path, f'{tmpdir}/page', '-png'], 
+                         capture_output=True, check=True)
+            
+            # OCR each page
+            all_text = []
+            page_files = sorted([f for f in os.listdir(tmpdir) if f.startswith('page-')])
+            for page_file in page_files:
+                page_path = os.path.join(tmpdir, page_file)
+                ocr_result = subprocess.run(['tesseract', page_path, '-'], 
+                                          capture_output=True, text=True, check=True)
+                all_text.append(ocr_result.stdout)
+            
+            text = '\n'.join(all_text)
+    
+    return text
+
+def clean_description(desc):
+    """Clean up description by removing artifacts"""
+    # Remove page headers and vendor names
+    desc = re.sub(r'INVOICE\s+\d+\s*(?:-\s*)?Page\s+\d+\s+of\s+\d+', '', desc, flags=re.IGNORECASE)
+    desc = re.sub(r'Page\s+\d+\s+of\s+\d+', '', desc, flags=re.IGNORECASE)
+    
+    vendor_names = ['Delta Studio Supply', 'Elm Fabrication Ltd', 'Firth Survey Services']
+    for vendor in vendor_names:
+        desc = desc.replace(vendor, '')
+    
+    # Clean up multiple spaces
+    desc = re.sub(r'\s+', ' ', desc)
+    desc = desc.strip()
+    
+    return desc
+
+def should_skip_line(line):
+    """Check if line should be skipped entirely"""
+    line = line.strip()
+    if not line:
+        return True
+        
+    skip_patterns = [
+        r'^Invoice continues',
+        r'^Totals are on',
+        r'^Continuation of line items\.',
+        r'SYNTHETIC DEMO INVOICE',
+        r'^Bill to:',
+        r'^Currency:',
+        r'^Page \d+ of \d+$',
+        r'Amounts in parentheses',
+        r'^INVOICE \d+\s*(-\s*Page\s+\d+\s+of\s+\d+)?\s*$',
+        r'demonstration.*fixture',
+        r'image-only scanned',
+        r'^\s*(Delta Studio Supply|Elm Fabrication Ltd|Firth Survey Services)\s*$'
+    ]
+    
+    return any(re.search(pattern, line, re.IGNORECASE) for pattern in skip_patterns)
+
+def is_total_line(line):
+    """Check if line is a Subtotal, Tax, or Total line"""
+    line = line.strip()
+    return re.match(r'^(Subtotal|Tax|Total due)', line) is not None
+
+def has_line_item_pattern(line):
+    """Check if line contains a line item pattern (qty, unit_price, amount at end)"""
+    # More flexible pattern to catch items
+    pattern = r'([\d.]+)\s+(\([\d,]+\.[\d]{2,4}\)|[\d,]+\.[\d]{2,4})\s+(\([\d,]+\.[\d]{2}\)|[\d,]+\.[\d]{2})\s*$'
+    return re.search(pattern, line) is not None
+
+def parse_invoice_text(text, vendor):
+    """Parse text to extract line items and totals"""
+    lines = text.split('\n')
+    
+    # Extract invoice ID
+    invoice_match = re.search(r'INVOICE\s+(\d+)', text)
+    invoice_id = invoice_match.group(1) if invoice_match else ""
+    
+    # Extract line items
+    line_items = []
+    in_items_section = False
+    i = 0
+    
+    while i < len(lines):
+        line = lines[i]
+        
+        # Skip lines we shouldn't process
+        if should_skip_line(line):
+            i += 1
+            continue
+        
+        # Check if we've reached a description header
+        if re.search(r'Description\s+Qty\s+Unit price\s+Amount', line):
+            in_items_section = True
+            i += 1
+            continue
+        
+        # Stop at subtotal/tax/total lines
+        if is_total_line(line):
+            break
+        
+        if not in_items_section:
+            i += 1
+            continue
+        
+        # Try to match a complete line item with all components
+        item_pattern = r'^(.+?)\s+([\d.]+)\s+(\([\d,]+\.[\d]{2,4}\)|[\d,]+\.[\d]{2,4})\s+(\([\d,]+\.[\d]{2}\)|[\d,]+\.[\d]{2})\s*$'
+        match = re.match(item_pattern, line)
+        
+        if match:
+            description = match.group(1).strip()
+            qty_str = match.group(2)
+            unit_price_str = match.group(3)
+            amount_str = match.group(4)
+            
+            # Look ahead for continuation lines (lines without item pattern)
+            continuation_lines = []
+            j = i + 1
+            while j < len(lines):
+                next_line = lines[j].strip()
+                
+                # Stop if we hit an empty line, skip line, or total line
+                if not next_line or should_skip_line(lines[j]) or is_total_line(next_line):
+                    j += 1
+                    if not next_line or is_total_line(next_line):
+                        break
+                    continue
+                
+                # Stop if next line has another line item pattern
+                if has_line_item_pattern(next_line):
+                    break
+                
+                # This is a continuation line
+                continuation_lines.append(next_line)
+                j += 1
+                
+                # Stop if we've gone too far (max 3 continuation lines)
+                if len(continuation_lines) >= 3:
+                    break
+            
+            # Build full description
+            if continuation_lines:
+                description = description + ' ' + ' '.join(continuation_lines)
+                i = j  # Skip the continuation lines we processed
+            else:
+                i += 1
+            
+            # Clean the description
+            description = clean_description(description)
+            
+            # Skip if description is empty after cleaning
+            if not description:
+                continue
+            
+            try:
+                qty = Decimal(qty_str)
+                unit_price = parse_amount(unit_price_str)
+                amount = parse_amount(amount_str)
+                
+                line_items.append({
+                    'invoice_id': invoice_id,
+                    'vendor': vendor,
+                    'description': description,
+                    'quantity': qty,
+                    'unit_price': unit_price,
+                    'line_amount': amount
+                })
+            except Exception as e:
+                print(f"  Warning: Could not parse values: {line[:50]}")
+                print(f"    Error: {e}")
+                i += 1
+        else:
+            i += 1
+    
+    # Extract totals
+    subtotal_match = re.search(r'Subtotal\s+([\d,]+\.[\d]{2})', text)
+    tax_match = re.search(r'Tax\s+([\d,]+\.[\d]{2})', text)
+    total_match = re.search(r'Total due\s+([\d,]+\.[\d]{2})', text)
+    
+    subtotal = parse_amount(subtotal_match.group(1)) if subtotal_match else Decimal('0')
+    tax = parse_amount(tax_match.group(1)) if tax_match else Decimal('0')
+    total = parse_amount(total_match.group(1)) if total_match else Decimal('0')
+    
+    return line_items, invoice_id, subtotal, tax, total
+
+def extract_invoice_data(pdf_path):
+    """Extract line items and totals from an invoice PDF"""
+    # Get the text for all pages
+    text = extract_text_from_pdf(pdf_path)
+    
+    # Extract vendor name (first non-empty line)
+    lines = [l.strip() for l in text.split('\n') if l.strip()]
+    vendor = lines[0] if lines else ""
+    
+    return parse_invoice_text(text, vendor)
+
+# Process all PDFs
+all_items = []
+reconciliation = []
+
+pdf_files = sorted([f for f in os.listdir('input') if f.endswith('.pdf')])
+
+for pdf_file in pdf_files:
+    pdf_path = os.path.join('input', pdf_file)
+    print(f"Processing {pdf_file}...")
+    
+    line_items, invoice_id, printed_subtotal, tax, printed_total = extract_invoice_data(pdf_path)
+    
+    # Add items to list
+    all_items.extend(line_items)
+    
+    # Calculate computed subtotal (sum of line amounts)
+    computed_subtotal = sum(item['line_amount'] for item in line_items)
+    computed_total = computed_subtotal + tax
+    difference = computed_total - printed_total
+    
+    # Determine status
+    status = "matched" if difference == 0 else "discrepancy"
+    
+    if line_items or invoice_id:
+        reconciliation.append({
+            'invoice_id': invoice_id,
+            'subtotal': computed_subtotal,
+            'tax': tax,
+            'printed_total': printed_total,
+            'computed_total': computed_total,
+            'difference': difference,
+            'status': status
+        })
+        
+        print(f"  Invoice {invoice_id}: {len(line_items)} items, status={status}")
+        if status == "discrepancy":
+            print(f"    Discrepancy: difference={difference}")
+
+# Write items.csv
+with open('items.csv', 'w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+    writer.writeheader()
+    writer.writerows(all_items)
+
+print(f"\nWrote {len(all_items)} line items to items.csv")
+
+# Write reconciliation.csv
+with open('reconciliation.csv', 'w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+    writer.writeheader()
+    writer.writerows(reconciliation)
+
+print(f"Wrote {len(reconciliation)} reconciliation records to reconciliation.csv")
+
+# Report any discrepancies
+discrepancies = [r for r in reconciliation if r['status'] == 'discrepancy']
+if discrepancies:
+    print(f"\n⚠️  FOUND {len(discrepancies)} DISCREPANCIES:")
+    for d in discrepancies:
+        print(f"  Invoice {d['invoice_id']}: difference = {d['difference']}")
+else:
+    print("\n✓ All invoices reconciled successfully!")

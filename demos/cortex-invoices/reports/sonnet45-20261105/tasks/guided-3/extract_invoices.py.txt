@@ -1,0 +1,105 @@
+import csv
+from decimal import Decimal, ROUND_HALF_UP
+import re
+import sys
+
+# Parse invoice data from the PDFs
+invoices = {
+    '004071': {
+        'vendor': 'Juniper Studio Supply',
+        'line_items': [
+            {'description': 'Archive cartons, reinforced - batch 4', 'quantity': '11', 'unit_price': '12.45', 'line_amount': '136.95'},
+            {'description': 'Labels "Handle with care", roll 4', 'quantity': '3', 'unit_price': '12.80', 'line_amount': '38.40'},
+            {'description': 'Cut-to-length protective liner, grade 4', 'quantity': '2.5', 'unit_price': '14.76', 'line_amount': '36.90'},
+            {'description': 'Returned labels credit, order 4', 'quantity': '1', 'unit_price': '-9.80', 'line_amount': '-9.80'},
+        ],
+        'subtotal': '202.45',
+        'tax': '24.17',
+        'total': '226.62'
+    },
+    '004082': {
+        'vendor': 'Kestrel Fabrication Ltd',
+        'line_items': [
+            {'description': 'Bench assembly, series 4', 'quantity': '2', 'unit_price': '1296.60', 'line_amount': '2593.20'},
+            {'description': 'Alignment service, station 4', 'quantity': '1.5', 'unit_price': '86.40', 'line_amount': '129.60'},
+            {'description': 'Replacement seal kit for hydraulic assembly, series 4, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate', 'quantity': '3', 'unit_price': '51.75', 'line_amount': '155.25'},
+            {'description': 'Precision shims, pack 4', 'quantity': '7', 'unit_price': '4.375', 'line_amount': '30.63'},
+            {'description': 'Freight and handling, zone 4', 'quantity': '1', 'unit_price': '42.50', 'line_amount': '42.50'},
+            {'description': 'Volume discount, agreement 4', 'quantity': '1', 'unit_price': '-38.00', 'line_amount': '-38.00'},
+        ],
+        'subtotal': '2913.18',
+        'tax': '156.28',
+        'total': '3069.46'
+    },
+    '004093': {
+        'vendor': 'Larch Survey Services',
+        'line_items': [
+            {'description': 'Site survey, area 4', 'quantity': '1', 'unit_price': '494.50', 'line_amount': '494.50'},
+            {'description': 'Travel time, route 4', 'quantity': '2.25', 'unit_price': '64.80', 'line_amount': '145.80'},
+            {'description': 'Calibration standard, set 4', 'quantity': '2', 'unit_price': '37.25', 'line_amount': '74.50'},
+            {'description': 'Additional sensor mounts, revised scope 4', 'quantity': '4', 'unit_price': '18.95', 'line_amount': '75.80'},
+            {'description': 'Cable assemblies, shielded, length 4 m', 'quantity': '5', 'unit_price': '11.40', 'line_amount': '57.00'},
+            {'description': 'Previously billed visit credit, ticket 4', 'quantity': '1', 'unit_price': '-28.00', 'line_amount': '-28.00'},
+        ],
+        'subtotal': '819.60',
+        'tax': '92.64',
+        'total': '912.26'
+    }
+}
+
+# Write items.csv
+with open('items.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+    
+    for invoice_id, invoice in invoices.items():
+        for item in invoice['line_items']:
+            writer.writerow([
+                invoice_id,
+                invoice['vendor'],
+                item['description'],
+                item['quantity'],
+                item['unit_price'],
+                item['line_amount']
+            ])
+
+print("Created items.csv with", sum(len(inv['line_items']) for inv in invoices.values()), "line items")
+
+# Write reconciliation.csv
+with open('reconciliation.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+    
+    for invoice_id, invoice in invoices.items():
+        subtotal = Decimal(invoice['subtotal'])
+        tax = Decimal(invoice['tax'])
+        printed_total = Decimal(invoice['total'])
+        
+        # Compute total from line amounts
+        computed_subtotal = sum(Decimal(item['line_amount']) for item in invoice['line_items'])
+        computed_total = computed_subtotal + tax
+        
+        # Calculate difference
+        difference = computed_total - printed_total
+        
+        # Determine status
+        status = 'matched' if difference == 0 else 'discrepancy'
+        
+        writer.writerow([
+            invoice_id,
+            f"{subtotal:.2f}",
+            f"{tax:.2f}",
+            f"{printed_total:.2f}",
+            f"{computed_total:.2f}",
+            f"{difference:.2f}",
+            status
+        ])
+        
+        # Check if subtotal matches computed subtotal
+        if computed_subtotal != subtotal:
+            print(f"WARNING: Invoice {invoice_id} - Computed subtotal {computed_subtotal:.2f} != Printed subtotal {subtotal:.2f}")
+        
+        if difference != 0:
+            print(f"DISCREPANCY: Invoice {invoice_id} - Difference: {difference:.2f}")
+
+print("Created reconciliation.csv")

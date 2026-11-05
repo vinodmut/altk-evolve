@@ -156,6 +156,19 @@ def test_bridge_preserves_all_system_text_and_tools(bundle):
         bundle.services.flatten_system({"system": [{"type": "image"}]})
 
 
+def test_shared_runtime_can_isolate_another_task_family(bundle, monkeypatch):
+    config = bundle.services.cortex_config()
+    assert config["pipeline"]["outbound"]["plugins"][-1]["config"]["serve_namespace"] == "photo-reviewed"
+    monkeypatch.setattr(bundle.services, "SERVE_NAMESPACE", "invoice-reviewed")
+    monkeypatch.setattr(bundle.services, "LEARN_NAMESPACE", "invoice-candidates")
+    monkeypatch.setattr(bundle.services, "PROCESSING_PROFILE", "invoice-demo")
+    config = bundle.services.cortex_config(True)["pipeline"]["outbound"]["plugins"][-1]["config"]
+    assert config["serve_namespace"] == "invoice-reviewed"
+    assert config["learn_namespace"] == "invoice-candidates"
+    assert config["processing_profile"] == "invoice-demo"
+    assert config["inject"] is True and config["learn"] is False
+
+
 @pytest.mark.parametrize(
     "data,passed",
     [

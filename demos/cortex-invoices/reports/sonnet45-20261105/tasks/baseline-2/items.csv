@@ -1,0 +1,17 @@
+invoice_id,vendor,description,quantity,unit_price,line_amount
+003071,Grove Office Supply,"Archive cartons, reinforced - batch 3",10,12.45,124.50
+003071,Grove Office Supply,"Labels ""Handle with care"", roll 3",3,11.80,35.40
+003071,Grove Office Supply,"Cut-to-length protective liner, grade 3",2.5,14.76,36.90
+003071,Grove Office Supply,"Returned labels credit, order 3",1,-9.80,-9.80
+003082,Harbor Workshop Ltd,"Bench assembly, series 3",2,1279.60,2559.20
+003082,Harbor Workshop Ltd,"Alignment service, station 3",1.5,86.40,129.60
+003082,Harbor Workshop Ltd,"Replacement seal kit for hydraulic assembly, series 3, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",3,50.75,152.25
+003082,Harbor Workshop Ltd,"Precision shims, pack 3",7,4.375,30.63
+003082,Harbor Workshop Ltd,"Freight and handling, zone 3",1,42.50,42.50
+003082,Harbor Workshop Ltd,"Volume discount, agreement 3",1,-37.00,-37.00
+003093,Iris Field Services,"Site survey, area 3",1,471.50,471.50
+003093,Iris Field Services,"Travel time, route 3",2.25,64.80,145.80
+003093,Iris Field Services,"Calibration standard, set 3",2,37.25,74.50
+003093,Iris Field Services,"Additional sensor mounts, revised scope 3",4,18.95,75.80
+003093,Iris Field Services,"Cable assemblies, shielded, length 3 m",5,11.40,57.00
+003093,Iris Field Services,"Previously billed visit credit, ticket 3",1,-27.00,-27.00

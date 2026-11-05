@@ -1,0 +1,5 @@
+I checked your saved CSVs against independently prepared reference data.
+
+All 16 item rows and all 3 invoice reconciliations match the reference, including complete descriptions, signed credits, and discrepancies.
+
+Summarize the verified extraction and checking procedure, and any approaches that actually failed in this session. Keep this summary in the conversation; do not write a memory file.

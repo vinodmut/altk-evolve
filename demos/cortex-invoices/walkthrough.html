@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run the Cortex + Evolve invoice demo</title><style>body{max-width:920px;margin:36px auto;padding:0 24px;font:17px/1.6 system-ui;color:#172033;background:#f8fafc;overflow-wrap:anywhere}h1,h2{line-height:1.25}h2{margin-top:48px;border-top:1px solid #ccd;padding-top:24px}pre{padding:20px;background:#e8edf4;overflow:auto;font-size:14px}code{font-family:ui-monospace,monospace}p code{background:#e8edf4;padding:2px 4px}a{color:#0043ce}li{margin:8px 0}</style></head><body><h1>Cortex + Evolve invoice demo</h1>
+<p>Extract invoice PDFs into checked CSVs in Claude Code, let Evolve learn from one training session, then run fresh invoices with reviewed guidelines. Cortex, Evolve, Claude Code, Poppler, and Tesseract run inside Docker. The models use your configured API. You need Docker with Compose, Git, and API access; host PDF tools, Python, uv, and Claude are not required.</p>
+<p>Each packet contains three synthetic invoices and 16 line items: a text invoice; a multipage invoice with repeated headings and a description continuing across a page boundary; and an invoice whose second page is scanned. They include signed credits, fractional quantities, a three-decimal unit price with a printed rounded line amount, and one mismatched printed total. Training and all three evaluation packets use different IDs, vendors, descriptions, and amounts.</p>
+<p>The task is printed in <a href="prompt.txt">prompt.txt</a>. It asks for <code>items.csv</code> and <code>reconciliation.csv</code>; the exact field definitions are part of the prompt. The <a href="fixtures/training/">sample training invoices</a> and other packets are ready to use. Author-side references live in <code>oracle/</code> and are excluded from the task image. A separate evaluator container, with networking disabled, reads the references and output files. The task agent cannot see that container or its mounts.</p>
+<p>The <a href="reports/sonnet45-20261105/summary.html">recorded Sonnet 4.5 report</a> includes the original three pairs and a same-input follow-up. The original pairs all passed, with 52 baseline tool calls versus 53 guided calls; they did not show an overall improvement. Two further batch pairs on identical PDFs used 36 and 68 baseline calls versus 12 and 16 guided calls. The 68-call baseline lost a description continuation; both guided runs passed. This is a small observed benefit with substantial baseline variation. The report records the interactive-to-batch switch and separates comparisons with matching harnesses. The commands below use batch mode consistently for new runs.</p>
+<h2>1. Get the bundle and configure both model connections</h2>
+<pre><code class="language-bash">export DEMO_ROOT=&quot;$(mktemp -d &quot;${TMPDIR:-/tmp}/cortex-invoices.XXXXXX&quot;)&quot;
+git clone --depth 1 --single-branch --branch rossocortex \
+  https://github.com/vinodmut/kaizen.git &quot;$DEMO_ROOT/kaizen&quot;
+cd &quot;$DEMO_ROOT/kaizen/demos/cortex-invoices&quot;
+cp ../cortex-photo/.env.example .env
+</code></pre>
+<p>For local development, use <code>cd demos/cortex-invoices</code> in this checkout. Stay in this directory for every <code>./demo</code> command. The new bundle must be present in the branch you clone.</p>
+<p>Edit <code>.env</code>. Set <code>ANTHROPIC_BASE_URL</code>, <code>ANTHROPIC_API_KEY</code>, <code>ANTHROPIC_MODEL</code>, and <code>EVOLVE_MODEL_NAME</code>; keep <code>EVOLVE_CUSTOM_LLM_PROVIDER=anthropic</code> for a shared Anthropic connection. Direct-provider defaults select Sonnet 4.6 for both task and learner. The recorded experiment uses the gateway's <code>aws/claude-sonnet-4-5</code> ID for both. Choose model IDs your endpoint serves, and keep them unchanged during a comparison. Your host's Claude subscription/login is not copied into Docker.</p>
+<pre><code class="language-bash">./demo setup
+</code></pre>
+<p>The launcher builds the shared pinned runtime from <code>../cortex-photo</code>, adds the PDF tools, starts services on container loopback, and makes two small live API checks. Expect <code>live API OK</code> for Claude and Evolve. No host port or host trust-store change is needed. The first build takes several minutes; subsequent builds reuse cached layers.</p>
+<h2>2. Complete one training packet and inspect real feedback</h2>
+<pre><code class="language-bash">./demo training --batch
+</code></pre>
+<p>Claude runs the supplied task and exits automatically. Bash, Read, Write, and Edit are explicitly allowed; other operations that need permission are denied. No stdin, folder trust answer, or <code>/exit</code> is required. Expect a captured training UUID and tool-call count, with guideline injection off. The final Claude result is saved as <code>results/training-cli-1.json</code>; Cortex records the intermediate tool calls and results.</p>
+<pre><code class="language-bash">./demo feedback
+./demo resume training --batch
+./demo feedback
+</code></pre>
+<p>The evaluator prints reference-based feedback and saves it to <code>results/training-feedback.txt</code>. The batch resume supplies that text automatically. It requests corrections only for actual output errors, followed by a summary of the verified procedure and real failed approaches. If the first outputs pass, it confirms that outcome and requests the summary. The final feedback command checks the saved outputs again. The original outputs and first evaluation are preserved alongside the final training recording.</p>
+<h2>3. Learn, review the generated text, and promote</h2>
+<pre><code class="language-bash">./demo learn --json-output
+./demo candidates
+</code></pre>
+<p>Learning processes only the training UUID. Expect full generated guideline text and the source session ID; complete provenance is saved in invoice-candidates.json. The command uses Evolve's existing JSON generation with local Pydantic validation, which also works with the gateway used in the recorded experiment. Native response-schema generation was incompatible with that gateway. The flag changes no library source; omit it only if you want to test native schema support on your endpoint.</p>
+<p>Review the candidates. Select reusable, evidenced procedures; leave invoice-specific answers, invented failures, and unjustified advice unpromoted. Then run:</p>
+<pre><code class="language-bash">./demo promote
+</code></pre>
+<p>Enter your selected candidate IDs when prompted. Expect unchanged copies in <code>invoice-reviewed</code>, with a saved candidate-to-serving ID mapping. The selection is frozen before the trials. There is no automatic promotion and no new learning from evaluation cases.</p>
+<h2>4. Run three fresh baseline/guided pairs</h2>
+<pre><code class="language-bash">./demo baseline 1 --batch
+./demo guided 1 --batch
+./demo guided 2 --batch
+./demo baseline 2 --batch
+./demo baseline 3 --batch
+./demo guided 3 --batch
+</code></pre>
+<p>Each session finishes automatically and saves its CLI JSON plus Cortex trajectory. Both arms receive the identical prompt, original PDFs, and tools in fresh workspaces and Claude configurations. Baseline injection is off even when reviewed guidelines exist. Guided sessions preview MCP retrieval, enable injection, and capture the first request's serving IDs. No previous scripts or output CSVs are copied into a fresh task workspace. The alternating order reduces a simple run-order bias; six sessions are still a small experiment.</p>
+<p>The three pairs use three different invoice packets. To measure variation on identical inputs, optionally repeat packet 1 in fresh sessions:</p>
+<pre><code class="language-bash">./demo baseline 1 --repeat 2 --batch
+./demo guided 1 --repeat 2 --batch
+./demo guided 1 --repeat 3 --batch
+./demo baseline 1 --repeat 3 --batch
+</code></pre>
+<p>Repeat numbers preserve the earlier UUIDs, recordings and outputs. All three repetitions use identical PDF bytes and task text, but separate workspaces and configurations. The report shows these separately from the different-packet comparison; the original pair 1 appears in both summaries and must not be counted twice. Keep the model, harness, and frozen guidelines unchanged.</p>
+<h2>5. Read the actual results and stop services</h2>
+<pre><code class="language-bash">./demo report
+./demo stop
+</code></pre>
+<p>Open <code>results/summary.html</code> in your host browser. It includes the architecture, task, all generated guidelines, training feedback, before/after trajectories, exact CSV outputs, reference-based checks, tool calls, harness modes, and injection attribution. It reports ties and regressions as well as improvements. Correctness is the primary measure; fewer tool calls are useful when correctness is preserved. Terminal interaction and harness changes make elapsed time unsuitable as a speed comparison.</p>
+<p>Raw Cortex events, converted trajectories, and outputs are saved beside the report. <code>.env</code> and <code>results/runtime/</code> are private and ignored; runtime includes credentials/configuration and CA material. <code>./demo capture baseline-1</code> can recover evidence after a terminal interruption. A completed arm cannot overwrite its earlier evidence. For a new experiment, stop services and rename <code>results</code> before setup.</p>
+<p>To use Claude Code interactively, omit <code>--batch</code> consistently from both arms. Accept the folder trust prompt, approve local tools, and enter <code>/exit</code> after the answer. For interactive training feedback, paste <code>results/training-feedback.txt</code> into <code>./demo resume training</code>. If an evaluation session is interrupted, <code>./demo resume baseline 2 --batch</code> resumes that UUID with only a neutral request to finish the original task; the report flags a changed harness. Completed evaluation sessions and learned training cannot be resumed by the driver.</p>
+<p>Fixture maintenance is optional and requires uv: <code>uv run --project demos/cortex-invoices python demos/cortex-invoices/build_fixtures.py</code> from the repository root. It regenerates PDFs from the author-side catalog and writes reference data and SHA-256 hashes. Normal walkthrough users use the bundled PDFs. The Docker task environment uses the shared locked runtime; this directory's <code>pyproject.toml</code> and <code>uv.lock</code> are only for fixture generation.</p>
+</body></html>

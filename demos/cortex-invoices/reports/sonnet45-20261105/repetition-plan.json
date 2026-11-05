@@ -1,0 +1,17 @@
+{
+  "registered_at": "2026-11-05T17:41:13.320804+00:00",
+  "packet": "trial-1",
+  "repetitions": [
+    1,
+    2,
+    3
+  ],
+  "additional_order": [
+    "baseline-1-repeat-2",
+    "guided-1-repeat-2",
+    "guided-1-repeat-3",
+    "baseline-1-repeat-3"
+  ],
+  "reason": "Measure same-input variation after exploratory differences; keep original results and reviewed selection frozen.",
+  "harness": "repetition 1 interactive; repetitions 2 and 3 noninteractive"
+}

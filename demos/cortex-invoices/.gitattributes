@@ -1,0 +1,3 @@
+*.pdf binary
+*.gz binary
+reports/** -text -whitespace

@@ -1,0 +1,100 @@
+import csv
+from decimal import Decimal
+
+# Invoice data extracted from PDFs
+invoices = {
+    '002071': {
+        'vendor': 'Delta Studio Supply',
+        'items': [
+            {'description': 'Archive cartons, reinforced - batch 2', 'quantity': '9', 'unit_price': '12.45', 'line_amount': '112.05'},
+            {'description': 'Labels "Handle with care", roll 2', 'quantity': '3', 'unit_price': '10.80', 'line_amount': '32.40'},
+            {'description': 'Cut-to-length protective liner, grade 2', 'quantity': '2.5', 'unit_price': '14.76', 'line_amount': '36.90'},
+            {'description': 'Returned labels credit, order 2', 'quantity': '1', 'unit_price': '-9.80', 'line_amount': '-9.80'},
+        ],
+        'subtotal': '171.55',
+        'tax': '22.17',
+        'total': '193.72'
+    },
+    '002082': {
+        'vendor': 'Elm Fabrication Ltd',
+        'items': [
+            {'description': 'Bench assembly, series 2', 'quantity': '2', 'unit_price': '1262.60', 'line_amount': '2525.20'},
+            {'description': 'Alignment service, station 2', 'quantity': '1.5', 'unit_price': '86.40', 'line_amount': '129.60'},
+            {'description': 'Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate', 'quantity': '3', 'unit_price': '49.75', 'line_amount': '149.25'},
+            {'description': 'Precision shims, pack 2', 'quantity': '7', 'unit_price': '4.375', 'line_amount': '30.63'},
+            {'description': 'Freight and handling, zone 2', 'quantity': '1', 'unit_price': '42.50', 'line_amount': '42.50'},
+            {'description': 'Volume discount, agreement 2', 'quantity': '1', 'unit_price': '-36.00', 'line_amount': '-36.00'},
+        ],
+        'subtotal': '2841.18',
+        'tax': '154.28',
+        'total': '2995.46'
+    },
+    '002093': {
+        'vendor': 'Firth Survey Services',
+        'items': [
+            {'description': 'Site survey, area 2', 'quantity': '1', 'unit_price': '448.50', 'line_amount': '448.50'},
+            {'description': 'Travel time, route 2', 'quantity': '2.25', 'unit_price': '64.80', 'line_amount': '145.80'},
+            {'description': 'Calibration standard, set 2', 'quantity': '2', 'unit_price': '37.25', 'line_amount': '74.50'},
+            {'description': 'Additional sensor mounts, revised scope 2', 'quantity': '4', 'unit_price': '18.95', 'line_amount': '75.80'},
+            {'description': 'Cable assemblies, shielded, length 2 m', 'quantity': '5', 'unit_price': '11.40', 'line_amount': '57.00'},
+            {'description': 'Previously billed visit credit, ticket 2', 'quantity': '1', 'unit_price': '-26.00', 'line_amount': '-26.00'},
+        ],
+        'subtotal': '775.60',
+        'tax': '90.64',
+        'total': '866.26'
+    }
+}
+
+# Write items.csv
+with open('items.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+    
+    for invoice_id, data in sorted(invoices.items()):
+        for item in data['items']:
+            writer.writerow([
+                invoice_id,
+                data['vendor'],
+                item['description'],
+                item['quantity'],
+                item['unit_price'],
+                item['line_amount']
+            ])
+
+print("✓ Created items.csv with", sum(len(data['items']) for data in invoices.values()), "line items")
+
+# Write reconciliation.csv
+with open('reconciliation.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+    
+    discrepancies = []
+    for invoice_id, data in sorted(invoices.items()):
+        subtotal = Decimal(data['subtotal'])
+        tax = Decimal(data['tax'])
+        printed_total = Decimal(data['total'])
+        computed_total = subtotal + tax
+        difference = computed_total - printed_total
+        status = 'matched' if difference == 0 else 'discrepancy'
+        
+        if status == 'discrepancy':
+            discrepancies.append((invoice_id, difference))
+        
+        writer.writerow([
+            invoice_id,
+            data['subtotal'],
+            data['tax'],
+            data['total'],
+            f'{computed_total:.2f}',
+            f'{difference:.2f}',
+            status
+        ])
+
+print("✓ Created reconciliation.csv")
+
+if discrepancies:
+    print("\n⚠ DISCREPANCIES FOUND:")
+    for invoice_id, diff in discrepancies:
+        print(f"  Invoice {invoice_id}: difference of ${diff:.2f}")
+else:
+    print("✓ All invoices reconciled successfully")

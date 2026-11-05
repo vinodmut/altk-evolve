@@ -1,0 +1,16 @@
+Extract every invoice line item from the PDFs in input/ into items.csv.
+Use exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.
+Preserve invoice IDs and complete item descriptions, including continuation text.
+Include credits and discounts as signed line items. Do not include table headings,
+page subtotals, tax, or grand totals as items. Preserve exact decimal amounts.
+
+Reconcile each invoice's sum of line amounts plus its printed tax against its
+printed total. Write reconciliation.csv with exactly these columns:
+invoice_id,subtotal,tax,printed_total,computed_total,difference,status.
+Difference means computed_total minus printed_total. Status must be matched
+when the difference is zero and discrepancy otherwise. Report any discrepancy.
+
+Keep all source PDFs unchanged. Use the installed local tools; do not install
+packages or write persistent memory files. If using Python, run it with
+uv run --offline --no-sync --project /opt/demo python.
+Show the successful commands and briefly explain how you checked the result.

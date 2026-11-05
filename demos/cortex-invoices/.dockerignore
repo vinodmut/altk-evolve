@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!driver.py
+!prompt.txt
+!fixtures/
+!fixtures/**

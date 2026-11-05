@@ -1,0 +1,16 @@
+{
+  "reviewer": "Codex",
+  "selected_candidate_ids": [
+    "1",
+    "3"
+  ],
+  "selection_unchanged": true,
+  "reasons": {
+    "1": "Three captured file-not-found errors preceded working-directory discovery and successful absolute-path reads.",
+    "3": "Decimal-based calculations correctly identified the printed-total discrepancy."
+  },
+  "not_promoted": {
+    "2": "Blanket preference for manual transcription over installed parsers/OCR was not established by this run.",
+    "4": "Supported but largely repeats the explicit task exclusions; omitted to keep the reviewed selection focused."
+  }
+}

@@ -1,0 +1,4 @@
+invoice_id,subtotal,tax,printed_total,computed_total,difference,status
+004071,202.45,24.17,226.62,226.62,0.00,matched
+004082,2913.18,156.28,3069.46,3069.46,0.00,matched
+004093,819.60,92.64,912.26,912.24,-0.02,discrepancy

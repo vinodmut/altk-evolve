@@ -1,0 +1,93 @@
+import csv
+import re
+from decimal import Decimal
+
+# Define invoice data structure
+invoices = {
+    '003071': {
+        'vendor': 'Grove Office Supply',
+        'items': [
+            {'description': 'Archive cartons, reinforced - batch 3', 'qty': '10', 'unit_price': '12.45', 'amount': '124.50'},
+            {'description': 'Labels "Handle with care", roll 3', 'qty': '3', 'unit_price': '11.80', 'amount': '35.40'},
+            {'description': 'Cut-to-length protective liner, grade 3', 'qty': '2.5', 'unit_price': '14.76', 'amount': '36.90'},
+            {'description': 'Returned labels credit, order 3', 'qty': '1', 'unit_price': '-9.80', 'amount': '-9.80'},
+        ],
+        'subtotal': '187.00',
+        'tax': '23.17',
+        'total': '210.17'
+    },
+    '003082': {
+        'vendor': 'Harbor Workshop Ltd',
+        'items': [
+            {'description': 'Bench assembly, series 3', 'qty': '2', 'unit_price': '1279.60', 'amount': '2559.20'},
+            {'description': 'Alignment service, station 3', 'qty': '1.5', 'unit_price': '86.40', 'amount': '129.60'},
+            {'description': 'Replacement seal kit for hydraulic assembly, series 3, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate', 'qty': '3', 'unit_price': '50.75', 'amount': '152.25'},
+            {'description': 'Precision shims, pack 3', 'qty': '7', 'unit_price': '4.375', 'amount': '30.63'},
+            {'description': 'Freight and handling, zone 3', 'qty': '1', 'unit_price': '42.50', 'amount': '42.50'},
+            {'description': 'Volume discount, agreement 3', 'qty': '1', 'unit_price': '-37.00', 'amount': '-37.00'},
+        ],
+        'subtotal': '2877.18',
+        'tax': '155.28',
+        'total': '3032.46'
+    },
+    '003093': {
+        'vendor': 'Iris Field Services',
+        'items': [
+            {'description': 'Site survey, area 3', 'qty': '1', 'unit_price': '471.50', 'amount': '471.50'},
+            {'description': 'Travel time, route 3', 'qty': '2.25', 'unit_price': '64.80', 'amount': '145.80'},
+            {'description': 'Calibration standard, set 3', 'qty': '2', 'unit_price': '37.25', 'amount': '74.50'},
+            {'description': 'Additional sensor mounts, revised scope 3', 'qty': '4', 'unit_price': '18.95', 'amount': '75.80'},
+            {'description': 'Cable assemblies, shielded, length 3 m', 'qty': '5', 'unit_price': '11.40', 'amount': '57.00'},
+            {'description': 'Previously billed visit credit, ticket 3', 'qty': '1', 'unit_price': '-27.00', 'amount': '-27.00'},
+        ],
+        'subtotal': '797.60',
+        'tax': '91.64',
+        'total': '889.25'
+    }
+}
+
+# Write items.csv
+with open('items.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'vendor', 'description', 'quantity', 'unit_price', 'line_amount'])
+    
+    for invoice_id, data in sorted(invoices.items()):
+        for item in data['items']:
+            writer.writerow([
+                invoice_id,
+                data['vendor'],
+                item['description'],
+                item['qty'],
+                item['unit_price'],
+                item['amount']
+            ])
+
+print("✓ Created items.csv with all line items")
+
+# Write reconciliation.csv
+with open('reconciliation.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['invoice_id', 'subtotal', 'tax', 'printed_total', 'computed_total', 'difference', 'status'])
+    
+    for invoice_id, data in sorted(invoices.items()):
+        subtotal = Decimal(data['subtotal'])
+        tax = Decimal(data['tax'])
+        printed_total = Decimal(data['total'])
+        computed_total = subtotal + tax
+        difference = computed_total - printed_total
+        status = 'matched' if difference == 0 else 'discrepancy'
+        
+        writer.writerow([
+            invoice_id,
+            f"{subtotal:.2f}",
+            f"{tax:.2f}",
+            f"{printed_total:.2f}",
+            f"{computed_total:.2f}",
+            f"{difference:.2f}",
+            status
+        ])
+        
+        if status == 'discrepancy':
+            print(f"⚠ DISCREPANCY found in invoice {invoice_id}: difference = {difference:.2f}")
+
+print("✓ Created reconciliation.csv with reconciliation results")

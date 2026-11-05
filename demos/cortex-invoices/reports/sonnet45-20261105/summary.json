@@ -1,0 +1,819 @@
+{
+  "task_model": "aws/claude-sonnet-4-5",
+  "learning_model": "aws/claude-sonnet-4-5",
+  "completed_pairs": 3,
+  "pairs": [
+    {
+      "trial": 1,
+      "labels": {
+        "baseline": "baseline-1",
+        "guided": "guided-1"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 16,
+          "assistant_messages": 13,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "interactive",
+            "flags": [],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 15,
+          "assistant_messages": 13,
+          "observed_tool_errors": 2,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T16:47:21.446367031Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "interactive",
+            "flags": [],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "labels": {
+        "baseline": "baseline-2",
+        "guided": "guided-2"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": false,
+      "valid_comparison": false,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 17,
+          "assistant_messages": 14,
+          "observed_tool_errors": 4,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "interactive",
+            "flags": [],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": true
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 18,
+          "assistant_messages": 15,
+          "observed_tool_errors": 4,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T17:15:34.059236564Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "interactive",
+            "flags": [],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    },
+    {
+      "trial": 3,
+      "labels": {
+        "baseline": "baseline-3",
+        "guided": "guided-3"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 19,
+          "assistant_messages": 18,
+          "observed_tool_errors": 2,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 20,
+          "assistant_messages": 17,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T17:48:37.92821203Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    }
+  ],
+  "totals": {
+    "baseline": {
+      "correct_packets": 3,
+      "exact_item_rows": 48,
+      "expected_item_rows": 48,
+      "exact_reconciliations": 9,
+      "tool_calls": 52
+    },
+    "guided": {
+      "correct_packets": 3,
+      "exact_item_rows": 48,
+      "expected_item_rows": 48,
+      "exact_reconciliations": 9,
+      "tool_calls": 53
+    }
+  },
+  "same_input_repetitions": [
+    {
+      "repetition": 1,
+      "labels": {
+        "baseline": "baseline-1",
+        "guided": "guided-1"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 16,
+          "assistant_messages": 13,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "interactive",
+            "flags": [],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 15,
+          "assistant_messages": 13,
+          "observed_tool_errors": 2,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T16:47:21.446367031Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "interactive",
+            "flags": [],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    },
+    {
+      "repetition": 2,
+      "labels": {
+        "baseline": "baseline-1-repeat-2",
+        "guided": "guided-1-repeat-2"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 36,
+          "assistant_messages": 33,
+          "observed_tool_errors": 4,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 12,
+          "assistant_messages": 9,
+          "observed_tool_errors": 1,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T18:00:21.944257911Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    },
+    {
+      "repetition": 3,
+      "labels": {
+        "baseline": "baseline-1-repeat-3",
+        "guided": "guided-1-repeat-3"
+      },
+      "input_and_injection_valid": true,
+      "same_harness": true,
+      "valid_comparison": true,
+      "metrics": {
+        "baseline": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 14,
+            "row_accuracy": 0.875,
+            "missing_or_incorrect": [
+              {
+                "invoice_id": "002082",
+                "vendor": "Elm Fabrication Ltd",
+                "description": "Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",
+                "quantity": "3",
+                "unit_price": "49.75",
+                "line_amount": "149.25"
+              },
+              {
+                "invoice_id": "002093",
+                "vendor": "Firth Survey Services",
+                "description": "Cable assemblies, shielded, length 2 m",
+                "quantity": "5",
+                "unit_price": "11.40",
+                "line_amount": "57.00"
+              }
+            ],
+            "unexpected_or_incorrect": [
+              {
+                "invoice_id": "002082",
+                "vendor": "Elm Fabrication Ltd",
+                "description": "Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves;",
+                "quantity": "3",
+                "unit_price": "49.75",
+                "line_amount": "149.25"
+              },
+              {
+                "invoice_id": "002093",
+                "vendor": "Firth Survey Services",
+                "description": "Cable assemblies, shielded, length 2m",
+                "quantity": "5",
+                "unit_price": "11.40",
+                "line_amount": "57.00"
+              }
+            ],
+            "correct": false
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": false,
+          "tool_calls": 68,
+          "assistant_messages": 65,
+          "observed_tool_errors": 5,
+          "first_request_evolve": {},
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        },
+        "guided": {
+          "items": {
+            "expected_rows": 16,
+            "actual_rows": 16,
+            "exact_rows": 16,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "reconciliation": {
+            "expected_rows": 3,
+            "actual_rows": 3,
+            "exact_rows": 3,
+            "row_accuracy": 1.0,
+            "missing_or_incorrect": [],
+            "unexpected_or_incorrect": [],
+            "correct": true
+          },
+          "format_errors": [],
+          "all_correct": true,
+          "tool_calls": 16,
+          "assistant_messages": 13,
+          "observed_tool_errors": 3,
+          "first_request_evolve": {
+            "injected": true,
+            "ids": [
+              "1",
+              "2"
+            ],
+            "revisions": [
+              1,
+              1
+            ],
+            "sources": [
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+              "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+            ],
+            "cached": false,
+            "fetchedAt": "2026-11-05T18:02:00.096311982Z"
+          },
+          "inputs_unchanged": true,
+          "harness": {
+            "mode": "noninteractive",
+            "flags": [
+              "--print",
+              "--allowedTools",
+              "Bash,Read,Write,Edit",
+              "--permission-mode",
+              "dontAsk",
+              "--permission-prompts",
+              "none",
+              "--output-format",
+              "json"
+            ],
+            "tools": [
+              "Bash",
+              "Read",
+              "Write",
+              "Edit"
+            ]
+          },
+          "harness_transition": false
+        }
+      }
+    }
+  ],
+  "same_input_distributions": {
+    "baseline": {
+      "runs": 3,
+      "correct_packets": 2,
+      "tool_calls": [
+        16,
+        36,
+        68
+      ],
+      "total_tool_calls": 120,
+      "tool_errors": [
+        3,
+        4,
+        5
+      ],
+      "min_tool_calls": 16,
+      "max_tool_calls": 68,
+      "mean_tool_calls": 40,
+      "median_tool_calls": 36
+    },
+    "guided": {
+      "runs": 3,
+      "correct_packets": 3,
+      "tool_calls": [
+        15,
+        12,
+        16
+      ],
+      "total_tool_calls": 43,
+      "tool_errors": [
+        2,
+        1,
+        3
+      ],
+      "min_tool_calls": 12,
+      "max_tool_calls": 16,
+      "mean_tool_calls": 14.333333333333334,
+      "median_tool_calls": 15
+    }
+  },
+  "same_input_noninteractive_distributions": {
+    "baseline": {
+      "runs": 2,
+      "correct_packets": 1,
+      "tool_calls": [
+        36,
+        68
+      ],
+      "total_tool_calls": 104,
+      "tool_errors": [
+        4,
+        5
+      ],
+      "min_tool_calls": 36,
+      "max_tool_calls": 68,
+      "mean_tool_calls": 52,
+      "median_tool_calls": 52.0
+    },
+    "guided": {
+      "runs": 2,
+      "correct_packets": 2,
+      "tool_calls": [
+        12,
+        16
+      ],
+      "total_tool_calls": 28,
+      "tool_errors": [
+        1,
+        3
+      ],
+      "min_tool_calls": 12,
+      "max_tool_calls": 16,
+      "mean_tool_calls": 14,
+      "median_tool_calls": 14.0
+    }
+  }
+}

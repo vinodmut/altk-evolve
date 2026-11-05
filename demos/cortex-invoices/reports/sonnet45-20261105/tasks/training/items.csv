@@ -1,0 +1,17 @@
+invoice_id,vendor,description,quantity,unit_price,line_amount
+001071,Alder Office Supply,"Archive cartons, reinforced - batch 1",8,12.45,99.60
+001071,Alder Office Supply,"Labels ""Handle with care"", roll 1",3,9.80,29.40
+001071,Alder Office Supply,"Cut-to-length protective liner, grade 1",2.5,14.76,36.90
+001071,Alder Office Supply,"Returned labels credit, order 1",1,-9.80,-9.80
+001082,Beacon Workshop Ltd,"Bench assembly, series 1",2,1245.60,2491.20
+001082,Beacon Workshop Ltd,"Alignment service, station 1",1.5,86.40,129.60
+001082,Beacon Workshop Ltd,"Replacement seal kit for hydraulic assembly, series 1, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",3,48.75,146.25
+001082,Beacon Workshop Ltd,"Precision shims, pack 1",7,4.375,30.63
+001082,Beacon Workshop Ltd,"Freight and handling, zone 1",1,42.50,42.50
+001082,Beacon Workshop Ltd,"Volume discount, agreement 1",1,-35.00,-35.00
+001093,Cedar Field Services,"Site survey, area 1",1,425.50,425.50
+001093,Cedar Field Services,"Travel time, route 1",2.25,64.80,145.80
+001093,Cedar Field Services,"Calibration standard, set 1",2,37.25,74.50
+001093,Cedar Field Services,"Additional sensor mounts, revised scope 1",4,18.95,75.80
+001093,Cedar Field Services,"Cable assemblies, shielded, length 1 m",5,11.40,57.00
+001093,Cedar Field Services,"Previously billed visit credit, ticket 1",1,-25.00,-25.00

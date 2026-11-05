@@ -1,0 +1,25 @@
+Reviewed retrieval: ['1', '2']
+Noninteractive Claude Code: guided-3, UUID 77bb97bd-467e-492e-ab1a-31a89edfb3ca.
+{
+  "session": "guided-3",
+  "id": "77bb97bd-467e-492e-ab1a-31a89edfb3ca",
+  "tool_calls": 20,
+  "first_request_evolve": {
+    "injected": true,
+    "ids": [
+      "1",
+      "2"
+    ],
+    "revisions": [
+      1,
+      1
+    ],
+    "sources": [
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+      "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38"
+    ],
+    "cached": false,
+    "fetchedAt": "2026-11-05T17:48:37.92821203Z"
+  }
+}
+Saved outputs: tasks/guided-3/items.csv and reconciliation.csv. Use ./demo feedback for independent training checks.

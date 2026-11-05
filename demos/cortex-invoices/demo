@@ -1,0 +1,38 @@
+#!/bin/sh
+set -eu
+DEMO_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$DEMO_DIR"
+COMPOSE_PROJECT_NAME="cortex-invoices-$(printf '%s' "$DEMO_DIR" | cksum | awk '{print $1}')"
+export COMPOSE_PROJECT_NAME
+case "${1:-help}" in
+  setup)
+    if [ ! -f .env ]; then
+      cp ../cortex-photo/.env.example .env
+      printf '%s\n' 'Created .env. Configure both LLM connections and rerun ./demo setup.'
+      exit 1
+    fi
+    mkdir -p results
+    docker build --tag cortex-invoice-runtime:local ../cortex-photo
+    docker compose up --build --detach --wait --wait-timeout 360
+    docker compose exec -T demo uv run --offline --no-sync python driver.py check
+    ;;
+  baseline|training|guided|promote|resume)
+    case " $* " in
+      *" --batch "*) docker compose exec -T demo uv run --offline --no-sync python driver.py "$@" ;;
+      *) docker compose exec demo uv run --offline --no-sync python driver.py "$@" ;;
+    esac
+    ;;
+  check|capture|learn|candidates|status)
+    docker compose exec -T demo uv run --offline --no-sync python driver.py "$@"
+    ;;
+  feedback|report)
+    docker run --rm --network none \
+      -v "$DEMO_DIR:/evaluation:ro" -v "$DEMO_DIR/results:/results" \
+      cortex-invoice-runtime:local \
+      uv run --offline --no-sync python /evaluation/evaluate.py "$@"
+    ;;
+  stop) docker compose down ;;
+  logs) docker compose logs --tail 60 ;;
+  shell) docker compose exec demo bash ;;
+  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|learn [--json-output]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|report|status|stop' ;;
+esac

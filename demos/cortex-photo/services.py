@@ -22,6 +22,9 @@ MCP = "http://127.0.0.1:18201/sse"
 BRIDGE = "http://127.0.0.1:18202"
 CA = RUNTIME / "ca"
 UV = ["uv", "run", "--offline", "--no-sync", "--project", str(ROOT)]
+SERVE_NAMESPACE = os.environ.get("DEMO_SERVE_NAMESPACE", "photo-reviewed")
+LEARN_NAMESPACE = os.environ.get("DEMO_LEARN_NAMESPACE", "photo-candidates")
+PROCESSING_PROFILE = os.environ.get("DEMO_PROCESSING_PROFILE", "photo-demo")
 
 
 def read_json(path):
@@ -83,7 +86,7 @@ def environment():
         EVOLVE_BACKEND="filesystem",
         EVOLVE_DATA_DIR=str(RUNTIME / "data"),
         EVOLVE_SQLITE_PATH=str(RUNTIME / "entities.sqlite.db"),
-        EVOLVE_NAMESPACE_ID="photo-reviewed",
+        EVOLVE_NAMESPACE_ID=SERVE_NAMESPACE,
         EVOLVE_GUIDELINES_MODE="consistency",
         EVOLVE_INJECTION_MODE="retrieval",
         EVOLVE_EMBEDDING_PROVIDER="fastembed",
@@ -129,9 +132,9 @@ def cortex_config(inject=False):
                         "config": {
                             "endpoint": MCP,
                             "agents": ["claude-code"],
-                            "serve_namespace": "photo-reviewed",
-                            "learn_namespace": "photo-candidates",
-                            "processing_profile": "photo-demo",
+                            "serve_namespace": SERVE_NAMESPACE,
+                            "learn_namespace": LEARN_NAMESPACE,
+                            "processing_profile": PROCESSING_PROFILE,
                             "learn": False,
                             "inject": inject,
                             "idle_after_seconds": 60,

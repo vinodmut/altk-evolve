@@ -1,0 +1,919 @@
+[
+  {
+    "candidate_id": "1",
+    "id": "1",
+    "content": "When reading files in a task, always verify the working directory first and construct absolute paths from it. Avoid assuming relative paths will resolve correctly.",
+    "metadata": {
+      "status": "active",
+      "creation_mode": "auto-cortex",
+      "agent_id": "claude-code",
+      "session_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+      "cortex_capture": {
+        "adapter_revision": 2,
+        "excluded_events": 22,
+        "subagent_seqs": [],
+        "turns": [
+          {
+            "seq": 7,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 12834,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 1683,
+              "completionTokens": 350,
+              "totalTokens": 2033,
+              "inputTokens": 10,
+              "cacheWriteTokens": 1673,
+              "outputTokens": 350,
+              "reasoningTokens": 240,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 9,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 8266,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 2202,
+              "completionTokens": 198,
+              "totalTokens": 2400,
+              "inputTokens": 6,
+              "cacheReadTokens": 1673,
+              "cacheWriteTokens": 523,
+              "outputTokens": 198,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 12,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 3083,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 2536,
+              "completionTokens": 80,
+              "totalTokens": 2616,
+              "inputTokens": 7,
+              "cacheReadTokens": 2196,
+              "cacheWriteTokens": 333,
+              "outputTokens": 80,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 14,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 5353,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 2633,
+              "completionTokens": 161,
+              "totalTokens": 2794,
+              "inputTokens": 6,
+              "cacheReadTokens": 2529,
+              "cacheWriteTokens": 98,
+              "outputTokens": 161,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 16,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 32343,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 11427,
+              "completionTokens": 1494,
+              "totalTokens": 12921,
+              "inputTokens": 7,
+              "cacheReadTokens": 2627,
+              "cacheWriteTokens": 8793,
+              "outputTokens": 1494,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 18,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 7320,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 12939,
+              "completionTokens": 96,
+              "totalTokens": 13035,
+              "inputTokens": 5,
+              "cacheReadTokens": 11420,
+              "cacheWriteTokens": 1514,
+              "outputTokens": 96,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 20,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 7237,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13074,
+              "completionTokens": 99,
+              "totalTokens": 13173,
+              "inputTokens": 6,
+              "cacheReadTokens": 12934,
+              "cacheWriteTokens": 134,
+              "outputTokens": 99,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 22,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 13879,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13670,
+              "completionTokens": 77,
+              "totalTokens": 13747,
+              "inputTokens": 6,
+              "cacheReadTokens": 13068,
+              "cacheWriteTokens": 596,
+              "outputTokens": 77,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 24,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 9968,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13859,
+              "completionTokens": 104,
+              "totalTokens": 13963,
+              "inputTokens": 6,
+              "cacheReadTokens": 13664,
+              "cacheWriteTokens": 189,
+              "outputTokens": 104,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 26,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 5613,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13994,
+              "completionTokens": 79,
+              "totalTokens": 14073,
+              "inputTokens": 6,
+              "cacheReadTokens": 13853,
+              "cacheWriteTokens": 135,
+              "outputTokens": 79,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 28,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 14836,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 14165,
+              "completionTokens": 360,
+              "totalTokens": 14525,
+              "inputTokens": 6,
+              "cacheReadTokens": 13988,
+              "cacheWriteTokens": 171,
+              "outputTokens": 360,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 30,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 7852,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 14619,
+              "completionTokens": 340,
+              "totalTokens": 14959,
+              "inputTokens": 6,
+              "cacheReadTokens": 14159,
+              "cacheWriteTokens": 454,
+              "outputTokens": 340,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 32,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 4917,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 15134,
+              "completionTokens": 92,
+              "totalTokens": 15226,
+              "inputTokens": 5,
+              "cacheWriteTokens": 15129,
+              "outputTokens": 92,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 34,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 6086,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 15371,
+              "completionTokens": 121,
+              "totalTokens": 15492,
+              "inputTokens": 6,
+              "cacheReadTokens": 15129,
+              "cacheWriteTokens": 236,
+              "outputTokens": 121,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 36,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 13739,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "end_turn",
+              "promptTokens": 15712,
+              "completionTokens": 439,
+              "totalTokens": 16151,
+              "inputTokens": 6,
+              "cacheReadTokens": 15365,
+              "cacheWriteTokens": 341,
+              "outputTokens": 439,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 38,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 25846,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "end_turn",
+              "promptTokens": 15991,
+              "completionTokens": 878,
+              "totalTokens": 16869,
+              "inputTokens": 10,
+              "cacheWriteTokens": 15981,
+              "outputTokens": 878,
+              "reasoningTokens": 262,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          }
+        ],
+        "limits": [
+          "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+          "Subagents are separate supporting observations; tool-less side calls are excluded.",
+          "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+        ]
+      },
+      "source_task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+      "task_description": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "support": 1,
+      "rationale": "The agent initially attempted to read PDFs using incorrect absolute paths (/tmp/tmp.qtTJoOx4O2/input/) that didn't match the actual working directory (/results/tasks/training/input/). This caused three consecutive file-not-found errors (steps 4-6) before the agent checked `pwd` and corrected the paths. Verifying the working directory upfront prevents wasted tool calls and ensures file operations succeed on the first attempt.",
+      "category": "recovery",
+      "trigger": "When beginning a task that requires reading files from a specified directory, especially when the task description uses relative paths",
+      "implementation_steps": [
+        "Execute `pwd` or equivalent to confirm the current working directory",
+        "Construct absolute file paths by joining the confirmed working directory with relative paths from the task specification",
+        "Verify at least one file exists before processing multiple files"
+      ],
+      "generation_method": "consistency-fast",
+      "processing": {
+        "operation_id": "c5262e00-ca00-4786-8a53-e55b0d32f81a",
+        "profile_id": null,
+        "revision": null,
+        "digest": "3e9b08e3597a7f7cb15b405adcf39a57f90a1424f2ae52362cee01b92b63f9af",
+        "manifest": {
+          "conflict_resolution": {
+            "conflict_resolution_model": "aws/claude-sonnet-4-5",
+            "custom_llm_provider": "anthropic"
+          },
+          "processors": [
+            {
+              "api_version": 1,
+              "config": {
+                "analysis_config": null,
+                "consistency_method": "fast",
+                "custom_llm_provider": "anthropic",
+                "guidelines_mode": "consistency",
+                "guidelines_model": "aws/claude-sonnet-4-5",
+                "segmentation_enabled": false,
+                "trajectory_max_step_chars": 2000,
+                "trajectory_max_steps": 50,
+                "trajectory_tail_steps": 0
+              },
+              "id": "guidelines",
+              "plugin": "evolve.guidelines",
+              "version": "1"
+            }
+          ],
+          "schema_version": 1
+        },
+        "source_batch": {
+          "source": "cortex",
+          "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+          "batch_id": "7-38",
+          "revision": "2",
+          "scope": "cortex",
+          "aliases": [],
+          "alias_revisions": {}
+        },
+        "processor_id": "guidelines"
+      },
+      "sources": [
+        {
+          "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+          "task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+          "user_id": null,
+          "agent_id": "claude-code",
+          "status": "supporting",
+          "associated_at": "2026-11-05T13:41:33.853006+00:00"
+        }
+      ],
+      "provenance_incomplete": false,
+      "memory_revision": 1,
+      "candidate_id": "1",
+      "reviewed_at": "2026-11-05T13:42:42.828553+00:00"
+    }
+  },
+  {
+    "candidate_id": "3",
+    "id": "2",
+    "content": "Use Python's Decimal type for financial calculations when exact precision is required, especially when reconciling monetary amounts where rounding errors must be detected.",
+    "metadata": {
+      "status": "active",
+      "creation_mode": "auto-cortex",
+      "agent_id": "claude-code",
+      "session_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+      "cortex_capture": {
+        "adapter_revision": 2,
+        "excluded_events": 22,
+        "subagent_seqs": [],
+        "turns": [
+          {
+            "seq": 7,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 12834,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 1683,
+              "completionTokens": 350,
+              "totalTokens": 2033,
+              "inputTokens": 10,
+              "cacheWriteTokens": 1673,
+              "outputTokens": 350,
+              "reasoningTokens": 240,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 9,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 8266,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 2202,
+              "completionTokens": 198,
+              "totalTokens": 2400,
+              "inputTokens": 6,
+              "cacheReadTokens": 1673,
+              "cacheWriteTokens": 523,
+              "outputTokens": 198,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 12,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 3083,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 2536,
+              "completionTokens": 80,
+              "totalTokens": 2616,
+              "inputTokens": 7,
+              "cacheReadTokens": 2196,
+              "cacheWriteTokens": 333,
+              "outputTokens": 80,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 14,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 5353,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 2633,
+              "completionTokens": 161,
+              "totalTokens": 2794,
+              "inputTokens": 6,
+              "cacheReadTokens": 2529,
+              "cacheWriteTokens": 98,
+              "outputTokens": 161,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 16,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 32343,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 11427,
+              "completionTokens": 1494,
+              "totalTokens": 12921,
+              "inputTokens": 7,
+              "cacheReadTokens": 2627,
+              "cacheWriteTokens": 8793,
+              "outputTokens": 1494,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 18,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 7320,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 12939,
+              "completionTokens": 96,
+              "totalTokens": 13035,
+              "inputTokens": 5,
+              "cacheReadTokens": 11420,
+              "cacheWriteTokens": 1514,
+              "outputTokens": 96,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 20,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 7237,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13074,
+              "completionTokens": 99,
+              "totalTokens": 13173,
+              "inputTokens": 6,
+              "cacheReadTokens": 12934,
+              "cacheWriteTokens": 134,
+              "outputTokens": 99,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 22,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 13879,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13670,
+              "completionTokens": 77,
+              "totalTokens": 13747,
+              "inputTokens": 6,
+              "cacheReadTokens": 13068,
+              "cacheWriteTokens": 596,
+              "outputTokens": 77,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 24,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 9968,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13859,
+              "completionTokens": 104,
+              "totalTokens": 13963,
+              "inputTokens": 6,
+              "cacheReadTokens": 13664,
+              "cacheWriteTokens": 189,
+              "outputTokens": 104,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 26,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 5613,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 13994,
+              "completionTokens": 79,
+              "totalTokens": 14073,
+              "inputTokens": 6,
+              "cacheReadTokens": 13853,
+              "cacheWriteTokens": 135,
+              "outputTokens": 79,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 28,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 14836,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 14165,
+              "completionTokens": 360,
+              "totalTokens": 14525,
+              "inputTokens": 6,
+              "cacheReadTokens": 13988,
+              "cacheWriteTokens": 171,
+              "outputTokens": 360,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 30,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 7852,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 14619,
+              "completionTokens": 340,
+              "totalTokens": 14959,
+              "inputTokens": 6,
+              "cacheReadTokens": 14159,
+              "cacheWriteTokens": 454,
+              "outputTokens": 340,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 32,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 4917,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 15134,
+              "completionTokens": 92,
+              "totalTokens": 15226,
+              "inputTokens": 5,
+              "cacheWriteTokens": 15129,
+              "outputTokens": 92,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 34,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 6086,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "tool_use",
+              "promptTokens": 15371,
+              "completionTokens": 121,
+              "totalTokens": 15492,
+              "inputTokens": 6,
+              "cacheReadTokens": 15129,
+              "cacheWriteTokens": 236,
+              "outputTokens": 121,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 36,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 13739,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "end_turn",
+              "promptTokens": 15712,
+              "completionTokens": 439,
+              "totalTokens": 16151,
+              "inputTokens": 6,
+              "cacheReadTokens": 15365,
+              "cacheWriteTokens": 341,
+              "outputTokens": 439,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          },
+          {
+            "seq": 38,
+            "phase": "response",
+            "statusCode": 200,
+            "durationMs": 25846,
+            "inference": {
+              "model": "aws/claude-sonnet-4-5",
+              "maxTokens": 32000,
+              "stream": true,
+              "agentRole": "main",
+              "streamedResponse": true,
+              "finishReason": "end_turn",
+              "promptTokens": 15991,
+              "completionTokens": 878,
+              "totalTokens": 16869,
+              "inputTokens": 10,
+              "cacheWriteTokens": 15981,
+              "outputTokens": 878,
+              "reasoningTokens": 262,
+              "presentKinds": 31,
+              "isAction": true
+            }
+          }
+        ],
+        "limits": [
+          "Cortex's parsed API retains text, not image/audio payloads or hidden reasoning.",
+          "Subagents are separate supporting observations; tool-less side calls are excluded.",
+          "Tool output is visible only after the agent sends it through the proxy; no final request means no final tool result."
+        ]
+      },
+      "source_task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+      "task_description": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "support": 1,
+      "rationale": "The agent used Decimal for all financial calculations, which enabled it to correctly detect a $0.01 discrepancy in invoice 001093 (computed: 843.24 vs printed: 843.25). Using float arithmetic could have introduced additional rounding errors that would mask or create false discrepancies. The task explicitly required preserving 'exact decimal amounts' and detecting differences, making Decimal the appropriate choice.",
+      "category": "strategy",
+      "trigger": "When performing arithmetic on monetary values where exact precision is required, particularly in reconciliation or validation tasks",
+      "implementation_steps": [
+        "Import Decimal from the decimal module",
+        "Convert all monetary string values to Decimal objects before arithmetic",
+        "Perform all calculations using Decimal arithmetic",
+        "Format output to required decimal places only at final display/output stage"
+      ],
+      "generation_method": "consistency-fast",
+      "processing": {
+        "operation_id": "c5262e00-ca00-4786-8a53-e55b0d32f81a",
+        "profile_id": null,
+        "revision": null,
+        "digest": "3e9b08e3597a7f7cb15b405adcf39a57f90a1424f2ae52362cee01b92b63f9af",
+        "manifest": {
+          "conflict_resolution": {
+            "conflict_resolution_model": "aws/claude-sonnet-4-5",
+            "custom_llm_provider": "anthropic"
+          },
+          "processors": [
+            {
+              "api_version": 1,
+              "config": {
+                "analysis_config": null,
+                "consistency_method": "fast",
+                "custom_llm_provider": "anthropic",
+                "guidelines_mode": "consistency",
+                "guidelines_model": "aws/claude-sonnet-4-5",
+                "segmentation_enabled": false,
+                "trajectory_max_step_chars": 2000,
+                "trajectory_max_steps": 50,
+                "trajectory_tail_steps": 0
+              },
+              "id": "guidelines",
+              "plugin": "evolve.guidelines",
+              "version": "1"
+            }
+          ],
+          "schema_version": 1
+        },
+        "source_batch": {
+          "source": "cortex",
+          "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+          "batch_id": "7-38",
+          "revision": "2",
+          "scope": "cortex",
+          "aliases": [],
+          "alias_revisions": {}
+        },
+        "processor_id": "guidelines"
+      },
+      "sources": [
+        {
+          "conversation_id": "c7a2fb03-8761-4ed8-9027-47878a44a5cb",
+          "task_id": "cortex:c7a2fb03-8761-4ed8-9027-47878a44a5cb:38",
+          "user_id": null,
+          "agent_id": "claude-code",
+          "status": "supporting",
+          "associated_at": "2026-11-05T13:41:33.853006+00:00"
+        }
+      ],
+      "provenance_incomplete": false,
+      "memory_revision": 1,
+      "candidate_id": "3",
+      "reviewed_at": "2026-11-05T13:42:42.845588+00:00"
+    }
+  }
+]

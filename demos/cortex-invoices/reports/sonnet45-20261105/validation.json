@@ -1,0 +1,20 @@
+{
+  "focused_tests_passed": 39,
+  "ruff": "passed",
+  "html_link_checks": {
+    "walkthrough.html": {
+      "links": 3,
+      "missing": []
+    },
+    "summary.html": {
+      "links": 61,
+      "missing": []
+    }
+  },
+  "unique_task_UUIDs": 11,
+  "duplicate_tool_call_IDs": false,
+  "explicit_other_workspace_paths_in_tool_arguments": [],
+  "credential_value_matches": 0,
+  "generated_scripts_preserved_as_text": 12,
+  "lossless_compressed_captures": 2
+}

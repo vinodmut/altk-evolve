@@ -1,0 +1,19 @@
+services:
+  demo:
+    build:
+      context: .
+    init: true
+    environment:
+      DEMO_SERVE_NAMESPACE: invoice-reviewed
+      DEMO_LEARN_NAMESPACE: invoice-candidates
+      DEMO_PROCESSING_PROFILE: invoice-demo
+    volumes:
+      - ./.env:/run/secrets/demo.env:ro
+      - ./results:/results
+    healthcheck:
+      test: ["CMD", "uv", "run", "--offline", "--no-sync", "python", "services.py", "health"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
+      start_period: 20s
+    stop_grace_period: 15s

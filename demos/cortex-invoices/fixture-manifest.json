@@ -1,0 +1,50 @@
+{
+  "fixtures/training/001071.pdf": {
+    "sha256": "e3dcc214231e100d95bb8b68932f6adfe4994c54573906d07c936a345328aff8",
+    "pages": 1
+  },
+  "fixtures/training/001082.pdf": {
+    "sha256": "88490662d3e18b028a44b4af96f09fc4e5712460f68672498764593a47965594",
+    "pages": 2
+  },
+  "fixtures/training/001093.pdf": {
+    "sha256": "3391322fb70d9164c5800ac7885be9136d7c11dfe2180aa44c4d7e94e320c351",
+    "pages": 2
+  },
+  "fixtures/trial-1/002071.pdf": {
+    "sha256": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+    "pages": 1
+  },
+  "fixtures/trial-1/002082.pdf": {
+    "sha256": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+    "pages": 2
+  },
+  "fixtures/trial-1/002093.pdf": {
+    "sha256": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f",
+    "pages": 2
+  },
+  "fixtures/trial-2/003071.pdf": {
+    "sha256": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+    "pages": 1
+  },
+  "fixtures/trial-2/003082.pdf": {
+    "sha256": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+    "pages": 2
+  },
+  "fixtures/trial-2/003093.pdf": {
+    "sha256": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e",
+    "pages": 2
+  },
+  "fixtures/trial-3/004071.pdf": {
+    "sha256": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+    "pages": 1
+  },
+  "fixtures/trial-3/004082.pdf": {
+    "sha256": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+    "pages": 2
+  },
+  "fixtures/trial-3/004093.pdf": {
+    "sha256": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42",
+    "pages": 2
+  }
+}

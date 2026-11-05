@@ -1,0 +1,554 @@
+{
+  "training": [
+    {
+      "invoice_id": "001071",
+      "vendor": "Alder Office Supply",
+      "layout": "text",
+      "tax": "21.17",
+      "rows": [
+        {
+          "description": "Archive cartons, reinforced - batch 1",
+          "quantity": "8",
+          "unit_price": "12.45",
+          "line_amount": "99.60"
+        },
+        {
+          "description": "Labels \"Handle with care\", roll 1",
+          "quantity": "3",
+          "unit_price": "9.80",
+          "line_amount": "29.40"
+        },
+        {
+          "description": "Cut-to-length protective liner, grade 1",
+          "quantity": "2.5",
+          "unit_price": "14.76",
+          "line_amount": "36.90"
+        },
+        {
+          "description": "Returned labels credit, order 1",
+          "quantity": "1",
+          "unit_price": "-9.80",
+          "line_amount": "-9.80"
+        }
+      ],
+      "subtotal": "156.10",
+      "computed_total": "177.27",
+      "printed_total": "177.27",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "001082",
+      "vendor": "Beacon Workshop Ltd",
+      "layout": "multipage",
+      "tax": "153.28",
+      "rows": [
+        {
+          "description": "Bench assembly, series 1",
+          "quantity": "2",
+          "unit_price": "1245.60",
+          "line_amount": "2491.20"
+        },
+        {
+          "description": "Alignment service, station 1",
+          "quantity": "1.5",
+          "unit_price": "86.40",
+          "line_amount": "129.60"
+        },
+        {
+          "description": "Replacement seal kit for hydraulic assembly, series 1, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",
+          "quantity": "3",
+          "unit_price": "48.75",
+          "line_amount": "146.25"
+        },
+        {
+          "description": "Precision shims, pack 1",
+          "quantity": "7",
+          "unit_price": "4.375",
+          "line_amount": "30.63"
+        },
+        {
+          "description": "Freight and handling, zone 1",
+          "quantity": "1",
+          "unit_price": "42.50",
+          "line_amount": "42.50"
+        },
+        {
+          "description": "Volume discount, agreement 1",
+          "quantity": "1",
+          "unit_price": "-35.00",
+          "line_amount": "-35.00"
+        }
+      ],
+      "subtotal": "2805.18",
+      "computed_total": "2958.46",
+      "printed_total": "2958.46",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "001093",
+      "vendor": "Cedar Field Services",
+      "layout": "hybrid",
+      "tax": "89.64",
+      "discrepancy": "0.01",
+      "rows": [
+        {
+          "description": "Site survey, area 1",
+          "quantity": "1",
+          "unit_price": "425.50",
+          "line_amount": "425.50"
+        },
+        {
+          "description": "Travel time, route 1",
+          "quantity": "2.25",
+          "unit_price": "64.80",
+          "line_amount": "145.80"
+        },
+        {
+          "description": "Calibration standard, set 1",
+          "quantity": "2",
+          "unit_price": "37.25",
+          "line_amount": "74.50"
+        },
+        {
+          "description": "Additional sensor mounts, revised scope 1",
+          "quantity": "4",
+          "unit_price": "18.95",
+          "line_amount": "75.80"
+        },
+        {
+          "description": "Cable assemblies, shielded, length 1 m",
+          "quantity": "5",
+          "unit_price": "11.40",
+          "line_amount": "57.00"
+        },
+        {
+          "description": "Previously billed visit credit, ticket 1",
+          "quantity": "1",
+          "unit_price": "-25.00",
+          "line_amount": "-25.00"
+        }
+      ],
+      "subtotal": "753.60",
+      "computed_total": "843.24",
+      "printed_total": "843.25",
+      "difference": "-0.01",
+      "status": "discrepancy"
+    }
+  ],
+  "trial-1": [
+    {
+      "invoice_id": "002071",
+      "vendor": "Delta Studio Supply",
+      "layout": "text",
+      "tax": "22.17",
+      "rows": [
+        {
+          "description": "Archive cartons, reinforced - batch 2",
+          "quantity": "9",
+          "unit_price": "12.45",
+          "line_amount": "112.05"
+        },
+        {
+          "description": "Labels \"Handle with care\", roll 2",
+          "quantity": "3",
+          "unit_price": "10.80",
+          "line_amount": "32.40"
+        },
+        {
+          "description": "Cut-to-length protective liner, grade 2",
+          "quantity": "2.5",
+          "unit_price": "14.76",
+          "line_amount": "36.90"
+        },
+        {
+          "description": "Returned labels credit, order 2",
+          "quantity": "1",
+          "unit_price": "-9.80",
+          "line_amount": "-9.80"
+        }
+      ],
+      "subtotal": "171.55",
+      "computed_total": "193.72",
+      "printed_total": "193.72",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "002082",
+      "vendor": "Elm Fabrication Ltd",
+      "layout": "multipage",
+      "tax": "154.28",
+      "rows": [
+        {
+          "description": "Bench assembly, series 2",
+          "quantity": "2",
+          "unit_price": "1262.60",
+          "line_amount": "2525.20"
+        },
+        {
+          "description": "Alignment service, station 2",
+          "quantity": "1.5",
+          "unit_price": "86.40",
+          "line_amount": "129.60"
+        },
+        {
+          "description": "Replacement seal kit for hydraulic assembly, series 2, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",
+          "quantity": "3",
+          "unit_price": "49.75",
+          "line_amount": "149.25"
+        },
+        {
+          "description": "Precision shims, pack 2",
+          "quantity": "7",
+          "unit_price": "4.375",
+          "line_amount": "30.63"
+        },
+        {
+          "description": "Freight and handling, zone 2",
+          "quantity": "1",
+          "unit_price": "42.50",
+          "line_amount": "42.50"
+        },
+        {
+          "description": "Volume discount, agreement 2",
+          "quantity": "1",
+          "unit_price": "-36.00",
+          "line_amount": "-36.00"
+        }
+      ],
+      "subtotal": "2841.18",
+      "computed_total": "2995.46",
+      "printed_total": "2995.46",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "002093",
+      "vendor": "Firth Survey Services",
+      "layout": "hybrid",
+      "tax": "90.64",
+      "discrepancy": "0.02",
+      "rows": [
+        {
+          "description": "Site survey, area 2",
+          "quantity": "1",
+          "unit_price": "448.50",
+          "line_amount": "448.50"
+        },
+        {
+          "description": "Travel time, route 2",
+          "quantity": "2.25",
+          "unit_price": "64.80",
+          "line_amount": "145.80"
+        },
+        {
+          "description": "Calibration standard, set 2",
+          "quantity": "2",
+          "unit_price": "37.25",
+          "line_amount": "74.50"
+        },
+        {
+          "description": "Additional sensor mounts, revised scope 2",
+          "quantity": "4",
+          "unit_price": "18.95",
+          "line_amount": "75.80"
+        },
+        {
+          "description": "Cable assemblies, shielded, length 2 m",
+          "quantity": "5",
+          "unit_price": "11.40",
+          "line_amount": "57.00"
+        },
+        {
+          "description": "Previously billed visit credit, ticket 2",
+          "quantity": "1",
+          "unit_price": "-26.00",
+          "line_amount": "-26.00"
+        }
+      ],
+      "subtotal": "775.60",
+      "computed_total": "866.24",
+      "printed_total": "866.26",
+      "difference": "-0.02",
+      "status": "discrepancy"
+    }
+  ],
+  "trial-2": [
+    {
+      "invoice_id": "003071",
+      "vendor": "Grove Office Supply",
+      "layout": "text",
+      "tax": "23.17",
+      "rows": [
+        {
+          "description": "Archive cartons, reinforced - batch 3",
+          "quantity": "10",
+          "unit_price": "12.45",
+          "line_amount": "124.50"
+        },
+        {
+          "description": "Labels \"Handle with care\", roll 3",
+          "quantity": "3",
+          "unit_price": "11.80",
+          "line_amount": "35.40"
+        },
+        {
+          "description": "Cut-to-length protective liner, grade 3",
+          "quantity": "2.5",
+          "unit_price": "14.76",
+          "line_amount": "36.90"
+        },
+        {
+          "description": "Returned labels credit, order 3",
+          "quantity": "1",
+          "unit_price": "-9.80",
+          "line_amount": "-9.80"
+        }
+      ],
+      "subtotal": "187.00",
+      "computed_total": "210.17",
+      "printed_total": "210.17",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "003082",
+      "vendor": "Harbor Workshop Ltd",
+      "layout": "multipage",
+      "tax": "155.28",
+      "rows": [
+        {
+          "description": "Bench assembly, series 3",
+          "quantity": "2",
+          "unit_price": "1279.60",
+          "line_amount": "2559.20"
+        },
+        {
+          "description": "Alignment service, station 3",
+          "quantity": "1.5",
+          "unit_price": "86.40",
+          "line_amount": "129.60"
+        },
+        {
+          "description": "Replacement seal kit for hydraulic assembly, series 3, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",
+          "quantity": "3",
+          "unit_price": "50.75",
+          "line_amount": "152.25"
+        },
+        {
+          "description": "Precision shims, pack 3",
+          "quantity": "7",
+          "unit_price": "4.375",
+          "line_amount": "30.63"
+        },
+        {
+          "description": "Freight and handling, zone 3",
+          "quantity": "1",
+          "unit_price": "42.50",
+          "line_amount": "42.50"
+        },
+        {
+          "description": "Volume discount, agreement 3",
+          "quantity": "1",
+          "unit_price": "-37.00",
+          "line_amount": "-37.00"
+        }
+      ],
+      "subtotal": "2877.18",
+      "computed_total": "3032.46",
+      "printed_total": "3032.46",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "003093",
+      "vendor": "Iris Field Services",
+      "layout": "hybrid",
+      "tax": "91.64",
+      "discrepancy": "0.01",
+      "rows": [
+        {
+          "description": "Site survey, area 3",
+          "quantity": "1",
+          "unit_price": "471.50",
+          "line_amount": "471.50"
+        },
+        {
+          "description": "Travel time, route 3",
+          "quantity": "2.25",
+          "unit_price": "64.80",
+          "line_amount": "145.80"
+        },
+        {
+          "description": "Calibration standard, set 3",
+          "quantity": "2",
+          "unit_price": "37.25",
+          "line_amount": "74.50"
+        },
+        {
+          "description": "Additional sensor mounts, revised scope 3",
+          "quantity": "4",
+          "unit_price": "18.95",
+          "line_amount": "75.80"
+        },
+        {
+          "description": "Cable assemblies, shielded, length 3 m",
+          "quantity": "5",
+          "unit_price": "11.40",
+          "line_amount": "57.00"
+        },
+        {
+          "description": "Previously billed visit credit, ticket 3",
+          "quantity": "1",
+          "unit_price": "-27.00",
+          "line_amount": "-27.00"
+        }
+      ],
+      "subtotal": "797.60",
+      "computed_total": "889.24",
+      "printed_total": "889.25",
+      "difference": "-0.01",
+      "status": "discrepancy"
+    }
+  ],
+  "trial-3": [
+    {
+      "invoice_id": "004071",
+      "vendor": "Juniper Studio Supply",
+      "layout": "text",
+      "tax": "24.17",
+      "rows": [
+        {
+          "description": "Archive cartons, reinforced - batch 4",
+          "quantity": "11",
+          "unit_price": "12.45",
+          "line_amount": "136.95"
+        },
+        {
+          "description": "Labels \"Handle with care\", roll 4",
+          "quantity": "3",
+          "unit_price": "12.80",
+          "line_amount": "38.40"
+        },
+        {
+          "description": "Cut-to-length protective liner, grade 4",
+          "quantity": "2.5",
+          "unit_price": "14.76",
+          "line_amount": "36.90"
+        },
+        {
+          "description": "Returned labels credit, order 4",
+          "quantity": "1",
+          "unit_price": "-9.80",
+          "line_amount": "-9.80"
+        }
+      ],
+      "subtotal": "202.45",
+      "computed_total": "226.62",
+      "printed_total": "226.62",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "004082",
+      "vendor": "Kestrel Fabrication Ltd",
+      "layout": "multipage",
+      "tax": "156.28",
+      "rows": [
+        {
+          "description": "Bench assembly, series 4",
+          "quantity": "2",
+          "unit_price": "1296.60",
+          "line_amount": "2593.20"
+        },
+        {
+          "description": "Alignment service, station 4",
+          "quantity": "1.5",
+          "unit_price": "86.40",
+          "line_amount": "129.60"
+        },
+        {
+          "description": "Replacement seal kit for hydraulic assembly, series 4, including mounting collars and protective sleeves; compatible with the extended housing and supplied with inspection certificate",
+          "quantity": "3",
+          "unit_price": "51.75",
+          "line_amount": "155.25"
+        },
+        {
+          "description": "Precision shims, pack 4",
+          "quantity": "7",
+          "unit_price": "4.375",
+          "line_amount": "30.63"
+        },
+        {
+          "description": "Freight and handling, zone 4",
+          "quantity": "1",
+          "unit_price": "42.50",
+          "line_amount": "42.50"
+        },
+        {
+          "description": "Volume discount, agreement 4",
+          "quantity": "1",
+          "unit_price": "-38.00",
+          "line_amount": "-38.00"
+        }
+      ],
+      "subtotal": "2913.18",
+      "computed_total": "3069.46",
+      "printed_total": "3069.46",
+      "difference": "0.00",
+      "status": "matched"
+    },
+    {
+      "invoice_id": "004093",
+      "vendor": "Larch Survey Services",
+      "layout": "hybrid",
+      "tax": "92.64",
+      "discrepancy": "0.02",
+      "rows": [
+        {
+          "description": "Site survey, area 4",
+          "quantity": "1",
+          "unit_price": "494.50",
+          "line_amount": "494.50"
+        },
+        {
+          "description": "Travel time, route 4",
+          "quantity": "2.25",
+          "unit_price": "64.80",
+          "line_amount": "145.80"
+        },
+        {
+          "description": "Calibration standard, set 4",
+          "quantity": "2",
+          "unit_price": "37.25",
+          "line_amount": "74.50"
+        },
+        {
+          "description": "Additional sensor mounts, revised scope 4",
+          "quantity": "4",
+          "unit_price": "18.95",
+          "line_amount": "75.80"
+        },
+        {
+          "description": "Cable assemblies, shielded, length 4 m",
+          "quantity": "5",
+          "unit_price": "11.40",
+          "line_amount": "57.00"
+        },
+        {
+          "description": "Previously billed visit credit, ticket 4",
+          "quantity": "1",
+          "unit_price": "-28.00",
+          "line_amount": "-28.00"
+        }
+      ],
+      "subtotal": "819.60",
+      "computed_total": "912.24",
+      "printed_total": "912.26",
+      "difference": "-0.02",
+      "status": "discrepancy"
+    }
+  ]
+}
