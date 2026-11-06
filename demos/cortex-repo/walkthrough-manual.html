@@ -14,7 +14,7 @@
   <p>Run the self-improvement loop yourself, on your own machine: Cortex records your Claude Code sessions, Evolve learns guidelines from what went wrong, you promote the good ones, and Cortex injects them into the next session. No Docker, no driver, no grader.</p>
   <div class="facts">
     <div class="fact"><span>Time</span><b>45–60 minutes</b></div>
-    <div class="fact"><span>API cost</span><b>About $1</b></div>
+    <div class="fact"><span>Model</span><b>Sonnet 4.6 via litellm</b></div>
     <div class="fact"><span>Terminals</span><b>Three</b></div>
     <div class="fact"><span>Touches your setup?</span><b>No — side by side</b></div>
   </div>
@@ -60,12 +60,16 @@
     <li><b>Go 1.26.10 or later</b> (<code>go version</code>) and <b>uv</b> (<code>uv --version</code>).</li>
     <li><b>Claude Code</b> (<code>claude --version</code>), logged in as you normally use it.</li>
     <li><b>Checkouts</b>: Cortex on branch <code>evolve-plugin</code> at <code>ab08dda3</code> or later (it adds <code>placement</code>), and altk-evolve on <code>rossocortex</code>, which contains the sample repository.</li>
-    <li><b>An LLM for Evolve</b>, any litellm model that supports tool calls. The setup that worked here: <code>litellm_proxy/Azure/gpt-4o</code> through your litellm proxy.</li>
+    <li><b>A litellm proxy key that serves Claude Sonnet 4.6</b> (<code>aws/claude-sonnet-4-6</code>). Both Claude Code and Evolve use it, so the task model and the learner are the same model. Check with:
+    <code>curl -s -H "Authorization: Bearer $KEY" $PROXY/v1/models | jq -r '.data[].id' | grep sonnet</code></li>
   </ul>
-  <p>Set these in <b>every</b> terminal you use below:</p>
+  <p>Set these in <b>every</b> terminal you use below. Put your proxy key in <code>LITELLM_KEY</code>:</p>
   <div class="cmd" data-label="All terminals"><pre><code>export CORTEX_SRC="$HOME/data/digitallabor/src/agents/cortex"
 export EVOLVE_SRC="$HOME/data/digitallabor/src/agents/altk-evolve.rossocortex"
 export PLAY="$HOME/evolve-playground"          # everything this walkthrough writes
+export LITELLM_URL="https://ete-litellm.bx.cloud9.ibm.com"
+export LITELLM_KEY="&lt;your proxy key&gt;"
+export MODEL="aws/claude-sonnet-4-6"          # task model and learner
 mkdir -p "$PLAY" &amp;&amp; ls -d "$CORTEX_SRC" "$EVOLVE_SRC" "$PLAY"</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three absolute paths starting with <code>/Users/</code> (or <code>/home/</code>). Change the first two if your checkouts live elsewhere.</p></div></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>Use <code>$HOME</code>, not <code>~</code>, inside quotes.</b> <code>export PLAY="~/evolve-playground"</code> keeps a literal <code>~</code>, and every later command then looks for a directory named <code>~</code> in your current folder.</p></div></div>
@@ -87,9 +91,9 @@ mkdir -p "$PLAY" &amp;&amp; ls -d "$CORTEX_SRC" "$EVOLVE_SRC" "$PLAY"</code></pr
   <div class="cmd" data-label="Terminal 1"><pre><code>umask 077
 case "$PLAY" in /*) ;; *) echo "PLAY must be an absolute path; redo step 1's variables"; return 1 2&gt;/dev/null || exit 1 ;; esac
 cat &gt; "$PLAY/evolve.env" &lt;&lt;EOF
-EVOLVE_MODEL_NAME=litellm_proxy/Azure/gpt-4o
-LITELLM_PROXY_API_BASE=https://&lt;your litellm proxy&gt;
-LITELLM_PROXY_API_KEY=&lt;your key&gt;
+EVOLVE_MODEL_NAME=litellm_proxy/$MODEL
+LITELLM_PROXY_API_BASE=$LITELLM_URL
+LITELLM_PROXY_API_KEY=$LITELLM_KEY
 EVOLVE_BACKEND=filesystem
 EVOLVE_DATA_DIR=$PLAY/data
 EVOLVE_SQLITE_PATH=$PLAY/evolve.sqlite.db
@@ -97,7 +101,7 @@ EVOLVE_INJECTION_MODE=retrieval
 EVOLVE_OTEL_ENABLED=false
 EVOLVE_HOOKS_CONFIG=
 EOF</code></pre></div>
-  <div class="callout caution"><span class="icon">!</span><div><p><b>Fill in the two <code>&lt;…&gt;</code> values</b> after running this (the file is written with your shell's values for <code>$PLAY</code>). <code>EVOLVE_INJECTION_MODE=retrieval</code> is required: without it Evolve matches the task text literally and returns almost nothing.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p>The file is written with your shell's values, so check it: <code>grep -E 'MODEL|BASE' $PLAY/evolve.env</code> should show <code>litellm_proxy/aws/claude-sonnet-4-6</code> and your proxy URL. <code>EVOLVE_INJECTION_MODE=retrieval</code> is required: without it Evolve matches the task text literally and returns almost nothing.</p></div></div>
   <p>Start the server and leave it running:</p>
   <div class="cmd" data-label="Terminal 1"><pre><code>set -a; . $PLAY/evolve.env; set +a
 cd $PLAY &amp;&amp; env -u HTTPS_PROXY -u HTTP_PROXY \
@@ -140,10 +144,15 @@ msg="HTTP server listening" name=forward-proxy addr=127.0.0.1:47700</pre><p>The 
   <p>Check the plugin is loaded, from terminal 3:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>curl -s --noproxy '*' 127.0.0.1:47701/v1/pipeline | jq -c '[.outbound[] | {name, placement: .config.placement}]'</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>evolve</code> last, with <code>"placement":"user"</code>.</p></div></div>
-  <p>Finally, a settings file that routes one Claude Code run through the dev Cortex. Your <code>~/.claude/settings.json</code> pins <code>HTTPS_PROXY</code> to the everyday Cortex, and settings beat the shell environment, so <code>--settings</code> is the reliable override:</p>
-  <div class="cmd" data-label="Terminal 3"><pre><code>echo '{"env":{"HTTPS_PROXY":"http://127.0.0.1:47700","NODE_EXTRA_CA_CERTS":"'$HOME'/.cortex/ca/ca.crt"}}' \
-  &gt; $PLAY/claude-dev.json
-dev-claude() { claude --settings $PLAY/claude-dev.json "$@"; }</code></pre></div>
+  <p>Finally, a settings file that routes Claude Code through the dev Cortex <b>to the litellm proxy, on Sonnet 4.6</b>. Your <code>~/.claude/settings.json</code> pins <code>HTTPS_PROXY</code> to the everyday Cortex, and settings beat the shell environment, so <code>--settings</code> is the reliable override:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>jq -n --arg url "$LITELLM_URL" --arg key "$LITELLM_KEY" --arg ca "$HOME/.cortex/ca/ca.crt" '{env: {
+  HTTPS_PROXY: "http://127.0.0.1:47700", NODE_EXTRA_CA_CERTS: $ca,
+  ANTHROPIC_BASE_URL: $url, ANTHROPIC_AUTH_TOKEN: $key}}' &gt; $PLAY/claude-dev.json
+chmod 600 $PLAY/claude-dev.json
+dev-claude() { claude --settings $PLAY/claude-dev.json --model "$MODEL" "$@"; }
+dev-claude -p "Reply with exactly: READY" --setting-sources ""</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>READY</code>. Every <code>dev-claude</code> run now uses <code>aws/claude-sonnet-4-6</code> through the proxy, whatever your normal Claude Code login or default model is.</p></div></div>
+  <div class="callout ifnot"><span class="icon">!</span><div><p><b>An auth or "model not available" error</b> means the key doesn't serve that model ID. List what it serves (prerequisites) and set <code>MODEL</code> to a Sonnet ID from that list, then rewrite this file and <code>evolve.env</code>.</p></div></div>
 </section>
 
 <section class="card" id="smoke">
@@ -295,6 +304,7 @@ rejections 0    # guided</code></pre></div>
   <h2>Troubleshooting</h2>
   <table>
     <tr><th>What you see</th><th>Meaning and fix</th></tr>
+    <tr><td><code>sending session to learn from failed … model '…' is not available for this API key</code></td><td>Evolve's key can't use its model. Check <code>grep -E 'MODEL|KEY=' $PLAY/evolve.env</code> shows <code>litellm_proxy/$MODEL</code> and your real key, not a placeholder. Restart terminal 1; the plugin retries the same batch every 30 s.</td></tr>
     <tr><td><code>no such file or directory: ~/…/evolve.env</code></td><td><code>PLAY</code> holds a literal <code>~</code> because it was set in quotes. Run <code>export PLAY="$HOME/evolve-playground"</code>, delete any stray <code>./~</code> directory, and redo step 3's <code>cat</code> command.</td></tr>
     <tr><td>No session on <code>:47701</code></td><td>Claude went through your everyday Cortex. Use <code>dev-claude</code> (it passes <code>--settings</code>).</td></tr>
     <tr><td><code>why: evolve_unavailable</code></td><td>The plugin couldn't reach Evolve. Check terminal 1 is up and <code>endpoint</code> ends in <code>/sse</code>; terminal 2 logs the error. It retries after 60 s.</td></tr>
@@ -302,7 +312,7 @@ rejections 0    # guided</code></pre></div>
     <tr><td><code>why: no_tools</code></td><td>A tool-less side call (title, summary). Skipped on purpose.</td></tr>
     <tr><td><code>unknown field "placement"</code> in terminal 2</td><td>Cortex is older than <code>ab08dda3</code>. Pull <code>evolve-plugin</code> and rebuild (step 2).</td></tr>
     <tr><td>No "sent idle session" line</td><td>The session had fewer than 2 successful turns, or isn't idle yet. Wait <code>idle_after_seconds</code> plus up to 30 s.</td></tr>
-    <tr><td>Learning fails with a schema or JSON error</td><td>Your learner model doesn't support Evolve's structured output. Use a model that supports forced tool calls (e.g. <code>litellm_proxy/Azure/gpt-4o</code>), restart terminal 1; the plugin resends the same batch.</td></tr>
+    <tr><td>Learning fails with a schema or JSON error</td><td>Your learner model doesn't support Evolve's structured output. Use a model that supports forced tool calls (<code>litellm_proxy/aws/claude-sonnet-4-6</code> does), restart terminal 1; the plugin resends the same batch.</td></tr>
     <tr><td>Candidates say nothing about the hooks</td><td>The window was not raised before learning (step 8), so the rejections were dropped. Run a new training session.</td></tr>
     <tr><td><code>ModuleNotFoundError: yaml</code> in Claude's output</td><td>The session ran without the shopkit venv on <code>PATH</code>. Re-export it (step 6) and rerun in a fresh clone.</td></tr>
     <tr><td>Turns lost after restarting Cortex</td><td>Unsent turns are held in memory. Let a session go idle and be sent before restarting.</td></tr>
