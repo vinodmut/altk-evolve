@@ -15,7 +15,7 @@
   <div class="facts">
     <div class="fact"><span>Time</span><b>45–60 minutes</b></div>
     <div class="fact"><span>Model</span><b>Sonnet 4.6 via litellm</b></div>
-    <div class="fact"><span>Terminals</span><b>Three</b></div>
+    <div class="fact"><span>Terminals</span><b>Three, plus agentop</b></div>
     <div class="fact"><span>Touches your setup?</span><b>No — side by side</b></div>
   </div>
 </div></header>
@@ -137,7 +137,7 @@ ev namespaces create cortex-candidates</code></pre></div>
 </section>
 
 <section class="card" id="cortex">
-  <div class="step-head"><span class="step-num">4</span><h2>Start a dev Cortex next to your everyday one</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 2</span></div></div>
+  <div class="step-head"><span class="step-num">4</span><h2>Start a dev Cortex next to your everyday one</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminals 2 and 4</span></div></div>
   <p>Copy your installed config, move every listener from <code>4760x</code> to <code>4770x</code>, and add the plugin as the last outbound plugin:</p>
   <div class="cmd" data-label="Terminal 2"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
 sed -e 's/127.0.0.1:4760\([0-9]\)/127.0.0.1:4770\1/g' \
@@ -175,7 +175,19 @@ chmod 600 $WALK/claude-dev.json
 dev-claude() { claude --settings $WALK/claude-dev.json --model "$MODEL" "$@"; }
 dev-claude -p "Reply with exactly: READY" --setting-sources ""</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>READY</code>. Every <code>dev-claude</code> run now uses <code>$MODEL</code> through the proxy, whatever your normal Claude Code login or default model is.</p></div></div>
-  <div class="callout ifnot"><span class="icon">!</span><div><p><b>An auth or "model not available" error</b> means the key doesn't serve that model ID. List what it serves (prerequisites) and set <code>MODEL</code> to a Sonnet ID from that list, then rewrite this file and <code>evolve.env</code>.</p></div></div>
+  <div class="callout ifnot"><span class="icon">!</span><div><p><b>An auth or "model not available" error</b> means the key doesn't serve that model ID. Run step 1's model check, set <code>MODEL</code> in <code>env.sh</code> to the ID it lists, source it again, then rewrite this file and <code>evolve.env</code>.</p></div></div>
+
+  <h3>Watch the dev Cortex in agentop (optional)</h3>
+  <p>agentop shows each session's requests, what the evolve plugin did to them, and the plugin's counters. Point it at the <b>dev</b> Cortex's session API; without <code>-endpoint</code> it opens your everyday Cortex instead. Use a fourth terminal and leave it open:</p>
+  <div class="cmd" data-label="Terminal 4"><pre><code>agentop observe -endpoint http://127.0.0.1:47701</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> an empty session list for now; the <code>READY</code> check above may appear as one session. Sessions show up as you run <code>dev-claude</code> in the later steps.</p></div></div>
+  <table>
+    <tr><th>To see</th><th>Do</th></tr>
+    <tr><td>Which guidelines shaped a request</td><td>Select a session, then a request, and read <code>plugins.evolve</code> in the detail pane: <code>injected</code>, the guideline <code>ids</code>, <code>cached</code>, and the <code>sources</code> they were learned from.</td></tr>
+    <tr><td>The plugin's counters</td><td>Press <span class="kbd">P</span> for the plugins pane and select <code>evolve</code>: requests injected, fetch errors, sessions sent to learn from.</td></tr>
+    <tr><td>Every key</td><td>Press <span class="kbd">?</span>.</td></tr>
+  </table>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Sessions live in memory.</b> The dev Cortex's archive is off, so restarting terminal 2 empties the list. Sessions may show as bare IDs rather than titles. If the <code>plugins.evolve</code> entry looks raw or is missing, run the branch's own agentop instead: <code>(cd "$CORTEX_SRC" &amp;&amp; make agentop) &amp;&amp; "$CORTEX_SRC/bin/agentop" observe -endpoint http://127.0.0.1:47701</code>.</p></div></div>
 </section>
 
 <section class="card" id="smoke">
@@ -316,7 +328,7 @@ rejections 1    # baseline
 rejections 0    # guided</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> the baseline to show <code>injected none</code> and the guided run your promoted IDs. In the recorded six-pair run, every baseline had <b>2</b> rejected commits; guided runs had 0–2, and 2 of 6 committed first time.</p></div></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>One pair is an anecdote.</b> Run variance is large. For a real comparison, repeat several pairs on <code>products.weight_grams</code> (integer grams) and <code>users.locale</code> (text), and alternate which arm goes first, or use the <a href="walkthrough.html">automated demo</a>, which does this and grades each repository.</p></div></div>
-  <p>Inspect a guided session in the TUI: <code>agentop observe -endpoint http://127.0.0.1:47701</code>, then the detail pane of its first request shows <code>plugins.evolve</code>.</p>
+  <p>In agentop (step 4), the guided session's first request shows your promoted IDs in <code>plugins.evolve</code>; the baseline's shows none.</p>
 </section>
 
 <section class="card" id="cleanup">
@@ -353,7 +365,7 @@ ls "$WALK"          # altk-evolve  cortex  env.sh</code></pre></div>
 <section class="card" id="reference">
   <h2>Reference</h2>
   <div class="grid-2">
-    <div class="mini"><h4>Ports</h4><p><code>8201</code> Evolve MCP (SSE at <code>/sse</code>)<br><code>47700</code> dev Cortex proxy<br><code>47701</code> dev Cortex session API<br><code>47704</code> dev Cortex health</p></div>
+    <div class="mini"><h4>Ports</h4><p><code>8201</code> Evolve MCP (SSE at <code>/sse</code>)<br><code>47700</code> dev Cortex proxy<br><code>47701</code> dev Cortex session API (agentop <code>-endpoint</code>)<br><code>47704</code> dev Cortex health</p></div>
     <div class="mini"><h4>Files in <code>$WALK</code></h4><p><code>env.sh</code> variables to source (has your key)<br><code>evolve.env</code> Evolve settings (has your key)<br><code>cortex.yaml</code> dev Cortex config<br><code>claude-dev.json</code> routes Claude to it<br><code>data/</code> every guideline</p></div>
     <div class="mini"><h4>Evolve CLI</h4><p><code>ev entities list NS --type guideline</code><br><code>ev entities show NS ID</code><br><code>ev entities delete NS ID</code><br><code>ev processing-profiles get cortex</code></p></div>
     <div class="mini"><h4>Plugin config</h4><p><code>inject</code> on/off · <code>learn</code> on/off<br><code>placement</code> system | user<br><code>idle_after_seconds</code> · <code>cache_ttl_seconds</code><br>Full list: Cortex <code>docs/evolve-plugin.md</code></p></div>
