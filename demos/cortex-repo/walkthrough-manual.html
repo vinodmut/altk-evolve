@@ -215,7 +215,8 @@ c = EvolveClient()
 for e in c.get_all_entities("cortex-candidates", filters={"type": "guideline"}, limit=1000):
     c.delete_entity_by_id("cortex-candidates", e.id); print("deleted candidate", e.id)')
 }
-clear-candidates          # usually prints nothing: the scratch session had nothing to learn</code></pre></div>
+clear-candidates</code></pre></div>
+  <p>It usually prints nothing: the scratch session had nothing to learn.</p>
 </section>
 
 <section class="card" id="repo">
@@ -223,8 +224,10 @@ clear-candidates          # usually prints nothing: the scratch session had noth
   <p><code>shopkit</code> is a small Python/SQLite library whose git hooks reject any commit that lacks regenerated code and a migration, a <code>CHANGES.md</code> entry, a <code>clients/python/VERSION</code> bump, or a lower-case Conventional Commit subject. Nothing tells the agent this up front.</p>
   <p>The repository's tools call <code>python3</code> and need PyYAML and pytest. Give it its own environment so your system Python is untouched:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>uv venv -q "$WALK/shopkit-venv" &amp;&amp; uv pip install -q --python "$WALK/shopkit-venv/bin/python" pyyaml pytest
-which python3     # env.sh already put this environment first on PATH</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>…/cortex-evolve-manual/shopkit-venv/bin/python3</code>. If it shows a system Python, source <code>env.sh</code> again in this terminal.</p></div></div>
+hash -r
+which python3</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>…/cortex-evolve-manual/shopkit-venv/bin/python3</code>. <code>env.sh</code> already put this environment first on <code>PATH</code>; <code>hash -r</code> makes the shell forget the <code>python3</code> it found before the environment existed. If it still shows a system Python, source <code>env.sh</code> again in this terminal.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Other terminals that were open before this step</b> may also remember the old <code>python3</code>. Run <code>hash -r</code> in each of them, or open new ones and source <code>env.sh</code>.</p></div></div>
   <p>Make a function that creates a fresh clone, with the hooks installed. You'll make one per session:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>fresh() {
   case "$1" in ""|altk-evolve|cortex|env.sh) echo "choose another name than '$1'"; return 1 ;; esac
@@ -258,18 +261,20 @@ curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" \
 <section class="card" id="learn">
   <div class="step-head"><span class="step-num">8</span><h2>Watch Evolve learn</h2><div class="meta"><span class="chip">2–3 min</span><span class="chip where">terminals 2 and 3</span></div></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>Do this before the session goes idle</b> (within 90 s of the training run ending), or right after starting terminal 2. Evolve keeps only the first 40 and last 10 steps of a Cortex session by default, and a coding session runs 50–70 steps, so the rejections fall in the middle and get dropped. Raise the window on the plugin's processing profile:</p></div></div>
-  <div class="cmd" data-label="Terminal 3"><pre><code>ev processing-profiles get cortex | jq '.revision'          # note the revision, e.g. 1
+  <div class="cmd" data-label="Terminal 3"><pre><code>ev processing-profiles get cortex | jq '.revision'
 cat &gt; $WALK/profile.json &lt;&lt;'EOF'
 {"processors": [{"id": "guidelines", "plugin": "evolve.guidelines",
   "config": {"guidelines_mode": "standard", "trajectory_max_steps": 150}}]}
 EOF
 ev processing-profiles apply cortex --file $WALK/profile.json --expected-revision 1</code></pre></div>
+  <p>The first command prints the profile's current revision. If it isn't <code>1</code>, use that number in <code>--expected-revision</code>.</p>
   <div class="callout why"><span class="icon">i</span><div><p>The plugin creates the <code>cortex</code> profile the first time it sends a session, so it exists once the canary session from step 5 has been sent. After that your edit is kept: the plugin's later refreshes only change values you haven't changed.</p><p>If <code>get</code> says the profile doesn't exist yet, <b>don't create it yourself</b>: the plugin would then reset it to its defaults. Wait until terminal 2 logs <code>sent idle session to learn from</code> for the canary session, then apply the edit.</p></div></div>
   <p>About 90 seconds after the training session's last turn, terminal 2 logs the send:</p>
   <pre class="out">msg="evolve: sent idle session to learn from" session=… messages=74 batch=…-1</pre>
   <p>Terminal 1 shows Evolve's LLM calls. A minute later, read what it learned:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>ev entities list cortex-candidates --type guideline
-ev entities show cortex-candidates 1          # replace 1 with each ID: content, rationale, trigger, source session</code></pre></div>
+ev entities show cortex-candidates 1</code></pre></div>
+  <p>Run <code>show</code> for each ID in the list to see its content, rationale, trigger and source session.</p>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three to six candidates. From the recorded run, for example:</p><pre class="out">When commit hooks reject a commit, read the error message to identify all required
 companion changes (changelog, version bumps, commit format) before re-attempting</pre></div></div>
   <div class="callout ifnot"><span class="icon">!</span><div><p><b>Nothing after 3 minutes?</b> Check terminal 2 for <code>sending session to learn from failed</code> (it retries every 30 s with the same batch) and terminal 1 for an LLM error. See <a href="#trouble">troubleshooting</a>.</p></div></div>
@@ -293,8 +298,9 @@ for candidate_id in sys.argv[1:]:
 EOF
   )
 }
-promote 1 2 3 4          # your chosen candidate IDs
+promote 1 2 3 4
 ev entities list cortex --type guideline</code></pre></div>
+  <p>Replace <code>1 2 3 4</code> with the candidate IDs you chose.</p>
   <div class="callout why"><span class="icon">i</span><div><p>Prefer pasting by hand? <code>ev entities add cortex --no-conflict-resolution -c "&lt;text&gt;"</code> does the same without provenance. To withdraw a guideline later: <code>ev entities delete cortex &lt;id&gt;</code>; it stops being injected within <code>cache_ttl_seconds</code>.</p></div></div>
 </section>
 
@@ -317,15 +323,16 @@ dev-claude -p "In this repository, add an optional \`discount_code\` field (text
   --setting-sources "" --strict-mcp-config --allowedTools Bash Read Write Edit --permission-mode acceptEdits</code></pre></div>
 
   <h3>Count rejected commits in each</h3>
-  <div class="cmd" data-label="Terminal 3"><pre><code>rejections() {   # rejected commits in the newest session; pass an offset for older ones
+  <div class="cmd" data-label="Terminal 3"><pre><code>rejections() {
   local S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
   curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" | jq -r '
     [.events[] | select(.phase=="request" and .inference)][0].plugins.evolve as $e
     | [.events[].inference.toolResults[]? | select(.isError and (.content | test("pre-commit: |commit-msg: "))) | .toolUseId] | unique | length
     | "session \("'$S'") · injected \($e.ids // [] | join(",") | if . == "" then "none" else . end) · rejected commits \(.)"'
 }
-rejections 1    # baseline
-rejections 0    # guided</code></pre></div>
+rejections 1
+rejections 0</code></pre></div>
+  <p><code>rejections</code> counts rejected commits in a session: <code>0</code> is the newest session (guided), <code>1</code> the one before it (baseline).</p>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> the baseline to show <code>injected none</code> and the guided run your promoted IDs. In the recorded six-pair run, every baseline had <b>2</b> rejected commits; guided runs had 0–2, and 2 of 6 committed first time.</p></div></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>One pair is an anecdote.</b> Run variance is large. For a real comparison, repeat several pairs on <code>products.weight_grams</code> (integer grams) and <code>users.locale</code> (text), and alternate which arm goes first, or use the <a href="walkthrough.html">automated demo</a>, which does this and grades each repository.</p></div></div>
   <p>In agentop (step 4), the guided session's first request shows your promoted IDs in <code>plugins.evolve</code>; the baseline's shows none.</p>
@@ -333,10 +340,12 @@ rejections 0    # guided</code></pre></div>
 
 <section class="card" id="cleanup">
   <div class="step-head"><span class="step-num">11</span><h2>Clean up</h2><div class="meta"><span class="chip">1 min</span></div></div>
-  <div class="cmd" data-label="Terminals 1 and 2: Ctrl-C, then"><pre><code>rm -rf "$WALK"      # the clones, every config and guideline, and env.sh with your key</code></pre></div>
+  <div class="cmd" data-label="Terminals 1 and 2: Ctrl-C, then"><pre><code>rm -rf "$WALK"</code></pre></div>
+  <p>That removes the clones, every config and guideline, and <code>env.sh</code> with your key.</p>
   <p>To start a fresh experiment instead, keep the clones and <code>env.sh</code> and delete everything else in <code>$WALK</code>:</p>
   <div class="cmd" data-label="Terminals 1 and 2 stopped"><pre><code>find "$WALK" -mindepth 1 -maxdepth 1 ! -name altk-evolve ! -name cortex ! -name env.sh -exec rm -rf {} +
-ls "$WALK"          # altk-evolve  cortex  env.sh</code></pre></div>
+ls "$WALK"</code></pre></div>
+  <p>Expect only <code>altk-evolve</code>, <code>cortex</code> and <code>env.sh</code>.</p>
   <p>Then start again from step 3.</p>
   <p>Your everyday Cortex, its config, its archive and <code>~/.evolve</code> were never modified. The only shared state is the cost ledger, where these runs remain as today's spend.</p>
 </section>
@@ -345,6 +354,8 @@ ls "$WALK"          # altk-evolve  cortex  env.sh</code></pre></div>
   <h2>Troubleshooting</h2>
   <table>
     <tr><th>What you see</th><th>Meaning and fix</th></tr>
+    <tr><td><code>not found</code> for words like <code>env.sh</code>, <code>this</code>, <code>PATH</code></td><td>Your zsh has <code>interactive_comments</code> off, so a pasted <code>#</code> comment ran as a command. The commands on this page have none; if you add your own, run <code>setopt interactive_comments</code> first.</td></tr>
+    <tr><td><code>which python3</code> shows a system Python after step 6</td><td>The shell remembered <code>python3</code> from before the environment existed. Run <code>hash -r</code>.</td></tr>
     <tr><td><code>403 The requested model '…' is not available for this API key</code> from <code>dev-claude</code></td><td><code>MODEL</code> isn't an ID your key serves; the prefix matters (<code>claude-sonnet-4-6</code> vs <code>aws/claude-sonnet-4-6</code>). Run step 1's model check, fix <code>MODEL</code> in <code>env.sh</code>, and source it again. Then rewrite <code>evolve.env</code> (step 3) and restart terminal 1, so Evolve uses the same ID.</td></tr>
     <tr><td><code>sending session to learn from failed … model '…' is not available for this API key</code></td><td>Evolve's key can't use its model. Check <code>grep -E 'MODEL|KEY=' $WALK/evolve.env</code> shows <code>litellm_proxy/$MODEL</code> and your real key, not a placeholder. Restart terminal 1; the plugin retries the same batch every 30 s.</td></tr>
     <tr><td>A variable is empty, or <code>ev: command not found</code></td><td>This terminal didn't source <code>env.sh</code>, or the helper was defined in another terminal. Run <code>. "$HOME/tmp/cortex-evolve-manual/env.sh"</code>; helpers such as <code>ev</code> and <code>dev-claude</code> are defined per terminal in the step that introduces them.</td></tr>

@@ -129,14 +129,16 @@ The wording will differ from run to run.</p></div></div>
 <p>This runs 12 sessions, alternating: a <b>baseline</b> session gets no guidelines; a <b>guided</b> session gets the promoted guidelines, which Cortex puts in a <code>&lt;system-reminder&gt;</code> at the start of the first user message. Each pair adds the same new field (<code>orders.discount_code</code>, <code>products.weight_grams</code> or <code>users.locale</code>, rotating), and the arm that goes first alternates. Every session starts from a fresh clone.</p>
 <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> one line per session as it starts, for example <code>baseline-1: baseline session …</code> then <code>guided-1: guided session …</code>, about 3–4 minutes apart.</p></div></div>
 <p><b>Leave this terminal open.</b> To watch progress from a second terminal (after repeating the variable block from step 3):</p>
-<div class="cmd" data-label="A second terminal"><pre><code>ls "$DEMO_RESULTS_DIR"/*-cli.json | wc -l    # 13 when done: training + 12 sessions</code></pre></div>
+<div class="cmd" data-label="A second terminal"><pre><code>ls "$DEMO_RESULTS_DIR"/*-cli.json | wc -l</code></pre></div>
+<p>It prints <code>13</code> when done: training plus 12 sessions.</p>
 <div class="callout caution"><span class="icon">!</span><div><p><b>While it runs,</b> do not run <code>./demo stop</code>, <code>./demo setup</code> or <code>docker compose down</code> in this directory: they stop the experiment. Other Docker work, and using Claude Code or Cortex normally on your machine, is fine; the container uses none of your ports or settings.</p></div></div>
 <div class="callout ifnot"><span class="icon">!</span><div><p><b>If it stops part-way</b> (a network drop, a closed laptop), run <code>./demo pairs --count N</code> again, where N is the number of pairs not yet finished (6 minus the finished ones). It completes any half-finished pair first, keeps the interrupted session's files as <code>…-interrupted-1</code>, and never overwrites a finished session.</p></div></div>
 </section>
 <section class="card" id="report">
 <div class="step-head"><span class="step-num">9</span><h2>Read the results</h2><div class="meta"><span class="chip">5 min</span></div></div>
 <div class="cmd" data-label="In demos/cortex-repo"><pre><code>./demo report
-open "$DEMO_RESULTS_DIR/summary.html"     # Linux: xdg-open</code></pre></div>
+open "$DEMO_RESULTS_DIR/summary.html"</code></pre></div>
+<p>On Linux, use <code>xdg-open</code> instead of <code>open</code>.</p>
 <p>Grading happens in a separate container with networking disabled. It checks each committed repository: the change is committed, the pre-merge check and tests pass, the migration adds the column, a value round-trips through the library and the client, and the changelog, client version and commit subject are right.</p>
 <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> two lines printed, one per arm, and a page with a table like:</p>
 <table>
