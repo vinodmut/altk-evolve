@@ -4,3 +4,4 @@
 !prompt.txt
 !fixtures/
 !fixtures/**
+!placement.py

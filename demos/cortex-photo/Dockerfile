@@ -1,10 +1,19 @@
 # All tools live together; Cortex/Evolve APIs stay on container loopback.
-FROM golang:1.26-alpine@sha256:9ce231b28998b32e116927c61aa5c406183061d4f3f2d61b292c88e7f6bdf7ca AS cortex-build
+# CORTEX_SOURCE=local builds a Cortex checkout passed as the cortex-checkout build context.
+ARG CORTEX_SOURCE=pinned
+FROM golang:1.26-alpine@sha256:9ce231b28998b32e116927c61aa5c406183061d4f3f2d61b292c88e7f6bdf7ca AS cortex-pinned
 RUN apk add --no-cache curl git
 ARG CORTEX_REV=4262d0a84c37589e8d7907cfb70c46f6e08694d4
 WORKDIR /src
 RUN curl -fsSL "https://codeload.github.com/vinodmut/cortex/tar.gz/${CORTEX_REV}" \
     | tar -xz --strip-components=1
+
+FROM golang:1.26-alpine@sha256:9ce231b28998b32e116927c61aa5c406183061d4f3f2d61b292c88e7f6bdf7ca AS cortex-local
+RUN apk add --no-cache git
+WORKDIR /src
+COPY --from=cortex-checkout . .
+
+FROM cortex-${CORTEX_SOURCE} AS cortex-build
 RUN tags="$(go -C scripts/profile-tags run . full)" \
     && cd cmd/cortex \
     && GOWORK=off CGO_ENABLED=0 go build -tags "$tags" -ldflags="-s -w" -o /cortex .

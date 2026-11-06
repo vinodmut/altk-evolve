@@ -304,3 +304,23 @@ def test_interactive_arms_are_fresh_and_have_the_same_prompt(bundle):
     assert "-p" not in command and "--dangerously-skip-permissions" not in command
     assert "--resume" not in command
     assert bundle.demo.prompt("baseline") == bundle.demo.prompt("guided")
+
+
+def test_placement_is_only_configured_when_chosen(bundle):
+    plugin = bundle.services.cortex_config(True)["pipeline"]["outbound"]["plugins"][-1]["config"]
+    assert "placement" not in plugin
+    plugin = bundle.services.cortex_config(True, "user")["pipeline"]["outbound"]["plugins"][-1]["config"]
+    assert plugin["placement"] == "user" and plugin["inject"] is True
+
+
+def test_bridge_reports_where_the_guideline_block_arrived(bundle):
+    block = '<evolve-guidelines ids="1">x</evolve-guidelines>'
+    in_system = {"system": "base\n\n" + block, "messages": [{"role": "user", "content": "task"}]}
+    in_user = {
+        "system": "base",
+        "messages": [{"role": "user", "content": [{"type": "text", "text": block}, {"type": "text", "text": "task"}]}],
+    }
+    absent = {"system": [{"type": "text", "text": "base"}], "messages": [{"role": "user", "content": "task"}]}
+    assert bundle.services.delivery(in_system) == {"in_system": True, "in_first_user": False}
+    assert bundle.services.delivery(in_user) == {"in_system": False, "in_first_user": True}
+    assert bundle.services.delivery(absent) == {"in_system": False, "in_first_user": False}

@@ -347,3 +347,24 @@ def test_reuse_imports_byte_identical_training_and_rejects_overwrites(tmp_path, 
         assert hashlib.sha256((tmp_path / name).read_bytes()).hexdigest() == digest
     with pytest.raises(RuntimeError, match="new, checked"):
         module.prepare(tmp_path, source)
+
+
+def test_placement_counts_reads_outside_the_task_directory():
+    spec = importlib.util.spec_from_file_location("invoice_placement", ROOT / "placement.py")
+    placement = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(placement)
+
+    def read(path):
+        return {"name": "Read", "arguments": json.dumps({"file_path": path})}
+
+    messages = [
+        {
+            "role": "assistant",
+            "tool_calls": [{"function": read("/tmp/tmp.abc/input/1.pdf")}, {"function": read("/results/tasks/a-1/input/1.pdf")}],
+        },
+        {"role": "tool", "content": "[error] File does not exist."},
+        {"role": "assistant", "tool_calls": [{"function": {"name": "Bash", "arguments": json.dumps({"command": "cat /tmp/x"})}}]},
+        {"role": "assistant", "tool_calls": [{"function": read("/results/tasks/a-10/input/1.pdf")}]},
+    ]
+    assert placement.wrong_path_reads(messages, "/results/tasks/a-1") == ["/tmp/tmp.abc/input/1.pdf", "/results/tasks/a-10/input/1.pdf"]
+    assert set(placement.ARMS) >= {"baseline", "system", "user"} and placement.ARMS["baseline"]["inject"] is False

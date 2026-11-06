@@ -107,7 +107,23 @@ def configure_process():
     return env
 
 
-def cortex_config(inject=False):
+def cortex_config(inject=False, placement=None):
+    evolve = {
+        "endpoint": MCP,
+        "agents": ["claude-code"],
+        "serve_namespace": SERVE_NAMESPACE,
+        "learn_namespace": LEARN_NAMESPACE,
+        "processing_profile": PROCESSING_PROFILE,
+        "learn": False,
+        "inject": inject,
+        "idle_after_seconds": 60,
+        "cache_ttl_seconds": 30,
+        "timeout_ms": 30000,
+        "learn_timeout_seconds": 180,
+    }
+    if placement:
+        # Only set when chosen: Cortex builds without the field reject unknown config.
+        evolve["placement"] = placement
     return {
         "mode": "proxy-sidecar",
         "listener": {
@@ -127,38 +143,28 @@ def cortex_config(inject=False):
                     {"name": "inference-parser"},
                     {"name": "mcp-parser"},
                     {"name": "a2a-parser"},
-                    {
-                        "name": "evolve",
-                        "config": {
-                            "endpoint": MCP,
-                            "agents": ["claude-code"],
-                            "serve_namespace": SERVE_NAMESPACE,
-                            "learn_namespace": LEARN_NAMESPACE,
-                            "processing_profile": PROCESSING_PROFILE,
-                            "learn": False,
-                            "inject": inject,
-                            "idle_after_seconds": 60,
-                            "cache_ttl_seconds": 30,
-                            "timeout_ms": 30000,
-                            "learn_timeout_seconds": 180,
-                        },
-                    },
+                    {"name": "evolve", "config": evolve},
                 ]
             }
         },
     }
 
 
-def set_injection(enabled):
+def set_injection(enabled, placement=None):
     path = RUNTIME / "cortex.yaml"
-    path.write_text(yaml.safe_dump(cortex_config(enabled), sort_keys=False))
+    path.write_text(yaml.safe_dump(cortex_config(enabled, placement), sort_keys=False))
     # Cortex watches the file. Read back the effective pipeline before launching.
     with httpx.Client(trust_env=False, timeout=2) as client:
         for _ in range(30):
             pipeline = client.get(API + "/v1/pipeline").json()
             plugin = next((p for p in pipeline.get("outbound", []) if p["name"] == "evolve"), {})
             config = plugin.get("config", {})
-            if config.get("inject") == enabled and config.get("learn") is False:
+            if (
+                config.get("inject") == enabled
+                and config.get("learn") is False
+                and config.get("placement") == placement
+                and config.get("serve_namespace") == SERVE_NAMESPACE
+            ):
                 return
             time.sleep(0.5)
     raise RuntimeError("Cortex did not confirm the injection setting. Inspect runtime/cortex.log.")
@@ -279,6 +285,15 @@ def flatten_system(body):
     return body
 
 
+def delivery(body):
+    """Where Cortex's guideline block sits in the payload the gateway actually receives."""
+    marker = "<evolve-guidelines"
+    system = body.get("system")
+    system_text = system if isinstance(system, str) else json.dumps(system or "")
+    first_user = next((m for m in body.get("messages") or [] if m.get("role") == "user"), {})
+    return {"in_system": marker in system_text, "in_first_user": marker in json.dumps(first_user.get("content") or "")}
+
+
 def serve_bridge():
     import uvicorn
     from fastapi import FastAPI, Request
@@ -297,11 +312,17 @@ def serve_bridge():
         content = await request.body()
         if request.method == "POST" and path in {"v1/messages", "v1/messages/count_tokens"}:
             try:
-                content = json.dumps(flatten_system(json.loads(content))).encode()
+                body = flatten_system(json.loads(content))
+                content = json.dumps(body).encode()
             except (ValueError, TypeError):
                 return JSONResponse(
                     {"error": {"type": "invalid_request_error", "message": "This demo supports text system blocks only."}}, status_code=400
                 )
+            if path == "v1/messages" and body.get("tools"):
+                # Records what reaches the model, not what Cortex says it did.
+                row = {"at": datetime.now(UTC).isoformat(), "session": request.headers.get("x-claude-code-session-id"), **delivery(body)}
+                with (RUNTIME / "bridge-delivery.jsonl").open("a") as log:
+                    log.write(json.dumps(row) + "\n")
         headers = {k: v for k, v in request.headers.items() if k.lower() not in hop}
         client = httpx.AsyncClient(trust_env=False, timeout=180)
         upstream = client.build_request(request.method, gateway + "/" + path, headers=headers, content=content, params=request.query_params)

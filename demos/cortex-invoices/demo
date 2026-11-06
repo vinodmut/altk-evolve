@@ -14,7 +14,12 @@ case "${1:-help}" in
       exit 1
     fi
     mkdir -p "$DEMO_RESULTS_DIR"
-    docker build --tag cortex-invoice-runtime:local ../cortex-photo
+    if [ -n "${CORTEX_CHECKOUT:-}" ]; then
+      docker build --tag cortex-invoice-runtime:local --build-arg CORTEX_SOURCE=local \
+        --build-context "cortex-checkout=$CORTEX_CHECKOUT" ../cortex-photo
+    else
+      docker build --tag cortex-invoice-runtime:local ../cortex-photo
+    fi
     docker compose up --build --detach --wait --wait-timeout 360
     docker compose exec -T demo uv run --offline --no-sync python driver.py check
     ;;
@@ -27,9 +32,14 @@ case "${1:-help}" in
   check|capture|learn|candidates|status|repeat-trials)
     docker compose exec -T demo uv run --offline --no-sync python driver.py "$@"
     ;;
-  feedback|report|repetition-report|consistency-report|reuse-training)
+  placement)
+    shift
+    docker compose exec -T demo uv run --offline --no-sync python placement.py "$@"
+    ;;
+  feedback|report|repetition-report|consistency-report|reuse-training|placement-report)
     case "$1" in
       repetition-report|consistency-report) shift; set -- consistency.py report "$@" ;;
+      placement-report) shift; set -- placement.py report "$@" ;;
       reuse-training) shift; set -- consistency.py prepare "$@" ;;
       *) set -- evaluate.py "$@" ;;
     esac
@@ -43,5 +53,5 @@ case "${1:-help}" in
   stop) docker compose down ;;
   logs) docker compose logs --tail 60 ;;
   shell) docker compose exec demo bash ;;
-  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|reuse-training|learn [--json-output] [--mode standard|consistency] [--consistency-method fast|accurate]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|repeat-trials|report|repetition-report|consistency-report|status|stop' ;;
+  *) printf '%s\n' 'Usage: ./demo setup|training [--batch]|feedback|resume training [--batch]|reuse-training|learn [--json-output] [--mode standard|consistency] [--consistency-method fast|accurate]|candidates|promote IDs|baseline 1 [--batch] [--repeat 2]|guided 1 [--batch] [--repeat 2]|repeat-trials|report|repetition-report|consistency-report|placement seed|placement run ARM... [--count N]|placement-report|status|stop' ;;
 esac
