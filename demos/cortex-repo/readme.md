@@ -37,7 +37,9 @@ full report (charts, commit-by-commit comparison, every run), or read the short
 ## Run it
 
 To hand this to someone else, send them [walkthrough.html](walkthrough.html): step-by-step instructions
-with what to expect at each step, troubleshooting, and what to send back.
+with what to expect at each step, troubleshooting, and what to send back. To run the same loop by
+hand on your own machine, without Docker or these scripts, follow
+[walkthrough-manual.html](walkthrough-manual.html).
 
 ```bash
 cd demos/cortex-repo

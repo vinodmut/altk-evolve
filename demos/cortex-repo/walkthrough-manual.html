@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cortex + Evolve by hand: learn a repository's conventions</title>
+<link rel="stylesheet" href="walkthrough.css">
+</head>
+<body>
+
+<header class="hero"><div class="hero-inner">
+  <span class="eyebrow">Hands-on walkthrough · no demo scripts</span>
+  <h1>Cortex + Evolve by hand</h1>
+  <p>Run the self-improvement loop yourself, on your own machine: Cortex records your Claude Code sessions, Evolve learns guidelines from what went wrong, you promote the good ones, and Cortex injects them into the next session. No Docker, no driver, no grader.</p>
+  <div class="facts">
+    <div class="fact"><span>Time</span><b>45–60 minutes</b></div>
+    <div class="fact"><span>API cost</span><b>About $1</b></div>
+    <div class="fact"><span>Terminals</span><b>Three</b></div>
+    <div class="fact"><span>Touches your setup?</span><b>No — side by side</b></div>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="Steps"><b>Steps</b><ol>
+  <li><a href="#how"><span class="num">·</span>How it fits together</a></li>
+  <li><a href="#prereqs"><span class="num">1</span>Prerequisites</a></li>
+  <li><a href="#build"><span class="num">2</span>Build Cortex</a></li>
+  <li><a href="#evolve"><span class="num">3</span>Start Evolve</a></li>
+  <li><a href="#cortex"><span class="num">4</span>Start a dev Cortex</a></li>
+  <li><a href="#smoke"><span class="num">5</span>Prove injection works</a></li>
+  <li><a href="#repo"><span class="num">6</span>Set up the sample repo</a></li>
+  <li><a href="#train"><span class="num">7</span>Training session</a></li>
+  <li><a href="#learn"><span class="num">8</span>Watch Evolve learn</a></li>
+  <li><a href="#promote"><span class="num">9</span>Review and promote</a></li>
+  <li><a href="#compare"><span class="num">10</span>Compare with and without</a></li>
+  <li><a href="#cleanup"><span class="num">11</span>Clean up</a></li>
+  <li class="extra"><a href="#trouble"><span class="num">?</span>Troubleshooting</a></li>
+  <li><a href="#reference"><span class="num">≡</span>Reference</a></li>
+</ol></nav>
+
+<main>
+
+<section class="card" id="how">
+  <h2>How it fits together</h2>
+  <p>Your everyday Cortex keeps running on its usual ports. You start a second, <b>dev</b> Cortex built with the <code>evolve</code> plugin on ports <code>477xx</code>, plus Evolve's MCP server on port <code>8201</code>. Only Claude Code runs you point at the dev Cortex take part.</p>
+  <div class="flow">
+    <div class="node"><b>Claude Code</b>A session in the sample repo<span class="tag">--settings → :47700</span></div>
+    <div class="node"><b>Dev Cortex</b>Records each turn; adds guidelines to the first user message<span class="tag">evolve plugin</span></div>
+    <div class="node"><b>Evolve</b>After the session goes idle, writes candidate guidelines<span class="tag">MCP :8201</span></div>
+    <div class="node"><b>You</b>Read candidates and promote the useful ones<span class="tag">evolve CLI</span></div>
+    <div class="node"><b>Next session</b>Gets the promoted guidelines injected<span class="tag">placement: user</span></div>
+  </div>
+  <div class="callout why"><span class="icon">i</span><div><p>Two namespaces are the review gate. Learned guidelines land in <code>cortex-candidates</code>, which is never injected. Only what you copy to <code>cortex</code> is served. Session content includes tool output, so this stops an attacker's text from becoming a permanent instruction.</p></div></div>
+</section>
+
+<section class="card" id="prereqs">
+  <div class="step-head"><span class="step-num">1</span><h2>Prerequisites</h2><div class="meta"><span class="chip">5 min</span></div></div>
+  <ul class="checklist">
+    <li><b>Your everyday Cortex is installed</b> and Claude Code trusts its CA (<code>~/.cortex/ca/ca.crt</code> exists). The dev Cortex reuses that CA and never writes to it.</li>
+    <li><b>Go 1.26.10 or later</b> (<code>go version</code>) and <b>uv</b> (<code>uv --version</code>).</li>
+    <li><b>Claude Code</b> (<code>claude --version</code>), logged in as you normally use it.</li>
+    <li><b>Checkouts</b>: Cortex on branch <code>evolve-plugin</code> at <code>ab08dda3</code> or later (it adds <code>placement</code>), and altk-evolve on <code>rossocortex</code>, which contains the sample repository.</li>
+    <li><b>An LLM for Evolve</b>, any litellm model that supports tool calls. The setup that worked here: <code>litellm_proxy/Azure/gpt-4o</code> through your litellm proxy.</li>
+  </ul>
+  <p>Set these in <b>every</b> terminal you use below:</p>
+  <div class="cmd" data-label="All terminals"><pre><code>export CORTEX_SRC=~/data/digitallabor/src/agents/cortex
+export EVOLVE_SRC=~/data/digitallabor/src/agents/altk-evolve.rossocortex
+export PLAY=~/evolve-playground          # everything this walkthrough writes
+mkdir -p $PLAY</code></pre></div>
+</section>
+
+<section class="card" id="build">
+  <div class="step-head"><span class="step-num">2</span><h2>Build Cortex with the plugin</h2><div class="meta"><span class="chip">2 min</span><span class="chip where">terminal 3</span></div></div>
+  <div class="cmd" data-label="Terminal 3"><pre><code>cd $CORTEX_SRC &amp;&amp; git log -1 --oneline &amp;&amp; make cortex</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>include_plugin_evolve</code> in the printed tag list, and a fresh <code>$CORTEX_SRC/bin/cortex</code>. Your installed Cortex in <code>~/.local/bin</code> is unchanged.</p></div></div>
+  <div class="callout ifnot"><span class="icon">!</span><div><p><b>If the tag is missing</b>, you are on a branch without the plugin. Check out <code>evolve-plugin</code>.</p></div></div>
+  <p>Make sure the ports this walkthrough uses are free:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>lsof -nP -iTCP:8201 -iTCP:47700 -iTCP:47701 -sTCP:LISTEN</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> no output. Your everyday Cortex uses <code>476xx</code> and is not listed.</p></div></div>
+</section>
+
+<section class="card" id="evolve">
+  <div class="step-head"><span class="step-num">3</span><h2>Start Evolve's MCP server</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 1</span></div></div>
+  <p>Write Evolve's settings. This keeps all guidelines in <code>$PLAY/data</code>, separate from anything else in <code>~/.evolve</code>:</p>
+  <div class="cmd" data-label="Terminal 1"><pre><code>umask 077
+cat &gt; $PLAY/evolve.env &lt;&lt;EOF
+EVOLVE_MODEL_NAME=litellm_proxy/Azure/gpt-4o
+LITELLM_PROXY_API_BASE=https://&lt;your litellm proxy&gt;
+LITELLM_PROXY_API_KEY=&lt;your key&gt;
+EVOLVE_BACKEND=filesystem
+EVOLVE_DATA_DIR=$PLAY/data
+EVOLVE_SQLITE_PATH=$PLAY/evolve.sqlite.db
+EVOLVE_INJECTION_MODE=retrieval
+EVOLVE_OTEL_ENABLED=false
+EVOLVE_HOOKS_CONFIG=
+EOF</code></pre></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Fill in the two <code>&lt;…&gt;</code> values</b> after running this (the file is written with your shell's values for <code>$PLAY</code>). <code>EVOLVE_INJECTION_MODE=retrieval</code> is required: without it Evolve matches the task text literally and returns almost nothing.</p></div></div>
+  <p>Start the server and leave it running:</p>
+  <div class="cmd" data-label="Terminal 1"><pre><code>set -a; . $PLAY/evolve.env; set +a
+cd $PLAY &amp;&amp; env -u HTTPS_PROXY -u HTTP_PROXY \
+  uv run --project $EVOLVE_SRC evolve-mcp --transport sse --port 8201</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b>, after a first-time download of a small embedding model:</p><pre class="out">INFO:     Uvicorn running on http://127.0.0.1:8201 (Press CTRL+C to quit)</pre></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><code>env -u HTTPS_PROXY</code> keeps Evolve's own LLM calls out of Cortex, so they don't show up as agent traffic.</p></div></div>
+  <p>Add a shortcut for the Evolve CLI in <b>terminal 3</b>. It reads the same data directory as the server:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>ev() { (set -a; . $PLAY/evolve.env; set +a; cd $PLAY &amp;&amp; env -u HTTPS_PROXY -u HTTP_PROXY uv run -q --project $EVOLVE_SRC evolve "$@"); }
+ev namespaces create cortex
+ev namespaces create cortex-candidates</code></pre></div>
+</section>
+
+<section class="card" id="cortex">
+  <div class="step-head"><span class="step-num">4</span><h2>Start a dev Cortex next to your everyday one</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 2</span></div></div>
+  <p>Copy your installed config, move every listener from <code>4760x</code> to <code>4770x</code>, and add the plugin as the last outbound plugin:</p>
+  <div class="cmd" data-label="Terminal 2"><pre><code>sed -e 's/127.0.0.1:4760\([0-9]\)/127.0.0.1:4770\1/g' \
+    -e 's/generate_ca: true/generate_ca: false/' \
+    ~/.cortex/config.yaml &gt; $PLAY/cortex.yaml
+cat &gt;&gt; $PLAY/cortex.yaml &lt;&lt;'EOF'
+      - name: evolve
+        config:
+          endpoint: http://127.0.0.1:8201/sse
+          agents: [claude-code]
+          placement: user
+          idle_after_seconds: 90
+          cache_ttl_seconds: 60
+EOF
+grep -c 4760 $PLAY/cortex.yaml</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>0</code>. The <code>evolve</code> entry must sit under <code>pipeline: outbound: plugins:</code>, indented like the plugin above it.</p></div></div>
+  <table>
+    <tr><th>Setting</th><th>Why</th></tr>
+    <tr><td><code>placement: user</code></td><td>Guidelines go in a <code>&lt;system-reminder&gt;</code> on the first user message. At the end of the system prompt the model ignored them (<a href="../cortex-invoices/placement.md">placement experiment</a>).</td></tr>
+    <tr><td><code>idle_after_seconds: 90</code></td><td>Send a session to Evolve 90 s after its last turn, instead of the default 15 minutes.</td></tr>
+    <tr><td><code>cache_ttl_seconds: 60</code></td><td>A newly promoted guideline reaches running sessions within a minute.</td></tr>
+  </table>
+  <p>Start it and leave it running:</p>
+  <div class="cmd" data-label="Terminal 2"><pre><code>env -u HTTPS_PROXY -u HTTP_PROXY $CORTEX_SRC/bin/cortex --config $PLAY/cortex.yaml</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> among the startup lines:</p><pre class="out">msg="session archive disabled — …" reason="not a local install"
+msg="HTTP server listening" name=forward-proxy addr=127.0.0.1:47700</pre><p>The archive is off because the config lives outside <code>~/.cortex</code>, so nothing is written to your real session archive. Test runs do count toward today's cost in agentop.</p></div></div>
+  <p>Check the plugin is loaded, from terminal 3:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>curl -s --noproxy '*' 127.0.0.1:47701/v1/pipeline | jq -c '[.outbound[] | {name, placement: .config.placement}]'</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>evolve</code> last, with <code>"placement":"user"</code>.</p></div></div>
+  <p>Finally, a settings file that routes one Claude Code run through the dev Cortex. Your <code>~/.claude/settings.json</code> pins <code>HTTPS_PROXY</code> to the everyday Cortex, and settings beat the shell environment, so <code>--settings</code> is the reliable override:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>echo '{"env":{"HTTPS_PROXY":"http://127.0.0.1:47700","NODE_EXTRA_CA_CERTS":"'$HOME'/.cortex/ca/ca.crt"}}' \
+  &gt; $PLAY/claude-dev.json
+dev-claude() { claude --settings $PLAY/claude-dev.json "$@"; }</code></pre></div>
+</section>
+
+<section class="card" id="smoke">
+  <div class="step-head"><span class="step-num">5</span><h2>Prove injection works with a canary</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 3</span></div></div>
+  <p>Before learning anything, check that a promoted guideline actually reaches the model. Add one with a visible effect:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>ev entities add cortex --no-conflict-resolution \
+  -c "When you finish answering, end your reply with the exact line: EVOLVE-CANARY-7731" \
+  -m '{"creation_mode":"manual","task_description":"any task in a scratch directory"}'
+mkdir -p $PLAY/scratch &amp;&amp; cd $PLAY/scratch &amp;&amp; echo hello &gt; a.txt
+dev-claude -p "What files are in this directory?" --allowedTools "Bash(ls:*)" Read</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> the reply to end with <code>EVOLVE-CANARY-7731</code>.</p></div></div>
+  <p>See what the plugin recorded for that session:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r '.sessions | map(select(.agent)) | max_by(.createdAt) | .id')
+curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions/$S | jq -c '.events[] | select(.phase=="request" and .inference)
+  | {seq, evolve: .plugins.evolve, why: [.invocations.outbound[]? | select(.plugin=="evolve") | .reason]}'</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><pre class="out">{"seq":2,"evolve":{"injected":true,"ids":["1"],"cached":false,…},"why":["body_rewritten"]}</pre><p><code>ids</code> says exactly which guidelines shaped the request; <code>cached: true</code> on later turns means the block is reused, so prompt caching keeps working.</p></div></div>
+  <div class="callout ifnot"><span class="icon">!</span><div><p><b>No canary?</b> Read the <code>why</code> column against the <a href="#trouble">troubleshooting table</a>. No session at all usually means you ran plain <code>claude</code> instead of <code>dev-claude</code>.</p></div></div>
+  <p>Remove the canary before the real experiment. The scratch session is sent to Evolve once it goes idle; give it two minutes, then clear anything it produced so only the training session's lessons remain:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>ev entities delete cortex 1
+sleep 120
+clear-candidates() {
+  (set -a; . $PLAY/evolve.env; set +a; cd $PLAY &amp;&amp; env -u HTTPS_PROXY uv run -q --project $EVOLVE_SRC python -c '
+from altk_evolve.frontend.client.evolve_client import EvolveClient
+c = EvolveClient()
+for e in c.get_all_entities("cortex-candidates", filters={"type": "guideline"}, limit=1000):
+    c.delete_entity_by_id("cortex-candidates", e.id); print("deleted candidate", e.id)')
+}
+clear-candidates          # usually prints nothing: the scratch session had nothing to learn</code></pre></div>
+</section>
+
+<section class="card" id="repo">
+  <div class="step-head"><span class="step-num">6</span><h2>Set up the sample repository</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 3</span></div></div>
+  <p><code>shopkit</code> is a small Python/SQLite library whose git hooks reject any commit that lacks regenerated code and a migration, a <code>CHANGES.md</code> entry, a <code>clients/python/VERSION</code> bump, or a lower-case Conventional Commit subject. Nothing tells the agent this up front.</p>
+  <p>The repository's tools call <code>python3</code> and need PyYAML and pytest. Give it its own environment so your system Python is untouched:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>uv venv -q $PLAY/shopkit-venv &amp;&amp; uv pip install -q --python $PLAY/shopkit-venv/bin/python pyyaml pytest
+export PATH=$PLAY/shopkit-venv/bin:$PATH      # python3 now has the repo's dependencies</code></pre></div>
+  <p>Make a function that creates a fresh clone, with the hooks installed. You'll make one per session:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>fresh() {
+  rm -rf "$PLAY/$1" &amp;&amp; cp -R $EVOLVE_SRC/demos/cortex-repo/shopkit "$PLAY/$1" &amp;&amp; cd "$PLAY/$1" &amp;&amp;
+  git init -q &amp;&amp; git config core.hooksPath .githooks &amp;&amp;
+  git add -A &amp;&amp; git commit -q -m "chore: shopkit 0.4.0" &amp;&amp; git log --oneline
+}
+fresh train</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>check passed: …</code> from the hook, then one commit: <code>… chore: shopkit 0.4.0</code>. Run <code>./scripts/test</code> to see <code>3 passed</code>.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Run every <code>dev-claude</code> session in a terminal where this <code>PATH</code> is set.</b> Claude's Bash tool inherits it, so the repository's <code>python3</code> finds its packages.</p></div></div>
+</section>
+
+<section class="card" id="train">
+  <div class="step-head"><span class="step-num">7</span><h2>Run the training session</h2><div class="meta"><span class="chip">3–5 min</span><span class="chip where">terminal 3</span></div></div>
+  <p>Ask for a change and a commit. The flags keep your personal hooks, skills and memory out of the run, so it is reproducible:</p>
+  <div class="cmd" data-label="Terminal 3 · in $PLAY/train"><pre><code>cd $PLAY/train
+dev-claude -p "In this repository, add an optional \`nickname\` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge." \
+  --setting-sources "" --strict-mcp-config --allowedTools Bash Read Write Edit --permission-mode acceptEdits</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> a summary after a few minutes. Then look at how the commit went:</p></div></div>
+  <div class="cmd" data-label="Terminal 3 · in $PLAY/train"><pre><code>git log --oneline
+S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r '.sessions | map(select(.agent)) | max_by(.createdAt) | .id')
+curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" \
+  | jq -r '[.events[].inference.toolResults[]? | select(.isError)] | unique_by(.toolUseId) | .[].content' \
+  | grep -E 'pre-commit: |commit-msg: ' | sort | uniq -c</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> a <code>feat(users): …</code> commit, and one or two rejections such as:</p><pre class="out">   1 pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
+   1 pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
+   1 commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'</pre><p>Those rejections are what Evolve will learn from. Nobody grades the session. (Each request carries earlier tool results again, so the command keeps one copy per tool call.)</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>No rejections?</b> Claude read <code>.githooks/</code> first and got it right. Evolve then has little to learn. Run <code>fresh train2</code> and try again; it varies between runs.</p></div></div>
+</section>
+
+<section class="card" id="learn">
+  <div class="step-head"><span class="step-num">8</span><h2>Watch Evolve learn</h2><div class="meta"><span class="chip">2–3 min</span><span class="chip where">terminals 2 and 3</span></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Do this before the session goes idle</b> (within 90 s of the training run ending), or right after starting terminal 2. Evolve keeps only the first 40 and last 10 steps of a Cortex session by default, and a coding session runs 50–70 steps, so the rejections fall in the middle and get dropped. Raise the window on the plugin's processing profile:</p></div></div>
+  <div class="cmd" data-label="Terminal 3"><pre><code>ev processing-profiles get cortex | jq '.revision'          # note the revision, e.g. 1
+cat &gt; $PLAY/profile.json &lt;&lt;'EOF'
+{"processors": [{"id": "guidelines", "plugin": "evolve.guidelines",
+  "config": {"guidelines_mode": "standard", "trajectory_max_steps": 150}}]}
+EOF
+ev processing-profiles apply cortex --file $PLAY/profile.json --expected-revision 1</code></pre></div>
+  <div class="callout why"><span class="icon">i</span><div><p>The plugin creates the <code>cortex</code> profile the first time it sends a session, so it exists after the canary run. Your edit is kept: the plugin's later refreshes only change values you haven't changed. If <code>get</code> says the profile doesn't exist yet, use <code>--expected-revision 0</code> and the plugin will adopt it.</p></div></div>
+  <p>About 90 seconds after the training session's last turn, terminal 2 logs the send:</p>
+  <pre class="out">msg="evolve: sent idle session to learn from" session=… messages=74 batch=…-1</pre>
+  <p>Terminal 1 shows Evolve's LLM calls. A minute later, read what it learned:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>ev entities list cortex-candidates --type guideline
+ev entities show cortex-candidates 1          # replace 1 with each ID: content, rationale, trigger, source session</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three to six candidates. From the recorded run, for example:</p><pre class="out">When commit hooks reject a commit, read the error message to identify all required
+companion changes (changelog, version bumps, commit format) before re-attempting</pre></div></div>
+  <div class="callout ifnot"><span class="icon">!</span><div><p><b>Nothing after 3 minutes?</b> Check terminal 2 for <code>sending session to learn from failed</code> (it retries every 30 s with the same batch) and terminal 1 for an LLM error. See <a href="#trouble">troubleshooting</a>.</p></div></div>
+</section>
+
+<section class="card" id="promote">
+  <div class="step-head"><span class="step-num">9</span><h2>Review and promote</h2><div class="meta"><span class="chip">5 min</span><span class="chip where">terminal 3</span></div></div>
+  <p>Promote a candidate only if it is <b>grounded in what happened</b> and would help <b>a different change</b> in the same repository. Leave out generic advice and anything naming the training field.</p>
+  <p>Promotion copies the text into the served namespace, keeping its provenance:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>promote() {
+  (set -a; . $PLAY/evolve.env; set +a; cd $PLAY &amp;&amp; env -u HTTPS_PROXY uv run -q --project $EVOLVE_SRC python - "$@" &lt;&lt;'EOF'
+import sys
+from altk_evolve.frontend.client.evolve_client import EvolveClient
+from altk_evolve.schema.core import Entity
+client = EvolveClient()
+for candidate_id in sys.argv[1:]:
+    g = client.get_entity_by_id("cortex-candidates", candidate_id)
+    keep = {k: g.metadata[k] for k in ("creation_mode", "agent_id", "session_id", "source_task_id", "task_description", "rationale") if k in g.metadata}
+    [u] = client.update_entities("cortex", [Entity(type="guideline", content=g.content, metadata={**keep, "status": "active"})], enable_conflict_resolution=False)
+    print(f"candidate {candidate_id} -&gt; served as {u.id}: {g.content[:90]}")
+EOF
+  )
+}
+promote 1 2 3 4          # your chosen candidate IDs
+ev entities list cortex --type guideline</code></pre></div>
+  <div class="callout why"><span class="icon">i</span><div><p>Prefer pasting by hand? <code>ev entities add cortex --no-conflict-resolution -c "&lt;text&gt;"</code> does the same without provenance. To withdraw a guideline later: <code>ev entities delete cortex &lt;id&gt;</code>; it stops being injected within <code>cache_ttl_seconds</code>.</p></div></div>
+</section>
+
+<section class="card" id="compare">
+  <div class="step-head"><span class="step-num">10</span><h2>Compare a session with and without</h2><div class="meta"><span class="chip">15–20 min</span><span class="chip where">terminals 2 and 3</span></div></div>
+  <p>Use a <b>different</b> field from training, so you are testing transfer rather than recall. Run one session with injection off and one with it on, each in a fresh clone.</p>
+
+  <h3>Baseline: injection off</h3>
+  <p>Edit <code>$PLAY/cortex.yaml</code> and add <code>inject: false</code> under the evolve plugin's <code>config:</code>. Cortex hot-reloads the file; check it took:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>curl -s --noproxy '*' 127.0.0.1:47701/v1/pipeline | jq '.outbound[] | select(.name=="evolve") | .config.inject'
+fresh baseline
+dev-claude -p "In this repository, add an optional \`discount_code\` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge." \
+  --setting-sources "" --strict-mcp-config --allowedTools Bash Read Write Edit --permission-mode acceptEdits</code></pre></div>
+
+  <h3>Guided: injection on</h3>
+  <p>Change it to <code>inject: true</code> (or remove the line), wait two seconds, then:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>curl -s --noproxy '*' 127.0.0.1:47701/v1/pipeline | jq '.outbound[] | select(.name=="evolve") | .config.inject'
+fresh guided
+dev-claude -p "In this repository, add an optional \`discount_code\` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge." \
+  --setting-sources "" --strict-mcp-config --allowedTools Bash Read Write Edit --permission-mode acceptEdits</code></pre></div>
+
+  <h3>Count rejected commits in each</h3>
+  <div class="cmd" data-label="Terminal 3"><pre><code>rejections() {   # rejected commits in the newest session; pass an offset for older ones
+  local S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
+  curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" | jq -r '
+    [.events[] | select(.phase=="request" and .inference)][0].plugins.evolve as $e
+    | [.events[].inference.toolResults[]? | select(.isError and (.content | test("pre-commit: |commit-msg: "))) | .toolUseId] | unique | length
+    | "session \("'$S'") · injected \($e.ids // [] | join(",") | if . == "" then "none" else . end) · rejected commits \(.)"'
+}
+rejections 1    # baseline
+rejections 0    # guided</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> the baseline to show <code>injected none</code> and the guided run your promoted IDs. In the recorded six-pair run, every baseline had <b>2</b> rejected commits; guided runs had 0–2, and 2 of 6 committed first time.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>One pair is an anecdote.</b> Run variance is large. For a real comparison, repeat several pairs on <code>products.weight_grams</code> (integer grams) and <code>users.locale</code> (text), and alternate which arm goes first, or use the <a href="walkthrough.html">automated demo</a>, which does this and grades each repository.</p></div></div>
+  <p>Inspect a guided session in the TUI: <code>agentop observe -endpoint http://127.0.0.1:47701</code>, then the detail pane of its first request shows <code>plugins.evolve</code>.</p>
+</section>
+
+<section class="card" id="cleanup">
+  <div class="step-head"><span class="step-num">11</span><h2>Clean up</h2><div class="meta"><span class="chip">1 min</span></div></div>
+  <div class="cmd" data-label="Terminals 1 and 2: Ctrl-C, then"><pre><code>rm -rf $PLAY        # config, guidelines, clones, the shopkit venv</code></pre></div>
+  <p>Your everyday Cortex, its config, its archive and <code>~/.evolve</code> were never modified. The only shared state is the cost ledger, where these runs remain as today's spend.</p>
+</section>
+
+<section class="card" id="trouble">
+  <h2>Troubleshooting</h2>
+  <table>
+    <tr><th>What you see</th><th>Meaning and fix</th></tr>
+    <tr><td>No session on <code>:47701</code></td><td>Claude went through your everyday Cortex. Use <code>dev-claude</code> (it passes <code>--settings</code>).</td></tr>
+    <tr><td><code>why: evolve_unavailable</code></td><td>The plugin couldn't reach Evolve. Check terminal 1 is up and <code>endpoint</code> ends in <code>/sse</code>; terminal 2 logs the error. It retries after 60 s.</td></tr>
+    <tr><td><code>why: no_guidelines</code></td><td>Evolve returned nothing. Check <code>EVOLVE_INJECTION_MODE=retrieval</code> was set when terminal 1 started, and <code>ev entities list cortex</code> isn't empty.</td></tr>
+    <tr><td><code>why: no_tools</code></td><td>A tool-less side call (title, summary). Skipped on purpose.</td></tr>
+    <tr><td><code>unknown field "placement"</code> in terminal 2</td><td>Cortex is older than <code>ab08dda3</code>. Pull <code>evolve-plugin</code> and rebuild (step 2).</td></tr>
+    <tr><td>No "sent idle session" line</td><td>The session had fewer than 2 successful turns, or isn't idle yet. Wait <code>idle_after_seconds</code> plus up to 30 s.</td></tr>
+    <tr><td>Learning fails with a schema or JSON error</td><td>Your learner model doesn't support Evolve's structured output. Use a model that supports forced tool calls (e.g. <code>litellm_proxy/Azure/gpt-4o</code>), restart terminal 1; the plugin resends the same batch.</td></tr>
+    <tr><td>Candidates say nothing about the hooks</td><td>The window was not raised before learning (step 8), so the rejections were dropped. Run a new training session.</td></tr>
+    <tr><td><code>ModuleNotFoundError: yaml</code> in Claude's output</td><td>The session ran without the shopkit venv on <code>PATH</code>. Re-export it (step 6) and rerun in a fresh clone.</td></tr>
+    <tr><td>Turns lost after restarting Cortex</td><td>Unsent turns are held in memory. Let a session go idle and be sent before restarting.</td></tr>
+  </table>
+</section>
+
+<section class="card" id="reference">
+  <h2>Reference</h2>
+  <div class="grid-2">
+    <div class="mini"><h4>Ports</h4><p><code>8201</code> Evolve MCP (SSE at <code>/sse</code>)<br><code>47700</code> dev Cortex proxy<br><code>47701</code> dev Cortex session API<br><code>47704</code> dev Cortex health</p></div>
+    <div class="mini"><h4>Files in <code>$PLAY</code></h4><p><code>evolve.env</code> Evolve settings (has your key)<br><code>cortex.yaml</code> dev Cortex config<br><code>claude-dev.json</code> routes Claude to it<br><code>data/</code> every guideline</p></div>
+    <div class="mini"><h4>Evolve CLI</h4><p><code>ev entities list NS --type guideline</code><br><code>ev entities show NS ID</code><br><code>ev entities delete NS ID</code><br><code>ev processing-profiles get cortex</code></p></div>
+    <div class="mini"><h4>Plugin config</h4><p><code>inject</code> on/off · <code>learn</code> on/off<br><code>placement</code> system | user<br><code>idle_after_seconds</code> · <code>cache_ttl_seconds</code><br>Full list: Cortex <code>docs/evolve-plugin.md</code></p></div>
+  </div>
+  <p>Related: <a href="walkthrough.html">automated Docker demo</a> · <a href="reports/sonnet45-20261106/report.html">recorded results</a> · <a href="../cortex-invoices/placement.md">placement experiment</a></p>
+</section>
+
+<p class="foot">Cortex + Evolve · repository-conventions walkthrough (manual)</p>
+</main>
+</div>
+<script src="walkthrough.js"></script>
+</body>
+</html>
