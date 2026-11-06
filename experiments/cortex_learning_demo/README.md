@@ -138,8 +138,10 @@ of those changes caused a difference. No held-out trace was used for mining.
 
 Prerequisites: this checkout's `uv` environment, `claude` on PATH, a sibling
 Cortex build with `core/plugins/evolve`, an existing trusted Cortex CA, and an
-existing Claude sandbox environment file. The defaults use this laptop's
-configured paths. `--credentials`, `--cortex-bin`, and `--ca-dir` override them.
+existing Claude sandbox environment file. By default the credentials are read from
+`~/creds/claude-sandbox.env`, the CA from `~/.cortex/ca`, and Cortex from a sibling
+`cortex/bin/cortex`. `--credentials`, `--cortex-bin`, and `--ca-dir` override them, as do
+the `CORTEX_DEMO_CREDENTIALS` and `CORTEX_DEMO_CA_DIR` environment variables.
 
 From the Evolve repository root, choose a new result directory. The helper below
 passes the same directory to every command; it preserves the recorded run here.

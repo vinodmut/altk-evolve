@@ -28,9 +28,10 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 ARTIFACTS = HERE / "artifacts"
 STATE = ARTIFACTS / "state.json"
-CREDENTIALS = Path("/Users/vinod/data/creds/claude-sandbox.env")
+# Override with --credentials / --ca-dir, or the CORTEX_DEMO_CREDENTIALS / CORTEX_DEMO_CA_DIR environment.
+CREDENTIALS = Path(os.environ.get("CORTEX_DEMO_CREDENTIALS", Path.home() / "creds" / "claude-sandbox.env"))
 CORTEX = REPO.parent / "cortex" / "bin" / "cortex"
-CA_DIR = Path("/Users/vinod/.cortex/ca")
+CA_DIR = Path(os.environ.get("CORTEX_DEMO_CA_DIR", Path.home() / ".cortex" / "ca"))
 PROXY = "http://127.0.0.1:47800"
 SESSION_API = "http://127.0.0.1:47801"
 MCP = "http://127.0.0.1:18201/sse"
