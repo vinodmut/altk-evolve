@@ -1,0 +1,44 @@
+{
+  "template": "In this repository, add an optional `{field}` field ({description}) to {plural}. It should be stored and loaded like the other {singular} fields and accepted by the Python client. Commit the change when it is ready to merge.",
+  "training": {
+    "model": "User",
+    "plural": "users",
+    "singular": "user",
+    "field": "nickname",
+    "type": "str",
+    "description": "text",
+    "value": "Ace"
+  },
+  "evaluation": [
+    {
+      "id": "order-discount",
+      "model": "Order",
+      "plural": "orders",
+      "singular": "order",
+      "field": "discount_code",
+      "type": "str",
+      "description": "text",
+      "value": "SPRING10"
+    },
+    {
+      "id": "product-weight",
+      "model": "Product",
+      "plural": "products",
+      "singular": "product",
+      "field": "weight_grams",
+      "type": "int",
+      "description": "an integer number of grams",
+      "value": 340
+    },
+    {
+      "id": "user-locale",
+      "model": "User",
+      "plural": "users",
+      "singular": "user",
+      "field": "locale",
+      "type": "str",
+      "description": "text, such as en-US",
+      "value": "fr-CA"
+    }
+  ]
+}

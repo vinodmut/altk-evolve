@@ -1,0 +1,37 @@
+#!/bin/sh
+set -eu
+DEMO_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$DEMO_DIR"
+: "${DEMO_RESULTS_DIR:=$DEMO_DIR/results}"
+case "$DEMO_RESULTS_DIR" in /*) ;; *) DEMO_RESULTS_DIR="$DEMO_DIR/$DEMO_RESULTS_DIR" ;; esac
+COMPOSE_PROJECT_NAME="cortex-repo-$(printf '%s' "$DEMO_RESULTS_DIR" | cksum | awk '{print $1}')"
+export COMPOSE_PROJECT_NAME DEMO_RESULTS_DIR
+case "${1:-help}" in
+  setup)
+    if [ ! -f .env ]; then
+      cp ../cortex-photo/.env.example .env
+      printf '%s\n' 'Created .env. Configure both LLM connections and rerun ./demo setup.'
+      exit 1
+    fi
+    if [ -z "${CORTEX_CHECKOUT:-}" ]; then
+      printf '%s\n' 'Set CORTEX_CHECKOUT to a Cortex evolve-plugin checkout (ab08dda3 or later): this demo uses placement: user.'
+      exit 1
+    fi
+    mkdir -p "$DEMO_RESULTS_DIR"
+    docker build --tag cortex-invoice-runtime:local --build-arg CORTEX_SOURCE=local \
+      --build-context "cortex-checkout=$CORTEX_CHECKOUT" ../cortex-photo
+    docker compose up --build --detach --wait --wait-timeout 360
+    docker compose exec -T demo uv run --offline --no-sync python driver.py check
+    ;;
+  check|training|learn|candidates|promote|pairs|status)
+    docker compose exec -T demo uv run --offline --no-sync python driver.py "$@"
+    ;;
+  report)
+    docker run --rm --network none -v "$DEMO_DIR:/evaluation:ro" -v "$DEMO_RESULTS_DIR:/results" \
+      "${COMPOSE_PROJECT_NAME}-demo" python3 /evaluation/summary.py --results /results
+    ;;
+  stop) docker compose down ;;
+  logs) docker compose logs --tail 60 ;;
+  shell) docker compose exec demo bash ;;
+  *) printf '%s\n' 'Usage: ./demo setup|training|learn|candidates|promote [IDS]|pairs [--count N]|report|status|stop' ;;
+esac

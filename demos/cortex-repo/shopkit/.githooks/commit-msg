@@ -1,0 +1,6 @@
+#!/bin/sh
+# Release notes are generated from commit subjects.
+if ! head -n 1 "$1" | grep -Eq '^(feat|fix|chore|docs|refactor|test)(\([a-z0-9-]+\))?: [a-z]'; then
+  echo "commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'"
+  exit 1
+fi

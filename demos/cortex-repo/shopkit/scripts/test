@@ -1,0 +1,7 @@
+#!/bin/sh
+# Builds a throwaway database from the migrations, then runs the suite against it.
+set -eu
+cd "$(dirname "$0")/.."
+db="$(mktemp -d)/shopkit-test.db"
+python3 tools/migrate.py apply "$db"
+APP_ENV=test SHOPKIT_DB="$db" exec python3 -m pytest -q "$@"

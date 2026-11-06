@@ -1,0 +1,10 @@
+*
+!Dockerfile
+!driver.py
+!tasks.json
+!shopkit/
+!shopkit/**
+shopkit/**/__pycache__
+shopkit/**/.pytest_cache
+!grade.py
+!summary.py

@@ -1,0 +1,22 @@
+[
+  {
+    "candidate_id": "1",
+    "id": "1",
+    "content": "For code generation systems, always modify the source schema first, then run the generation tool, rather than manually editing generated files"
+  },
+  {
+    "candidate_id": "2",
+    "id": "2",
+    "content": "When commit hooks reject a commit, read the error message to identify all required companion changes (changelog, version bumps, commit format) before re-attempting"
+  },
+  {
+    "candidate_id": "3",
+    "id": "3",
+    "content": "For schema changes that add database columns, use the repository's migration tool to auto-generate the migration rather than writing SQL manually"
+  },
+  {
+    "candidate_id": "4",
+    "id": "4",
+    "content": "After making changes to a schema-driven system, run the repository's consistency check tool before committing to catch mismatches between schema and derived artifacts"
+  }
+]

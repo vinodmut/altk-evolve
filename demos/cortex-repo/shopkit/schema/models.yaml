@@ -1,0 +1,24 @@
+# Source of truth for shopkit's data model.
+# shopkit/models.py, clients/python/shopkit_client.py and the database migrations
+# are derived from this file.
+models:
+  User:
+    table: users
+    fields:
+      id: {type: int, primary: true}
+      email: {type: str}
+      name: {type: str}
+  Product:
+    table: products
+    fields:
+      id: {type: int, primary: true}
+      sku: {type: str}
+      title: {type: str}
+      price_cents: {type: int}
+  Order:
+    table: orders
+    fields:
+      id: {type: int, primary: true}
+      user_id: {type: int}
+      total_cents: {type: int}
+      status: {type: str, default: pending}

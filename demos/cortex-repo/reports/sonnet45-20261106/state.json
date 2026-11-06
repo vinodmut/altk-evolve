@@ -1,0 +1,436 @@
+{
+  "created_at": "2026-11-06T15:37:49.468531+00:00",
+  "model": "aws/claude-sonnet-4-5",
+  "learning_model": "aws/claude-sonnet-4-5",
+  "sessions": {
+    "training": {
+      "id": "b590c2fc-9bd5-48f3-9544-50aa09efd72f",
+      "arm": "training",
+      "task": {
+        "model": "User",
+        "plural": "users",
+        "singular": "user",
+        "field": "nickname",
+        "type": "str",
+        "description": "text",
+        "value": "Ace"
+      },
+      "prompt": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T15:38:05.533968+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 172.1,
+      "captured": true,
+      "first_request_evolve": {}
+    },
+    "baseline-1": {
+      "id": "832ce7c7-1d01-41ad-9709-f74c77a0cd79",
+      "arm": "baseline",
+      "task": {
+        "id": "order-discount",
+        "model": "Order",
+        "plural": "orders",
+        "singular": "order",
+        "field": "discount_code",
+        "type": "str",
+        "description": "text",
+        "value": "SPRING10"
+      },
+      "prompt": "In this repository, add an optional `discount_code` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T15:47:00.965035+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 172.2,
+      "captured": true,
+      "first_request_evolve": {}
+    },
+    "guided-1": {
+      "id": "c436f0e1-43ef-4b66-8b6e-64b50c60d2b1",
+      "arm": "guided",
+      "task": {
+        "id": "order-discount",
+        "model": "Order",
+        "plural": "orders",
+        "singular": "order",
+        "field": "discount_code",
+        "type": "str",
+        "description": "text",
+        "value": "SPRING10"
+      },
+      "prompt": "In this repository, add an optional `discount_code` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T15:49:56.356011+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 183.2,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T15:49:56.783212076Z"
+      }
+    },
+    "guided-2": {
+      "id": "048c04d0-892b-46ec-a2be-60cf617b1eac",
+      "arm": "guided",
+      "task": {
+        "id": "product-weight",
+        "model": "Product",
+        "plural": "products",
+        "singular": "product",
+        "field": "weight_grams",
+        "type": "int",
+        "description": "an integer number of grams",
+        "value": 340
+      },
+      "prompt": "In this repository, add an optional `weight_grams` field (an integer number of grams) to products. It should be stored and loaded like the other product fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T15:53:00.648541+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 226.0,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T15:53:01.022474352Z"
+      }
+    },
+    "baseline-2": {
+      "id": "4276b0c7-92c1-4afc-b6f8-4740b937158e",
+      "arm": "baseline",
+      "task": {
+        "id": "product-weight",
+        "model": "Product",
+        "plural": "products",
+        "singular": "product",
+        "field": "weight_grams",
+        "type": "int",
+        "description": "an integer number of grams",
+        "value": 340
+      },
+      "prompt": "In this repository, add an optional `weight_grams` field (an integer number of grams) to products. It should be stored and loaded like the other product fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T15:56:48.364128+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 248.4,
+      "captured": true,
+      "first_request_evolve": {}
+    },
+    "baseline-3": {
+      "id": "04aa0aca-c73d-41cf-8dc6-fa01ad074227",
+      "arm": "baseline",
+      "task": {
+        "id": "user-locale",
+        "model": "User",
+        "plural": "users",
+        "singular": "user",
+        "field": "locale",
+        "type": "str",
+        "description": "text, such as en-US",
+        "value": "fr-CA"
+      },
+      "prompt": "In this repository, add an optional `locale` field (text, such as en-US) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:00:57.848906+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 286.1,
+      "captured": true,
+      "first_request_evolve": {}
+    },
+    "guided-3": {
+      "id": "5fb6d627-01c4-4be9-9295-00f1eac2a476",
+      "arm": "guided",
+      "task": {
+        "id": "user-locale",
+        "model": "User",
+        "plural": "users",
+        "singular": "user",
+        "field": "locale",
+        "type": "str",
+        "description": "text, such as en-US",
+        "value": "fr-CA"
+      },
+      "prompt": "In this repository, add an optional `locale` field (text, such as en-US) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:05:45.616133+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 423.6,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T16:05:45.982759273Z"
+      }
+    },
+    "guided-4": {
+      "id": "170275e4-9acb-4853-b198-cdd8f2064062",
+      "arm": "guided",
+      "task": {
+        "id": "order-discount",
+        "model": "Order",
+        "plural": "orders",
+        "singular": "order",
+        "field": "discount_code",
+        "type": "str",
+        "description": "text",
+        "value": "SPRING10"
+      },
+      "prompt": "In this repository, add an optional `discount_code` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:12:50.234254+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 258.9,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T16:12:50.616548522Z"
+      }
+    },
+    "baseline-4": {
+      "id": "1f78cd14-55b0-48cb-975a-a825d3ef7d71",
+      "arm": "baseline",
+      "task": {
+        "id": "order-discount",
+        "model": "Order",
+        "plural": "orders",
+        "singular": "order",
+        "field": "discount_code",
+        "type": "str",
+        "description": "text",
+        "value": "SPRING10"
+      },
+      "prompt": "In this repository, add an optional `discount_code` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:17:10.853249+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 207.0,
+      "captured": true,
+      "first_request_evolve": {}
+    },
+    "baseline-5": {
+      "id": "a4e6821a-0305-43f3-bdd0-7f949fa7d208",
+      "arm": "baseline",
+      "task": {
+        "id": "product-weight",
+        "model": "Product",
+        "plural": "products",
+        "singular": "product",
+        "field": "weight_grams",
+        "type": "int",
+        "description": "an integer number of grams",
+        "value": 340
+      },
+      "prompt": "In this repository, add an optional `weight_grams` field (an integer number of grams) to products. It should be stored and loaded like the other product fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:20:38.930308+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 190.5,
+      "captured": true,
+      "first_request_evolve": {}
+    },
+    "guided-5": {
+      "id": "5698cd6d-d838-4ab0-91f0-ae88d0b2ad73",
+      "arm": "guided",
+      "task": {
+        "id": "product-weight",
+        "model": "Product",
+        "plural": "products",
+        "singular": "product",
+        "field": "weight_grams",
+        "type": "int",
+        "description": "an integer number of grams",
+        "value": 340
+      },
+      "prompt": "In this repository, add an optional `weight_grams` field (an integer number of grams) to products. It should be stored and loaded like the other product fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:23:51.006290+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 251.9,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T16:23:51.374766767Z"
+      }
+    },
+    "guided-6": {
+      "id": "e3ddd2d7-27d1-46d4-8c10-1e25ea23e9c5",
+      "arm": "guided",
+      "task": {
+        "id": "user-locale",
+        "model": "User",
+        "plural": "users",
+        "singular": "user",
+        "field": "locale",
+        "type": "str",
+        "description": "text, such as en-US",
+        "value": "fr-CA"
+      },
+      "prompt": "In this repository, add an optional `locale` field (text, such as en-US) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:28:04.009561+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 244.8,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T16:28:04.381190613Z"
+      }
+    },
+    "baseline-6": {
+      "id": "de731475-3328-4245-8fc4-bc7e5a51eefc",
+      "arm": "baseline",
+      "task": {
+        "id": "user-locale",
+        "model": "User",
+        "plural": "users",
+        "singular": "user",
+        "field": "locale",
+        "type": "str",
+        "description": "text, such as en-US",
+        "value": "fr-CA"
+      },
+      "prompt": "In this repository, add an optional `locale` field (text, such as en-US) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+      "placement": "user",
+      "started_at": "2026-11-06T16:32:10.394299+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 227.5,
+      "captured": true,
+      "first_request_evolve": {}
+    }
+  },
+  "promoted": [
+    {
+      "candidate_id": "1",
+      "id": "1",
+      "content": "For code generation systems, always modify the source schema first, then run the generation tool, rather than manually editing generated files"
+    },
+    {
+      "candidate_id": "2",
+      "id": "2",
+      "content": "When commit hooks reject a commit, read the error message to identify all required companion changes (changelog, version bumps, commit format) before re-attempting"
+    },
+    {
+      "candidate_id": "3",
+      "id": "3",
+      "content": "For schema changes that add database columns, use the repository's migration tool to auto-generate the migration rather than writing SQL manually"
+    },
+    {
+      "candidate_id": "4",
+      "id": "4",
+      "content": "After making changes to a schema-driven system, run the repository's consistency check tool before committing to catch mismatches between schema and derived artifacts"
+    }
+  ],
+  "checked_at": "2026-11-06T15:38:03.216294+00:00",
+  "placement": "user",
+  "learned": true
+}
