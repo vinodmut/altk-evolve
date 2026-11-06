@@ -360,7 +360,11 @@ def test_placement_counts_reads_outside_the_task_directory():
     messages = [
         {
             "role": "assistant",
-            "tool_calls": [{"function": read("/tmp/tmp.abc/input/1.pdf")}, {"function": read("/results/tasks/a-1/input/1.pdf")}],
+            "tool_calls": [
+                {"function": read("/tmp/tmp.abc/input/1.pdf")},
+                {"function": read("/results/tasks/a-1/input/1.pdf")},
+                {"function": read("input/2.pdf")},
+            ],
         },
         {"role": "tool", "content": "[error] File does not exist."},
         {"role": "assistant", "tool_calls": [{"function": {"name": "Bash", "arguments": json.dumps({"command": "cat /tmp/x"})}}]},
