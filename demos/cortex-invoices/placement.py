@@ -176,7 +176,8 @@ def wrong_path_reads(messages, cwd):
             file_path = json.loads(call["function"]["arguments"]).get("file_path", "")
         except ValueError:
             continue
-        if not file_path.startswith(cwd + "/"):
+        # A relative path resolves against the CWD; only a path elsewhere is a guess.
+        if file_path.startswith("/") and not file_path.startswith(cwd + "/"):
             paths.append(file_path)
     return paths
 
