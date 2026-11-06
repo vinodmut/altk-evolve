@@ -65,7 +65,7 @@ ls</code></pre></div>
 <div class="step-head"><span class="step-num">3</span><h2>Configure the model connection</h2><div class="meta"><span class="chip">3 min</span></div></div>
 <div class="cmd" data-label="In demos/cortex-repo"><pre><code>cp ../cortex-photo/.env.example .env
 chmod 600 .env
-open -e .env   # or: nano .env</code></pre></div>
+${EDITOR:-vi} .env</code></pre></div>
 <p>Fill in four values. The rest of the file is comments.</p>
 <table>
 <tr><th>Variable</th><th>Anthropic API directly</th><th>Through a gateway</th></tr>

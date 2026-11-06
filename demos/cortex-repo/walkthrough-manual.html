@@ -82,7 +82,7 @@ export MODEL="aws/claude-sonnet-4-6"               # task model and learner; use
 # The sample repository's Python environment (created in step 6) comes first on PATH.
 export PATH="$PLAY/shopkit-venv/bin:$PATH"
 EOF
-${EDITOR:-nano} "$WALK/env.sh"</code></pre></div>
+${EDITOR:-vi} "$WALK/env.sh"</code></pre></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>Set <code>LITELLM_URL</code> and <code>LITELLM_KEY</code> in the editor</b> before going on. The file holds your key, so it is written readable only by you; step 11 deletes it.</p></div></div>
   <p>Now load it. <b>Run this line in every new terminal</b> before anything else in this walkthrough:</p>
   <div class="cmd" data-label="Every terminal"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
