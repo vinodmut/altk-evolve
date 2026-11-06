@@ -186,8 +186,8 @@ def learn(json_output=True):
     trajectories = json.loads((services.RESULTS / "training-trajectory.json").read_text())["trajectories"]
     client = EvolveClient()
     client.ensure_namespace(CANDIDATES)
-    # A coding session runs past Evolve's default 50-step window, and the commit-hook lessons
-    # come at its end; render the whole session.
+    # Evolve renders at most 50 steps of a Cortex session (the first 40 and last 10). A coding
+    # session runs longer, and its commit rejections fall in the dropped middle; render it all.
     config = {"guidelines_mode": "standard", "trajectory_max_steps": MAX_STEPS}
     plan = client.processing.validate({"processors": [{"id": "guidelines", "plugin": "evolve.guidelines", "config": config}]})
     # No outcome and no feedback: Evolve sees only what happened in the session.

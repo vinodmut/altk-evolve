@@ -57,5 +57,6 @@ export DEMO_RESULTS_DIR="$PWD/results-my-run"
 
 `DEMO_PLACEMENT` defaults to `user` here: the guidelines go in a `<system-reminder>` on the
 first user message, which the [placement experiment](../cortex-invoices/placement.md) found to
-be the position the model acts on. Learning renders up to 150 steps of the session, because
-the commit-hook lessons come at the end of runs longer than Evolve's default 50-step window.
+be the position the model acts on. Learning renders up to 150 steps of the session. Evolve's
+default keeps only the first 40 and last 10 steps of a Cortex session, and a coding session's
+first commit rejection falls in the dropped middle.

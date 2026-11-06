@@ -45,11 +45,12 @@ Not promoted: generic semantic-versioning advice (see [review.json](review.json)
   subject"), so most guided runs still had to be rejected once to learn them. Evolve's prompt
   asks guidelines to generalise and to leave out task-specific values, which pushes it away
   from exactly the repository-specific facts that would help here.
-- **The first learning pass missed the commit lessons entirely.** At Evolve's default 50-step
-  window the session was cut to 50 of its 61 steps, losing the second rejection and the
-  recovery that followed; the first
-  candidates (kept in [superseded/](superseded/)) said nothing about hooks. The demo now
-  renders 150 steps.
+- **The first learning pass lost most of the commit lessons.** For a Cortex session Evolve
+  renders at most 50 steps: the first 40 and the last 10. Training ran 61 steps, so steps 41–51
+  were dropped. That removed the first rejection (step 44: the missing `CHANGES.md` entry and
+  client `VERSION` bump) and kept only the second (step 54: the commit subject format). The
+  first candidates (kept in [superseded/](superseded/)) mention commit-message formats but
+  nothing about the changelog or version rules. The demo now renders up to 150 steps.
 - **Six pairs are a small sample**, with no correctness headroom on this task.
 
 ## Next
@@ -57,5 +58,6 @@ Not promoted: generic semantic-versioning advice (see [review.json](review.json)
 - Let Evolve keep scoped, concrete facts: guidelines tied to a repository (or Cortex working
   directory) can name its files and rules, instead of being generalised away. Then test whether
   guided runs commit first time.
-- Raise the default trajectory window for Cortex coding sessions, or render error→recovery
-  steps first, so late lessons are not truncated.
+- Raise the default trajectory window for Cortex coding sessions, or always keep failed
+  steps and the recovery after them, so lessons in the middle of a long session are not
+  dropped.

@@ -330,8 +330,9 @@ Task and learner model <code>{esc(state["model"])}</code>. Every session starts 
 
 <h2>What Evolve learned</h2>
 <ul class="learned">{learned}</ul>
-<details><summary>First learning pass, discarded</summary><p>Evolve renders the first 50 steps of a session by default. Training ran 61 steps, so the second rejection and the
-recovery were cut off, and the first pass learned nothing about the hooks. The demo now renders 150 steps.</p><ul>{first}</ul></details>
+<details><summary>First learning pass, discarded</summary><p>For a Cortex session Evolve renders at most 50 steps: the first 40 and the last 10. Training ran 61 steps,
+so steps 41–51 were dropped. That removed the first rejection (step 44: the missing CHANGES.md entry and client VERSION bump) and kept only the second (step 54: the
+commit subject format). The first pass mentions commit-message formats but nothing about the changelog or version rules. The demo now renders up to 150 steps.</p><ul>{first}</ul></details>
 
 <h2>Results</h2>
 {pair_strip(pairs)}
@@ -350,7 +351,7 @@ Evolve's prompt asks for general guidelines without task-specific values, which 
 
 <h2>Next</h2>
 <ul><li>Let Evolve keep concrete facts scoped to a repository: "in this repository, a schema change needs a CHANGES.md entry, a clients/python/VERSION bump, and a lower-case Conventional Commit subject". Rerun the six pairs.</li>
-<li>Raise Evolve's default 50-step window for Cortex coding sessions, so lessons at the end of a session are not cut off.</li></ul>
+<li>Raise Evolve's default 50-step window for Cortex coding sessions, or always keep failed steps and the recovery after them, so lessons in the middle of a long session are not dropped.</li></ul>
 
 <h2>Every run</h2>
 {runs_table}
