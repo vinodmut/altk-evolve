@@ -215,7 +215,7 @@ cat &gt; $PLAY/profile.json &lt;&lt;'EOF'
   "config": {"guidelines_mode": "standard", "trajectory_max_steps": 150}}]}
 EOF
 ev processing-profiles apply cortex --file $PLAY/profile.json --expected-revision 1</code></pre></div>
-  <div class="callout why"><span class="icon">i</span><div><p>The plugin creates the <code>cortex</code> profile the first time it sends a session, so it exists after the canary run. Your edit is kept: the plugin's later refreshes only change values you haven't changed. If <code>get</code> says the profile doesn't exist yet, use <code>--expected-revision 0</code> and the plugin will adopt it.</p></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p>The plugin creates the <code>cortex</code> profile the first time it sends a session, so it exists once the canary session from step 5 has been sent. After that your edit is kept: the plugin's later refreshes only change values you haven't changed.</p><p>If <code>get</code> says the profile doesn't exist yet, <b>don't create it yourself</b>: the plugin would then reset it to its defaults. Wait until terminal 2 logs <code>sent idle session to learn from</code> for the canary session, then apply the edit.</p></div></div>
   <p>About 90 seconds after the training session's last turn, terminal 2 logs the send:</p>
   <pre class="out">msg="evolve: sent idle session to learn from" session=… messages=74 batch=…-1</pre>
   <p>Terminal 1 shows Evolve's LLM calls. A minute later, read what it learned:</p>
