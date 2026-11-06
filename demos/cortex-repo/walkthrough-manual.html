@@ -246,15 +246,43 @@ fresh train</code></pre></div>
   <div class="cmd" data-label="Terminal 3 · in $WALK/train"><pre><code>cd $WALK/train
 dev-claude -p "In this repository, add an optional \`nickname\` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge." \
   --setting-sources "" --strict-mcp-config --allowedTools Bash Read Write Edit --permission-mode acceptEdits</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> a summary after a few minutes. Then look at how the commit went:</p></div></div>
-  <div class="cmd" data-label="Terminal 3 · in $WALK/train"><pre><code>git log --oneline
-S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r '.sessions | map(select(.agent)) | max_by(.createdAt) | .id')
-curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" \
-  | jq -r '[.events[].inference.toolResults[]? | select(.isError)] | unique_by(.toolUseId) | .[].content' \
-  | grep -E 'pre-commit: |commit-msg: ' | sort | uniq -c</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> a <code>feat(users): …</code> commit, and one or two rejections such as:</p><pre class="out">   1 pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
-   1 pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
-   1 commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'</pre><p>Those rejections are what Evolve will learn from. Nobody grades the session. (Each request carries earlier tool results again, so the command keeps one copy per tool call.)</p></div></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> a summary after a few minutes. Claude's printed summary is its own account; to see what it actually did, read the session Cortex recorded.</p></div></div>
+  <p><code>timeline</code> prints every tool call in order, marks the ones that failed with <code>✗</code>, and shows the git hook's messages under each rejected commit:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>timeline() {
+  local S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
+  echo "session $S"
+  curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" | jq -r '
+    [.events[] | select(.inference)] as $ev
+    | ([$ev[] | .inference.toolResults[]? | {key: .toolUseId, value: .}] | from_entries) as $res
+    | reduce ($ev[] | select(.phase == "response") | .inference.toolCalls[]?) as $c ([]; if any(.[]; .id == $c.id) then . else . + [$c] end)
+    | to_entries[]
+    | .key as $n | .value as $c
+    | ($c.arguments | fromjson? // {}) as $a
+    | ($res[$c.id] // {}) as $r
+    | (($a.command // $a.file_path // "") | gsub("\n"; " ") | .[0:110]) as $what
+    | "\($n + 1 | tostring | ("   " + .)[-3:])  \(if $r.isError then "✗" else " " end) \($c.name | (. + "     ")[0:5]) \($what)"
+      + ([($r.content // "") | splits("\n") | select(test("^(pre-commit|commit-msg|check failed): "))] | map("\n        → " + .) | join(""))
+  '
+}
+timeline</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> about 40 lines, ending with the commits. From the recorded run:</p><pre class="out"> 29    Bash  git add -A &amp;&amp; git status
+ 30  ✗ Bash  git commit -m "Add optional nickname field to users  - Added nickname field to User model in schema/models.yam
+        → pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
+        → pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
+        → pre-commit: commit rejected
+ 31    Read  ./CHANGES.md
+ 32    Bash  find ./clients -name "VERSION" -o -name "version*"
+ 33    Read  ./clients/python/VERSION
+ 34    Edit  ./CHANGES.md
+ 35    Edit  ./clients/python/VERSION
+ 36    Bash  git add CHANGES.md clients/python/VERSION &amp;&amp; git status
+ 37  ✗ Bash  git commit -m "Add optional nickname field to users  - Added nickname field to User model in schema/models.yam
+        → commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'
+ 38    Bash  git commit -m "feat(users): add optional nickname field  - Added nickname field to User model in schema/models</pre><p>Here the first commit was rejected for the changelog and version, the agent fixed both, was rejected again for the subject format, then committed. Those rejections are what Evolve will learn from. Nobody grades the session.</p></div></div>
+  <p>To see only the rejections, or to check the final commit:</p>
+  <div class="cmd" data-label="Terminal 3"><pre><code>timeline | grep -B1 '→'
+git -C "$WALK/train" log --oneline</code></pre></div>
+  <div class="callout why"><span class="icon">i</span><div><p><code>timeline</code> shows the newest session; <code>timeline 1</code> the one before it. Long commands are cut at 110 characters; to read one in full, open the session in agentop (step 4) and select the request.</p></div></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>No rejections?</b> Claude read <code>.githooks/</code> first and got it right. Evolve then has little to learn. Run <code>fresh train2</code> and try again; it varies between runs.</p></div></div>
 </section>
 
