@@ -56,7 +56,7 @@
 <section class="card" id="prereqs">
   <div class="step-head"><span class="step-num">1</span><h2>Prerequisites</h2><div class="meta"><span class="chip">5 min</span></div></div>
   <ul class="checklist">
-    <li><b>Your everyday Cortex is installed</b> and Claude Code trusts its CA (<code>~/.cortex/ca/ca.crt</code> exists). The dev Cortex reuses that CA and never writes to it.</li>
+    <li><b>Your everyday Cortex is installed</b> and Claude Code trusts its CA (<code>~/.cortex/ca/ca.crt</code> exists). The dev Cortex uses a copy of that CA, so Claude Code trusts it too, and never writes to your <code>~/.cortex</code>.</li>
     <li><b>Go 1.26.10 or later</b> (<code>go version</code>) and <b>uv</b> (<code>uv --version</code>).</li>
     <li><b>Claude Code</b> (<code>claude --version</code>), logged in as you normally use it.</li>
     <li><b>The two repositories</b>, both public, on these branches (step 1 below clones them): <a href="https://github.com/vinodmut/altk-evolve/tree/rossocortex">vinodmut/altk-evolve</a> on <code>rossocortex</code> (Evolve and the sample repository) and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">vinodmut/cortex</a> on <code>evolve-plugin</code> (Cortex with the evolve plugin and its <code>placement</code> option).</li>
@@ -138,12 +138,16 @@ ev namespaces create cortex-candidates</code></pre></div>
 
 <section class="card" id="cortex">
   <div class="step-head"><span class="step-num">4</span><h2>Start a dev Cortex next to your everyday one</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminals 2 and 4</span></div></div>
-  <p>Copy your installed config, move every listener from <code>4760x</code> to <code>4770x</code>, and add the plugin as the last outbound plugin:</p>
+  <p>The dev Cortex gets its own Cortex home, <code>$WALK/cortex-home/.cortex</code>, so it keeps its sessions on disk in <code>$WALK</code> and survives a restart. Copy your installed config and CA into it, move every listener from <code>4760x</code> to <code>4770x</code>, and add the plugin as the last outbound plugin:</p>
   <div class="cmd" data-label="Terminal 2"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
+mkdir -p "$WALK/cortex-home/.cortex"
+cp -R "$HOME/.cortex/ca" "$WALK/cortex-home/.cortex/ca"
+export DEV_CORTEX_CONFIG="$WALK/cortex-home/.cortex/config.yaml"
 sed -e 's/127.0.0.1:4760\([0-9]\)/127.0.0.1:4770\1/g' \
     -e 's/generate_ca: true/generate_ca: false/' \
-    ~/.cortex/config.yaml &gt; $WALK/cortex.yaml
-cat &gt;&gt; $WALK/cortex.yaml &lt;&lt;'EOF'
+    -e "s|$HOME/.cortex/ca|$WALK/cortex-home/.cortex/ca|" \
+    "$HOME/.cortex/config.yaml" &gt; "$DEV_CORTEX_CONFIG"
+cat &gt;&gt; "$DEV_CORTEX_CONFIG" &lt;&lt;'EOF'
       - name: evolve
         config:
           endpoint: http://127.0.0.1:8201/sse
@@ -152,18 +156,21 @@ cat &gt;&gt; $WALK/cortex.yaml &lt;&lt;'EOF'
           idle_after_seconds: 90
           cache_ttl_seconds: 60
 EOF
-grep -c 4760 $WALK/cortex.yaml</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>0</code>. The <code>evolve</code> entry must sit under <code>pipeline: outbound: plugins:</code>, indented like the plugin above it.</p></div></div>
+grep -c 4760 "$DEV_CORTEX_CONFIG"
+grep ca_dir "$DEV_CORTEX_CONFIG"</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>0</code>, then a <code>ca_dir</code> inside <code>$WALK/cortex-home</code>. The <code>evolve</code> entry must sit under <code>pipeline: outbound: plugins:</code>, indented like the plugin above it.</p></div></div>
   <table>
     <tr><th>Setting</th><th>Why</th></tr>
     <tr><td><code>placement: user</code></td><td>Guidelines go in a <code>&lt;system-reminder&gt;</code> on the first user message. At the end of the system prompt the model ignored them (<a href="../cortex-invoices/placement.md">placement experiment</a>).</td></tr>
     <tr><td><code>idle_after_seconds: 90</code></td><td>Send a session to Evolve 90 s after its last turn, instead of the default 15 minutes.</td></tr>
     <tr><td><code>cache_ttl_seconds: 60</code></td><td>A newly promoted guideline reaches running sessions within a minute.</td></tr>
   </table>
-  <p>Start it and leave it running:</p>
-  <div class="cmd" data-label="Terminal 2"><pre><code>env -u HTTPS_PROXY -u HTTP_PROXY $CORTEX_SRC/bin/cortex --config $WALK/cortex.yaml</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> among the startup lines:</p><pre class="out">msg="session archive disabled — …" reason="not a local install"
-msg="HTTP server listening" name=forward-proxy addr=127.0.0.1:47700</pre><p>The archive is off because the config lives outside <code>~/.cortex</code>, so nothing is written to your real session archive. Test runs do count toward today's cost in agentop.</p></div></div>
+  <p>Start it with <code>HOME</code> pointing at the new Cortex home, and leave it running:</p>
+  <div class="cmd" data-label="Terminal 2"><pre><code>env -u HTTPS_PROXY -u HTTP_PROXY HOME="$WALK/cortex-home" \
+  "$CORTEX_SRC/bin/cortex" --config "$DEV_CORTEX_CONFIG"</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> among the startup lines:</p><pre class="out">msg="session archive enabled — sessions survive a restart and the store's eviction" dir=…/cortex-evolve-manual/cortex-home/.cortex/sessions
+msg="HTTP server listening" name=forward-proxy addr=127.0.0.1:47700</pre></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><b>Why <code>HOME</code>?</b> Cortex keeps a session archive only when its config is inside <code>~/.cortex</code>, and always writes it to <code>~/.cortex/sessions</code>; there is no setting for the location. Pointing <code>HOME</code> at <code>$WALK/cortex-home</code> for this one process makes that directory its install, so the archive, cost ledger and plugin state all land there. Your everyday Cortex and its <code>~/.cortex</code> are untouched, and these test runs stay out of your everyday cost totals.</p></div></div>
   <p>Check the plugin is loaded, from terminal 3:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>curl -s --noproxy '*' 127.0.0.1:47701/v1/pipeline | jq -c '[.outbound[] | {name, placement: .config.placement}]'</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>evolve</code> last, with <code>"placement":"user"</code>.</p></div></div>
@@ -187,7 +194,7 @@ dev-claude -p "Reply with exactly: READY" --setting-sources ""</code></pre></div
     <tr><td>The plugin's counters</td><td>Press <span class="kbd">P</span> for the plugins pane and select <code>evolve</code>: requests injected, fetch errors, sessions sent to learn from.</td></tr>
     <tr><td>Every key</td><td>Press <span class="kbd">?</span>.</td></tr>
   </table>
-  <div class="callout caution"><span class="icon">!</span><div><p><b>Sessions live in memory.</b> The dev Cortex's archive is off, so restarting terminal 2 empties the list. Sessions may show as bare IDs rather than titles. If the <code>plugins.evolve</code> entry looks raw or is missing, run the branch's own agentop instead: <code>(cd "$CORTEX_SRC" &amp;&amp; make agentop) &amp;&amp; "$CORTEX_SRC/bin/agentop" observe -endpoint http://127.0.0.1:47701</code>.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p>Sessions are kept in <code>$WALK/cortex-home/.cortex/sessions</code>, so they are still listed after you restart terminal 2. They may show as bare IDs rather than titles. If the <code>plugins.evolve</code> entry looks raw or is missing, run the branch's own agentop instead: <code>(cd "$CORTEX_SRC" &amp;&amp; make agentop) &amp;&amp; "$CORTEX_SRC/bin/agentop" observe -endpoint http://127.0.0.1:47701</code>.</p></div></div>
 </section>
 
 <section class="card" id="smoke">
@@ -200,7 +207,7 @@ mkdir -p $WALK/scratch &amp;&amp; cd $WALK/scratch &amp;&amp; echo hello &gt; a.
 dev-claude -p "What files are in this directory?" --allowedTools "Bash(ls:*)" Read</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> the reply to end with <code>EVOLVE-CANARY-7731</code>.</p></div></div>
   <p>See what the plugin recorded for that session:</p>
-  <div class="cmd" data-label="Terminal 3"><pre><code>S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r '.sessions | map(select(.agent)) | max_by(.createdAt) | .id')
+  <div class="cmd" data-label="Terminal 3"><pre><code>S=$(curl -s --noproxy '*' '127.0.0.1:47701/v1/sessions?archived=true' | jq -r '.sessions | map(select(.agent)) | max_by(.createdAt) | .id')
 curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions/$S | jq -c '.events[] | select(.phase=="request" and .inference)
   | {seq, evolve: .plugins.evolve, why: [.invocations.outbound[]? | select(.plugin=="evolve") | .reason]}'</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><pre class="out">{"seq":2,"evolve":{"injected":true,"ids":["1"],"cached":false,…},"why":["body_rewritten"]}</pre><p><code>ids</code> says exactly which guidelines shaped the request; <code>cached: true</code> on later turns means the block is reused, so prompt caching keeps working.</p></div></div>
@@ -221,7 +228,17 @@ clear-candidates</code></pre></div>
 
 <section class="card" id="repo">
   <div class="step-head"><span class="step-num">6</span><h2>Set up the sample repository</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 3</span></div></div>
-  <p><code>shopkit</code> is a small Python/SQLite library whose git hooks reject any commit that lacks regenerated code and a migration, a <code>CHANGES.md</code> entry, a <code>clients/python/VERSION</code> bump, or a lower-case Conventional Commit subject. Nothing tells the agent this up front.</p>
+  <p><code>shopkit</code> is a small Python/SQLite library. Its data model lives in <code>schema/models.yaml</code>; the model code and the Python client are generated from it, and database migrations must match it. Two git hooks in <code>.githooks/</code> enforce the repository's rules on every commit. Nothing in the task prompt mentions them, so the agent finds out by reading the hooks or by being rejected.</p>
+  <table>
+    <tr><th>Hook</th><th>Rejects a commit when</th><th>Message</th></tr>
+    <tr><td><code>pre-commit</code></td><td>Part of the change under <code>schema/</code>, <code>shopkit/</code>, <code>clients/</code> or <code>migrations/</code> is left unstaged.</td><td><code>part of the change is not staged</code></td></tr>
+    <tr><td><code>pre-commit</code></td><td><code>schema/models.yaml</code> changed but <code>CHANGES.md</code> gained no list entry.</td><td><code>changed without an entry in CHANGES.md under '## Unreleased'</code></td></tr>
+    <tr><td><code>pre-commit</code></td><td>The generated client changed but <code>clients/python/VERSION</code> did not.</td><td><code>bump clients/python/VERSION</code></td></tr>
+    <tr><td><code>pre-commit</code>, via <code>tools/check.py</code></td><td>The generated <code>shopkit/models.py</code> or client no longer match the schema.</td><td><code>is stale: run `make generate`</code></td></tr>
+    <tr><td><code>pre-commit</code>, via <code>tools/check.py</code></td><td>The migrations don't create a column the schema declares.</td><td><code>migrations do not create …: run `make migration NAME=…`</code></td></tr>
+    <tr><td><code>commit-msg</code></td><td>The subject isn't a lower-case Conventional Commit: <code>feat</code>, <code>fix</code>, <code>chore</code>, <code>docs</code>, <code>refactor</code> or <code>test</code>, an optional scope, then a colon.</td><td><code>subject must be a Conventional Commit in lower case</code></td></tr>
+  </table>
+  <p>Adding a field correctly therefore means: edit the schema, run <code>make generate</code>, run <code>make migration NAME=…</code>, add a <code>CHANGES.md</code> entry, bump the client <code>VERSION</code>, stage everything, and commit with a subject like <code>feat(users): add nickname</code>. A separate test runner, <code>./scripts/test</code>, builds a throwaway database first; running <code>pytest</code> directly fails.</p>
   <p>The repository's tools call <code>python3</code> and need PyYAML and pytest. Give it its own environment so your system Python is untouched:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>uv venv -q "$WALK/shopkit-venv" &amp;&amp; uv pip install -q --python "$WALK/shopkit-venv/bin/python" pyyaml pytest
 hash -r
@@ -249,7 +266,7 @@ dev-claude -p "In this repository, add an optional \`nickname\` field (text) to 
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> a summary after a few minutes. Claude's printed summary is its own account; to see what it actually did, read the session Cortex recorded.</p></div></div>
   <p><code>timeline</code> prints every tool call in order, marks the ones that failed with <code>✗</code>, and shows the git hook's messages under each rejected commit:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>timeline() {
-  local S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
+  local S=$(curl -s --noproxy '*' '127.0.0.1:47701/v1/sessions?archived=true' | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
   echo "session $S"
   curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" | jq -r '
     [.events[] | select(.inference)] as $ev
@@ -337,7 +354,7 @@ ev entities list cortex --type guideline</code></pre></div>
   <p>Use a <b>different</b> field from training, so you are testing transfer rather than recall. Run one session with injection off and one with it on, each in a fresh clone.</p>
 
   <h3>Baseline: injection off</h3>
-  <p>Edit <code>$WALK/cortex.yaml</code> and add <code>inject: false</code> under the evolve plugin's <code>config:</code>. Cortex hot-reloads the file; check it took:</p>
+  <p>Edit <code>$WALK/cortex-home/.cortex/config.yaml</code> and add <code>inject: false</code> under the evolve plugin's <code>config:</code>. Cortex hot-reloads the file; check it took:</p>
   <div class="cmd" data-label="Terminal 3"><pre><code>curl -s --noproxy '*' 127.0.0.1:47701/v1/pipeline | jq '.outbound[] | select(.name=="evolve") | .config.inject'
 fresh baseline
 dev-claude -p "In this repository, add an optional \`discount_code\` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge." \
@@ -352,7 +369,7 @@ dev-claude -p "In this repository, add an optional \`discount_code\` field (text
 
   <h3>Count rejected commits in each</h3>
   <div class="cmd" data-label="Terminal 3"><pre><code>rejections() {
-  local S=$(curl -s --noproxy '*' 127.0.0.1:47701/v1/sessions | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
+  local S=$(curl -s --noproxy '*' '127.0.0.1:47701/v1/sessions?archived=true' | jq -r --argjson n "${1:-0}" '.sessions | map(select(.agent)) | sort_by(.createdAt) | reverse | .[$n].id')
   curl -s --noproxy '*' "127.0.0.1:47701/v1/sessions/$S?limit=2000" | jq -r '
     [.events[] | select(.phase=="request" and .inference)][0].plugins.evolve as $e
     | [.events[].inference.toolResults[]? | select(.isError and (.content | test("pre-commit: |commit-msg: "))) | .toolUseId] | unique | length
@@ -405,7 +422,7 @@ ls "$WALK"</code></pre></div>
   <h2>Reference</h2>
   <div class="grid-2">
     <div class="mini"><h4>Ports</h4><p><code>8201</code> Evolve MCP (SSE at <code>/sse</code>)<br><code>47700</code> dev Cortex proxy<br><code>47701</code> dev Cortex session API (agentop <code>-endpoint</code>)<br><code>47704</code> dev Cortex health</p></div>
-    <div class="mini"><h4>Files in <code>$WALK</code></h4><p><code>env.sh</code> variables to source (has your key)<br><code>evolve.env</code> Evolve settings (has your key)<br><code>cortex.yaml</code> dev Cortex config<br><code>claude-dev.json</code> routes Claude to it<br><code>data/</code> every guideline</p></div>
+    <div class="mini"><h4>Files in <code>$WALK</code></h4><p><code>env.sh</code> variables to source (has your key)<br><code>evolve.env</code> Evolve settings (has your key)<br><code>cortex-home/.cortex/</code> dev Cortex config, CA copy, session archive<br><code>claude-dev.json</code> routes Claude to it<br><code>data/</code> every guideline</p></div>
     <div class="mini"><h4>Evolve CLI</h4><p><code>ev entities list NS --type guideline</code><br><code>ev entities show NS ID</code><br><code>ev entities delete NS ID</code><br><code>ev processing-profiles get cortex</code></p></div>
     <div class="mini"><h4>Plugin config</h4><p><code>inject</code> on/off · <code>learn</code> on/off<br><code>placement</code> system | user<br><code>idle_after_seconds</code> · <code>cache_ttl_seconds</code><br>Full list: Cortex <code>docs/evolve-plugin.md</code></p></div>
   </div>
