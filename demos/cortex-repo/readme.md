@@ -41,10 +41,17 @@ with what to expect at each step, troubleshooting, and what to send back. To run
 hand on your own machine, without Docker or these scripts, follow
 [walkthrough-manual.html](walkthrough-manual.html).
 
+Both repositories are public. Clone them side by side:
+
 ```bash
-cd demos/cortex-repo
+git clone --branch rossocortex https://github.com/vinodmut/altk-evolve.git altk-evolve
+git clone --branch evolve-plugin https://github.com/vinodmut/cortex.git cortex
+```
+
+```bash
+cd altk-evolve/demos/cortex-repo
 cp ../cortex-photo/.env.example .env     # set both model connections
-export CORTEX_CHECKOUT=/path/to/cortex   # evolve-plugin, ab08dda3 or later
+export CORTEX_CHECKOUT="$PWD/../../../cortex"
 export DEMO_RESULTS_DIR="$PWD/results-my-run"
 ./demo setup                 # build, start, live API checks
 ./demo training              # one session; Cortex records it

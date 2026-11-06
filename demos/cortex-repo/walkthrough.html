@@ -41,7 +41,7 @@
 <li><b>Docker</b> with Compose v2 and BuildKit, running. On a Mac, Docker Desktop or Colima (4 CPUs and 8 GB is enough).</li>
 <li><b>Git</b>.</li>
 <li><b>API access to a Claude model</b>, either an Anthropic API key or a gateway that serves the Anthropic Messages API. The same connection is used for Claude Code and for Evolve.</li>
-<li><b>Read access</b> to <code>github.com/vinodmut/kaizen</code> (branch <code>rossocortex</code>) and <code>github.com/vinodmut/cortex</code> (branch <code>evolve-plugin</code>). Ask the person who sent you this page if a clone fails.</li>
+<li><b>The two repositories</b>, both public: <a href="https://github.com/vinodmut/altk-evolve/tree/rossocortex">vinodmut/altk-evolve</a> on branch <code>rossocortex</code> (Evolve, this demo and the sample repository) and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">vinodmut/cortex</a> on branch <code>evolve-plugin</code> (Cortex with the evolve plugin). Step 2 clones them.</li>
 </ul>
 <p>Check Docker:</p>
 <div class="cmd" data-label="Any directory"><pre><code>docker version --format '{{.Server.Version}}'
@@ -54,7 +54,7 @@ docker buildx version</code></pre></div>
 <p>Clone both repositories side by side into a fresh directory. This keeps the walkthrough separate from anything else on your machine.</p>
 <div class="cmd" data-label="Any directory"><pre><code>export WALK="$HOME/cortex-evolve-walkthrough"
 mkdir -p "$WALK" && cd "$WALK"
-git clone --branch rossocortex https://github.com/vinodmut/kaizen.git evolve
+git clone --branch rossocortex https://github.com/vinodmut/altk-evolve.git evolve
 git clone --branch evolve-plugin https://github.com/vinodmut/cortex.git cortex
 cd evolve/demos/cortex-repo
 ls</code></pre></div>
