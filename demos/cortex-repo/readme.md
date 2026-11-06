@@ -29,7 +29,10 @@ subjects.
 
 ## First result (Sonnet 4.5, 6 pairs)
 
-See [reports/sonnet45-20261106/results.md](reports/sonnet45-20261106/results.md).
+Open [reports/sonnet45-20261106/report.html](reports/sonnet45-20261106/report.html) for the
+full report (charts, commit-by-commit comparison, every run), or read the short
+[results.md](reports/sonnet45-20261106/results.md). Regenerate the HTML offline with
+`uv run python demos/cortex-repo/report_html.py demos/cortex-repo/reports/sonnet45-20261106`.
 
 ## Run it
 
