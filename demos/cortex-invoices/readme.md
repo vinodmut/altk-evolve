@@ -12,6 +12,20 @@ The [accurate-consistency follow-up](reports/sonnet45-consistency-20261105/summa
 
 The [standard-guideline follow-up](reports/sonnet45-standard-20261105/summary.html) reused the same training and ran three new same-input batch pairs with two reviewed guides. Every packet passed. Baseline calls were 18, 15 and 17; guided calls were 17, 17 and 19, totaling 50 versus 53. Both medians were 17. Standard guidelines did not improve correctness or reduce calls in this set. The report includes all four generated candidates, the two rejected candidates' review rationale, and all six trajectories. This was standard reflection without consistency resampling.
 
+## Choose where guidelines are injected
+
+Cortex's `evolve` plugin has a `placement` option: `system` (its default) appends the guidelines after the system instructions; `user` puts them in a `<system-reminder>` at the start of the first user message. In the [invoice placement experiment](placement.md), only `user` changed the agent's behaviour. Select it with `DEMO_PLACEMENT`, which every `./demo` command reads. Leave it unset to keep Cortex's default.
+
+The option needs Cortex `ab08dda3` or later, which the pinned image predates. Build from a local `evolve-plugin` checkout:
+
+```bash
+export DEMO_PLACEMENT=user
+export CORTEX_CHECKOUT=/path/to/cortex
+./demo setup
+```
+
+Keep the same placement for a whole comparison. If Cortex does not accept the setting, guided runs stop with an error pointing at `CORTEX_CHECKOUT`.
+
 ## 1. Get the bundle and configure both model connections
 
 ```bash

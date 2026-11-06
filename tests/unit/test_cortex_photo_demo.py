@@ -324,3 +324,20 @@ def test_bridge_reports_where_the_guideline_block_arrived(bundle):
     assert bundle.services.delivery(in_system) == {"in_system": True, "in_first_user": False}
     assert bundle.services.delivery(in_user) == {"in_system": False, "in_first_user": True}
     assert bundle.services.delivery(absent) == {"in_system": False, "in_first_user": False}
+
+
+@pytest.mark.parametrize("value, expected", [("", None), ("system", "system"), ("user", "user")])
+def test_placement_is_selected_from_the_environment(monkeypatch, value, expected):
+    monkeypatch.setenv("DEMO_PLACEMENT", value)
+    spec = importlib.util.spec_from_file_location("services_placement", DEMO / "services.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module.PLACEMENT == expected
+    assert module.set_injection.__defaults__ == (expected,)
+
+
+def test_unknown_placement_is_rejected(monkeypatch):
+    monkeypatch.setenv("DEMO_PLACEMENT", "tools")
+    spec = importlib.util.spec_from_file_location("services_placement", DEMO / "services.py")
+    with pytest.raises(RuntimeError, match="DEMO_PLACEMENT"):
+        spec.loader.exec_module(importlib.util.module_from_spec(spec))

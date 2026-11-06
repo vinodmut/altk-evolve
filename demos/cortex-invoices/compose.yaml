@@ -8,6 +8,7 @@ services:
       DEMO_LEARN_NAMESPACE: ${DEMO_LEARN_NAMESPACE:-invoice-candidates}
       DEMO_PROCESSING_PROFILE: ${DEMO_PROCESSING_PROFILE:-invoice-demo}
       DEMO_GUIDELINES_MODE: ${DEMO_GUIDELINES_MODE:-standard}
+      DEMO_PLACEMENT: ${DEMO_PLACEMENT:-}
     volumes:
       - ./.env:/run/secrets/demo.env:ro
       - ${DEMO_RESULTS_DIR:-./results}:/results

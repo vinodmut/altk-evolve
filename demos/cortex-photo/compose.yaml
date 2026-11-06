@@ -2,7 +2,14 @@ services:
   demo:
     build:
       context: .
+      args:
+        CORTEX_SOURCE: ${CORTEX_SOURCE:-pinned}
+      additional_contexts:
+        # Only read when CORTEX_SOURCE=local, e.g. to try Cortex's placement option.
+        cortex-checkout: ${CORTEX_CHECKOUT:-.}
     init: true
+    environment:
+      DEMO_PLACEMENT: ${DEMO_PLACEMENT:-}
     volumes:
       - ./.env:/run/secrets/demo.env:ro
       - ./results:/results

@@ -25,6 +25,10 @@ UV = ["uv", "run", "--offline", "--no-sync", "--project", str(ROOT)]
 SERVE_NAMESPACE = os.environ.get("DEMO_SERVE_NAMESPACE", "photo-reviewed")
 LEARN_NAMESPACE = os.environ.get("DEMO_LEARN_NAMESPACE", "photo-candidates")
 PROCESSING_PROFILE = os.environ.get("DEMO_PROCESSING_PROFILE", "photo-demo")
+# Where Cortex injects guidelines: system (Cortex's default) or user. Unset leaves Cortex's default.
+PLACEMENT = os.environ.get("DEMO_PLACEMENT") or None
+if PLACEMENT not in (None, "system", "user"):
+    raise RuntimeError("DEMO_PLACEMENT must be system or user.")
 
 
 def read_json(path):
@@ -150,7 +154,7 @@ def cortex_config(inject=False, placement=None):
     }
 
 
-def set_injection(enabled, placement=None):
+def set_injection(enabled, placement=PLACEMENT):
     path = RUNTIME / "cortex.yaml"
     path.write_text(yaml.safe_dump(cortex_config(enabled, placement), sort_keys=False))
     # Cortex watches the file. Read back the effective pipeline before launching.
@@ -167,7 +171,8 @@ def set_injection(enabled, placement=None):
             ):
                 return
             time.sleep(0.5)
-    raise RuntimeError("Cortex did not confirm the injection setting. Inspect runtime/cortex.log.")
+    hint = " Placement needs a Cortex build with that option (CORTEX_CHECKOUT)." if placement else ""
+    raise RuntimeError("Cortex did not confirm the injection setting. Inspect runtime/cortex.log." + hint)
 
 
 def health():

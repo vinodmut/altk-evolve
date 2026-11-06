@@ -10,6 +10,21 @@ The [recorded Sonnet 4.5 comparison](reports/sonnet45-20261104/comparison.html) 
 
 The [three fresh Sonnet 4.5 pairs](reports/sonnet45-three-trials-20261105/summary.html) reuse those frozen guidelines. Numeric exports passed in 0/3 baseline attempts and 1/3 guided attempts; total tool calls were 9 → 10. [Pair 3](reports/sonnet45-three-trials-20261105/trial-3/comparison.html) improved correctness and used one fewer tool call, while the first two pairs still failed. The [export readme](reports/sonnet45-three-trials-20261105/readme.md) explains the evidence and offline regeneration.
 
+## Choose where guidelines are injected
+
+Cortex's `evolve` plugin has a `placement` option: `system` (its default) appends the guidelines after the system instructions; `user` puts them in a `<system-reminder>` at the start of the first user message. In the [invoice placement experiment](../cortex-invoices/placement.md), only `user` changed the agent's behaviour. Select it with `DEMO_PLACEMENT`, which every `./demo` command reads. Leave it unset to keep Cortex's default.
+
+The option needs Cortex `ab08dda3` or later, which the pinned image predates. Build from a local `evolve-plugin` checkout:
+
+```bash
+export DEMO_PLACEMENT=user
+export CORTEX_CHECKOUT=/path/to/cortex
+export CORTEX_SOURCE=local
+./demo setup
+```
+
+Keep the same placement for a whole comparison. If Cortex does not accept the setting, guided runs stop with an error pointing at `CORTEX_CHECKOUT`.
+
 ## 1. Get the bundle in a separate temporary directory
 
 ```bash
