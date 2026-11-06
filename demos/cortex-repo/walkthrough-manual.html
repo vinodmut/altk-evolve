@@ -60,8 +60,7 @@
     <li><b>Go 1.26.10 or later</b> (<code>go version</code>) and <b>uv</b> (<code>uv --version</code>).</li>
     <li><b>Claude Code</b> (<code>claude --version</code>), logged in as you normally use it.</li>
     <li><b>The two repositories</b>, both public, on these branches (step 1 below clones them): <a href="https://github.com/vinodmut/altk-evolve/tree/rossocortex">vinodmut/altk-evolve</a> on <code>rossocortex</code> (Evolve and the sample repository) and <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin">vinodmut/cortex</a> on <code>evolve-plugin</code> (Cortex with the evolve plugin and its <code>placement</code> option).</li>
-    <li><b>A litellm proxy key that serves Claude Sonnet 4.6</b> (<code>aws/claude-sonnet-4-6</code>). Both Claude Code and Evolve use it, so the task model and the learner are the same model. Check with:
-    <code>curl -s -H "Authorization: Bearer $LITELLM_KEY" "$LITELLM_URL/v1/models" | jq -r '.data[].id' | grep sonnet</code> (after setting the variables below).</li>
+    <li><b>A litellm proxy key that serves Claude Sonnet 4.6.</b> Both Claude Code and Evolve use it, so the task model and the learner are the same model. The model's ID depends on the key: one key may call it <code>claude-sonnet-4-6</code>, another <code>aws/claude-sonnet-4-6</code>. Step 1 shows how to find yours.</li>
   </ul>
   <p>Clone both repositories into one fresh directory:</p>
   <div class="cmd" data-label="Once, any terminal"><pre><code>export WALK="$HOME/tmp/cortex-evolve-manual"
@@ -77,7 +76,7 @@ export CORTEX_SRC="$WALK/cortex"
 export EVOLVE_SRC="$WALK/altk-evolve"
 export LITELLM_URL="https://litellm.example.com"   # your litellm proxy URL
 export LITELLM_KEY="replace-with-your-proxy-key"
-export MODEL="aws/claude-sonnet-4-6"               # task model and learner; use your proxy's ID
+export MODEL="claude-sonnet-4-6"                   # task model and learner: the ID your key lists (see below)
 # The sample repository's Python environment (created in step 6) comes first on PATH.
 export PATH="$WALK/shopkit-venv/bin:$PATH"
 EOF
@@ -87,6 +86,11 @@ ${EDITOR:-vi} "$WALK/env.sh"</code></pre></div>
   <div class="cmd" data-label="Every terminal"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
 ls -d "$WALK" "$CORTEX_SRC" "$EVOLVE_SRC" &amp;&amp; echo "$LITELLM_URL · $MODEL"</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three absolute paths, then your proxy URL and model. If a path is missing, check the clone step above.</p></div></div>
+  <p>The first time, check that your key can use <code>$MODEL</code>. List the Sonnet IDs it serves:</p>
+  <div class="cmd" data-label="Once, after sourcing"><pre><code>curl -s -H "Authorization: Bearer $LITELLM_KEY" "$LITELLM_URL/v1/models" | jq -r '.data[].id' | grep -i sonnet
+curl -s -H "Authorization: Bearer $LITELLM_KEY" "$LITELLM_URL/v1/models" | jq -e --arg m "$MODEL" 'any(.data[]; .id == $m)' &gt;/dev/null \
+  &amp;&amp; echo "OK: your key serves $MODEL" || echo "NOT SERVED: set MODEL in env.sh to a Sonnet 4.6 ID from the list above"</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>OK: your key serves claude-sonnet-4-6</code>. If it says <code>NOT SERVED</code>, edit <code>MODEL</code> in <code>env.sh</code> to the 4.6 ID in the list (for example <code>aws/claude-sonnet-4-6</code>) and source it again.</p></div></div>
   <div class="callout why"><span class="icon">i</span><div><p>The heredoc is quoted (<code>'EOF'</code>), so <code>$HOME</code> and <code>$WALK</code> are expanded each time the file is sourced, not when it is written. To change a value later, edit <code>env.sh</code> and source it again.</p></div></div>
 </section>
 
@@ -329,6 +333,7 @@ ls "$WALK"          # altk-evolve  cortex  env.sh</code></pre></div>
   <h2>Troubleshooting</h2>
   <table>
     <tr><th>What you see</th><th>Meaning and fix</th></tr>
+    <tr><td><code>403 The requested model '…' is not available for this API key</code> from <code>dev-claude</code></td><td><code>MODEL</code> isn't an ID your key serves; the prefix matters (<code>claude-sonnet-4-6</code> vs <code>aws/claude-sonnet-4-6</code>). Run step 1's model check, fix <code>MODEL</code> in <code>env.sh</code>, and source it again. Then rewrite <code>evolve.env</code> (step 3) and restart terminal 1, so Evolve uses the same ID.</td></tr>
     <tr><td><code>sending session to learn from failed … model '…' is not available for this API key</code></td><td>Evolve's key can't use its model. Check <code>grep -E 'MODEL|KEY=' $WALK/evolve.env</code> shows <code>litellm_proxy/$MODEL</code> and your real key, not a placeholder. Restart terminal 1; the plugin retries the same batch every 30 s.</td></tr>
     <tr><td>A variable is empty, or <code>ev: command not found</code></td><td>This terminal didn't source <code>env.sh</code>, or the helper was defined in another terminal. Run <code>. "$HOME/tmp/cortex-evolve-manual/env.sh"</code>; helpers such as <code>ev</code> and <code>dev-claude</code> are defined per terminal in the step that introduces them.</td></tr>
     <tr><td><code>no such file or directory: ~/…/evolve.env</code></td><td><code>WALK</code> holds a literal <code>~</code>. Check <code>env.sh</code> uses <code>$HOME</code>, not <code>~</code>, source it again, delete any stray <code>./~</code> directory, and redo step 3's <code>cat</code> command.</td></tr>
@@ -338,7 +343,7 @@ ls "$WALK"          # altk-evolve  cortex  env.sh</code></pre></div>
     <tr><td><code>why: no_tools</code></td><td>A tool-less side call (title, summary). Skipped on purpose.</td></tr>
     <tr><td><code>unknown field "placement"</code> in terminal 2</td><td>Cortex is older than <code>ab08dda3</code>. Pull <code>evolve-plugin</code> and rebuild (step 2).</td></tr>
     <tr><td>No "sent idle session" line</td><td>The session had fewer than 2 successful turns, or isn't idle yet. Wait <code>idle_after_seconds</code> plus up to 30 s.</td></tr>
-    <tr><td>Learning fails with a schema or JSON error</td><td>Your learner model doesn't support Evolve's structured output. Use a model that supports forced tool calls (<code>litellm_proxy/aws/claude-sonnet-4-6</code> does), restart terminal 1; the plugin resends the same batch.</td></tr>
+    <tr><td>Learning fails with a schema or JSON error</td><td>Your learner model doesn't support Evolve's structured output. Use a model that supports forced tool calls (Sonnet 4.6 does), restart terminal 1; the plugin resends the same batch.</td></tr>
     <tr><td>Candidates say nothing about the hooks</td><td>The window was not raised before learning (step 8), so the rejections were dropped. Run a new training session.</td></tr>
     <tr><td><code>ModuleNotFoundError: yaml</code> in Claude's output</td><td>The terminal didn't source <code>env.sh</code>, so the shopkit environment isn't on <code>PATH</code>. Source it and rerun in a fresh clone.</td></tr>
     <tr><td>Turns lost after restarting Cortex</td><td>Unsent turns are held in memory. Let a session go idle and be sent before restarting.</td></tr>
