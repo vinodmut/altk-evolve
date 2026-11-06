@@ -61,17 +61,17 @@
     <li><b>Claude Code</b> (<code>claude --version</code>), logged in as you normally use it.</li>
     <li><b>Checkouts</b>: Cortex on branch <code>evolve-plugin</code> at <code>ab08dda3</code> or later (it adds <code>placement</code>), and altk-evolve on <code>rossocortex</code>, which contains the sample repository.</li>
     <li><b>A litellm proxy key that serves Claude Sonnet 4.6</b> (<code>aws/claude-sonnet-4-6</code>). Both Claude Code and Evolve use it, so the task model and the learner are the same model. Check with:
-    <code>curl -s -H "Authorization: Bearer $KEY" $PROXY/v1/models | jq -r '.data[].id' | grep sonnet</code></li>
+    <code>curl -s -H "Authorization: Bearer $LITELLM_KEY" "$LITELLM_URL/v1/models" | jq -r '.data[].id' | grep sonnet</code> (after setting the variables below).</li>
   </ul>
-  <p>Set these in <b>every</b> terminal you use below. Put your proxy key in <code>LITELLM_KEY</code>:</p>
-  <div class="cmd" data-label="All terminals"><pre><code>export CORTEX_SRC="$HOME/data/digitallabor/src/agents/cortex"
-export EVOLVE_SRC="$HOME/data/digitallabor/src/agents/altk-evolve.rossocortex"
-export PLAY="$HOME/evolve-playground"          # everything this walkthrough writes
-export LITELLM_URL="https://ete-litellm.bx.cloud9.ibm.com"
+  <p>Set these in <b>every</b> terminal you use below. Replace each <code>&lt;…&gt;</code> with your own value first:</p>
+  <div class="cmd" data-label="All terminals"><pre><code>export CORTEX_SRC="&lt;path to your cortex checkout&gt;"         # e.g. "$HOME/src/cortex"
+export EVOLVE_SRC="&lt;path to your altk-evolve checkout&gt;"    # e.g. "$HOME/src/altk-evolve"
+export PLAY="$HOME/evolve-playground"                      # everything this walkthrough writes
+export LITELLM_URL="&lt;your litellm proxy URL&gt;"             # e.g. "https://litellm.example.com"
 export LITELLM_KEY="&lt;your proxy key&gt;"
-export MODEL="aws/claude-sonnet-4-6"          # task model and learner
+export MODEL="aws/claude-sonnet-4-6"                       # task model and learner; use your proxy's ID
 mkdir -p "$PLAY" &amp;&amp; ls -d "$CORTEX_SRC" "$EVOLVE_SRC" "$PLAY"</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three absolute paths starting with <code>/Users/</code> (or <code>/home/</code>). Change the first two if your checkouts live elsewhere.</p></div></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three absolute paths. If <code>ls</code> says a path doesn't exist, fix that variable before going on.</p></div></div>
   <div class="callout caution"><span class="icon">!</span><div><p><b>Use <code>$HOME</code>, not <code>~</code>, inside quotes.</b> <code>export PLAY="~/evolve-playground"</code> keeps a literal <code>~</code>, and every later command then looks for a directory named <code>~</code> in your current folder.</p></div></div>
 </section>
 
@@ -101,7 +101,7 @@ EVOLVE_INJECTION_MODE=retrieval
 EVOLVE_OTEL_ENABLED=false
 EVOLVE_HOOKS_CONFIG=
 EOF</code></pre></div>
-  <div class="callout caution"><span class="icon">!</span><div><p>The file is written with your shell's values, so check it: <code>grep -E 'MODEL|BASE' $PLAY/evolve.env</code> should show <code>litellm_proxy/aws/claude-sonnet-4-6</code> and your proxy URL. <code>EVOLVE_INJECTION_MODE=retrieval</code> is required: without it Evolve matches the task text literally and returns almost nothing.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p>The file is written with your shell's values, so check it: <code>grep -E 'MODEL|BASE' $PLAY/evolve.env</code> should show <code>litellm_proxy/</code> followed by your <code>$MODEL</code>, and your proxy URL. <code>EVOLVE_INJECTION_MODE=retrieval</code> is required: without it Evolve matches the task text literally and returns almost nothing.</p></div></div>
   <p>Start the server and leave it running:</p>
   <div class="cmd" data-label="Terminal 1"><pre><code>set -a; . $PLAY/evolve.env; set +a
 cd $PLAY &amp;&amp; env -u HTTPS_PROXY -u HTTP_PROXY \
@@ -151,7 +151,7 @@ msg="HTTP server listening" name=forward-proxy addr=127.0.0.1:47700</pre><p>The 
 chmod 600 $PLAY/claude-dev.json
 dev-claude() { claude --settings $PLAY/claude-dev.json --model "$MODEL" "$@"; }
 dev-claude -p "Reply with exactly: READY" --setting-sources ""</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>READY</code>. Every <code>dev-claude</code> run now uses <code>aws/claude-sonnet-4-6</code> through the proxy, whatever your normal Claude Code login or default model is.</p></div></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> <code>READY</code>. Every <code>dev-claude</code> run now uses <code>$MODEL</code> through the proxy, whatever your normal Claude Code login or default model is.</p></div></div>
   <div class="callout ifnot"><span class="icon">!</span><div><p><b>An auth or "model not available" error</b> means the key doesn't serve that model ID. List what it serves (prerequisites) and set <code>MODEL</code> to a Sonnet ID from that list, then rewrite this file and <code>evolve.env</code>.</p></div></div>
 </section>
 
