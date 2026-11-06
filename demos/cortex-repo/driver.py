@@ -258,13 +258,43 @@ def pairs(count):
     if not state.get("promoted"):
         raise RuntimeError("Promote guidelines first.")
     services.write_json(services.RESULTS / "retrieval-preview.json", asyncio.run(retrieval_preview()))
-    done = sum(label.startswith("baseline-") for label in state["sessions"])
-    for index in range(done, done + count):
+    sessions = state["sessions"]
+    # A pair is complete when both arms finished and were captured. An interrupted pair is
+    # finished first; a session that started but was never captured is set aside, not reused.
+    complete = 0
+    while all(sessions.get(f"{arm}-{complete + 1}", {}).get("captured") for arm in ("baseline", "guided")):
+        complete += 1
+    for index in range(complete, complete + count):
         task = TASKS["evaluation"][index % len(TASKS["evaluation"])]
         order = ("baseline", "guided") if index % 2 == 0 else ("guided", "baseline")
         for arm in order:
-            launch(f"{arm}-{index + 1}", task, arm)
+            label = f"{arm}-{index + 1}"
+            existing = services.load_state()["sessions"].get(label)
+            if existing and existing.get("captured"):
+                continue
+            if existing:
+                set_aside(label)
+            launch(label, task, arm)
     services.set_injection(False)
+
+
+def set_aside(label):
+    """Keep an interrupted session's evidence under a new name so its label can be rerun."""
+    state = services.load_state()
+    suffix = 1
+    while f"{label}-interrupted-{suffix}" in state["sessions"]:
+        suffix += 1
+    aside = f"{label}-interrupted-{suffix}"
+    state["sessions"][aside] = {**state["sessions"].pop(label), "arm": "interrupted"}
+    services.save_state(state)
+    for path in services.RESULTS.glob(f"{label}-*"):
+        if path.name.startswith(f"{label}-interrupted-"):
+            continue
+        path.rename(path.with_name(path.name.replace(label, aside, 1)))
+    task_dir = services.RESULTS / "tasks" / label
+    if task_dir.exists():
+        task_dir.rename(services.RESULTS / "tasks" / aside)
+    print(f"{label}: an earlier attempt was interrupted; kept as {aside}", flush=True)
 
 
 def main():

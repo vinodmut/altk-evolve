@@ -110,3 +110,41 @@ def test_trap_hits_come_from_tool_output():
     read_hook = [{"role": "tool", "tool_call_id": "c", "content": "echo 'pre-commit: part of the change is not staged'"}]
     assert summary.trap_hits(read_hook)["partial_staging"] == 0 and summary.commit_rejections(read_hook) == 0
     assert summary.commit_rejections(rows) == 1
+
+
+def test_pairs_resume_finishes_an_interrupted_pair(tmp_path, monkeypatch):
+    fake = types_module(tmp_path)
+    monkeypatch.setitem(sys.modules, "services", fake)
+    monkeypatch.setitem(sys.modules, "demo", type(sys)("demo"))
+    monkeypatch.setitem(sys.modules, "report", type(sys)("report"))
+    sys.modules["report"].first_request_attribution = lambda evidence: {}
+    driver = module("driver")
+    fake.state["sessions"] = {
+        "training": {"captured": True},
+        "baseline-1": {"captured": True},
+        "guided-1": {"captured": True},
+        "guided-2": {"captured": False, "arm": "guided"},
+    }
+    (tmp_path / "guided-2-cli.json").write_text("{}")
+    launched = []
+    monkeypatch.setattr(driver, "retrieval_preview", lambda: _done({"entity_ids": ["1"]}))
+    monkeypatch.setattr(driver, "launch", lambda label, task, arm: launched.append(label))
+    driver.pairs(1)
+    assert launched == ["guided-2", "baseline-2"]
+    assert "guided-2-interrupted-1" in fake.state["sessions"] and (tmp_path / "guided-2-interrupted-1-cli.json").exists()
+
+
+async def _done(value):
+    return value
+
+
+def types_module(root):
+    services = type(sys)("services")
+    services.RESULTS = root
+    services.LEARN_NAMESPACE, services.SERVE_NAMESPACE = "repo-candidates", "repo-reviewed"
+    services.state = {"sessions": {}, "promoted": [{"id": "1"}]}
+    services.load_state = lambda: services.state
+    services.save_state = lambda state: None
+    services.write_json = lambda path, value: None
+    services.set_injection = lambda enabled: None
+    return services

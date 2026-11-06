@@ -36,6 +36,9 @@ full report (charts, commit-by-commit comparison, every run), or read the short
 
 ## Run it
 
+To hand this to someone else, send them [walkthrough.html](walkthrough.html): step-by-step instructions
+with what to expect at each step, troubleshooting, and what to send back.
+
 ```bash
 cd demos/cortex-repo
 cp ../cortex-photo/.env.example .env     # set both model connections

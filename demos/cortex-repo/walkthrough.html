@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Walkthrough: Evolve learns a repository's conventions</title>
+<style>
+:root{color-scheme:light;--bg:#fcfcfb;--panel:#f4f3f0;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--line:#e1e0d9;--accent:#2a78d6;--good:#0a7a0a;--warn:#9a6200;--bad:#b42f2f}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#1a1a19;--panel:#242422;--ink:#fff;--ink-2:#c3c2b7;--muted:#898781;--line:#2c2c2a;--accent:#3987e5;--good:#3fbf3f;--warn:#e0a640;--bad:#e66767}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:40px 24px 96px}
+h1{font-size:30px;line-height:1.2;margin:0 0 8px} h2{font-size:21px;margin:44px 0 6px;padding-top:12px;border-top:1px solid var(--line)} h3{font-size:16px;margin:22px 0 4px}
+p,li{color:var(--ink-2)} strong,b{color:var(--ink)} a{color:var(--accent)}
+.lede{font-size:18px}
+code{background:var(--panel);padding:1px 5px;border-radius:4px;font-size:14px;color:var(--ink)}
+.cmd{position:relative;margin:10px 0 14px}
+.cmd pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:0;overflow-x:auto;font-size:14px;line-height:1.5}
+.cmd pre code{background:none;padding:0}
+.cmd button{position:absolute;top:8px;right:8px;font-size:12px;padding:3px 9px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer}
+.expect{border-left:3px solid var(--good);padding:2px 0 2px 12px;margin:10px 0}
+.expect b{color:var(--good)}
+.caution{border-left:3px solid var(--warn);padding:2px 0 2px 12px;margin:10px 0}
+.caution b{color:var(--warn)}
+.ifnot{border-left:3px solid var(--bad);padding:2px 0 2px 12px;margin:10px 0}
+.ifnot b{color:var(--bad)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0 14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} th{color:var(--ink-2)} td{color:var(--ink)}
+.toc{background:var(--panel);border-radius:10px;padding:12px 18px;margin:20px 0}
+.toc ol{margin:4px 0;padding-left:20px} .toc li{margin:2px 0}
+.check{list-style:none;padding-left:0} .check li::before{content:"☐ ";color:var(--muted)}
+.time{font-size:13px;color:var(--muted);font-weight:normal;margin-left:8px}
+@media print{.cmd button{display:none}}
+</style>
+</head>
+<body><main>
+
+<h1>Walkthrough: Evolve learns a repository's conventions</h1>
+<p class="lede">You will run Claude Code on a small repository that has rules it cannot guess, let Evolve learn from one recorded session with no grading or feedback, and then compare fresh sessions with and without what it learned.</p>
+<p>Everything runs inside one Docker container: Claude Code, Cortex (the proxy that records sessions and injects guidelines), Evolve, the sample repository and its tools. Nothing is installed on your machine and nothing touches your own Claude Code setup. Plan on <b>about an hour</b>, mostly waiting, and <b>about $3–4 of API usage</b>.</p>
+
+<div class="toc"><b>Steps</b>
+<ol>
+<li><a href="#prereqs">Check prerequisites</a></li>
+<li><a href="#get">Get the code</a></li>
+<li><a href="#env">Configure the model connection</a></li>
+<li><a href="#setup">Build and start</a></li>
+<li><a href="#train">Run the training session</a></li>
+<li><a href="#learn">Let Evolve learn</a></li>
+<li><a href="#review">Review and promote guidelines</a></li>
+<li><a href="#pairs">Run baseline and guided sessions</a></li>
+<li><a href="#report">Read the results</a></li>
+<li><a href="#stop">Stop and clean up</a></li>
+</ol>
+<a href="#trouble">Troubleshooting</a> · <a href="#send">What to send back</a></div>
+
+<h2 id="what">What the experiment tests</h2>
+<p>The sample repository, <code>shopkit</code>, is a small Python library whose data model lives in <code>schema/models.yaml</code>. Its git hooks reject a commit unless it has:</p>
+<ul>
+<li>regenerated code (<code>make generate</code>) and a database migration (<code>make migration NAME=…</code>),</li>
+<li>an entry under <code>## Unreleased</code> in <code>CHANGES.md</code>,</li>
+<li>a bump of <code>clients/python/VERSION</code> whenever the client changes,</li>
+<li>a Conventional Commit subject in lower case, such as <code>feat(users): add nickname</code>.</li>
+</ul>
+<p>The task prompt says none of this. An agent finds out by reading <code>.githooks/</code> or by having its commit rejected. The question is whether Evolve can learn those rules from one session's own rejections, so that later sessions avoid them.</p>
+<p>For comparison, the author's run is recorded in <a href="reports/sonnet45-20261106/report.html">reports/sonnet45-20261106/report.html</a>: every baseline run was rejected twice; with Evolve, 2 of 6 runs committed first time and rejections fell from 12 to 7. Your numbers will differ; that is expected.</p>
+
+<h2 id="prereqs">1. Check prerequisites <span class="time">5 min</span></h2>
+<ul class="check">
+<li><b>macOS or Linux</b> with about <b>10 GB free disk</b>.</li>
+<li><b>Docker</b> with Compose v2 and BuildKit, running. On a Mac, Docker Desktop or Colima (4 CPUs and 8 GB is enough).</li>
+<li><b>Git</b>.</li>
+<li><b>API access to a Claude model</b>, either an Anthropic API key or a gateway that serves the Anthropic Messages API. The same connection is used for Claude Code and for Evolve.</li>
+<li><b>Read access</b> to <code>github.com/vinodmut/kaizen</code> (branch <code>rossocortex</code>) and <code>github.com/vinodmut/cortex</code> (branch <code>evolve-plugin</code>). Ask the person who sent you this page if a clone fails.</li>
+</ul>
+<p>Check Docker:</p>
+<div class="cmd"><pre><code>docker version --format '{{.Server.Version}}'
+docker compose version
+docker buildx version</code></pre></div>
+<div class="expect"><b>Expect</b> three version lines. If the first one errors, Docker is not running: start Docker Desktop, or run <code>colima start</code>.</div>
+
+<h2 id="get">2. Get the code <span class="time">2 min</span></h2>
+<p>Clone both repositories side by side into a fresh directory. This keeps the walkthrough separate from anything else on your machine.</p>
+<div class="cmd"><pre><code>export WALK="$HOME/cortex-evolve-walkthrough"
+mkdir -p "$WALK" && cd "$WALK"
+git clone --branch rossocortex https://github.com/vinodmut/kaizen.git evolve
+git clone --branch evolve-plugin https://github.com/vinodmut/cortex.git cortex
+cd evolve/demos/cortex-repo
+ls</code></pre></div>
+<div class="expect"><b>Expect</b> <code>demo</code>, <code>driver.py</code>, <code>grade.py</code>, <code>shopkit/</code>, <code>tasks.json</code>, <code>walkthrough.html</code> and others. <b>Run every remaining command from this directory</b> (<code>…/evolve/demos/cortex-repo</code>).</div>
+<div class="caution"><b>Keep the clone under your home directory.</b> Colima only shares your home directory with Docker. A clone in <code>/tmp</code> builds but cannot store results.</div>
+
+<h2 id="env">3. Configure the model connection <span class="time">3 min</span></h2>
+<div class="cmd"><pre><code>cp ../cortex-photo/.env.example .env
+chmod 600 .env
+open -e .env   # or: nano .env</code></pre></div>
+<p>Fill in four values. The rest of the file is comments.</p>
+<table>
+<tr><th>Variable</th><th>Anthropic API directly</th><th>Through a gateway</th></tr>
+<tr><td><code>ANTHROPIC_BASE_URL</code></td><td><code>https://api.anthropic.com</code></td><td>your gateway's URL</td></tr>
+<tr><td><code>ANTHROPIC_API_KEY</code></td><td>your API key</td><td>your gateway key</td></tr>
+<tr><td><code>ANTHROPIC_MODEL</code></td><td><code>claude-sonnet-4-6</code></td><td>the gateway's Sonnet ID, e.g. <code>aws/claude-sonnet-4-5</code></td></tr>
+<tr><td><code>EVOLVE_MODEL_NAME</code></td><td>same as <code>ANTHROPIC_MODEL</code></td><td>same as <code>ANTHROPIC_MODEL</code></td></tr>
+</table>
+<p>Leave <code>EVOLVE_CUSTOM_LLM_PROVIDER=anthropic</code>. Your own Claude Code login is never used; only this key.</p>
+<div class="caution"><b>Don't share <code>.env</code>.</b> It holds your key. It is git-ignored and is mounted read-only into the container; it is never copied into the image or the results.</div>
+<p>Then set three variables. <b>Repeat this block in any new terminal</b> before running <code>./demo</code>:</p>
+<div class="cmd"><pre><code>export WALK="$HOME/cortex-evolve-walkthrough"
+export CORTEX_CHECKOUT="$WALK/cortex"
+export DEMO_RESULTS_DIR="$WALK/evolve/demos/cortex-repo/results-$(whoami)"
+cd "$WALK/evolve/demos/cortex-repo"</code></pre></div>
+<p><code>CORTEX_CHECKOUT</code> tells the build to compile Cortex from your clone. <code>DEMO_RESULTS_DIR</code> is where every session, guideline and report is written; a fresh name means a fresh experiment.</p>
+
+<h2 id="setup">4. Build and start <span class="time">10–15 min the first time</span></h2>
+<div class="cmd"><pre><code>./demo setup</code></pre></div>
+<p>This builds the image (Go toolchain for Cortex, Python and uv for Evolve, Claude Code, the repository's tools, a small embedding model), starts Cortex, Evolve and a local bridge inside the container, and makes two small live API calls.</p>
+<div class="expect"><b>Expect</b>, at the end:
+<pre><code>{"claude": "live API OK", "evolve": "live API OK", "model": "…", "placement": "user"}</code></pre>
+A line mentioning <code>Provider List: https://docs.litellm.ai/…</code> may appear above it; it is harmless.</div>
+<div class="ifnot"><b>If it fails</b> with "Claude's live API check failed" or "structured-output API check failed", the URL, key or model ID in <code>.env</code> is wrong. Fix it and run <code>./demo setup</code> again; a rebuild is quick after the first time.</div>
+
+<h2 id="train">5. Run the training session <span class="time">about 3 min</span></h2>
+<div class="cmd"><pre><code>./demo training</code></pre></div>
+<p>Claude Code starts in a fresh clone of <code>shopkit</code> and is asked to add an optional <code>nickname</code> field to users and commit it. It runs unattended (Bash, Read, Write and Edit are allowed; nothing else) and exits on its own. Cortex records every request and tool result.</p>
+<div class="expect"><b>Expect</b> one line, <code>training: training session &lt;uuid&gt;</code>, and then the prompt back after a few minutes. There is no progress output while Claude works.</div>
+<p>See what happened. The training session normally hits at least one commit rejection; that rejection is what Evolve learns from:</p>
+<div class="cmd"><pre><code>cd "$DEMO_RESULTS_DIR/tasks/training" &amp;&amp; git log --oneline &amp;&amp; cd - &gt;/dev/null
+grep -o 'pre-commit: [^"\\]*\|commit-msg: [^"\\]*' "$DEMO_RESULTS_DIR/training-trajectory.json" | sort | uniq -c</code></pre></div>
+<div class="expect"><b>Expect</b> two commits (the initial one and Claude's <code>feat(…)</code> commit) and a few rejection messages, such as <code>pre-commit: schema/models.yaml changed without an entry in CHANGES.md</code>.</div>
+<div class="caution"><b>If the second command prints nothing,</b> Claude read the hooks and got the commit right first time. Evolve then has little to learn from. Note it, and continue anyway: it is a real outcome.</div>
+
+<h2 id="learn">6. Let Evolve learn <span class="time">1–2 min</span></h2>
+<div class="cmd"><pre><code>./demo learn</code></pre></div>
+<p>Evolve reads only the recorded training session. Nobody tells it whether the session went well; it sees the commands, their output and the rejections.</p>
+<div class="expect"><b>Expect</b> three to six numbered candidates, for example:
+<pre><code>Candidate 2
+When commit hooks reject a commit, read the error message to identify all
+required companion changes (changelog, version bumps, commit format) before
+re-attempting</code></pre>
+The wording will differ from run to run.</div>
+
+<h2 id="review">7. Review and promote guidelines <span class="time">5 min</span></h2>
+<p>Nothing learned is used until a person promotes it. Read each candidate and decide whether it is <b>specific to what happened</b> in the session and <b>would help a different change</b> in the same repository. Leave out generic advice ("be careful", "follow semantic versioning") and anything that names the training field (<code>nickname</code>).</p>
+<p>Promote by ID, for example:</p>
+<div class="cmd"><pre><code>./demo promote 1 2 3 4</code></pre></div>
+<div class="expect"><b>Expect</b> a JSON list of the promoted guidelines with their new IDs. This selection is now frozen for the experiment.</div>
+<p>Write down which IDs you promoted and why you left any out. It is part of what to send back.</p>
+<div class="caution"><b>Running <code>./demo promote</code> with no IDs promotes every candidate.</b> Only do that deliberately.</div>
+
+<h2 id="pairs">8. Run baseline and guided sessions <span class="time">about 45 min</span></h2>
+<div class="cmd"><pre><code>./demo pairs --count 6</code></pre></div>
+<p>This runs 12 sessions, alternating: a <b>baseline</b> session gets no guidelines; a <b>guided</b> session gets the promoted guidelines, which Cortex puts in a <code>&lt;system-reminder&gt;</code> at the start of the first user message. Each pair adds the same new field (<code>orders.discount_code</code>, <code>products.weight_grams</code> or <code>users.locale</code>, rotating), and the arm that goes first alternates. Every session starts from a fresh clone.</p>
+<div class="expect"><b>Expect</b> one line per session as it starts, for example <code>baseline-1: baseline session …</code> then <code>guided-1: guided session …</code>, about 3–4 minutes apart.</div>
+<p><b>Leave this terminal open.</b> To watch progress from a second terminal (after repeating the variable block from step 3):</p>
+<div class="cmd"><pre><code>ls "$DEMO_RESULTS_DIR"/*-cli.json | wc -l    # 13 when done: training + 12 sessions</code></pre></div>
+<div class="caution"><b>While it runs,</b> do not run <code>./demo stop</code>, <code>./demo setup</code> or <code>docker compose down</code> in this directory: they stop the experiment. Other Docker work, and using Claude Code or Cortex normally on your machine, is fine; the container uses none of your ports or settings.</div>
+<div class="ifnot"><b>If it stops part-way</b> (a network drop, a closed laptop), run <code>./demo pairs --count N</code> again, where N is the number of pairs not yet finished (6 minus the finished ones). It completes any half-finished pair first, keeps the interrupted session's files as <code>…-interrupted-1</code>, and never overwrites a finished session.</div>
+
+<h2 id="report">9. Read the results <span class="time">5 min</span></h2>
+<div class="cmd"><pre><code>./demo report
+open "$DEMO_RESULTS_DIR/summary.html"     # Linux: xdg-open</code></pre></div>
+<p>Grading happens in a separate container with networking disabled. It checks each committed repository: the change is committed, the pre-merge check and tests pass, the migration adds the column, a value round-trips through the library and the client, and the changelog, client version and commit subject are right.</p>
+<div class="expect"><b>Expect</b> two lines printed, one per arm, and a page with a table like:
+<table>
+<tr><th></th><th>Baseline</th><th>With Evolve</th></tr>
+<tr><td>Correct and committed</td><td>6/6</td><td>6/6</td></tr>
+<tr><td>Commits accepted on the first try</td><td>?/6</td><td>?/6</td></tr>
+<tr><td>Rejected commits (total)</td><td>?</td><td>?</td></tr>
+</table></div>
+<h3>How to read it</h3>
+<ul>
+<li><b>Commits accepted on the first try</b> and <b>rejected commits</b> are the main measures. The hooks force every run to fix its commit before finishing, so correctness is usually 6/6 in both arms.</li>
+<li>The <b>conventions</b> table shows which rules caught each arm. In the author's run every baseline missed all three hook rules; guided runs missed them less often.</li>
+<li>The <b>Injected</b> column should list your promoted IDs for every guided run and be empty for every baseline run. If not, the comparison is invalid; see troubleshooting.</li>
+<li>Each run links to its full recorded trajectory, if you want to see exactly what Claude did.</li>
+</ul>
+
+<h2 id="stop">10. Stop and clean up <span class="time">1 min</span></h2>
+<div class="cmd"><pre><code>./demo stop</code></pre></div>
+<p>This removes the container and its network. Your results stay in <code>$DEMO_RESULTS_DIR</code>. To remove everything later:</p>
+<div class="cmd"><pre><code>rm -rf "$HOME/cortex-evolve-walkthrough"
+docker image rm cortex-invoice-runtime:local $(docker images --format '{{.Repository}}' | grep '^cortex-repo-') 2&gt;/dev/null</code></pre></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<table>
+<tr><th>Symptom</th><th>Cause and fix</th></tr>
+<tr><td><code>Set CORTEX_CHECKOUT to a Cortex evolve-plugin checkout</code></td><td>The variable block from step 3 was not run in this terminal. Run it, then retry.</td></tr>
+<tr><td><code>Cannot connect to the Docker daemon</code></td><td>Docker is not running. Start Docker Desktop, or <code>colima start</code>.</td></tr>
+<tr><td>Build fails fetching from GitHub or PyPI</td><td>The build needs internet access. On a VPN or proxy, check Docker can reach <code>github.com</code>, <code>proxy.golang.org</code> and <code>pypi.org</code>.</td></tr>
+<tr><td><code>Services are starting. Inspect ./demo logs.</code></td><td>Setup has not finished, or a service crashed. Run <code>./demo logs</code>; detailed logs are in <code>$DEMO_RESULTS_DIR/runtime/</code> (<code>cortex.log</code>, <code>evolve.log</code>, <code>bridge.log</code>).</td></tr>
+<tr><td><code>training already exists; evidence is not overwritten</code></td><td>That step already ran in this results directory. To start over, run <code>./demo stop</code>, pick a new <code>DEMO_RESULTS_DIR</code>, and <code>./demo setup</code>.</td></tr>
+<tr><td>A session ends very quickly; its <code>*-cli.json</code> shows an error</td><td>Usually an API limit or quota. Check <code>$DEMO_RESULTS_DIR/&lt;session&gt;-cli.stderr.txt</code>. Wait, then rerun <code>./demo pairs</code> with the remaining count.</td></tr>
+<tr><td><code>Promoted guidelines are not retrievable</code></td><td>Nothing was promoted, or promotion failed. Run <code>./demo candidates</code>, then <code>./demo promote &lt;ids&gt;</code>.</td></tr>
+<tr><td>Guided runs show no injected IDs in the report</td><td>Cortex did not apply the guidelines. Check <code>$DEMO_RESULTS_DIR/runtime/cortex.log</code> for <code>evolve</code> errors and send it back; don't draw conclusions from that run.</td></tr>
+<tr><td>Learning returns no candidates</td><td>The training session had nothing to learn from (no rejections). Keep the result; to retry, start a new results directory.</td></tr>
+</table>
+
+<h2 id="send">What to send back</h2>
+<p>Zip the results without the private runtime directory, which holds the CA key, Claude configuration and logs:</p>
+<div class="cmd"><pre><code>cd "$(dirname "$DEMO_RESULTS_DIR")"
+zip -r "$(basename "$DEMO_RESULTS_DIR").zip" "$(basename "$DEMO_RESULTS_DIR")" -x "*/runtime/*"</code></pre></div>
+<p>Send the zip together with:</p>
+<ul>
+<li>the model ID you used (<code>ANTHROPIC_MODEL</code>),</li>
+<li>which candidate IDs you promoted and why you left any out,</li>
+<li>anything that failed or surprised you, with the step number.</li>
+</ul>
+<p>Never send <code>.env</code> or <code>runtime/</code>.</p>
+
+<h2>Reference</h2>
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>./demo setup</code></td><td>Build the image, start the services, check both API connections.</td></tr>
+<tr><td><code>./demo training</code></td><td>Run the one training session.</td></tr>
+<tr><td><code>./demo learn</code></td><td>Evolve learns candidates from the training session.</td></tr>
+<tr><td><code>./demo candidates</code></td><td>Print the candidates again.</td></tr>
+<tr><td><code>./demo promote ID…</code></td><td>Promote the chosen candidates; freezes the selection.</td></tr>
+<tr><td><code>./demo pairs --count N</code></td><td>Run N more baseline/guided pairs.</td></tr>
+<tr><td><code>./demo report</code></td><td>Grade every session offline and write <code>summary.html</code>.</td></tr>
+<tr><td><code>./demo status</code></td><td>Print the experiment state (sessions, promoted guidelines).</td></tr>
+<tr><td><code>./demo logs</code> · <code>./demo shell</code></td><td>Container logs · a shell inside the container.</td></tr>
+<tr><td><code>./demo stop</code></td><td>Remove the container; keep the results.</td></tr>
+</table>
+<p>Details of the design and the author's results: <a href="readme.md">readme.md</a> · <a href="reports/sonnet45-20261106/report.html">recorded report</a> · <a href="../cortex-invoices/placement.md">why guidelines go on the first user message</a>.</p>
+
+</main>
+<script>
+document.querySelectorAll(".cmd").forEach(block => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = "Copy";
+  button.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(block.querySelector("code").textContent);
+    button.textContent = "Copied";
+    setTimeout(() => (button.textContent = "Copy"), 1200);
+  });
+  block.appendChild(button);
+});
+</script>
+</body></html>
