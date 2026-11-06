@@ -63,10 +63,12 @@
     <li><b>An LLM for Evolve</b>, any litellm model that supports tool calls. The setup that worked here: <code>litellm_proxy/Azure/gpt-4o</code> through your litellm proxy.</li>
   </ul>
   <p>Set these in <b>every</b> terminal you use below:</p>
-  <div class="cmd" data-label="All terminals"><pre><code>export CORTEX_SRC=~/data/digitallabor/src/agents/cortex
-export EVOLVE_SRC=~/data/digitallabor/src/agents/altk-evolve.rossocortex
-export PLAY=~/evolve-playground          # everything this walkthrough writes
-mkdir -p $PLAY</code></pre></div>
+  <div class="cmd" data-label="All terminals"><pre><code>export CORTEX_SRC="$HOME/data/digitallabor/src/agents/cortex"
+export EVOLVE_SRC="$HOME/data/digitallabor/src/agents/altk-evolve.rossocortex"
+export PLAY="$HOME/evolve-playground"          # everything this walkthrough writes
+mkdir -p "$PLAY" &amp;&amp; ls -d "$CORTEX_SRC" "$EVOLVE_SRC" "$PLAY"</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><b>Expect</b> three absolute paths starting with <code>/Users/</code> (or <code>/home/</code>). Change the first two if your checkouts live elsewhere.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Use <code>$HOME</code>, not <code>~</code>, inside quotes.</b> <code>export PLAY="~/evolve-playground"</code> keeps a literal <code>~</code>, and every later command then looks for a directory named <code>~</code> in your current folder.</p></div></div>
 </section>
 
 <section class="card" id="build">
@@ -83,7 +85,8 @@ mkdir -p $PLAY</code></pre></div>
   <div class="step-head"><span class="step-num">3</span><h2>Start Evolve's MCP server</h2><div class="meta"><span class="chip">3 min</span><span class="chip where">terminal 1</span></div></div>
   <p>Write Evolve's settings. This keeps all guidelines in <code>$PLAY/data</code>, separate from anything else in <code>~/.evolve</code>:</p>
   <div class="cmd" data-label="Terminal 1"><pre><code>umask 077
-cat &gt; $PLAY/evolve.env &lt;&lt;EOF
+case "$PLAY" in /*) ;; *) echo "PLAY must be an absolute path; redo step 1's variables"; return 1 2&gt;/dev/null || exit 1 ;; esac
+cat &gt; "$PLAY/evolve.env" &lt;&lt;EOF
 EVOLVE_MODEL_NAME=litellm_proxy/Azure/gpt-4o
 LITELLM_PROXY_API_BASE=https://&lt;your litellm proxy&gt;
 LITELLM_PROXY_API_KEY=&lt;your key&gt;
@@ -292,6 +295,7 @@ rejections 0    # guided</code></pre></div>
   <h2>Troubleshooting</h2>
   <table>
     <tr><th>What you see</th><th>Meaning and fix</th></tr>
+    <tr><td><code>no such file or directory: ~/…/evolve.env</code></td><td><code>PLAY</code> holds a literal <code>~</code> because it was set in quotes. Run <code>export PLAY="$HOME/evolve-playground"</code>, delete any stray <code>./~</code> directory, and redo step 3's <code>cat</code> command.</td></tr>
     <tr><td>No session on <code>:47701</code></td><td>Claude went through your everyday Cortex. Use <code>dev-claude</code> (it passes <code>--settings</code>).</td></tr>
     <tr><td><code>why: evolve_unavailable</code></td><td>The plugin couldn't reach Evolve. Check terminal 1 is up and <code>endpoint</code> ends in <code>/sse</code>; terminal 2 logs the error. It retries after 60 s.</td></tr>
     <tr><td><code>why: no_guidelines</code></td><td>Evolve returned nothing. Check <code>EVOLVE_INJECTION_MODE=retrieval</code> was set when terminal 1 started, and <code>ev entities list cortex</code> isn't empty.</td></tr>
