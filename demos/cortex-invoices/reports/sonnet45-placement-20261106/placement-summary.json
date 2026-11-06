@@ -1,0 +1,567 @@
+{
+  "model": "aws/claude-sonnet-4-5",
+  "summary": {
+    "baseline": {
+      "runs": 6,
+      "completed": 6,
+      "correct": 6,
+      "runs_with_wrong_path_reads": 3,
+      "mean_tool_calls": 15.8,
+      "median_tool_calls": 15.5,
+      "mean_tool_errors": 1.5,
+      "delivered_runs": 0
+    },
+    "system": {
+      "runs": 6,
+      "completed": 6,
+      "correct": 6,
+      "runs_with_wrong_path_reads": 4,
+      "mean_tool_calls": 16.8,
+      "median_tool_calls": 17.0,
+      "mean_tool_errors": 2.5,
+      "delivered_runs": 6
+    },
+    "user": {
+      "runs": 6,
+      "completed": 6,
+      "correct": 6,
+      "runs_with_wrong_path_reads": 0,
+      "mean_tool_calls": 20.5,
+      "median_tool_calls": 15.0,
+      "mean_tool_errors": 0.83,
+      "delivered_runs": 6
+    },
+    "learned-system": {
+      "runs": 5,
+      "completed": 5,
+      "correct": 5,
+      "runs_with_wrong_path_reads": 2,
+      "mean_tool_calls": 20.8,
+      "median_tool_calls": 15,
+      "mean_tool_errors": 2.4,
+      "delivered_runs": 5
+    },
+    "learned-user": {
+      "runs": 5,
+      "completed": 5,
+      "correct": 5,
+      "runs_with_wrong_path_reads": 0,
+      "mean_tool_calls": 15.2,
+      "median_tool_calls": 14,
+      "mean_tool_errors": 0.2,
+      "delivered_runs": 5
+    }
+  },
+  "runs": [
+    {
+      "label": "baseline-1",
+      "arm": "baseline",
+      "packet": "trial-1",
+      "session": "71300a02-6898-4330-a24a-8d4eda95f65a",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 15,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [],
+      "delivered_in_system": false,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "system-1",
+      "arm": "system",
+      "packet": "trial-1",
+      "session": "0b6ae31b-2496-4ca3-91a7-b19abbe580c4",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 16,
+      "tool_errors": 3,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.hd1lZwuWwD/input/002071.pdf",
+        "/tmp/tmp.hd1lZwuWwD/input/002082.pdf",
+        "/tmp/tmp.hd1lZwuWwD/input/002093.pdf"
+      ],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "user-1",
+      "arm": "user",
+      "packet": "trial-1",
+      "session": "6ca17434-c49f-4606-b6c6-372b3495bb4a",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 50,
+      "tool_errors": 5,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "baseline-2",
+      "arm": "baseline",
+      "packet": "trial-1",
+      "session": "7fbd2f7b-818c-498a-8b8e-edbee260e64e",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 12,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [],
+      "delivered_in_system": false,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "system-2",
+      "arm": "system",
+      "packet": "trial-1",
+      "session": "9fcbf39d-ab31-43c6-b3fd-7de0303f3c24",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 18,
+      "tool_errors": 4,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.t1sbhq65Dc/input/002071.pdf",
+        "/tmp/tmp.t1sbhq65Dc/input/002082.pdf",
+        "/tmp/tmp.t1sbhq65Dc/input/002093.pdf"
+      ],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "user-2",
+      "arm": "user",
+      "packet": "trial-1",
+      "session": "8a77502d-51f3-4fc9-a506-ecc1e318e40a",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 13,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "learned-system-1",
+      "arm": "learned-system",
+      "packet": "trial-1",
+      "session": "55e4f8a3-819c-4cb7-935c-1ba3edd0d0e5",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 49,
+      "tool_errors": 8,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.LzvxzgdVLX/input/002071.pdf",
+        "/tmp/tmp.LzvxzgdVLX/input/002082.pdf",
+        "/tmp/tmp.LzvxzgdVLX/input/002093.pdf"
+      ],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "learned-user-1",
+      "arm": "learned-user",
+      "packet": "trial-1",
+      "session": "d39b5825-ed73-419f-a1aa-80a79433a6b5",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 14,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "system-3",
+      "arm": "system",
+      "packet": "trial-2",
+      "session": "a2c61941-bec8-4281-97ad-490ee46ea386",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 20,
+      "tool_errors": 4,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.AhxzAyFGu4/input/003071.pdf",
+        "/tmp/tmp.AhxzAyFGu4/input/003082.pdf",
+        "/tmp/tmp.AhxzAyFGu4/input/003093.pdf"
+      ],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "user-3",
+      "arm": "user",
+      "packet": "trial-2",
+      "session": "b2efb70c-c863-4892-9479-093596d2aef3",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 13,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "learned-system-2",
+      "arm": "learned-system",
+      "packet": "trial-2",
+      "session": "0d890f96-600c-4425-9e4b-17211e1c9640",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 17,
+      "tool_errors": 3,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.WD2rdzGUZL/input/003071.pdf",
+        "/tmp/tmp.WD2rdzGUZL/input/003082.pdf",
+        "/tmp/tmp.WD2rdzGUZL/input/003093.pdf"
+      ],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "learned-user-2",
+      "arm": "learned-user",
+      "packet": "trial-2",
+      "session": "69bc4029-0b39-44a3-9aa0-4d1e32fc569a",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 15,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "baseline-3",
+      "arm": "baseline",
+      "packet": "trial-2",
+      "session": "8c5df3b0-a77c-496e-979b-1c9ec612a387",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 19,
+      "tool_errors": 3,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.uJ6HdNlAXD/input/003071.pdf",
+        "/tmp/tmp.uJ6HdNlAXD/input/003082.pdf",
+        "/tmp/tmp.uJ6HdNlAXD/input/003093.pdf"
+      ],
+      "injected_ids": [],
+      "delivered_in_system": false,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "user-4",
+      "arm": "user",
+      "packet": "trial-3",
+      "session": "ff4fe42d-56dd-470b-b15d-bf2f99065c53",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 17,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "learned-system-3",
+      "arm": "learned-system",
+      "packet": "trial-3",
+      "session": "6fd81b06-9aa1-4db0-9241-97e6cb135e0a",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 13,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "learned-user-3",
+      "arm": "learned-user",
+      "packet": "trial-3",
+      "session": "e8e92327-8cd7-4fad-b113-5819efdf7ebf",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 14,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "baseline-4",
+      "arm": "baseline",
+      "packet": "trial-3",
+      "session": "3050a423-28e6-48ca-9d92-0029c7167010",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 18,
+      "tool_errors": 3,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmps_01c6wb/input/004071.pdf",
+        "/tmp/tmps_01c6wb/input/004082.pdf",
+        "/tmp/tmps_01c6wb/input/004093.pdf"
+      ],
+      "injected_ids": [],
+      "delivered_in_system": false,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "system-4",
+      "arm": "system",
+      "packet": "trial-3",
+      "session": "80579454-c633-4019-a482-75d8c19b1291",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 14,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "learned-system-4",
+      "arm": "learned-system",
+      "packet": "trial-1",
+      "session": "628163d8-1f83-431a-9203-da60a82322fe",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 10,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "learned-user-4",
+      "arm": "learned-user",
+      "packet": "trial-1",
+      "session": "fa082707-b3ed-40d1-af74-2482400f7455",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 14,
+      "tool_errors": 1,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "baseline-5",
+      "arm": "baseline",
+      "packet": "trial-1",
+      "session": "83639e3e-adcc-409d-b43a-7f0bb43d64fa",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 16,
+      "tool_errors": 3,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.jlF52JQGrx/input/002071.pdf",
+        "/tmp/tmp.jlF52JQGrx/input/002082.pdf",
+        "/tmp/tmp.jlF52JQGrx/input/002093.pdf"
+      ],
+      "injected_ids": [],
+      "delivered_in_system": false,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "system-5",
+      "arm": "system",
+      "packet": "trial-1",
+      "session": "55236183-d18f-4518-bff1-e9b6311e8301",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 23,
+      "tool_errors": 4,
+      "wrong_path_reads": 3,
+      "wrong_paths": [
+        "/tmp/tmp.vBlmz8i8Ku/input/002071.pdf",
+        "/tmp/tmp.vBlmz8i8Ku/input/002082.pdf",
+        "/tmp/tmp.vBlmz8i8Ku/input/002093.pdf"
+      ],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "user-5",
+      "arm": "user",
+      "packet": "trial-1",
+      "session": "d30839ed-1ead-4eb9-ae52-d9310380db38",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 15,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "learned-user-5",
+      "arm": "learned-user",
+      "packet": "trial-2",
+      "session": "5ae8d9b7-9625-4de4-a78d-ed961ec91edc",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 19,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "baseline-6",
+      "arm": "baseline",
+      "packet": "trial-2",
+      "session": "b9fc2b70-c49d-4a22-bf32-64e70df3471f",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 15,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [],
+      "delivered_in_system": false,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "system-6",
+      "arm": "system",
+      "packet": "trial-2",
+      "session": "01664f46-a7f2-4f6d-aeeb-b4b96dc75fcd",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 10,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    },
+    {
+      "label": "user-6",
+      "arm": "user",
+      "packet": "trial-2",
+      "session": "3dcc892e-71cd-4dcb-bc8f-b9ddef722276",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 15,
+      "tool_errors": 0,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1"
+      ],
+      "delivered_in_system": false,
+      "delivered_in_first_user": true
+    },
+    {
+      "label": "learned-system-5",
+      "arm": "learned-system",
+      "packet": "trial-2",
+      "session": "ce80892c-0858-40d2-8308-555d7aaf4daf",
+      "completed": true,
+      "all_correct": true,
+      "tool_calls": 15,
+      "tool_errors": 1,
+      "wrong_path_reads": 0,
+      "wrong_paths": [],
+      "injected_ids": [
+        "1",
+        "2"
+      ],
+      "delivered_in_system": true,
+      "delivered_in_first_user": false
+    }
+  ]
+}

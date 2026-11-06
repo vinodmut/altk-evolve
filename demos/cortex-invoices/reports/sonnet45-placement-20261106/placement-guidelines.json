@@ -1,0 +1,21 @@
+{
+  "invoice-placement-hand": [
+    {
+      "id": "1",
+      "content": "Relative paths in a task, such as input/, are relative to the CWD stated in your environment. Build absolute file paths from that CWD (or from pwd) before reading files; never guess a temporary directory such as /tmp/tmp.*.",
+      "origin": "hand-written"
+    }
+  ],
+  "invoice-placement-learned": [
+    {
+      "id": "1",
+      "content": "When reading PDF files with the Read tool, always use absolute paths from the current working directory rather than relative paths, even if the relative path appears correct in directory listings.",
+      "origin": "learned: sonnet45-standard-20261105 candidate 1"
+    },
+    {
+      "id": "2",
+      "content": "Use Python's Decimal type for all financial calculations and reconciliations to detect small discrepancies like 0.01 differences that would be masked by floating-point arithmetic.",
+      "origin": "learned: sonnet45-standard-20261105 candidate 4"
+    }
+  ]
+}

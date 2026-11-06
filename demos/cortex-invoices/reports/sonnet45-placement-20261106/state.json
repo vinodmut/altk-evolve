@@ -1,0 +1,1622 @@
+{
+  "created_at": "2026-11-06T04:24:05.701564+00:00",
+  "model": "aws/claude-sonnet-4-5",
+  "learning_model": "aws/claude-sonnet-4-5",
+  "sessions": {
+    "baseline-1": {
+      "id": "71300a02-6898-4330-a24a-8d4eda95f65a",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "baseline",
+      "arm_config": {
+        "inject": false,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:24:55.366888+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 98.07,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "system-1": {
+      "id": "0b6ae31b-2496-4ca3-91a7-b19abbe580c4",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:26:35.995188+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 102.21,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:26:36.43047486Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "user-1": {
+      "id": "6ca17434-c49f-4606-b6c6-372b3495bb4a",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T04:28:18.936242+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 414.25,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:28:19.384730261Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "baseline-2": {
+      "id": "7fbd2f7b-818c-498a-8b8e-edbee260e64e",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "baseline",
+      "arm_config": {
+        "inject": false,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:40:58.076262+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 72.09,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "system-2": {
+      "id": "9fcbf39d-ab31-43c6-b3fd-7de0303f3c24",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:42:12.795462+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 103.83,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:42:13.214450147Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "user-2": {
+      "id": "8a77502d-51f3-4fc9-a506-ecc1e318e40a",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T04:43:57.374950+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 77.21,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:43:57.7970068Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "learned-system-1": {
+      "id": "55e4f8a3-819c-4cb7-935c-1ba3edd0d0e5",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:45:15.308443+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 403.96,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:45:15.769016989Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "learned-user-1": {
+      "id": "d39b5825-ed73-419f-a1aa-80a79433a6b5",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T04:52:00.160181+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 75.28,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:52:00.722646659Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "system-3": {
+      "id": "a2c61941-bec8-4281-97ad-490ee46ea386",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:53:16.199466+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 110.63,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:53:16.691233253Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "user-3": {
+      "id": "b2efb70c-c863-4892-9479-093596d2aef3",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T04:55:07.620211+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 102.78,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:55:08.077471388Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "learned-system-2": {
+      "id": "0d890f96-600c-4425-9e4b-17211e1c9640",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:56:51.153390+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 91.31,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:56:51.631765884Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "learned-user-2": {
+      "id": "69bc4029-0b39-44a3-9aa0-4d1e32fc569a",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T04:58:23.216376+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 94.33,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T04:58:23.681533401Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "baseline-3": {
+      "id": "8c5df3b0-a77c-496e-979b-1c9ec612a387",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "baseline",
+      "arm_config": {
+        "inject": false,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T04:59:58.343991+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 120.87,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "user-4": {
+      "id": "ff4fe42d-56dd-470b-b15d-bf2f99065c53",
+      "packet": "trial-3",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T05:02:00.018767+00:00",
+      "input_hashes_before": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 113.43,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:02:00.565979131Z"
+      },
+      "input_hashes_after": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      }
+    },
+    "learned-system-3": {
+      "id": "6fd81b06-9aa1-4db0-9241-97e6cb135e0a",
+      "packet": "trial-3",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:03:54.213437+00:00",
+      "input_hashes_before": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 88.37,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:03:54.715028408Z"
+      },
+      "input_hashes_after": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      }
+    },
+    "learned-user-3": {
+      "id": "e8e92327-8cd7-4fad-b113-5819efdf7ebf",
+      "packet": "trial-3",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T05:05:23.335682+00:00",
+      "input_hashes_before": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 93.17,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:05:23.853920186Z"
+      },
+      "input_hashes_after": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      }
+    },
+    "baseline-4": {
+      "id": "3050a423-28e6-48ca-9d92-0029c7167010",
+      "packet": "trial-3",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "baseline",
+      "arm_config": {
+        "inject": false,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:06:57.290245+00:00",
+      "input_hashes_before": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 110.07,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      }
+    },
+    "system-4": {
+      "id": "80579454-c633-4019-a482-75d8c19b1291",
+      "packet": "trial-3",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:08:48.127169+00:00",
+      "input_hashes_before": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 101.17,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:08:48.580651583Z"
+      },
+      "input_hashes_after": {
+        "004071.pdf": "ed9b4de64fae4a852022d64992e2c51551e6cbecc60dc1d284daae35238e3d23",
+        "004082.pdf": "d74bb14023d62449c43b5cc89080fede1160fe276ac0fb42d8dd0fff0bfc3b4f",
+        "004093.pdf": "08f186aeb8948fa612d65afe2c22ae1addbf17004ef71e157d5ed2bc98eeaa42"
+      }
+    },
+    "learned-system-4": {
+      "id": "628163d8-1f83-431a-9203-da60a82322fe",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:10:30.056365+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 68.18,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:10:30.555054319Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "learned-user-4": {
+      "id": "fa082707-b3ed-40d1-af74-2482400f7455",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T05:11:38.994853+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 91.59,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:11:39.505719459Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "baseline-5": {
+      "id": "83639e3e-adcc-409d-b43a-7f0bb43d64fa",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "baseline",
+      "arm_config": {
+        "inject": false,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:13:11.382941+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 109.03,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "system-5": {
+      "id": "55236183-d18f-4518-bff1-e9b6311e8301",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:15:01.175941+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 157.17,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:15:01.760697185Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "user-5": {
+      "id": "d30839ed-1ead-4eb9-ae52-d9310380db38",
+      "packet": "trial-1",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T05:17:39.142470+00:00",
+      "input_hashes_before": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 89.54,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:17:39.632927149Z"
+      },
+      "input_hashes_after": {
+        "002071.pdf": "af0c58d2ddb37f01cb8d97aee7c770cc54b98cf735dfa542fcdcfae06415755a",
+        "002082.pdf": "f1f92cc04d498336ccc5ae09f1fdc4217091679b08775853048175c4c1c79912",
+        "002093.pdf": "12cd577edde23f1b567a141930777b3833a26f037d5c50bac60bedc8d3bcc28f"
+      }
+    },
+    "learned-user-5": {
+      "id": "5ae8d9b7-9625-4de4-a78d-ed961ec91edc",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T05:19:09.450081+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 112.48,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:19:09.933613352Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "baseline-6": {
+      "id": "b9fc2b70-c49d-4a22-bf32-64e70df3471f",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "baseline",
+      "arm_config": {
+        "inject": false,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:21:02.704232+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 96.85,
+      "captured": true,
+      "first_request_evolve": {},
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "system-6": {
+      "id": "01664f46-a7f2-4f6d-aeeb-b4b96dc75fcd",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:22:40.335483+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 85.81,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:22:40.897260989Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "user-6": {
+      "id": "3dcc892e-71cd-4dcb-bc8f-b9ddef722276",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "user",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-hand",
+        "placement": "user"
+      },
+      "started_at": "2026-11-06T05:24:06.910424+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 91.34,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1"
+        ],
+        "revisions": [
+          1
+        ],
+        "sources": [
+          "invoice-placement-hand"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:24:07.389805428Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    },
+    "learned-system-5": {
+      "id": "ce80892c-0858-40d2-8308-555d7aaf4daf",
+      "packet": "trial-2",
+      "prompt": "Extract every invoice line item from the PDFs in input/ into items.csv.\nUse exactly these columns: invoice_id,vendor,description,quantity,unit_price,line_amount.\nPreserve invoice IDs and complete item descriptions, including continuation text.\nInclude credits and discounts as signed line items. Do not include table headings,\npage subtotals, tax, or grand totals as items. Preserve exact decimal amounts.\n\nReconcile each invoice's sum of line amounts plus its printed tax against its\nprinted total. Write reconciliation.csv with exactly these columns:\ninvoice_id,subtotal,tax,printed_total,computed_total,difference,status.\nDifference means computed_total minus printed_total. Status must be matched\nwhen the difference is zero and discrepancy otherwise. Report any discrepancy.\n\nKeep all source PDFs unchanged. Use the installed local tools; do not install\npackages or write persistent memory files. If using Python, run it with\nuv run --offline --no-sync --project /opt/demo python.\nShow the successful commands and briefly explain how you checked the result.",
+      "arm": "learned-system",
+      "arm_config": {
+        "inject": true,
+        "namespace": "invoice-placement-learned",
+        "placement": null
+      },
+      "started_at": "2026-11-06T05:25:39.032294+00:00",
+      "input_hashes_before": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      },
+      "harness": {
+        "mode": "noninteractive",
+        "flags": [
+          "--print",
+          "--allowedTools",
+          "Bash,Read,Write,Edit",
+          "--permission-mode",
+          "dontAsk",
+          "--permission-prompts",
+          "none",
+          "--output-format",
+          "json"
+        ],
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 84.93,
+      "captured": true,
+      "first_request_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2"
+        ],
+        "revisions": [
+          1,
+          1
+        ],
+        "sources": [
+          "invoice-placement-learned",
+          "invoice-placement-learned"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T05:25:39.528605262Z"
+      },
+      "input_hashes_after": {
+        "003071.pdf": "999b06cc30db618fbf3a059c3b461fa19c0b797b14fb8d89495f78c318faf48a",
+        "003082.pdf": "7759adcedb04d1eb81bcbb9a953c5db0f4a8c7e8aedb3754f38029a50788ca67",
+        "003093.pdf": "91b58f6de8f697e8be2230f46acfe53fd5b3f20b33eae087e9f8a59e0b68726e"
+      }
+    }
+  },
+  "promoted": [],
+  "checked_at": "2026-11-06T04:24:26.432323+00:00",
+  "task_family": "invoice-extraction",
+  "trial_order": [
+    "baseline-1",
+    "guided-1",
+    "guided-2",
+    "baseline-2",
+    "baseline-3",
+    "guided-3"
+  ]
+}

@@ -41,8 +41,8 @@ Gaps:
    prompt says to return an empty list when a task succeeds without struggle. What came
    back was "use `Decimal`" (the model already does) and "embed the extracted data in the
    script" (codifies hand transcription).
-2. **The one real recurring error was misdiagnosed, and the guideline did not change
-   it.** Most runs first read `/tmp/tmp.XXXX/input/*.pdf`, get three errors, run `pwd`,
+2. **The one real recurring error persisted with the guideline injected.** (Later shown
+   to be a placement problem, not wording; see recommendation 1.) Most runs first read `/tmp/tmp.XXXX/input/*.pdf`, get three errors, run `pwd`,
    and retry. That path appears nowhere in the request (system prompt, tools, or
    messages); Sonnet invents it. Wrong-path reads: standard set 2/3 baseline vs 3/3
    guided; consistency set 3/3 vs 3/3, with the guideline delivered
@@ -66,13 +66,17 @@ Gaps:
    reads disappear, the bottleneck is guideline quality (Evolve's root-cause analysis and
    filtering out advice the model already follows). If they persist, it is delivery and
    placement (Cortex). Wrong-path reads are a cheap, objective metric.
-   *Status: in progress; see [cortex-invoices/placement.md](cortex-invoices/placement.md).*
+   *Result (2026-11-06): delivery was the bottleneck.* System-prompt placement left
+   wrong-path reads at baseline levels (6/11 runs vs 3/6 baseline); first-user-message
+   placement removed them (0/11), for both a hand-written and Evolve's learned guideline.
+   See [cortex-invoices/placement.md](cortex-invoices/placement.md).
 2. **Cortex: inject where the model pays attention.** Compare the current trailing system
    block with a `<system-reminder>` attached to the first user message, which Claude Code
    models are trained to heed. The block stays byte-stable across turns, so prompt caching
    is unaffected. Later: just-in-time injection, adding a matching guideline on the next
    request after a tool error that fits its trigger. Cortex already sees every tool result.
-   *Status: in progress, after 1.*
+   *Done: Cortex `placement: user` (`ab08dda3` on `evolve-plugin`); measured in 1. Next:
+   make it the default, then just-in-time injection.*
 3. **Outcome signals.** *Deferred by decision: the loop must work without extra user
    overhead.* If revisited, use only signals that need no user involvement: tool errors and
    retries, in-session self-corrections, and contrasting repeated runs of the same task
