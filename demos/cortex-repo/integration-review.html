@@ -11,7 +11,10 @@
 .verdict .v span { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .verdict .v b { display: block; font-size: 22px; margin: 2px 0; }
 .verdict .v p { margin: 0; font-size: 13.5px; }
-.files td:first-child, .files td:nth-child(2) { white-space: nowrap; }
+.files td:first-child { white-space: normal; word-break: break-word; }
+.files td:nth-child(2) { white-space: nowrap; }
+.files td:last-child { min-width: 260px; }
+.files code { white-space: normal; }
 .files .num { text-align: right; font-variant-numeric: tabular-nums; }
 .tag { display: inline-block; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
 .tag.plugin { color: var(--good); background: var(--good-soft); }
@@ -40,9 +43,9 @@
   <h1>Cortex + Evolve integration</h1>
   <p>What the <code>evolve-plugin</code> branch changes in Cortex, why each change outside the plugin is there, and what changed on the Evolve side. Written for a review with the Cortex maintainers.</p>
   <div class="facts">
-    <div class="fact"><span>Cortex branch</span><b>vinodmut/cortex · evolve-plugin</b></div>
-    <div class="fact"><span>Branch head</span><b>ab08dda3</b></div>
-    <div class="fact"><span>Based on</span><b>main 8b0facd5 (Nov 2)</b></div>
+    <div class="fact"><span>Cortex branch</span><b><a href="https://github.com/vinodmut/cortex/tree/evolve-plugin" style="color:#fff">vinodmut/cortex · evolve-plugin</a></b></div>
+    <div class="fact"><span>Branch head</span><b><a href="https://github.com/vinodmut/cortex/commit/ab08dda394e161f3806035817d38fedab5254c41" style="color:#fff">ab08dda3</a></b></div>
+    <div class="fact"><span>Based on</span><b><a href="https://github.com/rossoctl/cortex/commit/8b0facd5c5cb9d5b58b9ef256ab369c724f19422" style="color:#fff">main 8b0facd5</a> (Nov 2)</b></div>
     <div class="fact"><span>Prepared</span><b>Nov 9, 2026</b></div>
   </div>
 </div></header>
@@ -65,14 +68,14 @@
 
 <section class="card" id="summary">
   <h2>Summary</h2>
-  <p><b>The integration is a self-contained outbound plugin.</b> All behaviour lives in <code>core/plugins/evolve/</code>. It uses only pipeline APIs that already exist on main and changes no file under <code>core/pipeline</code>, <code>core/session</code>, <code>core/sessionapi</code> or <code>core/config</code>. It does nothing until a pipeline config names it.</p>
+  <p><b>The integration is a self-contained outbound plugin.</b> All behaviour lives in <a href="https://github.com/vinodmut/cortex/tree/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve"><code>core/plugins/evolve/</code></a>. It uses only pipeline APIs that already exist on main and changes no file under <code>core/pipeline</code>, <code>core/session</code>, <code>core/sessionapi</code> or <code>core/config</code>. It does nothing until a pipeline config names it.</p>
   <div class="verdict">
     <div class="v"><span>Behaviour outside the plugin</span><b>None</b><p>No core, session, config or API code changed.</p></div>
     <div class="v"><span>Files outside the plugin</span><b>4 + 2 docs</b><p>Build-tag registration, profile membership and its test, one dependency line.</p></div>
-    <div class="v"><span>New dependency</span><b>None really</b><p><code>mcp-go</code> was already in the module graph; it moves from indirect to direct.</p></div>
-    <div class="v"><span>Ships in</span><b>full, fullcpex</b><p>Not in the laptop <code>local</code> profile or the lite images.</p></div>
+    <div class="v"><span>New dependency</span><b>None really</b><p><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/go.mod#L12"><code>mcp-go</code></a> was already in the module graph; it moves from indirect to direct.</p></div>
+    <div class="v"><span>Ships in</span><b>full, fullcpex</b><p>Not in the laptop <code>local</code> profile or the lite images. <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles.go#L72-L75">See membership</a>.</p></div>
   </div>
-  <div class="callout caution"><span class="icon">!</span><div><p><b>One follow-up before a PR.</b> Upstream moved plugin registration from <code>cmd/cortex/</code> to <code>core/plugins/all/</code> after this branch was cut (<code>af76a320</code>). The branch still merges without conflicts, but two profile-tags guard tests fail until <code>plugins_evolve.go</code> moves; the fix is one <code>git mv</code> and a package rename. See <a href="#rebase">section 4</a>.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>One follow-up before a PR.</b> Upstream moved plugin registration from <code>cmd/cortex/</code> to <a href="https://github.com/rossoctl/cortex/tree/28b67b8d/core/plugins/all"><code>core/plugins/all/</code></a> after this branch was cut (<a href="https://github.com/rossoctl/cortex/commit/af76a320"><code>af76a320</code></a>). The branch still merges without conflicts, but two profile-tags guard tests fail until <code>plugins_evolve.go</code> moves; the fix is one <code>git mv</code> and a package rename. See <a href="#rebase">section 4</a>.</p></div></div>
 </section>
 
 <section class="card" id="footprint">
@@ -80,27 +83,27 @@
   <p>Every file the branch changes relative to its merge base with main (<code>git diff 8b0facd5 ab08dda3</code>): 14 files, +2,645 / −4.</p>
   <table class="files">
     <tr><th>File</th><th>Kind</th><th class="num">Lines</th><th>What</th></tr>
-    <tr><td><code>core/plugins/evolve/plugin.go</code></td><td><span class="tag plugin">plugin</span></td><td class="num">+547</td><td>Config, eligibility, request injection, turn recording, idle-session sender</td></tr>
-    <tr><td><code>core/plugins/evolve/client.go</code></td><td><span class="tag plugin">plugin</span></td><td class="num">+317</td><td>MCP client for Evolve's stock tools over SSE</td></tr>
-    <tr><td><code>core/plugins/evolve/inject.go</code></td><td><span class="tag plugin">plugin</span></td><td class="num">+218</td><td>Byte-preserving injection for Anthropic, Chat Completions and Responses dialects</td></tr>
-    <tr><td><code>core/plugins/evolve/trajectory.go</code></td><td><span class="tag plugin">plugin</span></td><td class="num">+167</td><td>Folds main-agent turns into OpenAI chat messages for learning</td></tr>
-    <tr><td><code>core/plugins/evolve/metrics.go</code></td><td><span class="tag plugin">plugin</span></td><td class="num">+57</td><td>Counters for the plugins pane</td></tr>
-    <tr><td><code>core/plugins/evolve/*_test.go</code></td><td><span class="tag plugin">plugin</span></td><td class="num">+728</td><td>26 tests; 83.6% statement coverage</td></tr>
-    <tr><td><code>cmd/cortex/plugins_evolve.go</code></td><td><span class="tag reg">registration</span></td><td class="num">+5</td><td>Build-tagged blank import</td></tr>
-    <tr><td><code>scripts/profile-tags/profiles.go</code></td><td><span class="tag reg">registration</span></td><td class="num">+6 / −1</td><td>Adds <code>evolve</code> to <code>full</code> and <code>fullcpex</code></td></tr>
-    <tr><td><code>scripts/profile-tags/profiles_test.go</code></td><td><span class="tag reg">registration</span></td><td class="num">+2 / −2</td><td>Expected tag lists</td></tr>
-    <tr><td><code>core/go.mod</code></td><td><span class="tag dep">dependency</span></td><td class="num">+1 / −1</td><td><code>mcp-go</code> indirect → direct</td></tr>
-    <tr><td><code>docs/evolve-plugin.md</code></td><td><span class="tag doc">docs</span></td><td class="num">+177</td><td>Plugin reference</td></tr>
-    <tr><td><code>docs/evolve-plugin-e2e.md</code></td><td><span class="tag doc">docs</span></td><td class="num">+409</td><td>Manual end-to-end walkthrough</td></tr>
-    <tr><td><code>docs/plugin-catalog.md</code></td><td><span class="tag doc">docs</span></td><td class="num">+11</td><td>Catalog row and section</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go"><code>core/plugins/evolve/plugin.go</code></a></td><td><span class="tag plugin">plugin</span></td><td class="num">+547</td><td>Config, eligibility, request injection, turn recording, idle-session sender</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/client.go"><code>core/plugins/evolve/client.go</code></a></td><td><span class="tag plugin">plugin</span></td><td class="num">+317</td><td>MCP client for Evolve's stock tools over SSE</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/inject.go"><code>core/plugins/evolve/inject.go</code></a></td><td><span class="tag plugin">plugin</span></td><td class="num">+218</td><td>Byte-preserving injection for Anthropic, Chat Completions and Responses dialects</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/trajectory.go"><code>core/plugins/evolve/trajectory.go</code></a></td><td><span class="tag plugin">plugin</span></td><td class="num">+167</td><td>Folds main-agent turns into OpenAI chat messages for learning</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/metrics.go"><code>core/plugins/evolve/metrics.go</code></a></td><td><span class="tag plugin">plugin</span></td><td class="num">+57</td><td>Counters for the plugins pane</td></tr>
+    <tr><td><code>core/plugins/evolve/</code><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin_test.go"><code>plugin_test.go</code></a>, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/client_test.go"><code>client_test.go</code></a></td><td><span class="tag plugin">plugin</span></td><td class="num">+728</td><td>26 tests; 83.6% statement coverage</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/cmd/cortex/plugins_evolve.go"><code>cmd/cortex/plugins_evolve.go</code></a></td><td><span class="tag reg">registration</span></td><td class="num">+5</td><td>Build-tagged blank import</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles.go#L72-L75"><code>scripts/profile-tags/profiles.go</code></a></td><td><span class="tag reg">registration</span></td><td class="num">+6 / −1</td><td>Adds <code>evolve</code> to <code>full</code> and <code>fullcpex</code></td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles_test.go#L36-L40"><code>scripts/profile-tags/profiles_test.go</code></a></td><td><span class="tag reg">registration</span></td><td class="num">+2 / −2</td><td>Expected tag lists</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/go.mod#L12"><code>core/go.mod</code></a></td><td><span class="tag dep">dependency</span></td><td class="num">+1 / −1</td><td><code>mcp-go</code> indirect → direct</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md"><code>docs/evolve-plugin.md</code></a></td><td><span class="tag doc">docs</span></td><td class="num">+177</td><td>Plugin reference</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin-e2e.md"><code>docs/evolve-plugin-e2e.md</code></a></td><td><span class="tag doc">docs</span></td><td class="num">+409</td><td>Manual end-to-end walkthrough</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/plugin-catalog.md#L28"><code>docs/plugin-catalog.md</code></a></td><td><span class="tag doc">docs</span></td><td class="num">+11</td><td>Catalog row and section</td></tr>
   </table>
-  <p>Four commits, plus one merge of public main into the branch (<code>4262d0a8</code>):</p>
+  <p>Four commits, plus one merge of public main into the branch (<a href="https://github.com/vinodmut/cortex/commit/4262d0a8"><code>4262d0a8</code></a>). <a href="https://github.com/rossoctl/cortex/compare/8b0facd5c5cb9d5b58b9ef256ab369c724f19422...vinodmut:cortex:ab08dda394e161f3806035817d38fedab5254c41">Full diff against main</a>:</p>
   <table>
     <tr><th>Commit</th><th>Date</th><th>Change</th></tr>
-    <tr><td><code>6c9d72c3</code></td><td>Oct 28</td><td>Guideline injection and idle-session export</td></tr>
-    <tr><td><code>122970b3</code></td><td>Oct 29</td><td>Use Evolve's stock MCP tools; no Evolve-side API needed</td></tr>
-    <tr><td><code>2dec3605</code></td><td>Oct 29</td><td>End-to-end walkthrough doc</td></tr>
-    <tr><td><code>ab08dda3</code></td><td>Nov 5</td><td><code>placement: user</code> option</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/commit/6c9d72c3"><code>6c9d72c3</code></a></td><td>Oct 28</td><td>Guideline injection and idle-session export</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/commit/122970b3"><code>122970b3</code></a></td><td>Oct 29</td><td>Use Evolve's stock MCP tools; no Evolve-side API needed</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/commit/2dec3605"><code>2dec3605</code></a></td><td>Oct 29</td><td>End-to-end walkthrough doc</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/cortex/commit/ab08dda3"><code>ab08dda3</code></a></td><td>Nov 5</td><td><code>placement: user</code> option</td></tr>
   </table>
 </section>
 
@@ -109,39 +112,39 @@
   <p>None of these change behaviour. Each is the minimum the build system requires to compile an optional plugin into some binaries and not others.</p>
 
   <div class="defend">
-    <h3>1. <code>cmd/cortex/plugins_evolve.go</code> <span class="tag reg">registration</span></h3>
+    <h3>1. <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/cmd/cortex/plugins_evolve.go"><code>cmd/cortex/plugins_evolve.go</code></a> <span class="tag reg">registration</span></h3>
     <pre class="diff"><span class="a">+//go:build include_plugin_evolve</span>
 <span class="a">+</span>
 <span class="a">+package main</span>
 <span class="a">+</span>
 <span class="a">+import _ "github.com/rossoctl/cortex/core/plugins/evolve"</span></pre>
-    <p><b>Why:</b> plugins register themselves in an <code>init()</code>; the binary only links the ones it imports. This is the same five-line file every other plugin had on main at the time (<code>plugins_inferencerouter.go</code>, <code>plugins_ibac.go</code>, …), and the build tag keeps it out of any profile that doesn't list it.</p>
-    <p><b>Now:</b> upstream has since moved these files to <code>core/plugins/all/</code>. This one should move with them before a PR (<a href="#rebase">section 4</a>).</p>
+    <p><b>Why:</b> plugins register themselves in an <code>init()</code>; the binary only links the ones it imports. This is the same five-line file every other plugin had on main at the time (<a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/cmd/cortex/plugins_inferencerouter.go"><code>plugins_inferencerouter.go</code></a>, <a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/cmd/cortex/plugins_ibac.go"><code>plugins_ibac.go</code></a>, …), and the build tag keeps it out of any profile that doesn't list it.</p>
+    <p><b>Now:</b> upstream has since moved these files to <a href="https://github.com/rossoctl/cortex/tree/28b67b8d/core/plugins/all"><code>core/plugins/all/</code></a>, for example <a href="https://github.com/rossoctl/cortex/blob/28b67b8d/core/plugins/all/plugins_inferencerouter.go"><code>plugins_inferencerouter.go</code></a>. This one should move with them before a PR (<a href="#rebase">section 4</a>).</p>
   </div>
 
   <div class="defend">
-    <h3>2. <code>scripts/profile-tags/profiles.go</code> and its test <span class="tag reg">registration</span></h3>
+    <h3>2. <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles.go#L72-L75"><code>scripts/profile-tags/profiles.go</code></a> and <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles_test.go#L36-L40">its test</a> <span class="tag reg">registration</span></h3>
     <pre class="diff"><span class="h">@@ var membership = map[PluginName][]ProfileName{</span>
 <span class="a">+	// Full only, like inference-router: it reaches laptops through the release tarballs</span>
 <span class="a">+	// and changes no traffic until a pipeline names it. It needs an altk-evolve MCP</span>
 <span class="a">+	// server beside it, which only a laptop runs today; only cmd/cortex registers it.</span>
 <span class="a">+	"evolve": {ProfileFull, ProfileFullCpex},</span></pre>
     <p><b>Why:</b> profile membership decides which binaries get the build tag. The guard tests require every registered plugin to have an entry, and <code>TestTags_ReproduceTodaysDefaults</code> pins the expected tag list, so the test edit is the expected list gaining <code>"evolve"</code>.</p>
-    <p><b>Why only <code>full</code>/<code>fullcpex</code>:</b> it mirrors <code>inference-router</code>. Laptops get it through release tarballs, the sidecar images don't grow, and it is inert until configured. It is deliberately <b>not</b> in <code>local</code>, the desktop profile, so <code>agentop setup</code> users are unaffected.</p>
+    <p><b>Why only <code>full</code>/<code>fullcpex</code>:</b> it mirrors <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles.go#L66-L70"><code>inference-router</code></a>. The profiles and the binaries each one builds are listed at the <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles.go#L42-L48">top of the file</a>. Laptops get it through release tarballs, the sidecar images don't grow, and it is inert until configured. It is deliberately <b>not</b> in <code>local</code>, the desktop profile, so <code>agentop setup</code> users are unaffected.</p>
   </div>
 
   <div class="defend">
-    <h3>3. <code>core/go.mod</code> <span class="tag dep">dependency</span></h3>
+    <h3>3. <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/go.mod#L12"><code>core/go.mod</code></a> <span class="tag dep">dependency</span></h3>
     <pre class="diff"><span class="a">+	github.com/mark3labs/mcp-go v0.43.2</span>
 <span class="h">  …</span>
 <span class="d">-	github.com/mark3labs/mcp-go v0.43.2 // indirect</span></pre>
-    <p><b>Why:</b> the plugin talks to Evolve's MCP server over SSE with <code>mcp-go</code>. That module, at the same version, was already in Cortex's module graph as an indirect dependency, so <code>go.sum</code> is unchanged and no new code enters the build. Only the direct/indirect marker moves.</p>
+    <p><b>Why:</b> <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/client.go#L79-L105">the plugin's client</a> talks to Evolve's MCP server over SSE with <a href="https://github.com/mark3labs/mcp-go"><code>mcp-go</code></a>. That module, at the same version, was already in Cortex's module graph as an indirect dependency, so <code>go.sum</code> is unchanged and no new code enters the build. Only the direct/indirect marker moves.</p>
     <p><b>Alternative considered:</b> a hand-rolled SSE + JSON-RPC client. Rejected: more code to own, and MCP's session and keep-alive handling is easy to get subtly wrong.</p>
   </div>
 
   <div class="defend">
     <h3>4. Docs <span class="tag doc">docs</span></h3>
-    <p><code>docs/evolve-plugin.md</code> (reference), <code>docs/evolve-plugin-e2e.md</code> (walkthrough) and two additions to <code>docs/plugin-catalog.md</code>, following the existing per-plugin doc pattern. The catalog marks it <b>Alpha</b>.</p>
+    <p><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md"><code>docs/evolve-plugin.md</code></a> (reference), <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin-e2e.md"><code>docs/evolve-plugin-e2e.md</code></a> (walkthrough) and two additions to <code>docs/plugin-catalog.md</code> (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/plugin-catalog.md#L28">table row</a>, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/plugin-catalog.md#L74-L82">section</a>), following the existing per-plugin doc pattern. The catalog marks it <b>Alpha</b>.</p>
   </div>
 
   <div class="callout why"><span class="icon">i</span><div><p><b>What is not on the branch.</b> The session-archive location issue (<a href="https://github.com/rossoctl/cortex/issues/1689">#1689</a>) is a proposal only; no core change was made for it. The demos work around it without touching Cortex.</p></div></div>
@@ -149,7 +152,7 @@
 
 <section class="card" id="rebase">
   <h2>Against today's main</h2>
-  <p>Checked on Nov 9 against <code>public/main</code> at <code>28b67b8d</code>, 406 commits after the merge base, in a scratch worktree:</p>
+  <p>Checked on Nov 9 against <code>public/main</code> at <a href="https://github.com/rossoctl/cortex/commit/28b67b8d"><code>28b67b8d</code></a>, 406 commits after the merge base, in a scratch worktree:</p>
   <table>
     <tr><th>Check</th><th>Result</th></tr>
     <tr><td><code>git merge</code> of the branch into main</td><td>Clean, no conflicts</td></tr>
@@ -157,7 +160,7 @@
     <tr><td><code>cmd/cortex</code> build with the <code>full</code> profile tags</td><td>Pass</td></tr>
     <tr><td><code>scripts/profile-tags</code> tests</td><td><b>2 fail</b>: <code>TestNoUnconditionalPluginImports</code>, <code>TestNoStaleMembershipEntries</code></td></tr>
   </table>
-  <p>Both failures come from upstream's <code>af76a320</code> ("Register plugins from one shared package"), which moved every <code>plugins_*.go</code> into <code>core/plugins/all/</code>. Moving this one too makes all checks pass, which I confirmed in the same scratch merge:</p>
+  <p>Both failures come from upstream's <a href="https://github.com/rossoctl/cortex/commit/af76a320"><code>af76a320</code></a> ("Register plugins from one shared package"), which moved every <code>plugins_*.go</code> into <code>core/plugins/all/</code>. Moving this one too makes all checks pass, which I confirmed in the same scratch merge:</p>
   <div class="cmd" data-label="Cortex worktree, after merging main"><pre><code>git mv cmd/cortex/plugins_evolve.go core/plugins/all/plugins_evolve.go
 sed -i '' 's/^package main$/package all/' core/plugins/all/plugins_evolve.go
 (cd scripts/profile-tags &amp;&amp; go test ./...)</code></pre></div>
@@ -198,30 +201,30 @@ sed -i '' 's/^package main$/package all/' core/plugins/all/plugins_evolve.go
   <p class="note">Both calls go from the plugin to Evolve; Evolve never calls Cortex. ① runs on the request path, once per session, bounded by <code>timeout_ms</code>, and fails open. ② runs from a 30-second background ticker after the response is on the wire, so it never delays a request.</p>
   <h3>What it does on each request</h3>
   <ol>
-    <li><b>Eligibility.</b> Only main-agent inference requests with tools, a session ID and an allowed client. It skips subagents, tool-less side calls (titles, summaries), unknown clients and its own calls (<code>X-Evolve-Cortex</code> header), recording a skip reason.</li>
-    <li><b>Fetch once per session.</b> On a session's first eligible request it asks Evolve for guidelines matching the task, the first user message with <code>&lt;system-reminder&gt;</code> removed. The result is cached per session (<code>cache_ttl_seconds</code>, default 30 min), with concurrent requests of one session waiting on a single fetch.</li>
-    <li><b>Inject byte-stably.</b> It appends one delimited <code>&lt;evolve-guidelines&gt;</code> block, rendered once and reused, so every turn adds identical bytes and the provider's prompt cache keeps hitting. Edits use <code>sjson</code> on the raw body, so <code>cache_control</code> markers and every untouched field survive byte for byte.</li>
-    <li><b>Placement.</b> <code>system</code> (default) adds a trailing system block; <code>user</code> puts the block in a <code>&lt;system-reminder&gt;</code> leading the first user message. <code>user</code> was added after an experiment showed the model ignored guidelines at the end of Claude Code's long system prompt.</li>
-    <li><b>Attribute.</b> Publishes <code>plugins.evolve</code> on the session event: whether it injected, guideline IDs, revisions and sources. agentop shows it in the detail pane.</li>
+    <li><b>Eligibility</b> (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L243-L277"><code>eligible</code></a>). Only main-agent inference requests with tools, a session ID and an allowed client. It skips subagents, tool-less side calls (titles, summaries), unknown clients and its own calls (<code>X-Evolve-Cortex</code> header), recording a skip reason.</li>
+    <li><b>Fetch once per session</b> (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L354-L418"><code>guidelinesFor</code></a>). On a session's first eligible request it asks Evolve for guidelines matching the task, the first user message with <code>&lt;system-reminder&gt;</code> removed. The result is cached per session (<code>cache_ttl_seconds</code>, default 30 min), with concurrent requests of one session waiting on a single fetch.</li>
+    <li><b>Inject byte-stably</b> (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/inject.go#L55-L73"><code>formatBlock</code></a>, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/inject.go#L81-L100"><code>injectBlock</code></a>). It appends one delimited <code>&lt;evolve-guidelines&gt;</code> block, rendered once and reused, so every turn adds identical bytes and the provider's prompt cache keeps hitting. Edits use <code>sjson</code> on the raw body, so <code>cache_control</code> markers and every untouched field survive byte for byte.</li>
+    <li><b>Placement</b> (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L52">config field</a>, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/inject.go#L147-L179"><code>injectFirstUser</code></a>, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md#L129">docs</a>). <code>system</code> (default) adds a trailing system block; <code>user</code> puts the block in a <code>&lt;system-reminder&gt;</code> leading the first user message. <code>user</code> was added after an <a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/demos/cortex-invoices/placement.md">experiment</a> showed the model ignored guidelines at the end of Claude Code's long system prompt.</li>
+    <li><b>Attribute</b> (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L435-L440"><code>publish</code></a>). Publishes <code>plugins.evolve</code> on the session event: whether it injected, guideline IDs, revisions and sources. agentop shows it in the detail pane.</li>
   </ol>
   <h3>What it does after each response</h3>
   <ul>
-    <li><code>OnFinish</code> records each successful main-agent turn into a per-session recorder. It only appends in memory, after the response is on the wire.</li>
-    <li>A background ticker (30 s) sends a session's new turns to Evolve's <code>process_trajectory</code> once it has been idle for <code>idle_after_seconds</code>, as one identified batch. Retried batches reuse their ID, so Evolve skips duplicates.</li>
+    <li><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L446-L471"><code>OnFinish</code></a> records each successful main-agent turn (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/trajectory.go#L60-L117">recorder</a>) into a per-session recorder. It only appends in memory, after the response is on the wire.</li>
+    <li>A <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L498-L544">background ticker</a> (30 s) sends a session's new turns to Evolve's <code>process_trajectory</code> once it has been idle for <code>idle_after_seconds</code>, as one identified batch. Retried batches reuse their ID, so Evolve skips duplicates.</li>
   </ul>
   <h3>Configuration surface</h3>
-  <p>Sixteen fields, all optional except <code>endpoint</code>, validated with <code>DisallowUnknownFields</code>. <code>inject</code> and <code>learn</code> each switch half of the plugin off; <code>on_error: observe</code> computes and publishes the event without changing bytes. Full table in <code>docs/evolve-plugin.md</code>.</p>
+  <p><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L46-L63">Sixteen fields</a>, all optional except <code>endpoint</code>, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L99-L121">validated</a> with <code>DisallowUnknownFields</code>. <code>inject</code> and <code>learn</code> each switch half of the plugin off; <code>on_error: observe</code> computes and publishes the event without changing bytes. Full table in <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md#L122-L139"><code>docs/evolve-plugin.md</code></a>.</p>
 </section>
 
 <section class="card" id="apis">
   <h2>Cortex APIs it relies on</h2>
-  <p>The plugin imports only <code>core/pipeline</code> and <code>core/plugins</code>. Every symbol it uses exists on main at the merge base; none was added for it.</p>
+  <p>The plugin imports only <a href="https://github.com/rossoctl/cortex/tree/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/core/pipeline"><code>core/pipeline</code></a> and <a href="https://github.com/rossoctl/cortex/tree/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/core/plugins"><code>core/plugins</code></a>. Every symbol it uses exists on main at the merge base; none was added for it.</p>
   <table>
     <tr><th>Area</th><th>Used</th></tr>
-    <tr><td>Plugin contract</td><td><code>Plugin</code>, <code>PluginCapabilities</code> (<code>ReadsBody</code>, <code>WritesRequestBody</code>, <code>RequiresAny: inference-parser</code>), <code>SchemaProvider</code>, <code>RawConfigProvider</code>, <code>MetricsProvider</code></td></tr>
-    <tr><td>Request context</td><td><code>Body</code>, <code>SetBody</code>, <code>BodyMutated</code>, <code>Headers</code>, <code>Path</code>, <code>Session</code>, <code>Subagent</code>, <code>ClientInfo</code>, <code>Outcome</code>, <code>Skip</code></td></tr>
+    <tr><td>Plugin contract</td><td><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L171-L178">Declared here</a>: <code>Plugin</code>, <code>PluginCapabilities</code> (<code>ReadsBody</code>, <code>WritesRequestBody</code>, <code>RequiresAny: inference-parser</code>), <code>SchemaProvider</code>, <code>RawConfigProvider</code>, <code>MetricsProvider</code></td></tr>
+    <tr><td>Request context</td><td><code>Body</code>, <a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/core/pipeline/context.go#L821"><code>SetBody</code></a>, <code>BodyMutated</code>, <code>Headers</code>, <code>Path</code>, <code>Session</code>, <code>Subagent</code>, <code>ClientInfo</code>, <code>Outcome</code>, <code>Skip</code></td></tr>
     <tr><td>Parsed inference</td><td><code>InferenceExtension</code> (messages, tools, tool calls, tool results, agent role, completion, model) from <code>inference-parser</code></td></tr>
-    <tr><td>Events</td><td><code>Extensions.Custom[name + PluginEventSuffix]</code>, the pattern <code>sparc</code> and <code>body-mutation</code> already use</td></tr>
+    <tr><td>Events</td><td><code>Extensions.Custom[name + </code><a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/core/pipeline/extensions.go#L55"><code>PluginEventSuffix</code></a><code>]</code>, the pattern <a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/core/plugins/sparc/plugin.go"><code>sparc</code></a> and <code>body-mutation</code> already use</td></tr>
   </table>
   <p>The plugin implements <code>OnRequest</code> (inject), <code>OnResponse</code> (no-op) and <code>OnFinish</code> (record), plus <code>Init</code>/<code>Shutdown</code> for the learning loop.</p>
 </section>
@@ -230,36 +233,36 @@ sed -i '' 's/^package main$/package all/' core/plugins/all/plugins_evolve.go
   <h2>Safety properties</h2>
   <table>
     <tr><th>Property</th><th>How</th></tr>
-    <tr><td><b>Fails open</b></td><td>Evolve down, slow (<code>timeout_ms</code>, default 3 s, paid once per session) or erroring: the request goes upstream unchanged and <code>fetch errors</code> is counted. A panic in <code>OnRequest</code> is recovered and the original body forwarded. A session keeps its last good guidelines through a failed refresh.</td></tr>
-    <tr><td><b>Review gate</b></td><td>Learned guidelines go to <code>learn_namespace</code> (default <code>cortex-candidates</code>), which is never injected from. Only <code>serve_namespace</code> (default <code>cortex</code>) is served, and config validation refuses the two being equal. A person promotes candidates by copying them across.</td></tr>
+    <tr><td><b>Fails open</b></td><td>Evolve down, slow (<code>timeout_ms</code>, default 3 s, paid once per session) or erroring: the request goes upstream unchanged and <code>fetch errors</code> is counted. A panic in <code>OnRequest</code> is <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L296-L302">recovered</a> and the original body forwarded. A session <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L409-L413">keeps its last good guidelines</a> through a failed refresh.</td></tr>
+    <tr><td><b>Review gate</b></td><td>Learned guidelines go to <code>learn_namespace</code> (default <code>cortex-candidates</code>), which is never injected from. Only <code>serve_namespace</code> (default <code>cortex</code>) is served, and <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L103-L105">config validation refuses the two being equal</a>. A person promotes candidates by copying them across.</td></tr>
     <tr><td><b>Prompt-injection containment</b></td><td>Session content includes tool output the agent read. Without the gate, text an attacker planted in a web page could become a permanent instruction. Conflict resolution also runs per namespace, so a learned trajectory can't rewrite a reviewed guideline.</td></tr>
-    <tr><td><b>Block can't be forged</b></td><td>Guideline text is stripped of anything resembling the block's open or close tag, so content can't end the block early or start a second one.</td></tr>
-    <tr><td><b>No learning loop on itself</b></td><td>Recorded turns have <code>&lt;system-reminder&gt;</code> and <code>&lt;evolve-guidelines&gt;</code> blocks removed, so Evolve never learns from its own injected text or harness context.</td></tr>
-    <tr><td><b>Its own traffic isn't recorded</b></td><td>The MCP client's transport has <code>Proxy: nil</code>, so it never goes back through Cortex as <code>HTTPS_PROXY</code>, and it sets <code>X-Evolve-Cortex</code> as a second guard.</td></tr>
-    <tr><td><b>Bounded memory</b></td><td><code>max_sessions</code> (1024) caps cached and recording sessions; tool results are truncated to 4 KB and user text to 8 KB per message; pending messages per session are capped at 400.</td></tr>
+    <tr><td><b>Block can't be forged</b></td><td>Guideline text is <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/inject.go#L48-L50">stripped</a> of anything resembling the block's open or close tag, so content can't end the block early or start a second one.</td></tr>
+    <tr><td><b>No learning loop on itself</b></td><td>Recorded turns have <code>&lt;system-reminder&gt;</code> and <code>&lt;evolve-guidelines&gt;</code> blocks <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/trajectory.go#L18-L25">removed</a>, so Evolve never learns from its own injected text or harness context.</td></tr>
+    <tr><td><b>Its own traffic isn't recorded</b></td><td>The MCP client's transport has <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/client.go#L102"><code>Proxy: nil</code></a>, so it never goes back through Cortex as <code>HTTPS_PROXY</code>, and it sets <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/client.go#L67"><code>X-Evolve-Cortex</code></a> as a second guard.</td></tr>
+    <tr><td><b>Bounded memory</b></td><td><code>max_sessions</code> (1024) caps cached and recording sessions; <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/trajectory.go#L10-L16">tool results are truncated</a> to 4 KB and user text to 8 KB per message; pending messages per session are capped at 400.</td></tr>
     <tr><td><b>Prompt cache intact</b></td><td>Byte-stable block, appended after any <code>cache_control</code> breakpoint, so the cached prefix is unchanged.</td></tr>
   </table>
-  <div class="callout caution"><span class="icon">!</span><div><p><b>Known limits, documented in <code>docs/evolve-plugin.md</code>.</b> Evolve's MCP server has no authentication, so it must bind to loopback on a single-user machine. A shared or remote Cortex needs an authenticated Evolve first. Unsent turns are in memory and are lost on restart. Session content goes to Evolve's LLM unredacted unless Evolve's own hooks are configured.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Known limits, documented in <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md#L161-L177"><code>docs/evolve-plugin.md</code></a>.</b> Evolve's MCP server has no authentication, so it must bind to loopback on a single-user machine. A shared or remote Cortex needs an authenticated Evolve first. Unsent turns are in memory and are lost on restart. Session content goes to Evolve's LLM unredacted unless Evolve's own hooks are configured.</p></div></div>
 </section>
 
 <section class="card" id="evolve">
   <h2>Evolve side</h2>
-  <p><b>The Cortex plugin needs no Evolve changes.</b> Since <code>122970b3</code> it uses four tools a stock <code>evolve-mcp --transport sse</code> server already exposes:</p>
+  <p><b>The Cortex plugin needs no Evolve changes.</b> Since <a href="https://github.com/vinodmut/cortex/commit/122970b3"><code>122970b3</code></a> it uses four tools a stock <code>evolve-mcp --transport sse</code> server already exposes:</p>
   <table>
     <tr><th>Purpose</th><th>Tool</th></tr>
-    <tr><td>Find guidelines relevant to the task</td><td><code>get_guidelines_with_attribution</code> (with <code>EVOLVE_INJECTION_MODE=retrieval</code>)</td></tr>
-    <tr><td>Read their text and provenance</td><td><code>list_entities</code></td></tr>
-    <tr><td>Create the plugin's processing profile once</td><td><code>ensure_processing_profile</code></td></tr>
-    <tr><td>Learn from a batch of turns</td><td><code>process_trajectory</code></td></tr>
+    <tr><td>Find guidelines relevant to the task</td><td><a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/frontend/mcp/mcp_server.py#L436"><code>get_guidelines_with_attribution</code></a> (with <code>EVOLVE_INJECTION_MODE=retrieval</code>)</td></tr>
+    <tr><td>Read their text and provenance</td><td><a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/frontend/mcp/mcp_server.py#L552"><code>list_entities</code></a></td></tr>
+    <tr><td>Create the plugin's processing profile once</td><td><a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/frontend/mcp/mcp_server.py#L1558"><code>ensure_processing_profile</code></a></td></tr>
+    <tr><td>Learn from a batch of turns</td><td><a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/frontend/mcp/mcp_server.py#L1569"><code>process_trajectory</code></a></td></tr>
   </table>
-  <p>The Evolve branch (<code>vinodmut/altk-evolve · rossocortex</code>) has six library commits. They fall into three groups:</p>
+  <p>The Evolve branch (<a href="https://github.com/vinodmut/altk-evolve/tree/rossocortex"><code>vinodmut/altk-evolve · rossocortex</code></a>) has six library commits. They fall into three groups:</p>
   <table>
     <tr><th>Group</th><th>Commits</th><th>Needed by the plugin?</th></tr>
-    <tr><td><b>Learning quality</b>: keep tool results, user corrections, tool definitions and delayed results in the prompt Evolve builds from a trajectory</td><td><code>91143f06</code>, <code>95c177f6</code></td><td>No, but it makes Cortex-sourced learning much better. Before <code>91143f06</code>, the guideline prompt dropped tool outputs entirely, so a session's errors were invisible to the learner.</td></tr>
-    <tr><td><b>Pull-based ingestion</b>: <code>evolve sync cortex</code> reads sessions from Cortex's session API</td><td><code>3d764aab</code></td><td>No. An alternative to the plugin's push path; the demos use it to learn from a specific session</td></tr>
-    <tr><td><b>Superseded</b>: an authenticated REST API for Cortex and a candidate/active/retired lifecycle</td><td><code>503ce71b</code>, <code>c52867c2</code></td><td>No. Built for an earlier design and kept on the branch</td></tr>
+    <tr><td><b>Learning quality</b>: keep tool results, user corrections, tool definitions and delayed results in the prompt Evolve builds from a trajectory</td><td><a href="https://github.com/vinodmut/altk-evolve/commit/91143f06"><code>91143f06</code></a>, <a href="https://github.com/vinodmut/altk-evolve/commit/95c177f6"><code>95c177f6</code></a></td><td>No, but it makes Cortex-sourced learning much better. Before <a href="https://github.com/vinodmut/altk-evolve/commit/91143f06"><code>91143f06</code></a>, the guideline prompt dropped tool outputs entirely (the fix pairs each action with its result in <a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/llm/guidelines/context.py#L30"><code>render_action_with_result</code></a>), so a session's errors were invisible to the learner.</td></tr>
+    <tr><td><b>Pull-based ingestion</b>: <a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/sync/cortex_sync.py"><code>evolve sync cortex</code></a> reads sessions from Cortex's session API</td><td><a href="https://github.com/vinodmut/altk-evolve/commit/3d764aab"><code>3d764aab</code></a></td><td>No. An alternative to the plugin's push path; the demos use it to learn from a specific session</td></tr>
+    <tr><td><b>Superseded</b>: an authenticated REST API for Cortex and a candidate/active/retired lifecycle</td><td><a href="https://github.com/vinodmut/altk-evolve/commit/503ce71b"><code>503ce71b</code></a>, <a href="https://github.com/vinodmut/altk-evolve/commit/c52867c2"><code>c52867c2</code></a></td><td>No. Built for an earlier design and kept on the branch</td></tr>
   </table>
-  <p>Evolve also has a default worth changing: it renders at most 50 steps of a Cortex session (the first 40 and last 10). A coding session runs longer than that, and its middle, often where the errors are, gets dropped. The demos raise it to 150 through the plugin's processing profile.</p>
+  <p>Evolve also has a default worth changing: it renders at most <a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/processing/builtin.py#L39">50 steps</a> of a Cortex session (<a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/altk_evolve/processing/builtin.py#L119-L124">the first 40 and last 10</a>). A coding session runs longer than that, and its middle, often where the errors are, gets dropped. The demos raise it to 150 through the <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/client.go#L70-L77">plugin's processing profile</a>.</p>
 </section>
 
 <section class="card" id="asks">
@@ -267,24 +270,24 @@ sed -i '' 's/^package main$/package all/' core/plugins/all/plugins_evolve.go
   <h3>For the Cortex team</h3>
   <ol>
     <li><b>Is a plugin in the main repo the right home?</b> Or would you rather it live out of tree? It has no core dependencies beyond the plugin contract.</li>
-    <li><b>Profile membership:</b> is <code>full</code>/<code>fullcpex</code> right, or should it stay out of every default profile until it leaves Alpha?</li>
-    <li><b>Default placement:</b> should <code>placement: user</code> become the default? Results so far favour it: in a 28-session experiment, wrong-path reads fell from 6/11 to 0/11. But it edits user content rather than system instructions, which you may prefer to keep opt-in.</li>
+    <li><b><a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/scripts/profile-tags/profiles.go#L72-L75">Profile membership</a>:</b> is <code>full</code>/<code>fullcpex</code> right, or should it stay out of every default profile until it leaves Alpha?</li>
+    <li><b>Default placement:</b> should <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L52"><code>placement: user</code></a> become the default? Results so far favour it: in a <a href="https://github.com/vinodmut/altk-evolve/blob/5448f1f58311/demos/cortex-invoices/placement.md">28-session experiment</a>, wrong-path reads fell from 6/11 to 0/11. But it edits user content rather than system instructions, which you may prefer to keep opt-in.</li>
     <li><b>Session archive location</b> (<a href="https://github.com/rossoctl/cortex/issues/1689">#1689</a>): would make side-by-side and demo setups much simpler, without touching the plugin.</li>
-    <li><b>Ordering with <code>context-guru</code>:</b> it can compact the injected block away. Is "place evolve after it" in the docs enough, or should the plugin declare an ordering?</li>
+    <li><b>Ordering with <a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/core/plugins/contextguru/plugin.go"><code>context-guru</code></a>:</b> it (<a href="https://github.com/rossoctl/context-guru">rossoctl/context-guru</a>, <a href="https://github.com/rossoctl/cortex/blob/8b0facd5c5cb9d5b58b9ef256ab369c724f19422/docs/plugin-catalog.md#L26">catalog</a>) can compact the injected block away; the <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md#L177">plugin docs</a> say to place evolve after it. Is that enough, or should the plugin declare an ordering?</li>
   </ol>
   <h3>Design of the loop</h3>
   <ol start="6">
     <li><b>Should there be a manual review gate, or should learnings apply automatically?</b>
-      <br><i>Today:</i> manual. Nothing learned is injected until a person copies it from <code>cortex-candidates</code> to <code>cortex</code>.
+      <br><i>Today:</i> manual (<a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/docs/evolve-plugin.md#L23-L44">docs</a>). Nothing learned is injected until a person copies it from <code>cortex-candidates</code> to <code>cortex</code>.
       <br><i>Trade-off:</i> the gate stops text from tool output (a fetched web page, a file the agent read) becoming a standing instruction for every later session, which is the main prompt-injection risk. It also costs a person's attention, and in the experiments some candidates were generic and worth rejecting. Automatic application would need another safeguard: shadow A/B gating (below), automatic expiry, or a trust signal on where the content came from.</li>
     <li><b>Should the manual review happen in Cortex or in Evolve?</b>
       <br><i>Today:</i> in Evolve. The plugin only reads and writes Evolve namespaces; review is an Evolve CLI copy between them.
       <br><i>Trade-off:</i> in Evolve, the review is the same for every client of Evolve, not just Cortex, and Cortex stays a thin client. In Cortex, it could sit in agentop next to the session a candidate came from, so a reviewer sees the evidence and approves in one place, but Cortex would then own guideline state. A middle option: agentop shows candidates and their source sessions, and the approve action calls Evolve.</li>
     <li><b>Should trajectories be sent on idle, or at some other time?</b>
-      <br><i>Today:</i> after a session has been idle for <code>idle_after_seconds</code> (default 15 minutes), checked every 30 seconds; a resumed session later sends only its new turns.
+      <br><i>Today:</i> after a session has been idle for <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L60"><code>idle_after_seconds</code></a> (default 15 minutes), checked <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L163">every 30 seconds</a>; a resumed session later sends only its new turns.
       <br><i>Trade-off:</i> idle is a cheap signal that a task is probably finished, needs nothing from the agent, and batches the turns. But it is a guess: a long pause mid-task splits one task in two, and turns not yet sent are lost if Cortex restarts. Alternatives: on an explicit signal (session end, the agent's own "done", a commit or a PR), on a turn or size threshold, or at a fixed time.</li>
     <li><b>Should guidelines be retrieved once per session, or at another granularity?</b>
-      <br><i>Today:</i> once, matched to the session's first user message, then cached for <code>cache_ttl_seconds</code> so every turn adds identical bytes and the prompt cache keeps hitting.
+      <br><i>Today:</i> once, <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/inject.go#L199-L216">matched to the session's first user message</a>, then cached for <a href="https://github.com/vinodmut/cortex/blob/ab08dda394e161f3806035817d38fedab5254c41/core/plugins/evolve/plugin.go#L58"><code>cache_ttl_seconds</code></a> so every turn adds identical bytes and the prompt cache keeps hitting.
       <br><i>Trade-off:</i> once per session is cheap and cache-friendly, but a session that changes task midway keeps guidelines chosen for its opening message. Finer options cost cache hits or need a trigger: per user turn (re-match when the user gives a new instruction), just-in-time (add a guideline on the request after a tool error matching its trigger), or per tool (attach guidance to the tool about to be used).</li>
   </ol>
   <h3>Not yet built</h3>
