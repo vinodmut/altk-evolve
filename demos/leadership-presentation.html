@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agents that learn from their own mistakes</title>
+<style>
+:root {
+  --bg: #0f1218; --slide: #14171f; --ink: #f4f5f8; --ink-2: #c3c7d2; --muted: #8b91a1; --line: #2a2f3b;
+  --is: #d95926; --could: #3987e5; --good: #4cc38a; --warn: #e9b35a; --panel: #1c2029;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+.deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.slide { position: absolute; inset: 0; display: none; padding: 6vh 7vw 9vh; background: var(--slide); flex-direction: column; justify-content: center; }
+.slide.on { display: flex; }
+.kicker { font-size: 1.6vh; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 2.2vh; }
+.kicker.is { color: var(--is); } .kicker.could { color: var(--could); } .kicker.turn { color: var(--warn); } .kicker.bliss { color: var(--good); }
+h1 { font-size: 6.4vh; line-height: 1.08; margin: 0 0 2.4vh; letter-spacing: -.01em; }
+h2 { font-size: 5vh; line-height: 1.12; margin: 0 0 3vh; letter-spacing: -.01em; max-width: 80vw; }
+p, li { font-size: 3vh; line-height: 1.45; color: var(--ink-2); }
+ul { margin: 0; padding-left: 2.2vw; } li { margin: 1.1vh 0; }
+b, strong { color: var(--ink); }
+.lede { font-size: 3.2vh; max-width: 70vw; }
+.big { font-size: 4.2vh; line-height: 1.3; color: var(--ink); max-width: 76vw; }
+.small { font-size: 2vh; color: var(--muted); }
+.grow { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw; align-items: start; }
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 1.4vh; padding: 2.4vh 1.6vw; }
+.card h3 { margin: 0 0 1.2vh; font-size: 2.6vh; }
+.card.is { border-top: 4px solid var(--is); } .card.could { border-top: 4px solid var(--could); }
+.card.good { border-top: 4px solid var(--good); } .card.warn { border-top: 4px solid var(--warn); } .card.muted { border-top: 4px solid var(--muted); }
+.card li, .card p { font-size: 2.6vh; }
+.tag { display: inline-block; font-size: 1.6vh; font-weight: 700; border-radius: 99px; padding: .3vh .8vw; margin-right: .6vw; }
+.tag.is { background: rgba(217,89,38,.16); color: var(--is); } .tag.could { background: rgba(57,135,229,.16); color: var(--could); }
+pre.tl { margin: 0; background: #0b0d12; border: 1px solid var(--line); border-radius: 1.2vh; padding: 2.4vh 1.6vw; font: 2.15vh/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color: #dfe3ea; overflow: hidden; white-space: pre; }
+pre.tl .x { color: #ff8f84; } pre.tl .r { color: #f6c177; } pre.tl .ok { color: #7ee2a8; } pre.tl .dim { color: #6f7686; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 1.6vh 1vw; border-bottom: 1px solid var(--line); font-size: 2.6vh; vertical-align: top; }
+th { color: var(--muted); font-size: 1.7vh; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+td { color: var(--ink-2); } td b { color: var(--ink); }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1vw; margin: 3vh 0; }
+.flow div { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 1.2vh; padding: 2vh 1vw; font-size: 2.1vh; color: var(--ink-2); }
+.flow div b { display: block; font-size: 2.5vh; margin-bottom: .6vh; }
+.flow div:not(:last-child)::after { content: "→"; position: absolute; right: -1vw; top: 50%; transform: translate(50%, -50%); color: var(--muted); font-size: 2.6vh; }
+.star { text-align: center; }
+.bars { display: flex; justify-content: center; align-items: flex-end; gap: 8vw; height: 50vh; margin: 2vh 0 1vh; }
+.bar { width: 14vw; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.bar .col { width: 100%; border-radius: 1vh 1vh 0 0; border-bottom: 2px solid var(--muted); }
+.bar .val { font-size: 9vh; font-weight: 800; margin-bottom: 1vh; line-height: 1; }
+.bar .lab { font-size: 2.2vh; color: var(--ink-2); margin-top: 1.4vh; text-align: center; line-height: 1.35; }
+.baseline { width: 40vw; height: 2px; background: var(--muted); margin: 0 auto; }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; margin: 2vh 0; }
+.kpi { background: var(--panel); border-radius: 1.4vh; padding: 2.4vh 1.6vw; border: 1px solid var(--line); }
+.kpi span { display: block; font-size: 1.8vh; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.kpi b { font-size: 5.4vh; letter-spacing: -.01em; }
+.kpi em { font-style: normal; color: var(--muted); font-size: 2.1vh; }
+.quote { font-size: 3.6vh; line-height: 1.35; border-left: 4px solid var(--good); padding-left: 1.6vw; color: var(--ink); max-width: 72vw; }
+.foot { position: absolute; left: 7vw; right: 7vw; bottom: 3.2vh; display: flex; justify-content: space-between; font-size: 1.6vh; color: var(--muted); }
+.progress { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--could); transition: width .2s; }
+.notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; background: #f4f5f8; color: #15171d; padding: 2vh 3vw; font-size: 2vh; line-height: 1.5; display: none; z-index: 10; border-top: 4px solid var(--warn); }
+.notes.on { display: block; }
+.notes b { color: #15171d; }
+.help { position: fixed; top: 1.6vh; right: 1.6vw; font-size: 1.5vh; color: var(--muted); z-index: 5; }
+.wip { display: inline-block; align-self: flex-start; margin-top: 3vh; font-size: 2vh; font-weight: 700; color: var(--warn); border: 1px solid var(--warn); border-radius: 99px; padding: .5vh 1.2vw; }
+@media print {
+  .slide { display: flex !important; position: relative; height: 100vh; page-break-after: always; }
+  .help, .progress, .notes { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 · Title -->
+<section class="slide" data-notes="This is early. I want your read on direction, not sign-off on a product. Everything I show you is from real recorded runs; where the evidence is thin, I'll say so.">
+  <div class="grow">
+    <div class="kicker could">Work in progress · Cortex + Evolve</div>
+    <h1>Agents that learn<br>from their own mistakes</h1>
+    <p class="lede">Making every coding agent we use get better from the sessions it has already had, at the proxy we already run.</p>
+    <span class="wip">Early results · open questions · your direction wanted</span>
+  </div>
+</section>
+
+<!-- 2 · What is: every session starts from zero -->
+<section class="slide" data-notes="Read the timeline. The agent does the work, commits, and the repository's own checks reject it: no changelog entry, no version bump. It fixes both and commits again. Nothing about this was in the task. It will happen again tomorrow, for the next developer, on the next agent. That's the problem in one picture.">
+  <div class="kicker is">What is</div>
+  <h2>Every agent session starts from zero</h2>
+  <div class="cols" style="grid-template-columns:1fr 1.15fr">
+    <div>
+      <ul>
+        <li>Coding agents don't remember what went wrong yesterday, or what <b>another developer's agent</b> already worked out.</li>
+        <li>Every repository has rules no prompt mentions: how to run tests, generate code, version a client, word a commit.</li>
+        <li>Today we write these down by hand, if at all, and they go stale.</li>
+      </ul>
+    </div>
+    <pre class="tl"><span class="dim">A real recorded session (Sonnet 4.5)
+
+ 37  Bash  git add schema/… clients/… migrations/…</span>
+ 38  <span class="x">✗</span> git commit -m "Add optional locale field…"
+     <span class="r">→ changed without an entry in CHANGES.md</span>
+     <span class="r">→ bump clients/python/VERSION</span>
+<span class="dim"> 40  Edit  ./CHANGES.md
+ 43  Edit  ./clients/python/VERSION</span>
+ 45  <span class="x">✗</span> git commit -m "Add optional locale field…"
+     <span class="r">→ subject must be a Conventional Commit</span>
+ 46    git commit -m "<span class="ok">feat(users): add … locale field</span>"</pre>
+  </div>
+</section>
+
+<!-- 3 · What is: what it costs -->
+<section class="slide" data-notes="We don't have org-wide numbers yet, and I'm not going to invent them. What we can say: the waste scales with adoption. Every session that rediscovers a rule pays for it in steps, tokens and time, and the knowledge never compounds. [If you have it: sessions per week × typical wasted steps.]">
+  <div class="kicker is">What is</div>
+  <h2>We pay for the same mistakes, again and again</h2>
+  <div class="cols3">
+    <div class="card is"><h3>Wasted work</h3><p>Repeated tool calls, tokens and minutes per task, on things another session already learned.</p></div>
+    <div class="card is"><h3>Rework</h3><p>Rejected commits and wrong conventions that a reviewer or a hook has to catch.</p></div>
+    <div class="card is"><h3>Knowledge that doesn't compound</h3><p>What one agent works out stays in that one session.</p></div>
+  </div>
+  <p class="big" style="margin-top:5vh">The cost grows with every agent we adopt.</p>
+</section>
+
+<!-- 4 · Call to adventure -->
+<section class="slide" data-notes="This is the shift. Not smarter agents in general, but agents that get smarter here, in our repositories, with our conventions, without anyone doing extra work.">
+  <div class="grow">
+    <div class="kicker turn">What could be</div>
+    <h1>Learn once.<br>Every agent knows.</h1>
+    <p class="lede">When an agent hits a problem and works it out, every agent, in every later session, starts already knowing. Nobody writes it down, grades it, or changes how they work.</p>
+  </div>
+</section>
+
+<!-- 5 · Why us, why now -->
+<section class="slide" data-notes="We're not starting from scratch. Cortex already sits in front of every coding agent we use and sees every request and tool result. Evolve already turns agent sessions into reusable guidelines. Joining them closes the loop. The contrast matters: each vendor is building memory into its own tool; we use several, and our conventions are ours.">
+  <div class="kicker could">Why us · why now</div>
+  <h2>We already sit in the right place</h2>
+  <div class="flow">
+    <div><b>Agent works</b>Claude Code, Codex, Bob…</div>
+    <div><b>Cortex records</b>every request and tool result</div>
+    <div><b>Evolve learns</b>a guideline, with no grading</div>
+    <div><b>A person approves</b>the review gate</div>
+    <div><b>Cortex injects</b>into the next session</div>
+  </div>
+  <div class="cols">
+    <div class="card is"><span class="tag is">Is</span><p style="margin-top:1vh">Each vendor's memory, inside its own tool, for its own users.</p></div>
+    <div class="card could"><span class="tag could">Could be</span><p style="margin-top:1vh">One learning layer across every agent we use, holding knowledge that is ours.</p></div>
+  </div>
+</section>
+
+<!-- 6 · How it works -->
+<section class="slide" data-notes="Keep this light. The point is that it's safe to try: it doesn't touch the agents or Cortex's core, it does nothing until turned on, and if Evolve is down the agent works exactly as before. The review gate matters because sessions include web pages and files the agent read; without it, text from a malicious page could become a standing instruction.">
+  <div class="kicker could">How it works</div>
+  <h2>Built to be safe to try</h2>
+  <div class="cols3">
+    <div class="card could"><h3>Isolated</h3><p>One plugin inside Cortex. No changes to the agents, and no changes to Cortex's core.</p></div>
+    <div class="card could"><h3>Fails open</h3><p>If Evolve is down or slow, requests go through unchanged. Inert until turned on; removed with one config line.</p></div>
+    <div class="card could"><h3>Reviewed</h3><p>Nothing learned is used until a person approves it, so text from a malicious page can't become a permanent instruction.</p></div>
+  </div>
+</section>
+
+<!-- 7 · STAR moment -->
+<section class="slide star" data-notes="Pause here. We gave agents a correct guideline and it did nothing: 6 of 11 runs still made the mistake, no better than giving them nothing. We moved the same words from the end of the system prompt to the start of the user's first message. The mistake disappeared, 0 of 11. Same words, different place. Most efforts at 'AI memory' would have stopped at 'it doesn't work'. [Don't add more data to this slide.]">
+  <div class="kicker could">What we learned first</div>
+  <h2 style="margin:0 auto 1vh">Same words. Different place.</h2>
+  <div class="bars" role="img" aria-label="Runs that still made the mistake: 6 of 11 with the guideline at the end of the system prompt, 0 of 11 with it in the first user message">
+    <div class="bar"><div class="val" style="color:var(--is)">6/11</div><div class="col" style="height:30vh;background:var(--is)"></div><div class="lab">Guideline at the end of<br>the system prompt</div></div>
+    <div class="bar"><div class="val" style="color:var(--could)">0/11</div><div class="col" style="height:.6vh;background:var(--could)"></div><div class="lab">Same guideline in the<br>user's first message</div></div>
+  </div>
+  <p class="small" style="margin-top:2.4vh">Runs that still made the mistake · 28 recorded sessions · no guideline at all: 3 of 6</p>
+</section>
+
+<!-- 8 · One lesson end to end -->
+<section class="slide" data-notes="One lesson, all the way through. Training session: rejected twice by the repo's hooks. Evolve learns 'read all the hook requirements before committing' with nobody grading it. A person approves it. A new session, doing a different change, reads the hooks first and commits first time. This is the best pair we have; the next slide is the honest average.">
+  <div class="kicker could">What could be, shown</div>
+  <h2>One lesson, end to end</h2>
+  <div class="cols" style="grid-template-columns:1fr 1fr">
+    <div>
+      <ul>
+        <li><b>The agent</b> is rejected twice by the repository's hooks.</li>
+        <li><b>Evolve learns</b>, with no grading: <i>"read all hook requirements before committing"</i>.</li>
+        <li><b>A person</b> approves it.</li>
+        <li><b>A new session</b>, on a different change, reads the hooks first and commits first time.</li>
+      </ul>
+    </div>
+    <pre class="tl"><span class="dim">Guided session, same task as slide 2</span>
+
+ 30    Bash  <span class="ok">ls -la .githooks/</span>
+ 31    Read  <span class="ok">.githooks/pre-commit</span>
+ 32    Read  <span class="ok">.githooks/commit-msg</span>
+ 34    Edit  ./CHANGES.md
+ 35    Edit  ./clients/python/VERSION
+ 38    git commit -m "<span class="ok">feat(users): …</span>"
+<span class="dim">       accepted on the first try</span></pre>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span>Rejected commits</span><b>2 → 0</b></div>
+    <div class="kpi"><span>Tool calls</span><b>56 → 41</b> <em>−27%</em></div>
+    <div class="kpi"><span>Cost for the task</span><b>$0.32 → $0.19</b> <em>−42%</em></div>
+  </div>
+</section>
+
+<!-- 9 · The evidence so far -->
+<section class="slide" data-notes="Here's everything, including where it didn't work. The direction is consistent; the size isn't established yet, and the samples are small. The invoice result is useful: the agents already got it right, so there was nothing to learn. That tells us which work benefits: tasks that depend on local knowledge the model can't guess.">
+  <div class="kicker is">What is, honestly</div>
+  <h2>The evidence so far</h2>
+  <table>
+    <tr><th>Experiment</th><th>Result</th><th>Read</th></tr>
+    <tr><td><b>Delivery</b> · 28 sessions</td><td>Wrong placement: no effect. Right placement: mistake gone (6/11 → 0/11)</td><td>Strong</td></tr>
+    <tr><td><b>Repository conventions</b> · 6 pairs</td><td>Committed first time 0/6 → 2/6 · rejected commits 12 → 7 · cost flat</td><td>Directional</td></tr>
+    <tr><td><b>Live run</b> · Nov 9</td><td>Baseline rejected once · guided committed first time</td><td>One pair</td></tr>
+    <tr><td><b>Billing workflow</b> · 6 cases, with feedback</td><td>Correct results 2/6 → 4/6</td><td>Directional</td></tr>
+    <tr><td><b>Invoice extraction</b></td><td>No gain: agents already got it right</td><td>Nothing to learn</td></tr>
+  </table>
+  <p class="small" style="margin-top:2.4vh">Small samples, synthetic tasks, one model family. Consistent in direction; size not yet established.</p>
+</section>
+
+<!-- 10 · Resistance -->
+<section class="slide" data-notes="Get ahead of the questions. Vendors: they learn inside their own tool; we use several, and our conventions are ours. Safety: review gate, fails open, local only today, and the open items are on the next slide. Real gain: directionally yes, statistically not yet; the pilot is how we find out. Developer effort: none.">
+  <div class="kicker is">The questions you're probably asking</div>
+  <h2>Before you ask</h2>
+  <div class="cols">
+    <div class="card muted"><h3>"Won't the vendors do this?"</h3><p>Each learns within its own tool. We use several, and our conventions are ours. A layer we control works across all of them.</p></div>
+    <div class="card muted"><h3>"Is it safe?"</h3><p>Review gate, fails open, local only today. The open security items are listed on slide 12, not hidden.</p></div>
+    <div class="card muted"><h3>"Is the gain real?"</h3><p>Directionally yes, statistically not yet. The pilot on slide 13 is how we find out.</p></div>
+    <div class="card muted"><h3>"Does it need developer effort?"</h3><p>No feedback, no grading, no prompt changes. Someone approves guidelines, and that step may become automatic.</p></div>
+  </div>
+</section>
+
+<!-- 11 · At scale -->
+<section class="slide" data-notes="Paint the picture at scale. The more we use agents, the more each session pays back, because what one learns, all of them know.">
+  <div class="kicker could">What could be, at scale</div>
+  <h2>The more we use agents, the more each session pays back</h2>
+  <div class="cols3">
+    <div class="card could"><h3>Conventions that stay current</h3><p>Every repository's rules, learned from the agents' own sessions, not from a document someone forgot to update.</p></div>
+    <div class="card could"><h3>Day-one expertise</h3><p>A new hire's agent works like a veteran's on the first day.</p></div>
+    <div class="card could"><h3>Less waste, everywhere</h3><p>Fewer wasted steps and rejected changes across every agent we license.</p></div>
+  </div>
+</section>
+
+<!-- 12 · Where we are -->
+<section class="slide" data-notes="Rough edges, plainly. The loop works end to end. The guidelines are useful but generic: they say how to recover, not what the rule is, which is why the average gain is modest. And there are design questions we're deciding with the Cortex team.">
+  <div class="kicker turn">Where we are</div>
+  <h2>Rough edges, stated plainly</h2>
+  <div class="cols3">
+    <div class="card good"><h3>Works</h3><ul><li>Record → learn → review → inject, end to end</li><li>Isolated plugin; fails open; review gate</li><li>Two Evolve fixes found and made along the way</li></ul></div>
+    <div class="card warn"><h3>Partly</h3><ul><li>Guidelines say how to recover, not what the rule is</li><li>Synthetic tasks, small samples</li><li>Review is a command-line step</li></ul></div>
+    <div class="card muted"><h3>Not yet</h3><ul><li>Automatic promotion behind an A/B check</li><li>Real repositories, real teams</li><li>UI in agentop; redaction; authentication</li></ul></div>
+  </div>
+  <p class="small" style="margin-top:2.4vh">Open with the Cortex team: manual or automatic review · where review lives · when sessions are learned from · how often guidelines are retrieved</p>
+</section>
+
+<!-- 13 · The ask -->
+<section class="slide" data-notes="Be specific. Pick the two or three you actually want and say who and how long. The pilot is the most important: it turns 'directional' into a number.">
+  <div class="kicker turn">The ask</div>
+  <h2>What I'm asking for</h2>
+  <div class="cols">
+    <div class="card could"><h3>A four-week pilot</h3><p>Two or three real repositories with opted-in teams, A/B compared: rejected changes, wasted steps and cost per task.</p></div>
+    <div class="card could"><h3>One engineer for a quarter</h3><p>Make guidelines repository-specific (the change most likely to turn "modest" into "clear"), and add the A/B gate.</p></div>
+    <div class="card could"><h3>Cortex team alignment</h3><p>On the plugin and the open design questions. Review meeting: &lt;date&gt;.</p></div>
+    <div class="card could"><h3>A decision owner for security</h3><p>Authentication, redaction and data handling, before anything leaves a laptop.</p></div>
+  </div>
+</section>
+
+<!-- 14 · New bliss -->
+<section class="slide" data-notes="Come back to the timeline from the start. The rejected commit is gone. Close with the big idea and the ask in one breath: our agents repeat the same mistakes; we can make them learn across every tool at the proxy we already run; let's prove it in a four-week pilot.">
+  <div class="kicker bliss">The future we're building</div>
+  <div class="cols" style="margin-top:1vh">
+    <pre class="tl"><span class="dim">Today</span>
+
+ 38  <span class="x">✗</span> git commit …
+     <span class="r">→ changed without an entry in CHANGES.md</span>
+     <span class="r">→ bump clients/python/VERSION</span>
+ 45  <span class="x">✗</span> git commit …
+     <span class="r">→ subject must be a Conventional Commit</span>
+ 46    git commit -m "feat(users): …"</pre>
+    <pre class="tl"><span class="dim">With what the last session learned</span>
+
+ 31    Read  <span class="ok">.githooks/pre-commit</span>
+ 32    Read  <span class="ok">.githooks/commit-msg</span>
+ 34    Edit  ./CHANGES.md
+ 35    Edit  ./clients/python/VERSION
+ 38    git commit -m "<span class="ok">feat(users): …</span>"
+<span class="dim">       accepted on the first try</span></pre>
+  </div>
+  <p class="quote" style="margin-top:5vh">Every mistake an agent makes here, it makes once.</p>
+</section>
+
+<div class="progress" id="progress"></div>
+<div class="foot"><span>Cortex + Evolve · work in progress</span><span id="count"></span></div>
+</div>
+<div class="help">← → slides · N notes · F full screen</div>
+<div class="notes" id="notes"></div>
+
+<script>
+const slides = [...document.querySelectorAll(".slide")];
+const notes = document.getElementById("notes");
+let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+function show(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle("on", k === i));
+  document.getElementById("count").textContent = `${i + 1} / ${slides.length}`;
+  document.getElementById("progress").style.width = `${((i + 1) / slides.length) * 100}%`;
+  notes.textContent = slides[i].dataset.notes || "";
+  history.replaceState(null, "", `#${i + 1}`);
+}
+document.addEventListener("keydown", (e) => {
+  if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+  else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+  else if (e.key === "Home") show(0);
+  else if (e.key === "End") show(slides.length - 1);
+  else if (e.key.toLowerCase() === "n") notes.classList.toggle("on");
+  else if (e.key.toLowerCase() === "f") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+});
+document.getElementById("deck").addEventListener("click", (e) => { if (!e.target.closest("a")) show(e.clientX > innerWidth / 2 ? i + 1 : i - 1); });
+show(i);
+</script>
+</body>
+</html>
