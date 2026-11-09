@@ -1,0 +1,55 @@
+{
+  "note": "First-request evolve attribution recorded by Cortex, and where the gateway bridge saw the guideline block, for the worked example's baseline-3 / guided-3 pair.",
+  "sessions": {
+    "baseline-3": {
+      "session_id": "04aa0aca-c73d-41cf-8dc6-fa01ad074227",
+      "first_request_seq": 1,
+      "first_request_bytes": 4007,
+      "plugins_evolve": null,
+      "evolve_invocation_reasons": [],
+      "bridge_delivery": {
+        "at": "2026-11-06T16:00:58.229918+00:00",
+        "session": "04aa0aca-c73d-41cf-8dc6-fa01ad074227",
+        "in_system": false,
+        "in_first_user": false
+      }
+    },
+    "guided-3": {
+      "session_id": "5fb6d627-01c4-4be9-9295-00f1eac2a476",
+      "first_request_seq": 1,
+      "first_request_bytes": 4955,
+      "plugins_evolve": {
+        "injected": true,
+        "ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "revisions": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "sources": [
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64",
+          "cortex:b590c2fc-9bd5-48f3-9544-50aa09efd72f:64"
+        ],
+        "cached": false,
+        "fetchedAt": "2026-11-06T16:05:45.982759273Z"
+      },
+      "evolve_invocation_reasons": [
+        "body_rewritten"
+      ],
+      "bridge_delivery": {
+        "at": "2026-11-06T16:05:46.063029+00:00",
+        "session": "5fb6d627-01c4-4be9-9295-00f1eac2a476",
+        "in_system": false,
+        "in_first_user": true
+      }
+    }
+  }
+}

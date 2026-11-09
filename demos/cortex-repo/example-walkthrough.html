@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One lesson, end to end: Cortex + Evolve example</title>
+<link rel="stylesheet" href="walkthrough.css">
+<style>
+.hop { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 14px; }
+.hop .dot { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: grid; place-items: center; }
+.who { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: 2px 10px; margin-bottom: 6px; }
+.who.cortex { color: var(--accent); background: var(--accent-soft); }
+.who.evolve { color: var(--good); background: var(--good-soft); }
+.who.person { color: var(--warn); background: var(--warn-soft); }
+.who.agent { color: var(--info); background: var(--info-soft); }
+pre.tl { margin: 10px 0; padding: 12px 14px; background: var(--code-bg); color: var(--code-ink); border-radius: 10px; overflow-x: auto; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+pre.tl .x { color: #f4a4a0; } pre.tl .r { color: #f6c177; } pre.tl .ok { color: #7ee2a8; } pre.tl .dim { color: var(--code-dim); }
+.vs { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.vs > div { min-width: 0; }
+.vs h4 { margin: 0 0 4px; font-size: 14.5px; }
+.score { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.score .s { background: var(--panel); border-radius: 12px; padding: 12px 14px; }
+.score .s span { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.score .s b { font-size: 20px; }
+.score .s em { font-style: normal; color: var(--muted); font-size: 13px; }
+blockquote.g { margin: 10px 0; padding: 10px 14px; border-left: 3px solid var(--good); background: var(--good-soft); border-radius: 0 10px 10px 0; color: var(--ink); }
+@media (max-width: 900px) { .score { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="hero-inner">
+  <span class="eyebrow">Worked example · recorded run</span>
+  <h1>One lesson, end to end</h1>
+  <p>A real recorded run: a coding agent gets its commit rejected, Cortex records it, Evolve turns it into a guideline with nobody grading anything, a person approves it, and Cortex hands it to a new session doing a different change. That session reads the hooks first and commits on the first try.</p>
+  <div class="facts">
+    <div class="fact"><span>Model</span><b>Claude Sonnet 4.5</b></div>
+    <div class="fact"><span>Sessions</span><b>Training + one pair</b></div>
+    <div class="fact"><span>Recorded</span><b>Nov 6, 2026</b></div>
+    <div class="fact"><span>Source</span><b>repo-conventions demo</b></div>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="Hops"><b>The hops</b><ol>
+  <li><a href="#setup"><span class="num">·</span>The setup</a></li>
+  <li><a href="#h1"><span class="num">1</span>Agent hits the hooks</a></li>
+  <li><a href="#h2"><span class="num">2</span>Cortex records it</a></li>
+  <li><a href="#h3"><span class="num">3</span>Evolve learns</a></li>
+  <li><a href="#h4"><span class="num">4</span>A person reviews</a></li>
+  <li><a href="#h5"><span class="num">5</span>Cortex injects</a></li>
+  <li><a href="#h6"><span class="num">6</span>The new session</a></li>
+  <li><a href="#result"><span class="num">=</span>Result</a></li>
+  <li class="extra"><a href="#honest"><span class="num">!</span>What this doesn't show</a></li>
+  <li><a href="#replay"><span class="num">↻</span>Replay it</a></li>
+</ol></nav>
+
+<main>
+
+<section class="card" id="setup">
+  <h2>The setup</h2>
+  <p><code>shopkit</code> is a small Python library. Its git hooks reject a commit unless it has a <code>CHANGES.md</code> entry, a bump of <code>clients/python/VERSION</code>, and a lower-case Conventional Commit subject (<code>feat(users): …</code>). <b>The task prompt mentions none of this.</b></p>
+  <p>Every session runs in a fresh clone, through Cortex with the <code>evolve</code> plugin (<code>placement: user</code>). Learning was triggered on the training session only; nothing from the evaluation sessions was learned.</p>
+  <table>
+    <tr><th>Session</th><th>Task</th><th>Guidelines</th></tr>
+    <tr><td>Training</td><td>Add <code>nickname</code> to users</td><td>none</td></tr>
+    <tr><td>Baseline</td><td>Add <code>locale</code> to users</td><td>none</td></tr>
+    <tr><td>Guided</td><td>Add <code>locale</code> to users (identical prompt)</td><td>the four promoted in hop 4</td></tr>
+  </table>
+</section>
+
+<section class="card" id="h1"><div class="hop"><span class="dot">1</span><div>
+  <span class="who agent">Claude Code</span>
+  <h2>The agent hits the hooks</h2>
+  <p>In training, the agent edits the schema, regenerates code, adds a migration, runs the checks, and commits. The hook rejects it. It fixes the changelog and version and is rejected again, this time for the subject format.</p>
+  <pre class="tl"><span class="dim"> 29    Bash  git add -A &amp;&amp; git status</span>
+ 30  <span class="x">✗</span> Bash  git commit -m "Add optional nickname field to users …"
+        <span class="r">→ pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'</span>
+        <span class="r">→ pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)</span>
+<span class="dim"> 31    Read  ./CHANGES.md
+ 33    Read  ./clients/python/VERSION
+ 34    Edit  ./CHANGES.md
+ 35    Edit  ./clients/python/VERSION</span>
+ 37  <span class="x">✗</span> Bash  git commit -m "Add optional nickname field to users …"
+        <span class="r">→ commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'</span>
+ 38    Bash  git commit -m "<span class="ok">feat(users): add optional nickname field</span> …"</pre>
+  <p class="note">Training session <code>b590c2fc</code>, 44 tool calls. Shown with the walkthrough's <code>timeline</code> helper.</p>
+</div></div></section>
+
+<section class="card" id="h2"><div class="hop"><span class="dot">2</span><div>
+  <span class="who cortex">Cortex · evolve plugin</span>
+  <h2>Cortex records the session</h2>
+  <p>On every successful main-agent turn, <code>OnFinish</code> folds the request's new messages, the reply, its tool calls and the next request's tool results into OpenAI chat messages, after the response is already on the wire. Errors are marked <code>[error]</code>, so the two rejections above are in the record exactly as the agent saw them.</p>
+  <p>When the session goes idle, the plugin sends its new turns to Evolve's stock <code>process_trajectory</code> tool as one identified batch, <code>cortex:b590c2fc…:64</code>. A retry reuses the ID, so Evolve won't learn the same turns twice.</p>
+  <div class="callout why"><span class="icon">i</span><div><p>Cortex strips <code>&lt;system-reminder&gt;</code> and <code>&lt;evolve-guidelines&gt;</code> blocks from what it records, so Evolve never learns from harness context or from its own earlier output.</p></div></div>
+</div></div></section>
+
+<section class="card" id="h3"><div class="hop"><span class="dot">3</span><div>
+  <span class="who evolve">Evolve</span>
+  <h2>Evolve learns, with no grading</h2>
+  <p>Evolve's learner reads the whole recorded session: every action paired with its result. Nobody says whether the run succeeded; the only signal is what happened. It wrote five candidates into the <code>cortex-candidates</code> namespace. The one tied to the rejections:</p>
+  <blockquote class="g">When commit hooks reject a commit, read the error message to identify all required companion changes (changelog, version bumps, commit format) before re-attempting</blockquote>
+  <table>
+    <tr><th>Field</th><th>What Evolve recorded</th></tr>
+    <tr><td>Rationale</td><td>"The agent initially committed without updating CHANGES.md or VERSION, triggering a pre-commit hook rejection. Then updated those files but still failed due to incorrect commit message format. Reading all hook requirements upfront would have avoided multiple failed commit attempts."</td></tr>
+    <tr><td>Category</td><td>recovery</td></tr>
+    <tr><td>Provenance</td><td>session <code>b590c2fc…</code>, batch <code>cortex:b590c2fc…:64</code></td></tr>
+  </table>
+  <div class="callout caution"><span class="icon">!</span><div><p>The first attempt at learning saw nothing about the hooks. Evolve renders at most 50 steps of a Cortex session (the first 40 and last 10), which dropped step 30's rejection. The demo raises the limit to 150.</p></div></div>
+</div></div></section>
+
+<section class="card" id="h4"><div class="hop"><span class="dot">4</span><div>
+  <span class="who person">A person</span>
+  <h2>A person reviews and promotes</h2>
+  <p>Nothing learned is served until someone copies it from <code>cortex-candidates</code> to the served namespace, <code>cortex</code>. This is the plugin's review gate. Session content includes tool output the agent read, so without it, text from a web page could become a permanent instruction.</p>
+  <p>Four of the five candidates were promoted unchanged:</p>
+  <ol>
+    <li>For code generation systems, always modify the source schema first, then run the generation tool, rather than manually editing generated files</li>
+    <li>When commit hooks reject a commit, read the error message to identify all required companion changes (changelog, version bumps, commit format) before re-attempting</li>
+    <li>For schema changes that add database columns, use the repository's migration tool to auto-generate the migration rather than writing SQL manually</li>
+    <li>After making changes to a schema-driven system, run the repository's consistency check tool before committing to catch mismatches between schema and derived artifacts</li>
+  </ol>
+  <p>The fifth, generic semantic-versioning advice, was left out.</p>
+</div></div></section>
+
+<section class="card" id="h5"><div class="hop"><span class="dot">5</span><div>
+  <span class="who cortex">Cortex · evolve plugin</span>
+  <h2>Cortex injects them into a new session</h2>
+  <p>A fresh session gets a different task: add <code>locale</code> to users. On its first request the plugin asks Evolve for guidelines matching the task, caches the answer for the session, and puts them in a <code>&lt;system-reminder&gt;</code> at the start of the first user message. Every later turn adds the same bytes, so the prompt cache keeps working.</p>
+  <p>What Cortex recorded on that first request, <code>plugins.evolve</code>:</p>
+  <pre class="out">{"injected": true, "ids": ["1","2","3","4"], "revisions": [1,1,1,1],
+ "sources": ["cortex:b590c2fc…:64", "cortex:b590c2fc…:64", "cortex:b590c2fc…:64", "cortex:b590c2fc…:64"],
+ "cached": false}</pre>
+  <p>Every ID traces back to the training batch in hop 2.</p>
+  <table>
+    <tr><th>Delivered to the model?</th><th>Baseline</th><th>Guided</th></tr>
+    <tr><td>Guideline block in the system prompt</td><td>no</td><td>no</td></tr>
+    <tr><td>Guideline block in the first user message</td><td>no</td><td><b>yes</b></td></tr>
+    <tr><td>First request size</td><td>4,007 bytes</td><td>4,955 bytes</td></tr>
+  </table>
+  <p class="note">Delivery is checked independently of Cortex's own report: a bridge after Cortex logged where the block appeared in the payload the gateway actually received.</p>
+</div></div></section>
+
+<section class="card" id="h6"><div class="hop"><span class="dot">6</span><div>
+  <span class="who agent">Claude Code</span>
+  <h2>The new session behaves differently</h2>
+  <p>Same prompt, same model, fresh clone, both sessions. The guided one opens the hooks before its first commit; the baseline finds them by being rejected, just as the training session did.</p>
+  <div class="vs">
+    <div><h4>Baseline · no guidelines</h4>
+    <pre class="tl"><span class="dim"> 37    Bash  git add schema/… shopkit/… clients/… migrations/…</span>
+ 38  <span class="x">✗</span> Bash  git commit -m "Add optional locale field to users …"
+        <span class="r">→ pre-commit: … without an entry in CHANGES.md …</span>
+        <span class="r">→ pre-commit: … bump clients/python/VERSION …</span>
+<span class="dim"> 39    Read  ./CHANGES.md
+ 40    Edit  ./CHANGES.md
+ 42    Read  ./clients/python/VERSION
+ 43    Edit  ./clients/python/VERSION</span>
+ 45  <span class="x">✗</span> Bash  git commit -m "Add optional locale field to users …"
+        <span class="r">→ commit-msg: subject must be a Conventional Commit …</span>
+ 46    Bash  git commit -m "<span class="ok">feat(users): add optional locale field</span> …"</pre></div>
+    <div><h4>Guided · four guidelines</h4>
+    <pre class="tl"><span class="dim"> 29    Read  ./CHANGES.md</span>
+ 30    Bash  <span class="ok">ls -la .githooks/</span>
+ 31    Read  <span class="ok">./.githooks/pre-commit</span>
+ 32    Read  <span class="ok">./.githooks/commit-msg</span>
+<span class="dim"> 33    Read  ./clients/python/VERSION</span>
+ 34    Edit  ./CHANGES.md
+ 35    Edit  ./clients/python/VERSION
+<span class="dim"> 36    Bash  git add schema/… clients/python/VERSION migrations/…
+ 37    Bash  git status</span>
+ 38    Bash  git commit -m "<span class="ok">feat(users): add optional locale field</span>"
+<span class="dim"> 39    Bash  git log --oneline -1</span></pre></div>
+  </div>
+</div></div></section>
+
+<section class="card" id="result">
+  <h2>Result</h2>
+  <div class="score">
+    <div class="s"><span>Rejected commits</span><b>2 → 0</b></div>
+    <div class="s"><span>Tool calls</span><b>56 → 41</b> <em>−27%</em></div>
+    <div class="s"><span>Cost</span><b>$0.32 → $0.19</b> <em>−42%</em></div>
+    <div class="s"><span>Grader</span><b>pass · pass</b></div>
+  </div>
+  <p>Both repositories pass the offline grader: committed, pre-merge check passes, the migration adds the column, a value round-trips through the library and client, tests pass, and the changelog, client version and commit subject are right.</p>
+</section>
+
+<section class="card" id="honest">
+  <h2>What this doesn't show</h2>
+  <ul>
+    <li><b>This is the best pair, not the average.</b> Across six recorded pairs, 2 of 6 guided runs committed first time against 0 of 6 baselines; rejected commits went from 12 to 7, and median cost and tool calls were flat. See the <a href="reports/sonnet45-20261106/report.html">full report</a>.</li>
+    <li><b>The guideline is reactive.</b> It says what to do after a rejection; this agent chose to apply it up front by reading the hooks. Four of six guided runs still had to be rejected once. A guideline that stated the rules themselves ("this repository requires a CHANGES.md entry…") would likely do better. Evolve's prompt currently generalises those specifics away.</li>
+    <li><b>Correctness can't improve here:</b> the hooks force every run to finish correctly, so the benefit shows up only as fewer wasted steps.</li>
+  </ul>
+</section>
+
+<section class="card" id="replay">
+  <h2>Replay it</h2>
+  <p>Everything above comes from files committed in <code>demos/cortex-repo/reports/sonnet45-20261106/</code>:</p>
+  <table>
+    <tr><th>Hop</th><th>File</th></tr>
+    <tr><td>1, 6</td><td><code>training-trajectory.json</code>, <code>baseline-3-trajectory.json</code>, <code>guided-3-trajectory.json</code></td></tr>
+    <tr><td>3</td><td><code>candidates.json</code>, <code>learning.json</code></td></tr>
+    <tr><td>4</td><td><code>promoted.json</code>, <code>review.json</code></td></tr>
+    <tr><td>5</td><td><code>example-attribution.json</code>: first-request <code>plugins.evolve</code>, request sizes and the bridge's delivery check for both sessions</td></tr>
+    <tr><td>Result</td><td><code>summary.json</code>, <code>state.json</code></td></tr>
+  </table>
+  <p>To run the loop yourself, follow the <a href="walkthrough-manual.html">manual walkthrough</a>; the plugin's own walkthrough is <code>docs/evolve-plugin-e2e.md</code> in the Cortex branch.</p>
+</section>
+
+<p class="foot">Cortex + Evolve · worked example from the repo-conventions demo · sessions b590c2fc (training), 04aa0aca (baseline-3), 5fb6d627 (guided-3)</p>
+</main>
+</div>
+<script src="walkthrough.js"></script>
+</body>
+</html>
