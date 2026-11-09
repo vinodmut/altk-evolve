@@ -29,6 +29,7 @@
 .arch text { fill: var(--ink); font: 15px ui-sans-serif, system-ui, sans-serif; }
 .arch .s { fill: var(--ink-2); font-size: 13px; }
 .arch .ln { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+#asks ol[start="6"] > li { margin-bottom: 14px; }
 .arch .ln.bg { stroke: var(--good); stroke-dasharray: 6 4; }
 </style>
 </head>
@@ -270,6 +271,21 @@ sed -i '' 's/^package main$/package all/' core/plugins/all/plugins_evolve.go
     <li><b>Default placement:</b> should <code>placement: user</code> become the default? Results so far favour it: in a 28-session experiment, wrong-path reads fell from 6/11 to 0/11. But it edits user content rather than system instructions, which you may prefer to keep opt-in.</li>
     <li><b>Session archive location</b> (<a href="https://github.com/rossoctl/cortex/issues/1689">#1689</a>): would make side-by-side and demo setups much simpler, without touching the plugin.</li>
     <li><b>Ordering with <code>context-guru</code>:</b> it can compact the injected block away. Is "place evolve after it" in the docs enough, or should the plugin declare an ordering?</li>
+  </ol>
+  <h3>Design of the loop</h3>
+  <ol start="6">
+    <li><b>Should there be a manual review gate, or should learnings apply automatically?</b>
+      <br><i>Today:</i> manual. Nothing learned is injected until a person copies it from <code>cortex-candidates</code> to <code>cortex</code>.
+      <br><i>Trade-off:</i> the gate stops text from tool output (a fetched web page, a file the agent read) becoming a standing instruction for every later session, which is the main prompt-injection risk. It also costs a person's attention, and in the experiments some candidates were generic and worth rejecting. Automatic application would need another safeguard: shadow A/B gating (below), automatic expiry, or a trust signal on where the content came from.</li>
+    <li><b>Should the manual review happen in Cortex or in Evolve?</b>
+      <br><i>Today:</i> in Evolve. The plugin only reads and writes Evolve namespaces; review is an Evolve CLI copy between them.
+      <br><i>Trade-off:</i> in Evolve, the review is the same for every client of Evolve, not just Cortex, and Cortex stays a thin client. In Cortex, it could sit in agentop next to the session a candidate came from, so a reviewer sees the evidence and approves in one place, but Cortex would then own guideline state. A middle option: agentop shows candidates and their source sessions, and the approve action calls Evolve.</li>
+    <li><b>Should trajectories be sent on idle, or at some other time?</b>
+      <br><i>Today:</i> after a session has been idle for <code>idle_after_seconds</code> (default 15 minutes), checked every 30 seconds; a resumed session later sends only its new turns.
+      <br><i>Trade-off:</i> idle is a cheap signal that a task is probably finished, needs nothing from the agent, and batches the turns. But it is a guess: a long pause mid-task splits one task in two, and turns not yet sent are lost if Cortex restarts. Alternatives: on an explicit signal (session end, the agent's own "done", a commit or a PR), on a turn or size threshold, or at a fixed time.</li>
+    <li><b>Should guidelines be retrieved once per session, or at another granularity?</b>
+      <br><i>Today:</i> once, matched to the session's first user message, then cached for <code>cache_ttl_seconds</code> so every turn adds identical bytes and the prompt cache keeps hitting.
+      <br><i>Trade-off:</i> once per session is cheap and cache-friendly, but a session that changes task midway keeps guidelines chosen for its opening message. Finer options cost cache hits or need a trigger: per user turn (re-match when the user gives a new instruction), just-in-time (add a guideline on the request after a tool error matching its trigger), or per tool (attach guidance to the tool about to be used).</li>
   </ol>
   <h3>Not yet built</h3>
   <ul>
