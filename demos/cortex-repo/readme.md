@@ -36,6 +36,10 @@ full report (charts, commit-by-commit comparison, every run), or read the short
 
 ## Run it
 
+For a five-minute read of one recorded run, explained step by step, see
+[example-walkthrough.html](example-walkthrough.html). What the integration changes in Cortex is in
+[integration-review.html](integration-review.html).
+
 To hand this to someone else, send them [walkthrough.html](walkthrough.html): step-by-step instructions
 with what to expect at each step, troubleshooting, and what to send back. To run the same loop by
 hand on your own machine, without Docker or these scripts, follow

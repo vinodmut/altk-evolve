@@ -270,7 +270,7 @@ git diff $(git merge-base HEAD origin/main) HEAD -- . ':!core/plugins/evolve' ':
 (cd core &amp;&amp; go test -cover ./plugins/evolve/)
 (cd scripts/profile-tags &amp;&amp; go test ./...)
 make cortex</code></pre></div>
-  <p>The second command shows every non-plugin, non-doc change: three files plus <code>go.mod</code>. To see the loop running end to end, follow <code>docs/evolve-plugin-e2e.md</code>, or the manual walkthrough in altk-evolve: <code>demos/cortex-repo/walkthrough-manual.html</code>.</p>
+  <p>The second command shows every non-plugin, non-doc change: three files plus <code>go.mod</code>. To see the loop running end to end, follow <code>docs/evolve-plugin-e2e.md</code> in the Cortex branch, or in altk-evolve the <a href="walkthrough-manual.html">manual walkthrough</a>. For one recorded run explained step by step, see the <a href="example-walkthrough.html">worked example</a>; the graded results are in the <a href="reports/sonnet45-20261106/report.html">experiment report</a>.</p>
 </section>
 
 <p class="foot">Cortex + Evolve integration · change review · branch heads: cortex <code>ab08dda3</code>, altk-evolve <code>rossocortex</code></p>
