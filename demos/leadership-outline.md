@@ -11,7 +11,7 @@ they'll always remember, sits in the middle.
 > from each other across every tool, at the proxy we already run, with no extra work for
 > developers. If we don't, we keep paying for the same mistakes at the scale we adopt agents.
 
-Length: 15 slides, 20 minutes plus discussion.
+Length: 16 slides, 20 minutes plus discussion.
 
 ---
 
@@ -114,7 +114,7 @@ Handle objections before they're raised (Duarte: address resistance in the middl
   and our conventions are ours. A layer we control works across all of them.
 - **"Is it safe?"** Review gate, fails open, local only today; the open security items are
   listed, not hidden (unauthenticated local service, no redaction yet).
-- **"Is the gain real?"** Directionally yes, statistically not yet; slide 14 is how we find out.
+- **"Is the gain real?"** Directionally yes, statistically not yet; slide 15 is how we find out.
 - **"Does it need developer effort?"** No feedback, no grading, no prompt changes. A person
   approves guidelines, and even that may become automatic.
 
@@ -124,11 +124,21 @@ Handle objections before they're raised (Duarte: address resistance in the middl
 - Fewer wasted steps and rejected changes across every agent we license.
 - *Say:* the more we use agents, the more each session pays back.
 
+### 13. What could be: what only a layer in front of every agent can do
+- Cross-agent transfer is one of several things a vendor's own memory can't do. Cortex sees
+  every agent, model and user, plus their tool results, costs and policy decisions.
+- Eight cards: across agents (shown), **across models**, across people, within a workflow,
+  from what Cortex blocked, from waste, **measured automatically**, kept current and local.
+- *Say:* the two I'd do next are across models (a cost number: a strong model teaches, a cheap
+  one works) and measured automatically (answers "is the gain real?" from real sessions).
+  Learning from what Cortex blocked is the one for the Cortex team. None adds developer effort.
+- Details: `demos/cortex-repo/angles.html`
+
 ---
 
 ## Turning point 2: call to action
 
-### 13. Where we are: rough edges, stated plainly
+### 14. Where we are: rough edges, stated plainly
 | Works | Partly | Not yet |
 |---|---|---|
 | Record, learn, review, inject loop end to end | Guidelines are generic and reactive; they say "how to recover", not "the rule" | Automatic promotion with an A/B safety check |
@@ -137,7 +147,7 @@ Handle objections before they're raised (Duarte: address resistance in the middl
 - Open design questions to decide with the Cortex team: manual vs automatic review, where
   review lives, when sessions are learned from, how often guidelines are retrieved.
 
-### 14. The ask
+### 15. The ask
 Pick two or three; be specific about people and weeks.
 - **A pilot:** two or three real repositories, opted-in teams, four weeks, with an A/B
   comparison so we measure rejected changes, wasted steps and cost per task.
@@ -151,7 +161,7 @@ Pick two or three; be specific about people and weeks.
 
 ## End: the new bliss
 
-### 15. The future we're building
+### 16. The future we're building
 - Come back to slide 2's timeline, now with the guided version beside it: the rejected
   commit is gone.
 - "Every mistake an agent makes here, it makes once."
@@ -167,7 +177,7 @@ Pick two or three; be specific about people and weeks.
 - **One STAR moment.** Slide 7. Pause after the 0/11; don't add more data to that slide.
 - **Honesty earns trust.** Show the best pair, then immediately the average and the failure
   (invoices). Leadership will trust the 2/6 more because you showed it.
-- **Backup slides** (not presented): integration review details
+- **Backup slides** (not presented): angles in detail (`demos/cortex-repo/angles.html`), integration review details
   (`demos/cortex-repo/integration-review.html`), full experiment report
   (`demos/cortex-repo/reports/sonnet45-20261106/report.html`), placement experiment
   (`demos/cortex-invoices/placement.md`), live run timelines.

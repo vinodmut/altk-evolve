@@ -238,8 +238,8 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
   <h2>Before you ask</h2>
   <div class="cols">
     <div class="card muted"><h3>"Won't the vendors do this?"</h3><p>Each learns within its own tool. We use several, and our conventions are ours. The previous slide is a layer we control working across two of them.</p></div>
-    <div class="card muted"><h3>"Is it safe?"</h3><p>Review gate, fails open, local only today. The open security items are listed on slide 13, not hidden.</p></div>
-    <div class="card muted"><h3>"Is the gain real?"</h3><p>Directionally yes, statistically not yet. The pilot on slide 14 is how we find out.</p></div>
+    <div class="card muted"><h3>"Is it safe?"</h3><p>Review gate, fails open, local only today. The open security items are listed on slide 14, not hidden.</p></div>
+    <div class="card muted"><h3>"Is the gain real?"</h3><p>Directionally yes, statistically not yet. The pilot on slide 15 is how we find out.</p></div>
     <div class="card muted"><h3>"Does it need developer effort?"</h3><p>No feedback, no grading, no prompt changes. Someone approves guidelines, and that step may become automatic.</p></div>
   </div>
 </section>
@@ -255,7 +255,24 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
   </div>
 </section>
 
-<!-- 13 · Where we are -->
+<!-- 13 · Only from the proxy -->
+<section class="slide" data-notes="Cross-agent transfer is one of several things only a layer in front of every agent can do. Cortex sees every agent, model and user, plus their tool results, costs and policy decisions. Two I'd do next: across models, because it's a cost number (a strong model teaches, a cheap one works), and self-measuring, because it answers 'is the gain real?' from real sessions and lets promotion become automatic. Learning from what Cortex blocked is the one to raise with the Cortex team. None of these adds developer effort. Details: demos/cortex-repo/angles.html.">
+  <div class="kicker could">What could be, beyond one vendor's memory</div>
+  <h2>What only a layer in front of every agent can do</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vw">
+    <div class="card good"><h3>Across agents</h3><p style="font-size:2.2vh">Claude Code learns, Codex benefits. <b>Shown, one pair.</b></p></div>
+    <div class="card could"><h3>Across models ★</h3><p style="font-size:2.2vh">Change models without losing lessons; a strong model teaches, a cheap one works.</p></div>
+    <div class="card could"><h3>Across people</h3><p style="font-size:2.2vh">One developer's lesson reaches the whole team the next session.</p></div>
+    <div class="card could"><h3>Within a workflow</h3><p style="font-size:2.2vh">The review agent's finding becomes the coding agent's guideline.</p></div>
+    <div class="card could"><h3>From what was blocked</h3><p style="font-size:2.2vh">Every policy denial is a lesson, so guardrails cause less friction.</p></div>
+    <div class="card could"><h3>From waste</h3><p style="font-size:2.2vh">Learn where tokens go on loops and retries. The proxy pays for itself.</p></div>
+    <div class="card could"><h3>Self-measuring ★</h3><p style="font-size:2.2vh">Hold guidelines back from some sessions; keep what measurably helps.</p></div>
+    <div class="card could"><h3>Kept current &amp; local</h3><p style="font-size:2.2vh">Spot stale guidelines from outcomes; learning never leaves our infrastructure.</p></div>
+  </div>
+  <p class="small" style="margin-top:2.4vh">★ recommended next · none adds developer effort · details: <code>demos/cortex-repo/angles.html</code></p>
+</section>
+
+<!-- 14 · Where we are -->
 <section class="slide" data-notes="Rough edges, plainly. The loop works end to end. The guidelines are useful but generic: they say how to recover, not what the rule is, which is why the average gain is modest. And there are design questions we're deciding with the Cortex team.">
   <div class="kicker turn">Where we are</div>
   <h2>Rough edges, stated plainly</h2>
@@ -267,7 +284,7 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
   <p class="small" style="margin-top:2.4vh">Open with the Cortex team: manual or automatic review · where review lives · when sessions are learned from · how often guidelines are retrieved</p>
 </section>
 
-<!-- 14 · The ask -->
+<!-- 15 · The ask -->
 <section class="slide" data-notes="Be specific. Pick the two or three you actually want and say who and how long. The pilot is the most important: it turns 'directional' into a number.">
   <div class="kicker turn">The ask</div>
   <h2>What I'm asking for</h2>
@@ -279,7 +296,7 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
   </div>
 </section>
 
-<!-- 15 · New bliss -->
+<!-- 16 · New bliss -->
 <section class="slide" data-notes="Come back to the timeline from the start. The rejected commit is gone. Close with the big idea and the ask in one breath: our agents repeat the same mistakes; we can make them learn across every tool at the proxy we already run; let's prove it in a four-week pilot.">
   <div class="kicker bliss">The future we're building</div>
   <div class="cols" style="margin-top:1vh">

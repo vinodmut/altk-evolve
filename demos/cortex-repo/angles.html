@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolve in Cortex: angles that only a proxy can offer</title>
+<link rel="stylesheet" href="walkthrough.css">
+<style>
+.angle h2 { display: flex; align-items: baseline; gap: 10px; }
+.pitch { font-size: 17px; line-height: 1.5; color: var(--ink); margin: 4px 0 12px; }
+dl.facts4 { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 8px 16px; margin: 10px 0 0; }
+dl.facts4 dt { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding-top: 3px; }
+dl.facts4 dd { margin: 0; }
+.group { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 28px 0 -4px; }
+.chip.shown { color: var(--good); background: var(--good-soft); }
+.chip.next { color: var(--info); background: var(--info-soft); }
+@media (max-width: 900px) { dl.facts4 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="hero-inner">
+  <span class="eyebrow">Direction · Nov 9, 2026</span>
+  <h1>Evolve in Cortex: what only a proxy can offer</h1>
+  <p>Each agent vendor is building memory into its own tool. Cortex sits in front of all of them: every agent, every model, every user, with their tool results, costs and policy decisions in one place. These are the uses of Evolve that come from that position, and that no single vendor's memory can match. None of them asks developers to grade, give feedback or change how they work.</p>
+  <div class="facts">
+    <div class="fact"><span>Shown so far</span><b>Across agents (1 pair)</b></div>
+    <div class="fact"><span>Angles</span><b>8 more</b></div>
+    <div class="fact"><span>Extra developer effort</span><b>None</b></div>
+    <div class="fact"><span>Recommended next</span><b>Model swaps · measurement</b></div>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="Sections"><b>Sections</b><ol>
+  <li><a href="#position"><span class="num">?</span>The position</a></li>
+  <li><a href="#a0"><span class="num">0</span>Across agents</a></li>
+  <li><a href="#a1"><span class="num">1</span>Across models</a></li>
+  <li><a href="#a2"><span class="num">2</span>Across people</a></li>
+  <li><a href="#a3"><span class="num">3</span>Within a workflow</a></li>
+  <li><a href="#a4"><span class="num">4</span>From what was blocked</a></li>
+  <li><a href="#a5"><span class="num">5</span>From waste</a></li>
+  <li><a href="#a6"><span class="num">6</span>Measured automatically</a></li>
+  <li><a href="#a7"><span class="num">7</span>Kept current</a></li>
+  <li><a href="#a8"><span class="num">8</span>Kept local</a></li>
+  <li><a href="#summary"><span class="num">≡</span>Summary</a></li>
+  <li><a href="#next"><span class="num">→</span>Recommendation</a></li>
+</ol></nav>
+
+<main>
+
+<section class="card" id="position">
+  <h2>The position</h2>
+  <p>A vendor's memory sees one agent, one model and one user's sessions. Cortex sees the traffic itself, which gives Evolve four things to work with that a vendor doesn't have:</p>
+  <div class="grid-2">
+    <div class="mini"><h4>Every agent and model</h4><p>Claude Code, Codex, opencode, Bob and subagents, on whatever model each is routed to.</p></div>
+    <div class="mini"><h4>Every user, eventually</h4><p>One shared Cortex means one developer's lesson can reach a whole team.</p></div>
+    <div class="mini"><h4>Outcomes, for free</h4><p>Tool results, rejected commands, policy denials, tokens and cost, already recorded per session.</p></div>
+    <div class="mini"><h4>Control of delivery</h4><p>Cortex decides which sessions get which guidelines, so it can also hold some back and compare.</p></div>
+  </div>
+  <p>The angles below are grouped by what that buys: <b>who learns from whom</b>, <b>what there is to learn from</b>, and <b>why the result can be trusted</b>.</p>
+</section>
+
+<p class="group">Who learns from whom</p>
+
+<section class="card angle" id="a0">
+  <h2>0 · Across agents <span class="chip shown">shown, one pair</span></h2>
+  <p class="pitch">What Claude Code works out, Codex already knows.</p>
+  <p>Guidelines Evolve learned from a Claude Code session were injected into a Codex session on a different model and a different change. Codex's rejected commits went 2 → 0, tool calls 13 → 8 and input tokens −39%. This is the anchor for everything below: guidelines belong to the repository, not to the agent. <a href="reports/codex-transfer-20261109/report.html">Full report</a>.</p>
+</section>
+
+<section class="card angle" id="a1">
+  <h2>1 · Across models <span class="chip next">recommended</span></h2>
+  <p class="pitch">Change models without losing what was learned. A strong model teaches; a cheaper one does the work.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>Teams change models every few months, for cost or capability. The new model, especially a cheaper one, often makes mistakes the old one had stopped making, and a vendor's memory doesn't carry across that change.</dd>
+    <dt>Why Cortex</dt><dd>Guidelines live in Cortex, not in a model or an agent. Cortex's <code>inference-router</code> plugin already chooses which inference server each agent's sessions go to, so a model change happens at the same place the guidelines are delivered.</dd>
+    <dt>Evidence today</dt><dd>The Codex probe already used a weaker model (gpt-5.6-luna) helped by guidelines learned on a stronger one (Sonnet 4.6). That is one data point for "strong teaches, cheap works".</dd>
+    <dt>To show it</dt><dd>Same agent, same task, two models: learn on the stronger model, then run the cheaper one with and without the guidelines. The claim to test is "the cheaper model with guidelines matches the stronger model without them" on rejected commits and cost per task.</dd>
+    <dt>Why it lands</dt><dd>It's a cost story with a number attached: the cost of each task on the cheaper model, with guidelines, against the stronger one.</dd>
+  </dl>
+</section>
+
+<section class="card angle" id="a2">
+  <h2>2 · Across people</h2>
+  <p class="pitch">One developer's agent hits a convention once; everyone's agent knows it the next session.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>Repository knowledge stays in individual sessions. Every developer's agent pays for the same mistake separately, and a new hire's agent starts from nothing.</dd>
+    <dt>Why Cortex</dt><dd>A shared Cortex sees every developer's sessions. A vendor's memory is per user, or at most per vendor account.</dd>
+    <dt>A by-product</dt><dd>Across many repositories, the guidelines form a map of which conventions agents keep tripping on: undocumented team knowledge, made visible. It's useful for documentation and onboarding even without agents.</dd>
+    <dt>To show it</dt><dd>Needs a shared Cortex and namespaces keyed by repository, not by machine. Two simulated users on one repository is enough for a first demo.</dd>
+    <dt>Needs first</dt><dd>Authentication and redaction: a guideline learned from one person's session should never carry their data to someone else. These are already on the open security list.</dd>
+  </dl>
+</section>
+
+<section class="card angle" id="a3">
+  <h2>3 · Within a workflow</h2>
+  <p class="pitch">The review agent's finding becomes the coding agent's guideline.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>Developers increasingly run several agents together: a coding agent, subagents, a review or test agent, agents in parallel on the same repository. What one of them finds, the others don't learn.</dd>
+    <dt>Why Cortex</dt><dd>Cortex sees all of their traffic, including agent-to-agent calls (the <code>a2a-parser</code> plugin). Each agent alone sees only its own conversation.</dd>
+    <dt>To show it</dt><dd>A review agent flags the same problem in two coding sessions; Evolve learns from the review sessions; the third coding session avoids it.</dd>
+  </dl>
+</section>
+
+<p class="group">What there is to learn from</p>
+
+<section class="card angle" id="a4">
+  <h2>4 · From what Cortex blocked</h2>
+  <p class="pitch">Every request Cortex blocks is a lesson that cost nobody any effort to label.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>When a guardrail blocks an agent, the agent retries, works around it, or stops, and does the same next session. Repeated friction is also what pushes teams to loosen a policy.</dd>
+    <dt>Why Cortex</dt><dd>Cortex is where the denials happen: <code>ibac</code> denies outbound calls that don't match the user's intent, <code>opa</code> applies policy, <code>session-budget</code> enforces token and call limits, and <code>sparc</code> reflects on tool calls before they run. Each decision is a clear failure signal, already recorded.</dd>
+    <dt>To show it</dt><dd>Feed denials into the trajectory Evolve learns from (or as a separate signal), so it learns "in this repository, don't call X; use Y". Then count how often agents hit the same denial before and after.</dd>
+    <dt>Why it lands</dt><dd>It's the angle most specific to Cortex, and the strongest reason for the Cortex team to want the plugin: it makes their guardrails cause less friction without making them weaker.</dd>
+  </dl>
+</section>
+
+<section class="card angle" id="a5">
+  <h2>5 · From waste</h2>
+  <p class="pitch">The proxy that meters every token learns where they're wasted.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>A lot of agent spend goes to loops: reading the same file again and again, retrying a failing command, long detours. Nobody reviews sessions for this.</dd>
+    <dt>Why Cortex</dt><dd>Cortex already records tokens, cost and every tool call per session. Its <code>tool-prune</code> and <code>context-guru</code> plugins already cut the size of each request; guidelines would cut the number of steps.</dd>
+    <dt>Evidence today</dt><dd>The Codex pair used 39% fewer input tokens; the best Claude Code pair went from $0.32 to $0.19. Both came from avoiding rework, not from guidelines aimed at waste.</dd>
+    <dt>To show it</dt><dd>Point learning at the most wasteful sessions (most repeated calls or tokens per change) and report cost per task before and after.</dd>
+    <dt>Why it lands</dt><dd>"The proxy pays for itself" is the easiest of these to fund.</dd>
+  </dl>
+</section>
+
+<p class="group">Why the result can be trusted</p>
+
+<section class="card angle" id="a6">
+  <h2>6 · Measured automatically <span class="chip next">recommended</span></h2>
+  <p class="pitch">Cortex holds guidelines back from a small share of sessions, and the difference is the measurement.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>Every result so far is a small, hand-run experiment. Reviewing each guideline by hand doesn't scale, and leadership's first question is "is the gain real?"</dd>
+    <dt>Why Cortex</dt><dd>Cortex decides delivery and already records which guidelines each session received. Holding some sessions back is a config decision, not an experiment someone runs.</dd>
+    <dt>What it enables</dt><dd>Compare rejected commits, tool calls and cost between sessions with and without each guideline. Promote what measurably helps; retire what doesn't. That replaces the manual review step with evidence, which is open design question 6 in the <a href="integration-review.html">change review</a>.</dd>
+    <dt>To show it</dt><dd>A holdout setting in the plugin plus a per-guideline report from session data already recorded. It is the measurement the pilot needs anyway.</dd>
+  </dl>
+</section>
+
+<section class="card angle" id="a7">
+  <h2>7 · Kept current</h2>
+  <p class="pitch">A guideline that stops matching the repository gets noticed, because Cortex sees what happens next.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>Hand-written instruction files go stale and nobody notices until an agent does the wrong thing confidently.</dd>
+    <dt>Why Cortex</dt><dd>Cortex sees the results of sessions that received a guideline. If those sessions start failing in a new way (a hook was removed, a command renamed), the guideline is the suspect.</dd>
+    <dt>To show it</dt><dd>Change a hook in the sample repository after learning; show the guideline flagged for review or retired. Builds on angle 6's per-guideline data.</dd>
+  </dl>
+</section>
+
+<section class="card angle" id="a8">
+  <h2>8 · Kept local</h2>
+  <p class="pitch">Learning that never leaves infrastructure we run.</p>
+  <dl class="facts4">
+    <dt>The problem</dt><dd>Some teams can't send sessions to a vendor's memory feature, so they get no learning at all.</dd>
+    <dt>Why Cortex</dt><dd>Cortex and Evolve run where we run them, with the model we choose. Redaction at the proxy is a single choke point for every agent.</dd>
+    <dt>Why it lands</dt><dd>It turns the open security items (authentication, redaction, data handling) from a weakness into the pitch for regulated teams.</dd>
+  </dl>
+</section>
+
+<section class="card" id="summary">
+  <h2>Summary</h2>
+  <table>
+    <tr><th>Angle</th><th>Evidence today</th><th>Builds on</th><th>Main audience</th></tr>
+    <tr><td><b>0 · Across agents</b></td><td>One pair: rejected 2 → 0, tokens −39%</td><td>Done</td><td>Leadership</td></tr>
+    <tr><td><b>1 · Across models</b></td><td>Same pair (weaker model helped)</td><td>Experiment only; <code>inference-router</code></td><td>Leadership (cost)</td></tr>
+    <tr><td><b>2 · Across people</b></td><td>None</td><td>Shared Cortex, auth, redaction</td><td>Leadership, teams</td></tr>
+    <tr><td><b>3 · Within a workflow</b></td><td>None</td><td><code>a2a-parser</code>, subagent sessions</td><td>Developers</td></tr>
+    <tr><td><b>4 · From what was blocked</b></td><td>None</td><td><code>ibac</code>, <code>opa</code>, <code>session-budget</code>, <code>sparc</code></td><td>Cortex team</td></tr>
+    <tr><td><b>5 · From waste</b></td><td>Indirect: −39% tokens, $0.32 → $0.19</td><td>Session cost data</td><td>Leadership (cost)</td></tr>
+    <tr><td><b>6 · Measured automatically</b></td><td>Attribution already recorded</td><td>Holdout setting, report</td><td>Everyone</td></tr>
+    <tr><td><b>7 · Kept current</b></td><td>None</td><td>Angle 6</td><td>Developers</td></tr>
+    <tr><td><b>8 · Kept local</b></td><td>Runs locally today</td><td>Security items</td><td>Regulated teams</td></tr>
+  </table>
+  <p class="note">None of these needs developers to give feedback, grade results or change how they work. The only person in the loop is the reviewer of guidelines, and angle 6 is how that step could become automatic.</p>
+</section>
+
+<section class="card" id="next">
+  <h2>Recommendation</h2>
+  <ol>
+    <li><b>Across models (1).</b> It reuses the Codex probe setup, gives a cost number leadership can check, and needs no new Cortex code.</li>
+    <li><b>Measured automatically (6).</b> It answers "is the gain real?" with real sessions instead of hand-run experiments, and it's what the pilot needs to report results.</li>
+    <li><b>From what was blocked (4)</b>, to raise with the Cortex team. It's the angle that most clearly needs Cortex, and gives them a reason of their own to want the plugin.</li>
+  </ol>
+  <p class="note">Related: <a href="reports/codex-transfer-20261109/report.html">cross-agent transfer probe</a> · <a href="integration-review.html">Cortex change review</a> · <a href="example-walkthrough.html">worked example</a> · <a href="../leadership-presentation.html">leadership presentation</a></p>
+</section>
+
+<p class="foot">Cortex + Evolve · angles · Nov 9, 2026</p>
+</main>
+</div>
+<script src="walkthrough.js"></script>
+</body>
+</html>
