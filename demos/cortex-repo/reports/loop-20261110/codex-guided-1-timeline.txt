@@ -1,0 +1,10 @@
+  1    exec  const r = await tools.exec_command({cmd:"pwd && rg --files -g '!**/.git/**' | head -200 &&
+  2    exec  const paths=["schema/models.yaml","shopkit/models.py","shopkit/store.py","clients/python/s
+  3    exec  const r = await tools.exec_command({cmd:"printf '%s\\n' '--- migrations ---'; for f in mig
+  4    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  5    exec  const r = await tools.exec_command({cmd:"make generate && make migration NAME=order_discou
+  6    exec  const r = await tools.exec_command({cmd:"git diff --check && git diff -- schema/models.yam
+  7    exec  const r = await tools.exec_command({cmd:"printf '%s\\n' '--- migration ---'; sed -n '1,80p
+  8    exec  const r = await tools.exec_command({cmd:"git diff --check && git status --short && git dif
+        → commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'
+  9    exec  const r = await tools.exec_command({cmd:"git commit -m \"feat(orders): add discount code\"

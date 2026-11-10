@@ -1,0 +1,13 @@
+  1    exec  const r = await tools.exec_command({cmd:"pwd && rg --files -g '!*venv*' -g '!*.pyc' | head
+  2    exec  const files=["schema/models.yaml","shopkit/models.py","shopkit/store.py","clients/python/s
+  3    exec  const files=["tools/schema.py","migrations/0001_initial.sql","tests/conftest.py","clients/
+  4    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  5    exec  const r = await tools.exec_command({cmd:"make generate && make migration NAME=order_discou
+  6    exec  const r = await tools.exec_command({cmd:"git diff -- schema/models.yaml shopkit/models.py 
+  7    exec  const patch = "*** Begin Patch\n*** Add File: $RUN/cod
+  8    exec  const rs=await Promise.all([   tools.exec_command({cmd:"make check","workdir":"~
+  9    exec  const r = await tools.exec_command({cmd:"git diff --check && printf '%s\\n' '--- migration
+ 10    exec  const r = await tools.exec_command({cmd:"git add CHANGES.md clients/python/VERSION clients
+        → commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'
+ 11    exec  const r = await tools.exec_command({cmd:"git commit -m \"feat(orders): add discount code\"
+ 12    exec  const r = await tools.exec_command({cmd:"git status --short && git log -1 --oneline --deco

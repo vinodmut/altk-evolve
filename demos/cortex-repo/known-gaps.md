@@ -70,6 +70,15 @@ rejections; fix the stated issues (changelog entry, version bump)".
 hangs up only after the stream's final event. That would fix this for every finisher, not only
 this plugin, but changes what all of them see.
 
+## A config reload drops turns not yet sent to Evolve (open)
+
+The evolve plugin keeps each session's unsent turns in memory until the session has been idle
+for `idle_after_seconds`. A config reload builds a new pipeline and shuts the old plugin down,
+and `Shutdown` drops what it hadn't sent. On Nov 10, a run that switched `inject` on and off
+between sessions sent only the first session to Evolve; the eight evaluation sessions after it
+were never learned from. A restart has the same effect. Closing it would mean handing pending
+turns from the old plugin instance to the new one, or persisting them in the plugin store.
+
 ## Codex tool results weren't recorded (fixed)
 
 Codex 0.167 declares its tools as custom (freeform) tools, so its results arrive as

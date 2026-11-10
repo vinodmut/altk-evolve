@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolve in Cortex: report for the altk-evolve team</title>
+<link rel="stylesheet" href="walkthrough.css">
+<style>
+.arch { width: 100%; max-width: 960px; height: auto; display: block; margin: 8px 0; }
+.arch .box { fill: var(--panel); stroke: var(--line); }
+.arch .boxc { fill: var(--accent-soft); stroke: var(--accent); }
+.arch .boxe { fill: var(--good-soft); stroke: var(--good); }
+.arch text { fill: var(--ink); font: 15px ui-sans-serif, system-ui, sans-serif; }
+.arch .s { fill: var(--ink-2); font-size: 13px; }
+.arch .ln { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.arch .ln.bg { stroke: var(--good); stroke-dasharray: 6 4; }
+.score { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0 6px; }
+.score .s { background: var(--panel); border-radius: 12px; padding: 14px 16px; }
+.score .s span { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.score .s b { font-size: 22px; }
+.score .s em { display: block; font-style: normal; color: var(--muted); font-size: 13px; }
+pre.tl { margin: 10px 0; padding: 12px 14px; background: var(--code-bg); color: var(--code-ink); border-radius: 10px; overflow-x: auto; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.q { border-left: 3px solid var(--accent); padding: 2px 0 2px 14px; margin: 18px 0; }
+.q h3 { margin: 0 0 6px; }
+.q p { margin: 6px 0; }
+.q .now { color: var(--ink-2); }
+.tag { display: inline-block; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 1px 8px; margin-right: 6px; vertical-align: 1px; }
+.tag.evolve { color: var(--good); background: var(--good-soft); }
+.tag.cortex { color: var(--accent); background: var(--accent-soft); }
+.tag.both { color: var(--info); background: var(--info-soft); }
+#contract table, #results table, #decisions table, #changes table, #history table { table-layout: fixed; width: 100%; }
+td code { overflow-wrap: anywhere; }
+@media (max-width: 900px) { .score { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="hero-inner">
+  <span class="eyebrow">For the altk-evolve team · Nov 10, 2026</span>
+  <h1>Evolve inside Cortex: what we built, what we measured, what we need from Evolve</h1>
+  <p>Cortex is a proxy that sits in front of coding agents. We added a Cortex plugin that records each session, sends it to a stock Evolve MCP server to learn from, and injects reviewed guidelines into later sessions. Nobody grades or labels anything. This report covers the architecture, a fresh end-to-end run (learned from Claude Code, applied to new Claude Code and Codex sessions), the design decisions, and the questions that are Evolve's to answer.</p>
+  <div class="facts">
+    <div class="fact"><span>Evolve changes needed</span><b>None to run · 3 to learn well</b></div>
+    <div class="fact"><span>Learned from</span><b>1 Claude Code session</b></div>
+    <div class="fact"><span>Evaluated on</span><b>4 pairs · 2 agents</b></div>
+    <div class="fact"><span>Headline</span><b>Rejections cut, not removed</b></div>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="Sections"><b>Sections</b><ol>
+  <li><a href="#summary"><span class="num">=</span>Summary</a></li>
+  <li><a href="#arch"><span class="num">1</span>Architecture</a></li>
+  <li><a href="#contract"><span class="num">2</span>How Cortex uses Evolve</a></li>
+  <li><a href="#experiment"><span class="num">3</span>The experiment</a></li>
+  <li><a href="#learned"><span class="num">4</span>What Evolve learned</a></li>
+  <li><a href="#results"><span class="num">5</span>Results</a></li>
+  <li><a href="#reading"><span class="num">6</span>What the results say</a></li>
+  <li><a href="#history"><span class="num">7</span>Earlier findings</a></li>
+  <li><a href="#decisions"><span class="num">8</span>Design decisions</a></li>
+  <li><a href="#changes"><span class="num">9</span>Evolve changes so far</a></li>
+  <li><a href="#questions"><span class="num">?</span>Questions for Evolve</a></li>
+  <li><a href="#future"><span class="num">→</span>Future work</a></li>
+  <li class="extra"><a href="#evidence"><span class="num">≡</span>Evidence</a></li>
+</ol></nav>
+
+<main>
+
+<section class="card" id="summary">
+  <h2>Summary</h2>
+  <ul>
+    <li><b>The loop works end to end with a stock Evolve server.</b> Cortex records a session, sends it to <code>process_trajectory</code> once idle, a person promotes candidates from <code>cortex-candidates</code> to <code>cortex</code>, and <code>get_guidelines_with_attribution</code> serves them to the next session. No Evolve API changes were needed.</li>
+    <li><b>Learning from one Claude Code session helped both a new Claude Code session and a Codex session</b> (a different vendor's agent on a different model). Each guided session committed after at most one rejection. Codex baselines needed up to two.</li>
+    <li><b>The rule the training session ran into was not learned as a rule.</b> Evolve learned "bump VERSION" as a concrete step, and every guided run then got it right. It learned "add a CHANGES.md entry" only as "read the hook's error message", so every guided run still hit that rejection. Specific, scoped facts work; generalised recovery advice mostly doesn't.</li>
+    <li><b>The biggest open question for Evolve is scope.</b> Its prompt pushes guidelines to generalise, while the knowledge that helps here belongs to one repository. Evolve would need a way to keep facts tied to a repository or project and to retrieve by that scope.</li>
+  </ul>
+  <div class="callout why"><span class="icon">i</span><div><p>Sample sizes are small throughout: one training session and four interleaved pairs here, six pairs and 28 placement sessions earlier. Read the numbers as direction, not effect size.</p></div></div>
+</section>
+
+<section class="card" id="arch">
+  <div class="step-head"><span class="step-num">1</span><h2>Architecture</h2></div>
+  <svg class="arch" viewBox="0 0 960 330" role="img" aria-label="Coding agent to Cortex pipeline to LLM provider. The evolve plugin calls the altk-evolve MCP server: on a session's first request it sends the task and gets guidelines back; in the background it sends idle sessions' turns to learn from. A person promotes candidates between two namespaces.">
+    <defs>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="#8a8b90"/></marker>
+      <marker id="arg" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#2f9e5b"/></marker>
+    </defs>
+    <rect class="box" x="10" y="30" width="170" height="70" rx="10"/><text x="95" y="60" text-anchor="middle">Coding agent</text><text class="s" x="95" y="80" text-anchor="middle">Claude Code, Codex, Bob…</text>
+    <rect class="boxc" x="240" y="14" width="440" height="110" rx="12"/><text x="460" y="36" text-anchor="middle">Cortex outbound pipeline</text>
+    <rect class="box" x="258" y="50" width="120" height="56" rx="8"/><text x="318" y="74" text-anchor="middle">inference-</text><text x="318" y="92" text-anchor="middle">parser</text>
+    <rect class="box" x="392" y="50" width="120" height="56" rx="8"/><text x="452" y="74" text-anchor="middle">other</text><text x="452" y="92" text-anchor="middle">plugins</text>
+    <rect class="boxe" x="526" y="50" width="138" height="56" rx="8"/><text x="595" y="74" text-anchor="middle">evolve</text><text class="s" x="595" y="92" text-anchor="middle">plugin</text>
+    <rect class="box" x="760" y="30" width="190" height="70" rx="10"/><text x="855" y="60" text-anchor="middle">LLM provider</text><text class="s" x="855" y="80" text-anchor="middle">or gateway</text>
+    <path class="ln" d="M180,65 H238" marker-end="url(#ar)"/>
+    <path class="ln" d="M680,65 H758" marker-end="url(#ar)"/>
+    <text class="s" x="719" y="56" text-anchor="middle">+ guidelines</text>
+
+    <rect class="box" x="470" y="214" width="250" height="100" rx="10"/><text x="595" y="240" text-anchor="middle">altk-evolve MCP server</text><text class="s" x="595" y="260" text-anchor="middle">stock tools over SSE · loopback</text>
+    <text class="s" x="595" y="282" text-anchor="middle">cortex-candidates → (person) → cortex</text>
+    <text class="s" x="595" y="300" text-anchor="middle">processing profile "cortex"</text>
+
+    <path class="ln" d="M548,110 V210" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <text x="536" y="150" text-anchor="end">① on a session's first request</text>
+    <text class="s" x="536" y="170" text-anchor="end">task ↓ · guidelines ↑, cached for the session</text>
+    <text class="s" x="536" y="188" text-anchor="end">get_guidelines_with_attribution, list_entities</text>
+
+    <path class="ln bg" d="M642,110 V210" marker-end="url(#arg)"/>
+    <text x="656" y="150">② in the background, once idle</text>
+    <text class="s" x="656" y="170">the session's new turns ↓, to learn from</text>
+    <text class="s" x="656" y="188">ensure_processing_profile, process_trajectory</text>
+
+    <rect class="box" x="10" y="230" width="230" height="70" rx="10"/><text x="125" y="258" text-anchor="middle">Reviewer</text><text class="s" x="125" y="278" text-anchor="middle">Evolve CLI or client</text>
+    <path class="ln" d="M240,265 H466" marker-end="url(#ar)"/>
+    <text class="s" x="353" y="256" text-anchor="middle">promote candidates</text>
+  </svg>
+  <p class="note">Evolve never calls Cortex. ① runs on the request path once per session, bounded by <code>timeout_ms</code>, and fails open: if Evolve is down, requests go through unchanged. ② runs from a background ticker after the response has been sent, so it never delays a request.</p>
+  <div class="grid-2">
+    <div class="mini"><h4>Why a proxy</h4><p>Cortex already sees every agent's model calls and tool results, for every coding agent. So one integration covers Claude Code, Codex, Bob and opencode, with no change to any of them.</p></div>
+    <div class="mini"><h4>Why two namespaces</h4><p>Learned guidelines land in <code>cortex-candidates</code>, which is never served. Only what a person copies to <code>cortex</code> is injected. Text from a tool result, such as a web page an agent fetched, can't become a standing instruction without review.</p></div>
+  </div>
+  <p>Code: Cortex plugin <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin/core/plugins/evolve"><code>core/plugins/evolve</code></a> on <a href="https://github.com/vinodmut/cortex/tree/evolve-plugin"><code>vinodmut/cortex@evolve-plugin</code></a>; Evolve on <a href="https://github.com/vinodmut/altk-evolve/tree/rossocortex"><code>vinodmut/altk-evolve@rossocortex</code></a>.</p>
+</section>
+
+<section class="card" id="contract">
+  <div class="step-head"><span class="step-num">2</span><h2>How Cortex uses Evolve</h2></div>
+  <p>The plugin uses four tools that a stock <code>evolve-mcp --transport sse</code> already exposes. This is the whole contract, so a change to any of these is a breaking change for Cortex.</p>
+  <table>
+    <tr><th>Tool</th><th>When</th><th>Arguments the plugin sends</th><th>What it relies on</th></tr>
+    <tr><td><code>get_guidelines_with_attribution</code></td><td>First request of a session</td><td><code>task</code> (the first user message, with any <code>&lt;system-reminder&gt;</code> removed), <code>namespace_id: cortex</code>, <code>session_id</code></td><td><code>entity_ids</code> and <code>entity_revisions</code> in the result. The plugin ignores the prose and renders its own block. Needs <code>EVOLVE_INJECTION_MODE=retrieval</code> on the server.</td></tr>
+    <tr><td><code>list_entities</code></td><td>Right after, same request</td><td><code>namespace_id: cortex</code>, <code>type: guideline</code>, <code>include_content</code>, a limit</td><td>Content and metadata by ID. Used instead of <code>get_entity</code>, which refuses a guideline whose <code>agent_id</code> differs from the caller's.</td></tr>
+    <tr><td><code>ensure_processing_profile</code></td><td>Before the first learning call</td><td>Profile <code>cortex</code>: one <code>evolve.guidelines</code> processor, <code>guidelines_mode: standard</code></td><td>Creates it once, then keeps an operator's later edits to it.</td></tr>
+    <tr><td><code>process_trajectory</code></td><td>A session idle for <code>idle_after_seconds</code></td><td>OpenAI-style messages (user, assistant with <code>tool_calls</code>, <code>tool</code> results), a batch ID, metadata (<code>creation_mode: auto-cortex</code>, <code>agent_id</code>, <code>session_id</code>)</td><td>Skipping a batch ID it has already processed, so a retried send isn't learned twice.</td></tr>
+  </table>
+  <h3>What the model receives</h3>
+  <p>With <code>placement: user</code>, the block leads the first user message. This is the exact block from this run's guided sessions:</p>
+  <pre class="tl">&lt;system-reminder&gt;
+&lt;evolve-guidelines source="altk-evolve" ids="1,2,3,4"&gt;
+Guidelines learned from earlier sessions on this machine. Apply them when they are relevant to the task; ignore them otherwise.
+1. Before editing any generated files, identify and update the source-of-truth file first, then use the project's generation tooling to propagate changes.
+2. After schema changes in a database-backed project, check for and run a migration generation tool to create the corresponding DDL change.
+3. Run the project's consistency check and test suite before committing, and carefully read any pre-commit hook failure messages to identify all required additional changes.
+4. When a client library file is modified in a versioned project, check for a VERSION file and bump it according to the type of change (minor bump for new optional fields/features).
+&lt;/evolve-guidelines&gt;
+…</pre>
+  <p>The block is the same bytes on every turn, so the provider's prompt cache keeps hitting. The plugin strips this block (and other reminders) from trajectories it sends back, so Evolve doesn't learn its own guidelines.</p>
+</section>
+
+<section class="card" id="experiment">
+  <div class="step-head"><span class="step-num">3</span><h2>The experiment</h2><div class="meta"><span class="chip">Nov 10, 2026</span></div></div>
+  <p><b>Question:</b> after learning from one Claude Code session, do fresh sessions of Claude Code and of Codex do a different task in the same repository better?</p>
+  <h3>The repository</h3>
+  <p><code>shopkit</code>, a small sample repository whose git hooks enforce rules no prompt mentions. A commit that changes the schema or the Python client is rejected unless:</p>
+  <ul>
+    <li><code>CHANGES.md</code> has an entry under <code>## Unreleased</code>;</li>
+    <li><code>clients/python/VERSION</code> is bumped (minor for a new field);</li>
+    <li>the subject is a lower-case Conventional Commit, for example <code>feat(users): add nickname</code>.</li>
+  </ul>
+  <p>The hooks print exactly which rule failed, so a session's rejections are in its tool results.</p>
+  <h3>Procedure</h3>
+  <ol>
+    <li><b>Fresh state.</b> A new Evolve data directory with empty <code>cortex</code> and <code>cortex-candidates</code> namespaces. Nothing from earlier runs.</li>
+    <li><b>Training</b> (injection off). Claude Code adds an optional <code>nickname</code> field to users and commits. Cortex sends the session to Evolve after 90 s idle.</li>
+    <li><b>Review.</b> All four candidates were promoted unchanged (judged below).</li>
+    <li><b>Evaluation.</b> A different task, adding an optional <code>discount_code</code> field to orders, in a fresh clone each time. Four pairs, interleaved: guided (injection on) then baseline (injection off), for Claude Code then Codex, twice.</li>
+  </ol>
+  <table>
+    <tr><th>Setting</th><th>Value</th></tr>
+    <tr><td>Claude Code</td><td><code>claude -p</code>, model <code>aws/claude-sonnet-4-6</code>, no user settings, MCP or skills</td></tr>
+    <tr><td>Codex</td><td>CLI 0.167.0, <code>codex exec</code>, model <code>azure/gpt-5.6-luna</code>, isolated <code>HOME</code> and <code>CODEX_HOME</code></td></tr>
+    <tr><td>Evolve</td><td><code>rossocortex</code> at <code>589a2047</code>, filesystem backend, <code>EVOLVE_INJECTION_MODE=retrieval</code>, learner <code>aws/claude-sonnet-4-6</code></td></tr>
+    <tr><td>Cortex</td><td><code>evolve-plugin</code> at <code>c8c4f876</code> (upstream main as of Nov 10, plus the plugin and its Codex fixes), <code>placement: user</code>, <code>idle_after_seconds: 90</code></td></tr>
+    <tr><td>Grading</td><td><code>grade.py</code> checks the field end to end and that the change is committed. Rejections come from the session Cortex recorded.</td></tr>
+  </table>
+</section>
+
+<section class="card" id="learned">
+  <div class="step-head"><span class="step-num">4</span><h2>What Evolve learned</h2></div>
+  <p>The training session made 39 tool calls: 18 by the main agent over 15 turns, the rest by a subagent Claude Code started. Cortex sent the main agent's 34 messages to Evolve. It was rejected once:</p>
+  <pre class="tl"> 35  ✗ Bash  git commit -m "feat: add optional nickname field to users …"
+        → pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
+        → pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
+        → pre-commit: commit rejected</pre>
+  <p>Evolve produced four candidates about a minute after the send:</p>
+  <table>
+    <tr><th>#</th><th>Guideline</th><th>Grounded in the session?</th><th>Shape</th></tr>
+    <tr><td>1</td><td>Before editing any generated files, identify and update the source-of-truth file first, then use the project's generation tooling to propagate changes.</td><td>Yes: generated files carry "Do not edit" headers.</td><td>General practice</td></tr>
+    <tr><td>2</td><td>After schema changes in a database-backed project, check for and run a migration generation tool to create the corresponding DDL change.</td><td>Yes: <code>make migration NAME=…</code></td><td>General practice</td></tr>
+    <tr><td>3</td><td>Run the project's consistency check and test suite before committing, and carefully read any pre-commit hook failure messages to identify all required additional changes.</td><td>Yes: the rejection</td><td><b>Recovery, not the rule</b></td></tr>
+    <tr><td>4</td><td>When a client library file is modified in a versioned project, check for a VERSION file and bump it according to the type of change (minor bump for new optional fields/features).</td><td>Yes: the rejection</td><td><b>Concrete step</b></td></tr>
+  </table>
+  <p>The rejection named two rules. Evolve turned the VERSION rule into a concrete step (4) and the CHANGES.md rule into advice about reading hook errors (3). It didn't pick up the commit-subject rule, which the training session never broke.</p>
+</section>
+
+<section class="card" id="results">
+  <div class="step-head"><span class="step-num">5</span><h2>Results</h2></div>
+  <div class="score">
+    <div class="s"><span>Missed VERSION bump</span><b>4/4 → 0/4</b><em>baseline → guided</em></div>
+    <div class="s"><span>Missed CHANGES.md entry</span><b>4/4 → 2/4</b><em>fixed in the Codex runs</em></div>
+    <div class="s"><span>Rejected commits</span><b>5 → 4</b><em>baseline → guided</em></div>
+    <div class="s"><span>Codex input tokens</span><b>−23%</b><em>baseline → guided</em></div>
+  </div>
+  <table>
+    <tr><th>Session</th><th class="n">Tool calls</th><th class="n">Rejected commits</th><th>Rules broken</th><th class="n">Input tokens</th><th class="n">Cost</th></tr>
+    <tr><td><b>Claude Code</b> guided 1</td><td class="n">22</td><td class="n">1</td><td>CHANGES.md</td><td class="n">552k</td><td class="n">$0.27</td></tr>
+    <tr><td>Claude Code baseline 1</td><td class="n">23</td><td class="n">1</td><td>CHANGES.md, VERSION</td><td class="n">534k</td><td class="n">$0.27</td></tr>
+    <tr><td><b>Claude Code</b> guided 2</td><td class="n">23</td><td class="n">1</td><td>CHANGES.md</td><td class="n">609k</td><td class="n">$0.29</td></tr>
+    <tr><td>Claude Code baseline 2</td><td class="n">22<sup>*</sup></td><td class="n">1</td><td>CHANGES.md, VERSION</td><td class="n">653k</td><td class="n">$0.46</td></tr>
+    <tr><td><b>Codex</b> guided 1</td><td class="n">9</td><td class="n">1</td><td>subject format</td><td class="n">124k</td><td class="n">$0.009</td></tr>
+    <tr><td>Codex baseline 1</td><td class="n">13</td><td class="n">2</td><td>CHANGES.md, VERSION, then subject format</td><td class="n">178k</td><td class="n">$0.010</td></tr>
+    <tr><td><b>Codex</b> guided 2</td><td class="n">12</td><td class="n">1</td><td>subject format</td><td class="n">174k</td><td class="n">$0.010</td></tr>
+    <tr><td>Codex baseline 2</td><td class="n">15</td><td class="n">1</td><td>CHANGES.md, VERSION</td><td class="n">208k</td><td class="n">$0.011</td></tr>
+  </table>
+  <p class="note">All eight sessions passed the grader, bumped the client to 1.4.0 (minor, as the hook asks) and ended with one commit. Guided sessions all received guidelines 1–4; no baseline received any. <sup>*</sup> Claude Code baseline 2 also ran a subagent (7 extra model calls), which accounts for most of its higher cost. Cost for Codex is LiteLLM's list price for the model.</p>
+</section>
+
+<section class="card" id="reading">
+  <div class="step-head"><span class="step-num">6</span><h2>What the results say</h2></div>
+  <h3>A concrete guideline removes its mistake, for both agents</h3>
+  <p>Every baseline missed the VERSION bump. No guided session did. Both Claude Code and Codex read guideline 4 and bumped <code>clients/python/VERSION</code> before their first commit. This holds across vendors: the guideline was learned from Claude Code (Sonnet 4.6) and applied by Codex (gpt-5.6-luna).</p>
+  <h3>A recovery guideline doesn't prevent its mistake</h3>
+  <p>Guideline 3 says to read hook failures carefully. It says nothing about CHANGES.md. Both guided Claude Code sessions still committed without a CHANGES.md entry, were rejected, and then fixed it. No session in any arm read <code>.githooks/</code> before committing, which is what "read the hooks" would have led to.</p>
+  <p>The guided Codex sessions did add a CHANGES.md entry before their first commit. Codex reads more of the repository up front, and with the guidelines in mind it updated both release files together. That's the agent's behaviour, not a guideline Evolve learned.</p>
+  <h3>What was never in the training session wasn't learned</h3>
+  <p>Training never broke the commit-subject rule, so Evolve had nothing to learn there. Both guided Codex sessions were rejected for it. A rule that one agent satisfies by habit (Claude Code writes lower-case Conventional Commit subjects) can still trip another agent, so learning from one harness leaves gaps for others.</p>
+  <h3>Cost and tool calls</h3>
+  <p>For Codex, guided sessions used fewer tool calls (9 and 12 against 13 and 15) and 23% fewer input tokens, because they avoided a rejection round trip. For Claude Code, calls and tokens were flat. Both arms had exactly one rejection, so there was no round trip to save.</p>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Takeaway for Evolve:</b> the gain came from the one guideline that stated a repository-specific fact as a step. The prompt's push to generalise (<i>"leave out … values specific to this task"</i>) works against exactly the kind of knowledge that helps an agent in a given repository.</p></div></div>
+</section>
+
+<section class="card" id="history">
+  <div class="step-head"><span class="step-num">7</span><h2>Earlier findings that shaped the design</h2></div>
+  <table>
+    <tr><th>Experiment</th><th>Finding</th><th>What changed</th></tr>
+    <tr><td><b>Placement</b> (invoices, 28 sessions, Sonnet 4.5)</td><td>The same guideline at the end of Claude Code's long system prompt had no effect: 6/11 runs with the mistake, against 3/6 with no guideline. Moved into a <code>&lt;system-reminder&gt;</code> on the first user message: 0/11.</td><td>Cortex <code>placement: user</code>. Evolve's guideline had been blamed for the failure; its wording turned out to be fine.</td></tr>
+    <tr><td><b>Repository conventions</b> (6 pairs, Sonnet 4.5)</td><td>Commits accepted first time: 0/6 → 2/6; rejected commits 12 → 7; cost flat. The first learning pass lost the commit lessons because Evolve rendered only the first 40 and last 10 steps of a 61-step session.</td><td>The demo profile raises <code>trajectory_max_steps</code> to 150. Raised as a default question for Evolve.</td></tr>
+    <tr><td><b>Cross-agent probe</b> (1 pair, Nov 9)</td><td>Codex with Claude Code's guidelines: rejected commits 2 → 0, input tokens −39%.</td><td>Repeated here with fresh learning: same direction, smaller effect.</td></tr>
+    <tr><td><b>Invoice extraction</b></td><td>No gain: agents already got it right.</td><td>Evolve helps where there's local knowledge the model can't guess, not on tasks it already does well.</td></tr>
+  </table>
+  <p>Reports: <a href="../cortex-invoices/placement.md">placement</a> · <a href="reports/sonnet45-20261106/report.html">repository conventions</a> · <a href="reports/codex-transfer-20261109/report.html">cross-agent probe</a></p>
+</section>
+
+<section class="card" id="decisions">
+  <div class="step-head"><span class="step-num">8</span><h2>Design decisions</h2></div>
+  <table>
+    <tr><th>Decision</th><th>Why</th><th>Cost</th></tr>
+    <tr><td><b>Use Evolve's stock MCP tools only</b></td><td>No Evolve fork to maintain; any Evolve server works. An earlier design with a custom REST API and lifecycle was dropped.</td><td>Cortex depends on four tool contracts and on retrieval mode (<a href="#contract">section 2</a>).</td></tr>
+    <tr><td><b>Push trajectories from Cortex, on idle</b></td><td>No agent or user action needed, which was a hard requirement. Idle is a cheap signal that a task is probably finished.</td><td>A long pause mid-task splits one task in two. Turns not yet sent are lost if Cortex restarts or reloads its config.</td></tr>
+    <tr><td><b>Review gate: two namespaces</b></td><td>Stops prompt-injected tool output becoming a standing instruction. Uses only existing Evolve namespaces.</td><td>A person's attention. Some candidates are generic and worth rejecting.</td></tr>
+    <tr><td><b>Retrieve once per session, from the first user message</b></td><td>Cheap and cache-friendly: identical bytes every turn.</td><td>A session that changes task keeps guidelines chosen for its opening message.</td></tr>
+    <tr><td><b>Plugin renders its own block</b></td><td>Cortex controls delimiting, escaping and placement. It also strips the block from trajectories so Evolve doesn't learn its own guidelines.</td><td>The prose <code>get_guidelines_with_attribution</code> returns goes unused.</td></tr>
+    <tr><td><b>Main-agent turns only</b></td><td>Subagent turns are a separate conversation with their own context.</td><td>Lessons only a subagent hit are not learned.</td></tr>
+    <tr><td><b>No feedback, no grading</b></td><td>The repository's own error messages are the signal. That works whenever the environment says what went wrong.</td><td>A mistake that nothing rejects is never learned.</td></tr>
+  </table>
+</section>
+
+<section class="card" id="changes">
+  <div class="step-head"><span class="step-num">9</span><h2>Evolve changes so far</h2></div>
+  <p>None of these is needed for the plugin to run. The first three are needed for it to learn well, and are worth upstreaming. All are on <a href="https://github.com/vinodmut/altk-evolve/tree/rossocortex"><code>rossocortex</code></a>, which is level with <code>AgentToolkit/altk-evolve</code> main.</p>
+  <table>
+    <tr><th>Commit</th><th>Change</th><th>Why it matters</th></tr>
+    <tr><td><a href="https://github.com/vinodmut/altk-evolve/commit/91143f06b46f88179639e05267265f64c256b211"><code>91143f06</code></a></td><td>Keep tool results in the guideline prompt: pair each action with its result.</td><td>Before this, the learner never saw a session's errors, so it couldn't learn from them.</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/altk-evolve/commit/95c177f643eab45eebae09dc63ba6b33ac8141c8"><code>95c177f6</code></a></td><td>Keep user corrections, tool definitions and late results through learning.</td><td>Evidence was being dropped between the trajectory and the prompt.</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/altk-evolve/commit/3aab085f2ba803d71990ed01bdd61a0976191ca3"><code>3aab085f</code></a></td><td>Send LLMs response schemas without numeric bounds (<code>minimum</code>, <code>maximum</code>, …), and keep validating them locally.</td><td>Bedrock-backed Claude rejects those keywords in strict structured output, so learning failed outright on that route.</td></tr>
+    <tr><td><a href="https://github.com/vinodmut/altk-evolve/commit/3d764aabb717342297954a50ed0504547c3735c8"><code>3d764aab</code></a></td><td><code>evolve sync cortex</code>: pull a session from Cortex's session API.</td><td>An alternative to push. The demos use it to learn from one chosen session.</td></tr>
+    <tr><td><code>c52867c2</code>, <code>503ce71b</code></td><td>A candidate / active / retired lifecycle and an authenticated REST API for Cortex.</td><td>Built for the earlier design and superseded by the two-namespace gate. Kept on the branch; not proposed upstream.</td></tr>
+  </table>
+</section>
+
+<section class="card" id="questions">
+  <h2>Questions for the Evolve team</h2>
+  <p>Each is a design choice that changes what the integration can do. <span class="tag evolve">Evolve</span> marks ones that are Evolve's to decide; <span class="tag both">both</span> marks ones to decide together.</p>
+
+  <div class="q"><h3><span class="tag evolve">Evolve</span>1. Should guidelines be allowed to be specific to a scope, such as a repository?</h3>
+    <p class="now">Today the generation prompt asks guidelines to generalise and to leave out task-specific values. The results here show the opposite need: the guideline that worked named the file and the rule.</p>
+    <p>Cortex knows each session's working directory and could send it as a scope. That would need Evolve to (a) let a guideline name concrete files and rules when they belong to its scope, (b) store the scope, and (c) filter or weight retrieval by it. Without scope, a repository-specific fact learned in one repository would be served in every other.</p></div>
+
+  <div class="q"><h3><span class="tag evolve">Evolve</span>2. Should a guideline state the rule, or how to recover?</h3>
+    <p class="now">Evolve turned the hook's CHANGES.md message into "read hook failure messages carefully", and every guided Claude Code session was still rejected for it.</p>
+    <p>When an error message spells out the rule (<i>"changed without an entry in CHANGES.md under '## Unreleased'"</i>), the useful guideline is the rule itself, stated as a step before the action. Could the prompt prefer preventive rules when the evidence states one, and keep recovery advice for when it doesn't?</p></div>
+
+  <div class="q"><h3><span class="tag evolve">Evolve</span>3. What should the default trajectory window be for long coding sessions?</h3>
+    <p class="now">The default keeps 50 steps: the first 40 and the last 10. In an earlier run this dropped the step with the most useful rejection. The demos raise it to 150 through the plugin's processing profile.</p>
+    <p>Options: a larger default for agentic sessions; always keeping failed steps and the step after each; or letting the caller mark steps that must be kept.</p></div>
+
+  <div class="q"><h3><span class="tag both">both</span>4. Who owns the review gate, and could it become automatic?</h3>
+    <p class="now">Today a person copies candidates between two namespaces with the Evolve client. Evolve doesn't know which namespace is "reviewed".</p>
+    <p>Options: Evolve owns review states (as <code>c52867c2</code> once did) so every client of Evolve gets the same gate; or Cortex holds guidelines back from some sessions and promotes only those that measurably help. Cortex can measure, since it records which guidelines each session got and how it went. Evolve would need to accept the outcome per guideline.</p></div>
+
+  <div class="q"><h3><span class="tag evolve">Evolve</span>5. How should retrieval work for a coding agent's first message?</h3>
+    <p class="now">The plugin sends the first user message as <code>task</code>. Claude Code's first message carries several kilobytes of environment context before the real request, which Cortex strips only if it's in a <code>&lt;system-reminder&gt;</code>.</p>
+    <p>Retrieval similarity is <code>source_task</code> by default. Is the first message the right key? Would Evolve rather receive a short task summary, the working directory, or the tool list?</p></div>
+
+  <div class="q"><h3><span class="tag both">both</span>6. Should guidelines be retrieved again when the task changes?</h3>
+    <p class="now">Once per session, then cached. A session that moves to a new task keeps its first set.</p>
+    <p>Finer options cost prompt-cache hits or need a trigger: on each new user instruction, or just in time after a tool error that matches a guideline's <code>trigger</code>. Evolve already stores a trigger per guideline; using it at retrieval time is unexplored.</p></div>
+
+  <div class="q"><h3><span class="tag evolve">Evolve</span>7. Should learning be told which agent and model produced a session?</h3>
+    <p class="now">The plugin sends <code>agent_id</code> and <code>session_id</code> as metadata. The agent ID is stored on each candidate; the model isn't used.</p>
+    <p>Two uses: retrieval could avoid serving one agent's tool-specific advice (for example "use the Read tool") to another agent, and learning could note what one agent does by habit that another doesn't (the commit-subject gap here). <code>get_entity</code> also refuses guidelines owned by another <code>agent_id</code>, which is why the plugin reads them with <code>list_entities</code>. Is that ownership check intended for cross-agent serving?</p></div>
+
+  <div class="q"><h3><span class="tag both">both</span>8. Where should redaction happen?</h3>
+    <p class="now">Session content, including tool output, goes to Evolve and its learner LLM unredacted. Evolve's hooks have a secrets plugin; the Cortex path doesn't use it.</p>
+    <p>Redacting in Cortex covers every agent at one point. Redacting in Evolve covers every client of Evolve. Either way, it's a prerequisite for sharing guidelines between people.</p></div>
+
+  <div class="q"><h3><span class="tag evolve">Evolve</span>9. Should Evolve learn from what an environment rejected, as a first-class signal?</h3>
+    <p class="now">Lessons come from tool results, read by the learner.</p>
+    <p>Cortex sees structured failures it could label: a hook rejection, a policy denial from one of its guardrail plugins, a command's non-zero exit. A typed "this action was rejected because X" signal could make learning both cheaper and more precise than reading free text.</p></div>
+</section>
+
+<section class="card" id="future">
+  <h2>Future work</h2>
+  <h3>For Evolve</h3>
+  <ol>
+    <li><b>Scoped, concrete guidelines</b> (question 1), then re-run this experiment. The test: do guided runs commit first time?</li>
+    <li><b>Upstream the three learning fixes</b> (<code>91143f06</code>, <code>95c177f6</code>, <code>3aab085f</code>).</li>
+    <li><b>A larger or failure-aware trajectory window</b> by default (question 3).</li>
+    <li><b>Per-guideline outcome input</b>, so a caller can report "sessions with this guideline did better or worse" (question 4).</li>
+  </ol>
+  <h3>For Cortex</h3>
+  <ol>
+    <li><b>Holdout measurement:</b> hold guidelines back from a share of sessions and report rejected commits, tool calls and cost with and without each guideline.</li>
+    <li><b>Keep unsent turns across a config reload.</b> In this run, a reload (which the experiment used to switch injection) dropped the evaluation sessions' pending turns, so they were never sent to Evolve. Harmless here, but in normal use any config change loses learning.</li>
+    <li><b>Send the working directory</b> as a scope once Evolve accepts one.</li>
+  </ol>
+  <h3>For the experiments</h3>
+  <ol>
+    <li>More pairs, across several held-out tasks, to put error bars on these effects.</li>
+    <li>A Codex-trained arm (learn from Codex, apply to Claude Code). Cortex now records Codex's tool results, which it didn't until this week (<a href="https://github.com/rossoctl/cortex/pull/1771">rossoctl/cortex#1771</a>).</li>
+    <li>A real repository with real conventions, with consenting developers.</li>
+  </ol>
+</section>
+
+<section class="card" id="evidence">
+  <h2>Evidence</h2>
+  <p>In <a href="reports/loop-20261110/"><code>reports/loop-20261110/</code></a>, with home paths shortened and no keys:</p>
+  <table>
+    <tr><th>What</th><th>Files</th></tr>
+    <tr><td>Training session, as a tool-call timeline with hook messages</td><td><a href="reports/loop-20261110/train-timeline.txt"><code>train-timeline.txt</code></a></td></tr>
+    <tr><td>The four learned guidelines with trigger, rationale and source</td><td><a href="reports/loop-20261110/learned-guidelines.json"><code>learned-guidelines.json</code></a></td></tr>
+    <tr><td>The block the guided sessions received</td><td><a href="reports/loop-20261110/injected-block.txt"><code>injected-block.txt</code></a></td></tr>
+    <tr><td>Eight evaluation timelines</td><td><code>claude-{guided,baseline}-{1,2}-timeline.txt</code>, <code>codex-{guided,baseline}-{1,2}-timeline.txt</code></td></tr>
+    <tr><td>Per-session metrics: injection, tool calls and results, rejections, tokens, cost, grade</td><td><a href="reports/loop-20261110/results.jsonl"><code>results.jsonl</code></a></td></tr>
+  </table>
+  <p class="note">Related: <a href="integration-review.html">Cortex change review</a> · <a href="example-walkthrough.html">worked example</a> · <a href="walkthrough-manual.html">manual walkthrough</a> · <a href="known-gaps.md">known gaps</a> · <a href="angles.html">other angles for Evolve in Cortex</a></p>
+</section>
+
+<p class="foot">Cortex + Evolve · report for the altk-evolve team · Nov 10, 2026</p>
+</main>
+</div>
+<script src="walkthrough.js"></script>
+</body>
+</html>

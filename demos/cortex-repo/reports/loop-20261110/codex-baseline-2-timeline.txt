@@ -1,0 +1,18 @@
+  1    exec  const r = await tools.exec_command({cmd:"pwd && rg --files -g '!*.pyc' | head -200 && git 
+  2    exec  const results = await Promise.all([   tools.exec_command({cmd:"sed -n '1,240p' schema/mode
+  3    exec  const r = await tools.exec_command({cmd:"cat tests/conftest.py; cat clients/python/README.
+  4    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  5    exec  const r = await tools.exec_command({cmd:"make generate","workdir":"~/tmp/cortex
+  6    exec  const r = await tools.exec_command({cmd:"make migration NAME=order_discount_code","workdir
+  7    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  8    exec  const results = await Promise.all([   tools.exec_command({cmd:"make check","workdir":"/Use
+  9    exec  const r = await tools.exec_command({cmd:"git diff -- schema/models.yaml shopkit/models.py 
+ 10    exec  const r = await tools.exec_command({cmd:"git add schema/models.yaml shopkit/models.py clie
+        → pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
+        → pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
+        → pre-commit: commit rejected
+ 11    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+ 12    exec  const r = await tools.exec_command({cmd:"sed -n '1,12l' CHANGES.md; sed -n '1,12l' clients
+ 13    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+ 14    exec  const results = await Promise.all([   tools.exec_command({cmd:"make check","workdir":"/Use
+ 15    exec  const r = await tools.exec_command({cmd:"git add CHANGES.md clients/python/VERSION && git 

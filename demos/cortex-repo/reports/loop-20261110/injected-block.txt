@@ -1,0 +1,7 @@
+<evolve-guidelines source="altk-evolve" ids="1,2,3,4">
+Guidelines learned from earlier sessions on this machine. Apply them when they are relevant to the task; ignore them otherwise.
+1. Before editing any generated files, identify and update the source-of-truth file first, then use the project's generation tooling to propagate changes.
+2. After schema changes in a database-backed project, check for and run a migration generation tool to create the corresponding DDL change.
+3. Run the project's consistency check and test suite before committing, and carefully read any pre-commit hook failure messages to identify all required additional changes.
+4. When a client library file is modified in a versioned project, check for a VERSION file and bump it according to the type of change (minor bump for new optional fields/features).
+</evolve-guidelines>
