@@ -42,28 +42,33 @@ order of effort:
 parser bug. Checked on Nov 10: in a Codex session that ended normally, the final request
 carried all 13 tool results, so complete sessions are indeed unaffected.
 
-## Most Codex turns are left out of what Evolve learns from (open)
+## Most Codex turns were left out of what Evolve learns from (fixed)
 
-**What.** Codex closes each streaming connection as soon as it has read `response.completed`,
-before Cortex has finished relaying the stream. Cortex records that response with
+Codex closes each streaming connection as soon as it has read `response.completed`, before
+Cortex has finished relaying the stream. Cortex records that response with
 `error.kind: client_canceled` and resets the request's status to 0, so the outcome every
-finisher sees is "error". The evolve plugin's `OnFinish` (`core/plugins/evolve/plugin.go`)
-only records a turn whose outcome status is 2xx, so it drops these turns, even though the
-response arrived whole (`finishReason: completed`, full tool call). Claude Code doesn't do
-this: 0 of 41 of its responses in two recorded sessions were marked `client_canceled`.
+finisher sees is "error", although the response arrived whole. The evolve plugin's `OnFinish`
+only recorded turns with a 2xx status, so it dropped them. Claude Code doesn't do this: 0 of 41
+of its responses in two recorded sessions were marked `client_canceled`.
 
-**Measured** (Nov 10, three Codex sessions through the fixed Cortex): 7–8 responses per
-session (of 13–14) were marked `client_canceled`. In the session where the sent batch was
-captured, the recorder kept 5 of 12 tool calls. Evolve was sent 11–13 messages per session,
-where replaying the same sessions in full gives 27–29. Evolve still learned
-useful guidelines from what it got (for example "check commit-message format requirements by
-inspecting commit hooks"), but from less than half the session.
+**Before** (Nov 10, three Codex sessions): 7–8 of 13–14 responses per session were marked
+`client_canceled`. In the session where the batch was captured, the recorder kept 5 of 12 tool
+calls; Evolve was sent 11–13 messages per session where the full session gives 27–29.
 
-**What would close it.** In `OnFinish`, accept a turn that wasn't denied and whose inference
-extension shows a finished response (a `finishReason`, or a completion or tool calls), even
-when the outcome is an error because the client hung up after the last frame. Better still,
-the listener could leave the status alone when the client hangs up after the terminal frame,
-but that changes what every finisher sees, so it's a Cortex core question.
+**Fix** (Cortex `evolve-plugin` branch, `core/plugins/evolve/plugin.go`, `answered`): also keep
+a turn whose outcome is that hang-up (status 0, no denial) when the parser saw the response
+finish with a completion or tool calls. Turns cut off before the end, failed responses, denied
+requests and upstream errors are still skipped.
+
+**After** (same task, one session): 10 of 12 responses were marked `client_canceled`, and all
+were kept. Evolve was sent 25 messages: 12 assistant turns, all 11 tool calls with their 11
+results, including the hook's rejection, and 2 user messages. It learned three guidelines from
+it, among them "after staging, run the commit and read its output for pre-commit hook
+rejections; fix the stated issues (changelog entry, version bump)".
+
+**Still open for the Cortex team:** whether the listener should keep the status when the client
+hangs up only after the stream's final event. That would fix this for every finisher, not only
+this plugin, but changes what all of them see.
 
 ## Codex tool results weren't recorded (fixed)
 
