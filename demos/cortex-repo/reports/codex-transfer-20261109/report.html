@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cross-agent transfer: guidelines learned from Claude Code, used by Codex</title>
+<link rel="stylesheet" href="../../walkthrough.css">
+<style>
+.score { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0 6px; }
+.score .s { background: var(--panel); border-radius: 12px; padding: 14px 16px; }
+.score .s span { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.score .s b { font-size: 24px; }
+.score .s em { font-style: normal; color: var(--muted); font-size: 13px; }
+pre.tl { margin: 10px 0; padding: 12px 14px; background: var(--code-bg); color: var(--code-ink); border-radius: 10px; overflow-x: auto; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+pre.tl .x { color: #f4a4a0; } pre.tl .r { color: #f6c177; } pre.tl .ok { color: #7ee2a8; } pre.tl .dim { color: var(--code-dim); }
+.vs { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.vs h4 { margin: 10px 0 2px; font-size: 14.5px; }
+blockquote.g { margin: 8px 0; padding: 8px 14px; border-left: 3px solid var(--good); background: var(--good-soft); border-radius: 0 10px 10px 0; color: var(--ink); font-size: 14.5px; }
+@media (max-width: 900px) { .score { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="hero-inner">
+  <span class="eyebrow">Probe · recorded Nov 9, 2026</span>
+  <h1>Learned from Claude Code, used by Codex</h1>
+  <p>Guidelines Evolve learned from one Claude Code session were injected by Cortex into a Codex session running a different model on a different task. With them, Codex committed first time; without them, it was rejected twice. One pair: a signal worth a proper run, not yet a result.</p>
+  <div class="facts">
+    <div class="fact"><span>Learned from</span><b>Claude Code · Sonnet 4.6</b></div>
+    <div class="fact"><span>Applied to</span><b>Codex · gpt-5.6-luna</b></div>
+    <div class="fact"><span>Sessions</span><b>1 training + 1 pair</b></div>
+    <div class="fact"><span>Status</span><b>Probe</b></div>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="Sections"><b>Sections</b><ol>
+  <li><a href="#result"><span class="num">=</span>Result</a></li>
+  <li><a href="#why"><span class="num">?</span>Why this matters</a></li>
+  <li><a href="#setup"><span class="num">1</span>Setup</a></li>
+  <li><a href="#learned"><span class="num">2</span>What was learned</a></li>
+  <li><a href="#delivery"><span class="num">3</span>Delivery to Codex</a></li>
+  <li><a href="#sessions"><span class="num">4</span>The two sessions</a></li>
+  <li><a href="#limits"><span class="num">!</span>Caveats</a></li>
+  <li><a href="#gaps"><span class="num">⚑</span>Gaps found</a></li>
+  <li><a href="#next"><span class="num">→</span>Next</a></li>
+  <li class="extra"><a href="#evidence"><span class="num">≡</span>Evidence</a></li>
+</ol></nav>
+
+<main>
+
+<section class="card" id="result">
+  <h2>Result</h2>
+  <p>Codex, same task in fresh clones of the sample repository: add an optional <code>discount_code</code> to orders and commit it.</p>
+  <div class="score">
+    <div class="s"><span>Rejected commits</span><b>2 → 0</b></div>
+    <div class="s"><span>Commit attempts</span><b>3 → 1</b></div>
+    <div class="s"><span>Tool calls</span><b>13 → 8</b></div>
+    <div class="s"><span>Input tokens</span><b>182k → 110k</b> <em>−39%</em></div>
+  </div>
+  <table>
+    <tr><th></th><th>Baseline · no guidelines</th><th>Guided · Claude Code's guidelines</th></tr>
+    <tr><td>Rejected commits</td><td>2: changelog + client version, then commit-message format</td><td><b>0</b></td></tr>
+    <tr><td>Commit attempts</td><td>3</td><td><b>1</b></td></tr>
+    <tr><td>Tool calls recorded by Cortex</td><td>13</td><td><b>8</b></td></tr>
+    <tr><td>Input tokens</td><td>181,745</td><td><b>110,421</b></td></tr>
+    <tr><td>Guidelines injected</td><td>none</td><td>IDs 2, 3, 4, 5</td></tr>
+    <tr><td>Grader</td><td>pass</td><td>pass</td></tr>
+    <tr><td>Client version bump</td><td>1.3.0 → <b>1.4.0</b> (minor, as the hook asks)</td><td>1.3.0 → <b>1.3.1</b> (patch; see <a href="#limits">caveats</a>)</td></tr>
+  </table>
+</section>
+
+<section class="card" id="why">
+  <h2>Why this matters</h2>
+  <p>Each coding-agent vendor is building memory into its own tool, for its own users. This probe is the first evidence for the argument that a layer we control can do something theirs can't: <b>knowledge one agent works out is used by a different agent</b>, from a different vendor, running a different model.</p>
+  <p>The lessons here are about the repository, not the agent: "this repository needs a <code>CHANGES.md</code> entry and a client version bump". That is exactly the kind of knowledge that should transfer, and it did.</p>
+</section>
+
+<section class="card" id="setup">
+  <div class="step-head"><span class="step-num">1</span><h2>Setup</h2></div>
+  <table>
+    <tr><th>Piece</th><th>Configuration</th></tr>
+    <tr><td>Cortex</td><td>A dev Cortex built from <code>vinodmut/cortex</code> <code>evolve-plugin</code> (<code>ab08dda3</code>), on ports 47710–47712, with its own session archive. Evolve plugin with <code>placement: user</code>, <code>agents: [claude-code, codex]</code>, and Codex's <code>Session-Id</code> header added to <code>session.id_headers</code>.</td></tr>
+    <tr><td>Evolve</td><td>MCP server on port 8211, filesystem backend, learner <code>litellm_proxy/aws/claude-sonnet-4-6</code>, learning window raised to 150 steps.</td></tr>
+    <tr><td>Training agent</td><td>Claude Code 2.1.287, <code>aws/claude-sonnet-4-6</code> through the litellm proxy.</td></tr>
+    <tr><td>Evaluation agent</td><td>Codex CLI 0.167.0, <code>azure/gpt-5.6-luna</code> through the litellm proxy, Responses API over HTTPS (<code>supports_websockets = false</code>), <code>approval_policy = "never"</code>, full access within the throwaway clone.</td></tr>
+    <tr><td>Isolation</td><td>Codex ran with its own <code>CODEX_HOME</code> and its own <code>HOME</code>, so none of the user's Codex config, skills, memories or plugins were loaded. Only Codex's four built-in system skills appeared in its prompt.</td></tr>
+    <tr><td>Task</td><td>The repo-conventions sample repository (<code>shopkit</code>). Training: add <code>nickname</code> to users. Evaluation: add <code>discount_code</code> to orders. Same prompt shape; each session in a fresh clone with the repository's git hooks installed.</td></tr>
+  </table>
+  <p>The repository's hooks reject a commit that lacks a <code>CHANGES.md</code> entry, a <code>clients/python/VERSION</code> bump, regenerated code and a migration, or a lower-case Conventional Commit subject. The task prompt mentions none of this.</p>
+</section>
+
+<section class="card" id="learned">
+  <div class="step-head"><span class="step-num">2</span><h2>What was learned, from Claude Code</h2></div>
+  <p>The Claude Code training session (<code>83c7705a</code>) had its first commit rejected for the missing changelog entry and version bump, fixed both and committed. Cortex sent the session to Evolve after it went idle; Evolve learned four candidates with no grading or feedback. All four were promoted:</p>
+  <blockquote class="g"><b>2.</b> Before modifying any field or schema, identify whether the repository uses a code-generation pattern (a source-of-truth schema file that generates derived files) and use the provided generation tooling rather than hand-editing generated files.</blockquote>
+  <blockquote class="g"><b>3.</b> After updating a schema, create the corresponding database migration file following the repository's established naming and content conventions.</blockquote>
+  <blockquote class="g"><b>4.</b> Read and satisfy all pre-commit hook requirements (changelog entries, version bumps, generated-code checks) before attempting to commit, to avoid a rejected commit and the need for a second commit.</blockquote>
+  <blockquote class="g"><b>5.</b> Proactively check whether a repository has a CHANGES.md (or CHANGELOG) and a client version file and update both when adding a user-facing field, even before the first commit attempt.</blockquote>
+  <p>None names a Claude-specific tool, which is part of why they can transfer.</p>
+</section>
+
+<section class="card" id="delivery">
+  <div class="step-head"><span class="step-num">3</span><h2>Delivery to Codex</h2></div>
+  <p>Codex sends the Responses API, a different request format from Claude Code's. The plugin's <code>placement: user</code> path for it had unit tests but had never run against a real Codex session. Two checks:</p>
+  <table>
+    <tr><th>Check</th><th>Result</th></tr>
+    <tr><td>Cortex attribution on the guided session's first request</td><td><code>{"injected": true, "ids": ["2","3","4","5"]}</code>, reason <code>body_rewritten</code>, on <code>POST /v1/responses</code></td></tr>
+    <tr><td>Baseline's first request</td><td>No <code>plugins.evolve</code> injection</td></tr>
+    <tr><td>Did the model receive it? (separate probe session)</td><td>Asked to quote the first line of any guidelines block, Codex replied <code>&lt;evolve-guidelines source="altk-evolve" ids="2,3,4,5"&gt;</code></td></tr>
+  </table>
+</section>
+
+<section class="card" id="sessions">
+  <div class="step-head"><span class="step-num">4</span><h2>The two sessions</h2></div>
+  <p>From Codex's own logs. Cortex does not yet record Codex's tool results (<a href="#gaps">gaps</a>), so these are the authoritative record of what each command returned.</p>
+  <div class="vs">
+    <h4>Baseline · no guidelines</h4>
+    <pre class="tl"><span class="dim">… edits schema, runs make generate, make migration, adds tests …</span>
+  git add schema/models.yaml … &amp;&amp; git commit …
+<span class="x">✗ exited 1</span>
+  <span class="r">pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'</span>
+  <span class="r">pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)</span>
+  <span class="r">pre-commit: commit rejected</span>
+<span class="dim">… edits CHANGES.md and clients/python/VERSION …</span>
+  git add CHANGES.md clients/python/VERSION &amp;&amp; git commit -m "Add optional discount codes to orders"
+<span class="x">✗ exited 1</span>
+  <span class="r">commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'</span>
+  git commit -m "<span class="ok">feat(orders): add optional discount code</span>"
+<span class="ok">✓ [main 625f15d]</span></pre>
+    <h4>Guided · four guidelines from Claude Code</h4>
+    <pre class="tl"><span class="dim">… early in the session, before any edits …</span>
+  sed -n '1,240p' <span class="ok">clients/python/VERSION</span>
+  sed -n '1,240p' <span class="ok">CHANGES.md</span>
+<span class="dim">… edits schema, runs make generate and make migration, make check, tests …</span>
+  git add CHANGES.md clients/python/VERSION clients/python/shopkit_client.py schema/models.yaml \
+          shopkit/models.py tests/test_store.py migrations/0003_order_discount_code.sql \
+    &amp;&amp; git commit -m "<span class="ok">feat: add order discount code</span>"
+<span class="ok">✓ succeeded · [main 6b8e39d] 7 files changed</span></pre>
+  </div>
+  <p>The guided session didn't open <code>.githooks/</code>, as Claude Code's guided runs did. It went straight to the files guideline 5 names, updated both before its first commit, and wrote a Conventional Commit subject. Its final message doesn't mention the guidelines; the change in behaviour is the evidence.</p>
+</section>
+
+<section class="card" id="limits">
+  <h2>Caveats</h2>
+  <ul>
+    <li><b>One pair.</b> Earlier Claude Code runs varied a lot between identical sessions. This is a signal to measure, not a measured effect.</li>
+    <li><b>The guided session got the version bump wrong in kind.</b> It bumped the client from 1.3.0 to <b>1.3.1</b> (patch). The hook's message asks for a minor bump for a new field, and the baseline, which saw that message, bumped to 1.4.0. The hook only checks that the version changed, so it accepted 1.3.1, and the grader passed it for the same reason. The guideline says "update both" without saying how; Evolve generalised away the "minor for a new field" detail. This is the known weakness of generic guidelines, now shown on a second agent.</li>
+    <li><b>Same task family as training.</b> Both are "add a field" tasks on the same repository, with a different field and model. This tests transfer across agents, not across task types.</li>
+    <li><b>One discarded run.</b> The first Codex baseline ran in Codex's default sandbox, which made <code>.git</code> read-only, so it could not commit at all. It is kept as <code>codex-baseline-1-sandboxed</code> and excluded. Both reported runs used the same permissions.</li>
+    <li><b>Different model families.</b> Codex used a GPT model, Claude Code a Claude model. Only Codex baseline and Codex guided are compared with each other.</li>
+  </ul>
+</section>
+
+<section class="card" id="gaps">
+  <h2>Gaps found</h2>
+  <table>
+    <tr><th>Gap</th><th>Effect</th><th>Where</th></tr>
+    <tr><td><b>Cortex records no tool results for this Codex version.</b> It captured all 13 and 8 tool calls but zero tool results. Codex 0.167 calls one <code>exec</code> tool with JavaScript as its argument; the parser reads <code>function_call_output</code> items, and these outputs aren't surfaced.</td><td>No effect on this probe (it only injects into Codex). Learning <em>from</em> Codex sessions would miss the error messages Evolve learns from, and the <code>timeline</code> helper shows no rejections for Codex.</td><td>Cortex <code>core/plugins/inferenceparser/responses.go</code></td></tr>
+    <tr><td><b>Codex sessions weren't grouped</b> until <code>Session-Id</code> was added to <code>session.id_headers</code>. A config copied from an existing install may not have it.</td><td>Codex turns landed in a <code>pending:codex@…</code> bucket. Fixed for this run; worth a note in the walkthrough.</td><td>Dev Cortex config</td></tr>
+    <tr><td><b>Codex loaded the user's personal skills</b> from <code>~/.agents/skills</code> even with its own <code>CODEX_HOME</code>.</td><td>Would contaminate a baseline. Fixed by giving Codex its own <code>HOME</code> for the runs.</td><td>Experiment setup</td></tr>
+  </table>
+</section>
+
+<section class="card" id="next">
+  <h2>Next</h2>
+  <ol>
+    <li><b>Five or six interleaved Codex pairs</b> across the three evaluation fields, to measure the size and spread of the effect.</li>
+    <li><b>A Codex-trained arm</b>: learn from a Codex session too, and compare cross-agent guidance with same-agent guidance. That answers whether transfer loses anything. It needs Codex tool results captured first.</li>
+    <li><b>Fix Codex tool-result capture</b> in Cortex's Responses parser.</li>
+    <li><b>Repository-specific guidelines</b>, so details like "minor bump for a new field" survive learning.</li>
+  </ol>
+</section>
+
+<section class="card" id="evidence">
+  <h2>Evidence</h2>
+  <p>Copied into this report's directory, with home paths shortened to <code>~</code> and no keys:</p>
+  <table>
+    <tr><th>What</th><th>File</th></tr>
+    <tr><td>Codex logs: every command and its output</td><td><a href="codex-baseline-1.txt"><code>codex-baseline-1.txt</code></a>, <a href="codex-guided-1.txt"><code>codex-guided-1.txt</code></a>, <a href="codex-baseline-1-sandboxed.txt"><code>codex-baseline-1-sandboxed.txt</code></a> (excluded run)</td></tr>
+    <tr><td>Cortex attribution: first request's <code>plugins.evolve</code>, tool calls, token totals</td><td><a href="codex-baseline-1-attribution.json"><code>codex-baseline-1-attribution.json</code></a>, <a href="codex-guided-1-attribution.json"><code>codex-guided-1-attribution.json</code></a></td></tr>
+    <tr><td>Injection probe: the model quoting the block back</td><td><a href="codex-inject-probe.txt"><code>codex-inject-probe.txt</code></a></td></tr>
+    <tr><td>Claude Code training session, as a timeline</td><td><a href="claude-training-timeline.txt"><code>claude-training-timeline.txt</code></a></td></tr>
+    <tr><td>The four served guidelines with their source session and rationale</td><td><a href="guidelines.json"><code>guidelines.json</code></a></td></tr>
+    <tr><td>Codex configuration used (proxy URL and key removed)</td><td><a href="codex-config.toml"><code>codex-config.toml</code></a></td></tr>
+  </table>
+  <p>The full run, including raw Cortex session events and the committed repositories (<code>625f15d</code>, <code>6b8e39d</code>), remains in <code>~/tmp/cortex-evolve-run</code> on the machine that ran it.</p>
+  <p class="note">Related: <a href="../../example-walkthrough.html">worked example (Claude Code)</a> · <a href="../../walkthrough-manual.html">manual walkthrough</a> · <a href="../../integration-review.html">Cortex change review</a></p>
+</section>
+
+<p class="foot">Cortex + Evolve · cross-agent transfer probe · Nov 9, 2026</p>
+</main>
+</div>
+<script src="../../walkthrough.js"></script>
+</body>
+</html>

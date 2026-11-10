@@ -11,7 +11,7 @@ they'll always remember, sits in the middle.
 > from each other across every tool, at the proxy we already run, with no extra work for
 > developers. If we don't, we keep paying for the same mistakes at the scale we adopt agents.
 
-Length: 12–14 slides, 20 minutes plus discussion.
+Length: 15 slides, 20 minutes plus discussion.
 
 ---
 
@@ -93,23 +93,32 @@ Length: 12–14 slides, 20 minutes plus discussion.
 | Delivery (28 sessions) | Wrong placement: no effect. Right placement: mistake eliminated (6/11 → 0/11) |
 | Repository conventions (6 pairs) | Commits right first time 0/6 → 2/6; rejected commits 12 → 7; cost flat |
 | Live run, Nov 9 | Baseline rejected once; guided committed first time |
+| Cross-agent, Claude Code → Codex (1 pair) | Codex rejected commits 2 → 0; tool calls 13 → 8; input tokens −39% |
 | Billing workflow (6 cases, with feedback) | Correct results 2/6 → 4/6 |
 | Invoice extraction | No gain: agents already got it right, nothing to learn |
 - *Say:* direction is consistent; size is not yet established; small samples.
 - *Say:* the invoice result taught us which tasks benefit: ones with local knowledge the
   model can't guess.
 
-### 10. Resistance: the questions you're probably asking
+### 10. What could be, across vendors: learned from Claude Code, used by Codex
+- Claude Code (Sonnet 4.6) is rejected by the repo's hooks; Evolve learns "update CHANGES.md and
+  the client version before the first commit"; Codex (gpt-5.6-luna), a different vendor and model,
+  does a different change.
+- Codex rejected commits 2 → 0, tool calls 13 → 8, input tokens 182k → 110k (−39%). One pair.
+- *Say:* this is the answer to "won't the vendors do this?": a layer we control, working across two of them.
+- Report: `demos/cortex-repo/reports/codex-transfer-20261109/report.html`
+
+### 11. Resistance: the questions you're probably asking
 Handle objections before they're raised (Duarte: address resistance in the middle).
 - **"Won't the vendors do this?"** Each vendor learns within its own tool; we use several,
   and our conventions are ours. A layer we control works across all of them.
 - **"Is it safe?"** Review gate, fails open, local only today; the open security items are
   listed, not hidden (unauthenticated local service, no redaction yet).
-- **"Is the gain real?"** Directionally yes, statistically not yet; slide 13 is how we find out.
+- **"Is the gain real?"** Directionally yes, statistically not yet; slide 14 is how we find out.
 - **"Does it need developer effort?"** No feedback, no grading, no prompt changes. A person
   approves guidelines, and even that may become automatic.
 
-### 11. What could be, at scale
+### 12. What could be, at scale
 - Every repository's conventions, learned from the agents' own sessions, kept current.
 - New hires' agents behave like a veteran's on day one.
 - Fewer wasted steps and rejected changes across every agent we license.
@@ -119,7 +128,7 @@ Handle objections before they're raised (Duarte: address resistance in the middl
 
 ## Turning point 2: call to action
 
-### 12. Where we are: rough edges, stated plainly
+### 13. Where we are: rough edges, stated plainly
 | Works | Partly | Not yet |
 |---|---|---|
 | Record, learn, review, inject loop end to end | Guidelines are generic and reactive; they say "how to recover", not "the rule" | Automatic promotion with an A/B safety check |
@@ -128,7 +137,7 @@ Handle objections before they're raised (Duarte: address resistance in the middl
 - Open design questions to decide with the Cortex team: manual vs automatic review, where
   review lives, when sessions are learned from, how often guidelines are retrieved.
 
-### 13. The ask
+### 14. The ask
 Pick two or three; be specific about people and weeks.
 - **A pilot:** two or three real repositories, opted-in teams, four weeks, with an A/B
   comparison so we measure rejected changes, wasted steps and cost per task.
@@ -142,7 +151,7 @@ Pick two or three; be specific about people and weeks.
 
 ## End: the new bliss
 
-### 14. The future we're building
+### 15. The future we're building
 - Come back to slide 2's timeline, now with the guided version beside it: the rejected
   commit is gone.
 - "Every mistake an agent makes here, it makes once."

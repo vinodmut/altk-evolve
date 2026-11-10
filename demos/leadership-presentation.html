@@ -208,25 +208,43 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
     <tr><td><b>Delivery</b> · 28 sessions</td><td>Wrong placement: no effect. Right placement: mistake gone (6/11 → 0/11)</td><td>Strong</td></tr>
     <tr><td><b>Repository conventions</b> · 6 pairs</td><td>Committed first time 0/6 → 2/6 · rejected commits 12 → 7 · cost flat</td><td>Directional</td></tr>
     <tr><td><b>Live run</b> · Nov 9</td><td>Baseline rejected once · guided committed first time</td><td>One pair</td></tr>
+    <tr><td><b>Cross-agent</b> · Claude Code → Codex</td><td>Codex rejected commits 2 → 0 · tool calls 13 → 8</td><td>One pair</td></tr>
     <tr><td><b>Billing workflow</b> · 6 cases, with feedback</td><td>Correct results 2/6 → 4/6</td><td>Directional</td></tr>
     <tr><td><b>Invoice extraction</b></td><td>No gain: agents already got it right</td><td>Nothing to learn</td></tr>
   </table>
-  <p class="small" style="margin-top:2.4vh">Small samples, synthetic tasks, one model family. Consistent in direction; size not yet established.</p>
+  <p class="small" style="margin-top:2.4vh">Small samples, synthetic tasks, Claude and GPT models. Consistent in direction; size not yet established.</p>
 </section>
 
-<!-- 10 · Resistance -->
+<!-- 10 · Cross-agent transfer -->
+<section class="slide" data-notes="This is the answer to 'won't the vendors do this?' Claude Code made the mistake once, Evolve learned from it, and Codex, a different vendor's agent on a different model, didn't make it. Without the guidelines, Codex was rejected twice; with them, it committed first time, with 39% fewer input tokens. One pair, so it's a signal, not a measurement. Honest caveat if asked: Codex bumped the version as a patch, not the minor the hook asks for; the guideline didn't carry that detail.">
+  <div class="kicker could">What could be, across vendors</div>
+  <h2>Learned from Claude Code. Used by Codex.</h2>
+  <div class="flow" style="grid-template-columns:repeat(3,1fr)">
+    <div><b>Claude Code</b>Sonnet 4.6 · rejected by the repo's hooks on <code>nickname</code></div>
+    <div><b>Evolve learns</b>"update CHANGES.md and the client version before the first commit"</div>
+    <div><b>Codex</b>gpt-5.6-luna · a different field, a different vendor</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span>Codex rejected commits</span><b>2 → 0</b></div>
+    <div class="kpi"><span>Codex tool calls</span><b>13 → 8</b></div>
+    <div class="kpi"><span>Codex input tokens</span><b>182k → 110k</b> <em>−39%</em></div>
+  </div>
+  <p class="small">One pair, Nov 9 · same task in fresh clones · both pass the grader · guidelines confirmed injected and received</p>
+</section>
+
+<!-- 11 · Resistance -->
 <section class="slide" data-notes="Get ahead of the questions. Vendors: they learn inside their own tool; we use several, and our conventions are ours. Safety: review gate, fails open, local only today, and the open items are on the next slide. Real gain: directionally yes, statistically not yet; the pilot is how we find out. Developer effort: none.">
   <div class="kicker is">The questions you're probably asking</div>
   <h2>Before you ask</h2>
   <div class="cols">
-    <div class="card muted"><h3>"Won't the vendors do this?"</h3><p>Each learns within its own tool. We use several, and our conventions are ours. A layer we control works across all of them.</p></div>
-    <div class="card muted"><h3>"Is it safe?"</h3><p>Review gate, fails open, local only today. The open security items are listed on slide 12, not hidden.</p></div>
-    <div class="card muted"><h3>"Is the gain real?"</h3><p>Directionally yes, statistically not yet. The pilot on slide 13 is how we find out.</p></div>
+    <div class="card muted"><h3>"Won't the vendors do this?"</h3><p>Each learns within its own tool. We use several, and our conventions are ours. The previous slide is a layer we control working across two of them.</p></div>
+    <div class="card muted"><h3>"Is it safe?"</h3><p>Review gate, fails open, local only today. The open security items are listed on slide 13, not hidden.</p></div>
+    <div class="card muted"><h3>"Is the gain real?"</h3><p>Directionally yes, statistically not yet. The pilot on slide 14 is how we find out.</p></div>
     <div class="card muted"><h3>"Does it need developer effort?"</h3><p>No feedback, no grading, no prompt changes. Someone approves guidelines, and that step may become automatic.</p></div>
   </div>
 </section>
 
-<!-- 11 · At scale -->
+<!-- 12 · At scale -->
 <section class="slide" data-notes="Paint the picture at scale. The more we use agents, the more each session pays back, because what one learns, all of them know.">
   <div class="kicker could">What could be, at scale</div>
   <h2>The more we use agents, the more each session pays back</h2>
@@ -237,31 +255,31 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
   </div>
 </section>
 
-<!-- 12 · Where we are -->
+<!-- 13 · Where we are -->
 <section class="slide" data-notes="Rough edges, plainly. The loop works end to end. The guidelines are useful but generic: they say how to recover, not what the rule is, which is why the average gain is modest. And there are design questions we're deciding with the Cortex team.">
   <div class="kicker turn">Where we are</div>
   <h2>Rough edges, stated plainly</h2>
   <div class="cols3">
-    <div class="card good"><h3>Works</h3><ul><li>Record → learn → review → inject, end to end</li><li>Isolated plugin; fails open; review gate</li><li>Two Evolve fixes found and made along the way</li></ul></div>
-    <div class="card warn"><h3>Partly</h3><ul><li>Guidelines say how to recover, not what the rule is</li><li>Synthetic tasks, small samples</li><li>Review is a command-line step</li></ul></div>
+    <div class="card good"><h3>Works</h3><ul><li>Record → learn → review → inject, end to end</li><li>Isolated plugin; fails open; review gate</li><li>Guidelines transfer across agents (Claude Code → Codex)</li><li>Two Evolve fixes found and made along the way</li></ul></div>
+    <div class="card warn"><h3>Partly</h3><ul><li>Guidelines say how to recover, not what the rule is</li><li>Synthetic tasks, small samples</li><li>Review is a command-line step</li><li>Cortex doesn't yet record Codex's tool results</li></ul></div>
     <div class="card muted"><h3>Not yet</h3><ul><li>Automatic promotion behind an A/B check</li><li>Real repositories, real teams</li><li>UI in agentop; redaction; authentication</li></ul></div>
   </div>
   <p class="small" style="margin-top:2.4vh">Open with the Cortex team: manual or automatic review · where review lives · when sessions are learned from · how often guidelines are retrieved</p>
 </section>
 
-<!-- 13 · The ask -->
+<!-- 14 · The ask -->
 <section class="slide" data-notes="Be specific. Pick the two or three you actually want and say who and how long. The pilot is the most important: it turns 'directional' into a number.">
   <div class="kicker turn">The ask</div>
   <h2>What I'm asking for</h2>
   <div class="cols">
-    <div class="card could"><h3>A four-week pilot</h3><p>Two or three real repositories with opted-in teams, A/B compared: rejected changes, wasted steps and cost per task.</p></div>
+    <div class="card could"><h3>A four-week pilot</h3><p>Two or three real repositories with opted-in teams on more than one agent, A/B compared: rejected changes, wasted steps and cost per task.</p></div>
     <div class="card could"><h3>One engineer for a quarter</h3><p>Make guidelines repository-specific (the change most likely to turn "modest" into "clear"), and add the A/B gate.</p></div>
     <div class="card could"><h3>Cortex team alignment</h3><p>On the plugin and the open design questions. Review meeting: &lt;date&gt;.</p></div>
     <div class="card could"><h3>A decision owner for security</h3><p>Authentication, redaction and data handling, before anything leaves a laptop.</p></div>
   </div>
 </section>
 
-<!-- 14 · New bliss -->
+<!-- 15 · New bliss -->
 <section class="slide" data-notes="Come back to the timeline from the start. The rejected commit is gone. Close with the big idea and the ask in one breath: our agents repeat the same mistakes; we can make them learn across every tool at the proxy we already run; let's prove it in a four-week pilot.">
   <div class="kicker bliss">The future we're building</div>
   <div class="cols" style="margin-top:1vh">

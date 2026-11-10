@@ -1,0 +1,65 @@
+{
+  "id": "01a1c2e5-21b0-7901-800c-9b551e3e3b83",
+  "first_request": {
+    "seq": 2,
+    "httpPath": "/v1/responses",
+    "plugins_evolve": null,
+    "evolve_reasons": []
+  },
+  "tool_calls": [
+    {
+      "id": "call_JTGiViNDY7qqcHsBv53x6uc7",
+      "name": "exec"
+    },
+    {
+      "id": "call_7JhxbdMTyd7ubNzgdsiPr4QS",
+      "name": "exec"
+    },
+    {
+      "id": "call_aMtPEjMNX8OOo5la7fl02YTO",
+      "name": "exec"
+    },
+    {
+      "id": "call_mrwopZmWBXrquNP7xLGY2FcO",
+      "name": "exec"
+    },
+    {
+      "id": "call_Mh7gZeTfG5RZ2p2qN31preE3",
+      "name": "exec"
+    },
+    {
+      "id": "call_BEnPLXhj0s7MwSZZqCUXYgI1",
+      "name": "exec"
+    },
+    {
+      "id": "call_DOR1yuH7Q1OSohWnkxuozGhg",
+      "name": "exec"
+    },
+    {
+      "id": "call_VFyJCN2srkvWB4r0AmfnAn8B",
+      "name": "exec"
+    },
+    {
+      "id": "call_nGVDXCZ0onLtdijAZx54MhHW",
+      "name": "exec"
+    },
+    {
+      "id": "call_vnS89WKyJ8sGZXx0rzN4IVHc",
+      "name": "exec"
+    },
+    {
+      "id": "call_jdpdRgHt3DaOBnWljfDAaSui",
+      "name": "exec"
+    },
+    {
+      "id": "call_Q5tje7B14uSeb1Elghicgin7",
+      "name": "exec"
+    },
+    {
+      "id": "call_G3oI7IHwZuTW9c5xKaL1hIDV",
+      "name": "exec"
+    }
+  ],
+  "tool_results_recorded": 0,
+  "input_tokens": 181745
+}

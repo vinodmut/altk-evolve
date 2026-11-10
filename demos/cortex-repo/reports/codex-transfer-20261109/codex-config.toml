@@ -1,0 +1,31 @@
+model_provider = "walk_litellm"
+model = "azure/gpt-5.6-luna"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[model_providers.walk_litellm]
+name = "LiteLLM via dev Cortex"
+base_url = "https://<litellm proxy>/v1"
+wire_api = "responses"
+supports_websockets = false
+
+
+# Keep the experiment clean: none of the user's skills, memories, plugins or hooks.
+[features]
+skill_search = false
+skill_mcp_dependency_install = false
+memories = false
+plugins = false
+plugin_discovery_prefetch = false
+hooks = false
+apps = false
+multi_agent = false
+browser_use = false
+computer_use = false
+image_generation = false
+
+[projects."~/tmp/cortex-evolve-run/codex-baseline-1"]
+trust_level = "trusted"
+
+[projects."~/tmp/cortex-evolve-run/codex-guided-1"]
+trust_level = "trusted"

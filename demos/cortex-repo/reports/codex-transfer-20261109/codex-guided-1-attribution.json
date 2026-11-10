@@ -1,0 +1,69 @@
+{
+  "id": "01a1c2e8-a548-70a2-8610-df1cf3e2f038",
+  "first_request": {
+    "seq": 2,
+    "httpPath": "/v1/responses",
+    "plugins_evolve": {
+      "injected": true,
+      "ids": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "revisions": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "sources": [
+        "cortex:83c7705a-0b6b-46c8-957d-44f5c5f8de4e:1794254878-1",
+        "cortex:83c7705a-0b6b-46c8-957d-44f5c5f8de4e:1794254878-1",
+        "cortex:83c7705a-0b6b-46c8-957d-44f5c5f8de4e:1794254878-1",
+        "cortex:83c7705a-0b6b-46c8-957d-44f5c5f8de4e:1794254878-1"
+      ],
+      "cached": false,
+      "fetchedAt": "2026-11-09T18:43:09.603708-06:00"
+    },
+    "evolve_reasons": [
+      "body_rewritten"
+    ]
+  },
+  "tool_calls": [
+    {
+      "id": "call_kg7r4ZSWCsaIYokDNAeqWCJA",
+      "name": "exec"
+    },
+    {
+      "id": "call_ARpoPU9AzYciZJN4qjrHxrX7",
+      "name": "exec"
+    },
+    {
+      "id": "call_ca3tbd28QogRoHiSt71DWW2Y",
+      "name": "exec"
+    },
+    {
+      "id": "call_geWGGHTn6KR5dxoOL5utsF6N",
+      "name": "exec"
+    },
+    {
+      "id": "call_dOixWuSs7FNw0OcHtgu4icFR",
+      "name": "exec"
+    },
+    {
+      "id": "call_rxSL7Ado5ii7SBnbpvTGeDso",
+      "name": "exec"
+    },
+    {
+      "id": "call_kwLGwiCyS9ynBcwFQPwJPSgL",
+      "name": "exec"
+    },
+    {
+      "id": "call_Pk3bECKBUbM9h6fyJyheoabI",
+      "name": "exec"
+    }
+  ],
+  "tool_results_recorded": 0,
+  "input_tokens": 110421
+}

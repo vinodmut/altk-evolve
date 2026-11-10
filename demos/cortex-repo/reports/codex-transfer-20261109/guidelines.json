@@ -1,0 +1,26 @@
+[
+  {
+    "id": "2",
+    "content": "Before modifying any field or schema, identify whether the repository uses a code-generation pattern (a source-of-truth schema file that generates derived files) and use the provided generation tooling rather than hand-editing generated files.",
+    "source_session": "83c7705a-0b6b-46c8-957d-44f5c5f8de4e",
+    "rationale": "In this repo, shopkit/models.py and clients/python/shopkit_client.py are marked 'Do not edit' and are regenerated from schema/models.yaml via `make generate`. Editing them directly would be overwritten and would also break the schema digest check run by the pre-commit hook."
+  },
+  {
+    "id": "3",
+    "content": "After updating a schema, create the corresponding database migration file following the repository's established naming and content conventions.",
+    "source_session": "83c7705a-0b6b-46c8-957d-44f5c5f8de4e",
+    "rationale": "The pre-commit hook runs a check that verifies generated code and migrations match the schema. Without the migration file the check passes here, but the database would be out of sync at runtime. The existing migration files (0001_initial.sql, 0002_order_status.sql) show the naming pattern and SQL style to follow."
+  },
+  {
+    "id": "4",
+    "content": "Read and satisfy all pre-commit hook requirements (changelog entries, version bumps, generated-code checks) before attempting to commit, to avoid a rejected commit and the need for a second commit.",
+    "source_session": "83c7705a-0b6b-46c8-957d-44f5c5f8de4e",
+    "rationale": "The first commit attempt was rejected because CHANGES.md lacked an Unreleased entry and clients/python/VERSION was not bumped. Reading the pre-commit hook output revealed exactly what was missing; acting on it immediately and re-committing fixed the issue."
+  },
+  {
+    "id": "5",
+    "content": "Proactively check whether a repository has a CHANGES.md (or CHANGELOG) and a client version file and update both when adding a user-facing field, even before the first commit attempt.",
+    "source_session": "83c7705a-0b6b-46c8-957d-44f5c5f8de4e",
+    "rationale": "The pre-commit hook required both a CHANGES.md entry under '## Unreleased' and a minor version bump in clients/python/VERSION. Discovering this only after a rejected commit added an extra round-trip. These files were visible in the initial directory listing and could have been updated upfront."
+  }
+]
