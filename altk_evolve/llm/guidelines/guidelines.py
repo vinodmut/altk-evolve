@@ -18,6 +18,7 @@ from pydantic import ValidationError
 
 from altk_evolve.config.llm import llm_settings  # noqa: F401
 from altk_evolve.config.evolve import evolve_config  # noqa: F401
+from altk_evolve.config.guideline_prompts import resolve_guidelines_prompt
 from altk_evolve.config.guideline_runtime import GuidelineRuntime
 from altk_evolve.hooks.manager import dispatch_llm_pre_call
 from altk_evolve.llm.guidelines.segmentation import SEGMENTATION_MIN_STEPS, one_pass_task_description, subtask_slices
@@ -35,7 +36,20 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_GENERATE_GUIDELINES_TEMPLATE = Template((Path(__file__).parent / "prompts/generate_guidelines.jinja2").read_text())
+# Parsed templates, keyed by file and its modification time, so an edited custom prompt is
+# picked up on the next trajectory without restarting.
+_TEMPLATES: dict[tuple[Path, int], Template] = {}
+
+
+def _guidelines_template(name: str) -> Template:
+    """The template for a ``guidelines_prompt`` setting: a built-in name or a file path."""
+    path = resolve_guidelines_prompt(name)
+    key = (path, path.stat().st_mtime_ns)
+    template = _TEMPLATES.get(key)
+    if template is None:
+        template = _TEMPLATES[key] = Template(path.read_text())
+    return template
+
 
 # With an outcome, a failure yields 1-3 corrective guidelines and a success at most 2
 # non-obvious ones. The prompt states these limits and the parser enforces them.
@@ -428,7 +442,7 @@ def _generate_guidelines_for_segment(
             "max_guidelines": max_guidelines,
             "segmented": segmented,
         }
-    prompt = _GENERATE_GUIDELINES_TEMPLATE.render(
+    prompt = _guidelines_template(options.guidelines_prompt).render(
         task_instruction=task_description,
         supporting_context=supporting_context,
         input_evidence=input_evidence,

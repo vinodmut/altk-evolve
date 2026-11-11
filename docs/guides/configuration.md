@@ -51,6 +51,7 @@ All configuration variables are prefixed with `EVOLVE_`.
 | `EVOLVE_SEGMENTATION_ENABLED` | Segment trajectories into logical subtasks before generating guidelines. Governs all three generation paths (`standard`, and both `consistency` methods). Disabled by default — see [Trajectory segmentation](#trajectory-segmentation) | `false` |
 | `EVOLVE_TRAJECTORY_MAX_STEPS` | Most trajectory steps rendered into a generation prompt (`standard` and `fast` consistency; not `accurate`) — see [Trajectory limits](#trajectory-limits) | `50` |
 | `EVOLVE_TRAJECTORY_MAX_STEP_CHARS` | Characters kept per step before truncation | `2000` |
+| `EVOLVE_GUIDELINES_PROMPT` | Prompt the standard guideline generator uses: `default`, `rules`, or a path to your own Jinja2 file — see [Guideline prompt](#guideline-prompt) | `default` |
 | `EVOLVE_TRAJECTORY_TAIL_STEPS` | How much of the step budget is reserved for the **end** of a long run. `0` truncates head-only, as before — see [Trajectory limits](#trajectory-limits) | `0` |
 | `EVOLVE_CONSOLIDATION_MODE` | How consolidation merges a cluster: `none` (skip), `lossless` (merge only equivalent advice) or `lossy` (merge more aggressively) — see [Guideline consolidation](#guideline-consolidation) | `lossless` |
 | `EVOLVE_CLUSTERING_KEY` | What consolidation clusters on: `task_description` or `guideline_text` | `task_description` |
@@ -102,6 +103,31 @@ of the same trajectory. One interaction to know about: with elision in effect, t
 `accurate` consistency method skips segmentation on any trajectory long enough to be elided,
 because its step numbering and the segmenter's stop agreeing across the gap. Trajectories
 within the step budget are unaffected, as is the `fast` method.
+
+### Guideline prompt
+
+`EVOLVE_GUIDELINES_PROMPT` chooses the prompt the `standard` generator renders. The
+consistency pipelines keep their own prompts.
+
+| Value | Prompt |
+|---|---|
+| `default` | `altk_evolve/llm/guidelines/prompts/generate_guidelines.jinja2`, the prompt earlier releases used |
+| `rules` | `generate_guidelines_rules.jinja2`: the default, plus an instruction to state each requirement a tool result or error message spells out (a file to update, a command to run, a format) as a step to take before the action it blocked, naming the project's files and commands |
+| a path | Your own Jinja2 file. It receives the same variables as the default prompt; start from a copy of it. An edited file is read again on the next trajectory |
+
+A processing profile can set it per profile, as `guidelines_prompt` in the
+`evolve.guidelines` processor's config, so one namespace can try a prompt while the rest keep
+the default:
+
+```bash
+evolve processing-profiles get cortex > profile.json
+# set "guidelines_prompt": "rules" in the guidelines processor's config
+evolve processing-profiles apply cortex --file profile.json --expected-revision <revision>
+```
+
+The profile records the name or path, not the file's contents, so a revision that names a
+file you later edit no longer reproduces its earlier output. An unknown name or a missing file
+is rejected when the profile is published.
 
 ### Trajectory segmentation
 

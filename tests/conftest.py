@@ -62,7 +62,8 @@ def mock_sentence_transformer(request, monkeypatch):
 
 @pytest.fixture
 def default_trajectory_window(monkeypatch):
-    """Pin the trajectory window to its defaults: 50 steps, 2000 characters each, no tail.
+    """Pin the trajectory window to its defaults (50 steps, 2000 characters each, no tail) and
+    the guideline prompt to "default".
 
     evolve_config reads EVOLVE_TRAJECTORY_MAX_STEPS, _MAX_STEP_CHARS and _TAIL_STEPS from the
     environment and from .env. A test that builds its runtime with GuidelineRuntime.from_settings()
@@ -75,6 +76,8 @@ def default_trajectory_window(monkeypatch):
     monkeypatch.setattr(evolve_config, "trajectory_max_steps", 50)
     monkeypatch.setattr(evolve_config, "trajectory_max_step_chars", 2000)
     monkeypatch.setattr(evolve_config, "trajectory_tail_steps", 0)
+    # Likewise EVOLVE_GUIDELINES_PROMPT: an exported prompt choice would change every prompt.
+    monkeypatch.setattr(evolve_config, "guidelines_prompt", "default")
 
 
 def pytest_addoption(parser):

@@ -23,6 +23,9 @@ class EvolveConfig(BaseSettings):
     trajectory_max_steps: int = Field(default=50, ge=1)
     trajectory_max_step_chars: int = Field(default=2000, ge=1)
     trajectory_tail_steps: int = Field(default=0, ge=0)
+    # Prompt the standard guideline generator renders: a built-in name ("default", "rules")
+    # or a path to a Jinja2 file. See altk_evolve/config/guideline_prompts.py.
+    guidelines_prompt: str = "default"
     retention_scheduler_enabled: bool = True
     retention_poll_seconds: float = Field(default=10, gt=0)
     retention_max_workers: int = Field(default=1, ge=1)
