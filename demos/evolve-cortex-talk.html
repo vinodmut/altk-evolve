@@ -114,7 +114,7 @@ pre.tl.sm { font-size: 1.85vh; }
 </section>
 
 <!-- 3 · Two kinds of mistakes -->
-<section class="slide" data-notes="Two real examples. Left: a tool-call error, from an AppWorld trajectory. The agent guessed an API name that doesn't exist, got a 422, listed the app's APIs and found the right one. Eleven steps later it made exactly the same mistake with a different app. It doesn't even learn within a session. Right: a reasoning mistake. The agent did the change correctly, but didn't think to look for the repository's release rules, so git hooks rejected the commit. Nothing in the prompt mentions those rules. Both happen again in the next session.">
+<section class="slide" data-notes="Two real examples. Left: a tool-call error, from an AppWorld trajectory. The agent guessed an API name that doesn't exist, got a 422, listed the app's APIs and found the right one. Eleven steps later it made exactly the same mistake with a different app. It doesn't even learn within a session. Right: a reasoning mistake, from the Evolve Claude Code demo: where was this photo taken? Claude Code tried three EXIF tools, Pillow and piexif, none of them installed, then wrote its own parser and got the TIFF offset wrong by four bytes before it worked: six attempts. After Evolve learned 'parse JPEG EXIF manually with Python's struct when image libraries are unavailable', the next attempt took two steps with no failures. Without that, both mistakes happen again in the next session.">
   <div class="kicker is">Two kinds of mistakes</div>
   <h2>Both repeat in every new session</h2>
   <div class="cols">
@@ -133,18 +133,19 @@ pre.tl.sm { font-size: 1.85vh; }
 13  apis.api_docs.show_api_descriptions(app_name='venmo')
 14  … api_name='<span class="ok">create_payment_request</span>'</pre>
       <p class="small">It guessed an API name, failed, and looked it up; then made the same mistake again in the same session.</p></div>
-    <div><p class="lab">Reasoning mistake · repository conventions</p>
-<pre class="tl sm"><span class="dim">… edits schema, generates code, adds migration,
-    make check &amp;&amp; make test pass …</span>
-38  <span class="x">✗</span> git commit -m "feat: add optional nickname…"
-    <span class="r">→ pre-commit: schema/models.yaml changed without
-      an entry in CHANGES.md under '## Unreleased'</span>
-    <span class="r">→ pre-commit: bump clients/python/VERSION
-      (minor for a new field)</span>
-39  Read CHANGES.md
-40  Read clients/python/VERSION
-    <span class="dim">… fixes both, commits again …</span></pre>
-      <p class="small">A correct change that ignored the repository's rules. No prompt mentioned them.</p></div>
+    <div><p class="lab">Reasoning mistake · "Where was sample.jpg taken?"</p>
+<pre class="tl sm">1  <span class="x">✗</span> exiftool, exiv2, identify -verbose
+     <span class="r">→ none installed</span>
+2  <span class="x">✗</span> PIL img._getexif()   <span class="r">→ exit 1</span>
+3    raw byte search for b'GPS'
+     <span class="r">→ no GPS string; camera is a Pixel 4a</span>
+4  <span class="x">✗</span> import piexif        <span class="r">→ not installed</span>
+5  <span class="x">✗</span> hand-written EXIF parser
+     <span class="r">→ struct.error: TIFF base off by 4 bytes
+       (counted the APP1 length field)</span>
+6    TIFF header at app1_start + 10
+     <span class="ok">→ 51.493608, -0.037561</span></pre>
+      <p class="small">It kept trying tools that weren't there, then got the byte offset wrong. From the Evolve Claude Code demo.</p></div>
   </div>
 </section>
 
