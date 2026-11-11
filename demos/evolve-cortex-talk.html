@@ -88,6 +88,8 @@ td { color: var(--ink-2); } td b { color: var(--ink); }
 ol.gl { margin: 0; padding-left: 2.4vw; } ol.gl li { font-size: 2.6vh; margin: 1.4vh 0; }
 .lab { font-size: 1.7vh; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1vh; }
 pre.tl.sm { font-size: 1.85vh; }
+.slide a { color: var(--could); text-decoration: underline; text-underline-offset: .3vh; }
+.src { font-size: 1.8vh !important; color: var(--muted) !important; margin: 1.4vh 0 0; }
 </style>
 </head>
 <body>
@@ -112,20 +114,25 @@ pre.tl.sm { font-size: 1.85vh; }
 </section>
 
 <!-- 3 · Two kinds of mistakes -->
-<section class="slide" data-notes="Two real examples from our runs. Left: a tool-call error. Claude Code invented a /tmp path for files that were in its working directory; three reads failed before it ran pwd. Right: a reasoning mistake. The agent did the change correctly, but didn't think to look for the repository's release rules, so git hooks rejected the commit. Nothing in the prompt mentions those rules. Both happen again in the next session.">
+<section class="slide" data-notes="Two real examples. Left: a tool-call error, from an AppWorld trajectory. The agent guessed an API name that doesn't exist, got a 422, listed the app's APIs and found the right one. Eleven steps later it made exactly the same mistake with a different app. It doesn't even learn within a session. Right: a reasoning mistake. The agent did the change correctly, but didn't think to look for the repository's release rules, so git hooks rejected the commit. Nothing in the prompt mentions those rules. Both happen again in the next session.">
   <div class="kicker is">Two kinds of mistakes</div>
   <h2>Both repeat in every new session</h2>
   <div class="cols">
-    <div><p class="lab">Tool-call error · invoice extraction</p>
-<pre class="tl sm"> 1  Read <span class="x">/tmp/tmp.uJ6HdNlAXD/input/003071.pdf</span>
- 2  Read <span class="x">/tmp/tmp.uJ6HdNlAXD/input/003082.pdf</span>
- 3  Read <span class="x">/tmp/tmp.uJ6HdNlAXD/input/003093.pdf</span>
-    <span class="r">→ File does not exist. Note: your current working
-      directory is /results/tasks/baseline-3.</span>  ×3
- 4  Bash pwd
- 5  Read <span class="ok">/results/tasks/baseline-3/input/003071.pdf</span>
-    <span class="dim">…</span></pre>
-      <p class="small">An invented path; three failed calls before it checked where it was.</p></div>
+    <div><p class="lab">Tool-call error · API call (AppWorld)</p>
+<pre class="tl sm"> 1  apis.api_docs.show_api_doc(app_name='phone',
+        api_name='<span class="x">show_contacts</span>')
+    <span class="r">→ 422: No APIs with name show_contacts found
+      for the phone app.</span>
+ 2  apis.api_docs.show_api_descriptions(app_name='phone')
+ 3  … api_name='<span class="ok">search_contacts</span>'
+    <span class="dim">… later in the same session …</span>
+12  apis.api_docs.show_api_doc(app_name='venmo',
+        api_name='<span class="x">request_payment</span>')
+    <span class="r">→ 422: No APIs with name request_payment found
+      for the venmo app.</span>
+13  apis.api_docs.show_api_descriptions(app_name='venmo')
+14  … api_name='<span class="ok">create_payment_request</span>'</pre>
+      <p class="small">It guessed an API name, failed, and looked it up; then made the same mistake again in the same session.</p></div>
     <div><p class="lab">Reasoning mistake · repository conventions</p>
 <pre class="tl sm"><span class="dim">… edits schema, generates code, adds migration,
     make check &amp;&amp; make test pass …</span>
@@ -182,15 +189,17 @@ pre.tl.sm { font-size: 1.85vh; }
         <li><b>Retail, GPT-4.1:</b> Pass^4 67.5%, ahead of every frontier model and of a model fine-tuned on τ²-bench data (61.4%)</li>
         <li><b>Airline, GPT-5.5:</b> Pass^4 82.0%, ahead of every frontier entry</li>
         <li>Held out: GPT-4.1 retail 57.5 → 67.5% · GPT-5.5 airline 55 → 70%</li>
-      </ul></div>
+      </ul>
+      <p class="src">Source: <a href="https://huggingface.co/blog/ibm-research/altk-evolve-bc">How learned memory tops the τ²-bench leaderboard</a> (blog, Oct 2026)</p></div>
     <div class="card good"><h3>AppWorld · at the top of the leaderboard's range</h3>
       <ul>
         <li><b>Claude Opus 4.6:</b> 94.6% scenario completion; the leaderboard's top entry is 91.1%</li>
         <li><b>GPT-5.5:</b> 89.3%, which would rank second</li>
         <li><b>GPT-4.1</b> (older model): 50.0 → 64.3% held out, ahead of the leaderboard's GPT-4.1 entry</li>
-      </ul></div>
+      </ul>
+      <p class="src">Sources: <a href="https://huggingface.co/blog/ibm-research/altk-evolve-hmm">How Much Memory Does Your Agent Actually Need?</a> (blog) · <a href="https://arxiv.org/abs/2603.10600">Trajectory-Informed Memory Generation</a> (paper) · <a href="https://appworld.dev/appworld/leaderboard">AppWorld leaderboard</a></p></div>
   </div>
-  <p class="small" style="margin-top:2vh">Only a block of learned guidelines in the prompt; model, tools and scaffold unchanged. τ²-bench: Oct 12, 2026 snapshot, submissions unverified. AppWorld: test-normal, published runs compared with the leaderboard as of Nov 11; not leaderboard submissions. Sources: ALTK-Evolve blog posts and results page.</p>
+  <p class="small" style="margin-top:2vh">Only a block of learned guidelines in the prompt; model, tools and scaffold unchanged. τ²-bench: Oct 12, 2026 snapshot, submissions unverified. AppWorld: test-normal, published runs compared with the leaderboard as of Nov 11; not leaderboard submissions. All results: <a href="https://agenttoolkit.github.io/altk-evolve/results/">ALTK-Evolve results</a> · <a href="https://arxiv.org/abs/2609.32091">Memory as Middleware</a> (Middleware 2026)</p>
 </section>
 
 <!-- 8 · Evolve in Cortex -->
