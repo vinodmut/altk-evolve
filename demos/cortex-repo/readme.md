@@ -74,16 +74,17 @@ first commit rejection falls in the dropped middle.
 
 ## Skipping the learning step
 
-For a demo that starts after learning, seed the guidelines a session would have produced into
+For a demo that starts after learning, load the guidelines a session would have produced into
 the namespace the Cortex plugin serves. `guidelines/rules-20261111.json` holds the two
 guidelines Evolve learned with `guidelines_prompt=rules` from one Claude Code session, as
 served in the Nov 11 evaluation. Use the same Evolve settings as the running server:
 
 ```bash
 set -a; . "$WALK/evolve.env"; set +a
-uv run python demos/cortex-repo/seed_guidelines.py demos/cortex-repo/guidelines/rules-20261111.json
+uv run evolve entities import cortex demos/cortex-repo/guidelines/rules-20261111.json
+uv run evolve entities list cortex --type guideline
 ```
 
-It refuses a namespace that already has guidelines; `--replace` deletes them first, `--append`
-keeps them. `--namespace` picks another namespace (default `cortex`). The running server serves
-the new guidelines without a restart.
+`import` refuses a namespace that already has guidelines: `--replace` deletes them first,
+`--append` keeps them. The running server serves the new set without a restart.
+`evolve entities export cortex -o file.json` writes a namespace's guidelines in the same format.
