@@ -1,0 +1,15 @@
+  1    Bash  find $RUN/claude-guided-2 -type f | head -50 && echo "
+  2    Read  $RUN/claude-guided-2/schema/models.yaml
+  3    Read  $RUN/claude-guided-2/CHANGES.md
+  4    Read  $RUN/claude-guided-2/clients/python/VERSION
+  5    Read  $RUN/claude-guided-2/shopkit/models.py
+  6    Edit  $RUN/claude-guided-2/schema/models.yaml
+  7    Bash  cd $RUN/claude-guided-2 && make generate
+  8    Bash  cd $RUN/claude-guided-2 && make migration NAME=add_ord
+  9    Bash  cd $RUN/claude-guided-2 && make check && make test
+ 10    Read  $RUN/claude-guided-2/migrations/0003_add_order_discoun
+ 11    Read  $RUN/claude-guided-2/shopkit/models.py
+ 12    Edit  $RUN/claude-guided-2/CHANGES.md
+ 13    Write $RUN/claude-guided-2/clients/python/VERSION
+ 14    Bash  git status && git diff
+ 15    Bash  git add schema/models.yaml shopkit/models.py clients/python/shopkit_client.py clients/pyth

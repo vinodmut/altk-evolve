@@ -31,20 +31,21 @@ td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
 .tag.both { color: var(--info); background: var(--info-soft); }
 #contract table, #results table, #decisions table, #changes table, #history table { table-layout: fixed; width: 100%; }
 td code { overflow-wrap: anywhere; }
+#followup td:first-child code { overflow-wrap: normal; white-space: nowrap; }
 @media (max-width: 900px) { .score { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
 
 <header class="hero"><div class="hero-inner">
-  <span class="eyebrow">For the altk-evolve team · Nov 10, 2026</span>
+  <span class="eyebrow">For the altk-evolve team · Nov 10–11, 2026</span>
   <h1>Evolve inside Cortex: what we built, what we measured, what we need from Evolve</h1>
-  <p>Cortex is a proxy that sits in front of coding agents. We added a Cortex plugin that records each session, sends it to a stock Evolve MCP server to learn from, and injects reviewed guidelines into later sessions. Nobody grades or labels anything. This report covers the architecture, a fresh end-to-end run (learned from Claude Code, applied to new Claude Code and Codex sessions), the design decisions, and the questions that are Evolve's to answer.</p>
+  <p>Cortex is a proxy that sits in front of coding agents. We added a Cortex plugin that records each session, sends it to a stock Evolve MCP server to learn from, and injects reviewed guidelines into later sessions. Nobody grades or labels anything. This report covers the architecture, a fresh end-to-end run (learned from Claude Code, applied to new Claude Code and Codex sessions), a follow-up that changed only Evolve's guideline prompt, the design decisions, and the questions that are Evolve's to answer.</p>
   <div class="facts">
     <div class="fact"><span>Evolve changes needed</span><b>None to run · 3 to learn well</b></div>
     <div class="fact"><span>Learned from</span><b>1 Claude Code session</b></div>
     <div class="fact"><span>Evaluated on</span><b>4 pairs · 2 agents</b></div>
-    <div class="fact"><span>Headline</span><b>Rejections cut, not removed</b></div>
+    <div class="fact"><span>With a rule-stating prompt</span><b>First-try commits 0/4 → 3/4</b></div>
   </div>
 </div></header>
 
@@ -57,6 +58,7 @@ td code { overflow-wrap: anywhere; }
   <li><a href="#learned"><span class="num">4</span>What Evolve learned</a></li>
   <li><a href="#results"><span class="num">5</span>Results</a></li>
   <li><a href="#reading"><span class="num">6</span>What the results say</a></li>
+  <li><a href="#followup"><span class="num">+</span>Follow-up: rules prompt</a></li>
   <li><a href="#history"><span class="num">7</span>Earlier findings</a></li>
   <li><a href="#decisions"><span class="num">8</span>Design decisions</a></li>
   <li><a href="#changes"><span class="num">9</span>Evolve changes so far</a></li>
@@ -72,8 +74,9 @@ td code { overflow-wrap: anywhere; }
   <ul>
     <li><b>The loop works end to end with a stock Evolve server.</b> Cortex records a session, sends it to <code>process_trajectory</code> once idle, a person promotes candidates from <code>cortex-candidates</code> to <code>cortex</code>, and <code>get_guidelines_with_attribution</code> serves them to the next session. No Evolve API changes were needed.</li>
     <li><b>Learning from one Claude Code session helped both a new Claude Code session and a Codex session</b> (a different vendor's agent on a different model). Each guided session committed after at most one rejection. Codex baselines needed up to two.</li>
-    <li><b>The rule the training session ran into was not learned as a rule.</b> Evolve learned "bump VERSION" as a concrete step, and every guided run then got it right. It learned "add a CHANGES.md entry" only as "read the hook's error message", so every guided run still hit that rejection. Specific, scoped facts work; generalised recovery advice mostly doesn't.</li>
-    <li><b>The biggest open question for Evolve is scope.</b> Its prompt pushes guidelines to generalise, while the knowledge that helps here belongs to one repository. Evolve would need a way to keep facts tied to a repository or project and to retrieve by that scope.</li>
+    <li><b>With the default prompt, a rule the session ran into was learned only as recovery advice.</b> Evolve learned "bump VERSION" as a concrete step, and every guided run got it right. It learned "add a CHANGES.md entry" only as "read the hook's error message", and both guided Claude Code sessions still hit that rejection.</li>
+    <li><b>A prompt that states rules fixed it</b> (<a href="#followup">follow-up, Nov 11</a>). A new opt-in <code>rules</code> prompt states each requirement an error message spells out as a step to take first. On the same trajectory it produced the rule where the default produced recovery advice. In a fresh run, guided sessions committed first time 3/4 (0/4 before), no guided session missed the changelog, and Claude Code's cost per task halved.</li>
+    <li><b>The open question for Evolve is scope.</b> These guidelines name one repository's files. Nothing yet stops them being served in another repository.</li>
   </ul>
   <div class="callout why"><span class="icon">i</span><div><p>Sample sizes are small throughout: one training session and four interleaved pairs here, six pairs and 28 placement sessions earlier. Read the numbers as direction, not effect size.</p></div></div>
 </section>
@@ -224,7 +227,48 @@ Guidelines learned from earlier sessions on this machine. Apply them when they a
   <p>Training never broke the commit-subject rule, so Evolve had nothing to learn there. Both guided Codex sessions were rejected for it. A rule that one agent satisfies by habit (Claude Code writes lower-case Conventional Commit subjects) can still trip another agent, so learning from one harness leaves gaps for others.</p>
   <h3>Cost and tool calls</h3>
   <p>For Codex, guided sessions used fewer tool calls (9 and 12 against 13 and 15) and 23% fewer input tokens, because they avoided a rejection round trip. For Claude Code, calls and tokens were flat. Both arms had exactly one rejection, so there was no round trip to save.</p>
-  <div class="callout caution"><span class="icon">!</span><div><p><b>Takeaway for Evolve:</b> the gain came from the one guideline that stated a repository-specific fact as a step. The prompt's push to generalise (<i>"leave out … values specific to this task"</i>) works against exactly the kind of knowledge that helps an agent in a given repository.</p></div></div>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Takeaway for Evolve:</b> the gain came from the one guideline that stated a repository-specific fact as a step. Cortex sessions have no outcome, so they get the prompt's no-evaluation branch. That branch asks for guidelines specific to the trajectory, but nothing in it asks for a requirement an error states to be written as a step to take beforehand. The <a href="#followup">follow-up</a> tests exactly that change.</p></div></div>
+</section>
+
+
+<section class="card" id="followup">
+  <div class="step-head"><span class="step-num">+</span><h2>Follow-up: a prompt that states rules</h2><div class="meta"><span class="chip">Nov 11, 2026</span></div></div>
+  <p>One change to Evolve, and one to the experiment. The standard generator's prompt is now a setting, <code>guidelines_prompt</code> (<code>EVOLVE_GUIDELINES_PROMPT</code>, or per processing profile). <code>default</code> is the existing prompt and stays the default (<a href="https://github.com/vinodmut/altk-evolve/commit/1b84e3dc"><code>1b84e3dc</code></a>). The new <code>rules</code> prompt is the default plus one section:</p>
+  <pre class="tl"># Requirements the environment stated
+When a tool result, a check, a hook or an error message states a requirement (a file to update, a command to run, a format to follow), write a guideline that states that requirement as a step to take *before* the action it blocked. Name the files, sections, commands and formats exactly as the evidence states them. …
+- Cover each stated requirement. …
+- Put the condition that triggers the requirement (for example, which files changed) in the trigger.
+- Advice about recovering from an error is for errors whose message states no requirement.</pre>
+  <p>Its example is from an unrelated domain (a deploy script), so it can't hand the learner this repository's rules. Retrieval is unchanged: embedding similarity of the task, with no scope.</p>
+
+  <h3>Same trajectory, two prompts</h3>
+  <p>Today's training trajectory (46 messages, rejected once for the changelog and version) learned twice with each prompt, in a separate store:</p>
+  <table>
+    <tr><th>Prompt</th><th>What it learned about the rejection</th></tr>
+    <tr><td><code>default</code></td><td>"Run all pre-merge checks (<code>make check</code>) before committing to discover hook requirements…" and "When a pre-commit hook rejects a commit…, address each message exactly as stated before retrying." No guideline names CHANGES.md.</td></tr>
+    <tr><td><code>rules</code></td><td>"Before committing in this repository, update <code>CHANGES.md</code> by adding an entry under the <code>## Unreleased</code> section…, and bump <code>clients/python/VERSION</code> to the next minor version when a new field is added to the Python client." Trigger: "When <code>schema/models.yaml</code> is modified…"</td></tr>
+  </table>
+  <p class="note">The <code>rules</code> prompt also learned the workflow as one step list (<code>make generate</code>, <code>make migration</code>, <code>make check &amp;&amp; make test</code>): 2 guidelines in place of 4. The two runs per prompt were word for word identical, which may be the proxy caching identical requests, so they show the result is stable here, not that it was sampled twice.</p>
+
+  <h3>The loop again, with the rules prompt</h3>
+  <p>Same procedure as <a href="#experiment">section 3</a>: fresh Evolve data, one Claude Code training session, both guidelines promoted, then four interleaved pairs on the <code>discount_code</code> task.</p>
+  <table>
+    <tr><th>Guided sessions</th><th class="n">Default prompt (Nov 10)</th><th class="n"><code>rules</code> prompt (Nov 11)</th><th class="n">Baselines (both days)</th></tr>
+    <tr><td>Committed on the first try</td><td class="n">0/4</td><td class="n"><b>3/4</b></td><td class="n">0/8</td></tr>
+    <tr><td>Missed the CHANGES.md entry</td><td class="n">2/4</td><td class="n"><b>0/4</b></td><td class="n">8/8</td></tr>
+    <tr><td>Missed the VERSION bump</td><td class="n">0/4</td><td class="n">0/4</td><td class="n">8/8</td></tr>
+    <tr><td>Rejected commits, total</td><td class="n">4</td><td class="n"><b>1</b></td><td class="n">5 and 6</td></tr>
+  </table>
+  <table>
+    <tr><th>Nov 11, per agent</th><th class="n">Guided</th><th class="n">Baseline</th><th class="n">Change</th></tr>
+    <tr><td>Claude Code: tool calls, two runs</td><td class="n">12, 15</td><td class="n">24, 19</td><td class="n">−37%</td></tr>
+    <tr><td>Claude Code: input tokens, total</td><td class="n">707k</td><td class="n">1,269k</td><td class="n">−44%</td></tr>
+    <tr><td>Claude Code: cost, total</td><td class="n">$0.37</td><td class="n">$0.72</td><td class="n">−49%</td></tr>
+    <tr><td>Codex: rejected commits, two runs</td><td class="n">1, 0</td><td class="n">2, 2</td><td class="n"></td></tr>
+    <tr><td>Codex: input tokens, total</td><td class="n">305k</td><td class="n">392k</td><td class="n">−22%</td></tr>
+  </table>
+  <p>Both guided Claude Code sessions and one guided Codex session committed first time. The remaining rejection was Codex's commit subject, a rule the training session never broke, so there was nothing to learn. All eight sessions passed the grader and bumped the client to 1.4.0.</p>
+  <p class="note">Two pairs per agent; baseline Claude Code 2 also started a subagent, which adds to its cost. Evidence: <a href="reports/loop-rules-20261111/"><code>reports/loop-rules-20261111/</code></a>, including the same-trajectory control.</p>
 </section>
 
 <section class="card" id="history">
@@ -271,12 +315,12 @@ Guidelines learned from earlier sessions on this machine. Apply them when they a
   <p>Each is a design choice that changes what the integration can do. <span class="tag evolve">Evolve</span> marks ones that are Evolve's to decide; <span class="tag both">both</span> marks ones to decide together.</p>
 
   <div class="q"><h3><span class="tag evolve">Evolve</span>1. Should guidelines be allowed to be specific to a scope, such as a repository?</h3>
-    <p class="now">Today the generation prompt asks guidelines to generalise and to leave out task-specific values. The results here show the opposite need: the guideline that worked named the file and the rule.</p>
+    <p class="now">The guidelines that worked name one repository's files and rules. Evolve stores no scope with a guideline, and retrieval ranks by task similarity, so a "add a field" task in another repository would be served them too. (The prompt's outcome branch also asks to leave out values specific to the task; Cortex sessions don't use that branch.)</p>
     <p>Cortex knows each session's working directory and could send it as a scope. That would need Evolve to (a) let a guideline name concrete files and rules when they belong to its scope, (b) store the scope, and (c) filter or weight retrieval by it. Without scope, a repository-specific fact learned in one repository would be served in every other.</p></div>
 
   <div class="q"><h3><span class="tag evolve">Evolve</span>2. Should a guideline state the rule, or how to recover?</h3>
     <p class="now">Evolve turned the hook's CHANGES.md message into "read hook failure messages carefully", and every guided Claude Code session was still rejected for it.</p>
-    <p>When an error message spells out the rule (<i>"changed without an entry in CHANGES.md under '## Unreleased'"</i>), the useful guideline is the rule itself, stated as a step before the action. Could the prompt prefer preventive rules when the evidence states one, and keep recovery advice for when it doesn't?</p></div>
+    <p>When an error message spells out the rule (<i>"changed without an entry in CHANGES.md under '## Unreleased'"</i>), the useful guideline is the rule itself, stated as a step before the action. <b>Tried on Nov 11</b> as the opt-in <code>rules</code> prompt (<a href="#followup">follow-up</a>): it did exactly this, and guided runs then committed first time. Should it become the default, for every client of Evolve or for coding sessions only?</p></div>
 
   <div class="q"><h3><span class="tag evolve">Evolve</span>3. What should the default trajectory window be for long coding sessions?</h3>
     <p class="now">The default keeps 50 steps: the first 40 and the last 10. In an earlier run this dropped the step with the most useful rejection. The demos raise it to 150 through the plugin's processing profile.</p>
@@ -311,7 +355,8 @@ Guidelines learned from earlier sessions on this machine. Apply them when they a
   <h2>Future work</h2>
   <h3>For Evolve</h3>
   <ol>
-    <li><b>Scoped, concrete guidelines</b> (question 1), then re-run this experiment. The test: do guided runs commit first time?</li>
+    <li><b>Decide whether <code>rules</code> becomes the default prompt</b> (question 2), after trying it on other kinds of trajectory (AppWorld, τ²-bench), where the default prompt's results were measured.</li>
+    <li><b>Scope</b> (question 1): store where a guideline applies and filter retrieval by it, before rule-stating guidelines are shared across repositories.</li>
     <li><b>Upstream the three learning fixes</b> (<code>91143f06</code>, <code>95c177f6</code>, <code>3aab085f</code>).</li>
     <li><b>A larger or failure-aware trajectory window</b> by default (question 3).</li>
     <li><b>Per-guideline outcome input</b>, so a caller can report "sessions with this guideline did better or worse" (question 4).</li>

@@ -1,0 +1,19 @@
+  1    exec  const r = await tools.exec_command({cmd:"pwd && rg --files -g '!*.pyc' | head -80 && git s
+  2    exec  const r = await tools.exec_command({cmd:"sed -n '1,220p' shopkit/models.py; sed -n '1,260p
+  3    exec  const r = await tools.exec_command({cmd:"sed -n '1,260p' tools/schema.py; sed -n '1,260p' 
+  4    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  5    exec  const r = await tools.exec_command({cmd:"make generate && make migration NAME=order_discou
+  6    exec  const r = await tools.exec_command({cmd:"cat migrations/0003_order_discount_code.sql && gi
+  7    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  8    exec  const results = await Promise.all([   tools.exec_command({cmd:"make check",workdir:"/Users
+  9    exec  const r = await tools.exec_command({cmd:"git diff --check && git diff --stat && git diff &
+ 10    exec  const r = await tools.exec_command({cmd:"git add schema/models.yaml shopkit/models.py clie
+        → pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
+        → pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
+        → pre-commit: commit rejected
+ 11    exec  const r = await tools.exec_command({cmd:"sed -n '1,180p' CHANGES.md; printf '\\nVERSION=';
+ 12    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+ 13    exec  const results = await Promise.all([   tools.exec_command({cmd:"make check",workdir:"/Users
+ 14    exec  const r = await tools.exec_command({cmd:"git add CHANGES.md clients/python/VERSION && git 
+        → commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'
+ 15    exec  const r = await tools.exec_command({cmd:"git commit -m \"feat(orders): add optional discou

@@ -1,0 +1,22 @@
+{
+  "ctl-default-1": [
+    "Identify and respect the source-of-truth file before modifying any derived/generated files. Only edit the source file, then use the project's generation tooling to update derived files.",
+    "After schema changes, run the project's migration tool to auto-generate the SQL migration rather than writing it manually.",
+    "Run all pre-merge checks (`make check`) before committing to discover hook requirements, then satisfy them before attempting the commit.",
+    "When a pre-commit hook rejects a commit with specific, actionable messages, address each message exactly as stated before retrying the commit."
+  ],
+  "ctl-default-2": [
+    "Identify and respect the source-of-truth file before modifying any derived/generated files. Only edit the source file, then use the project's generation tooling to update derived files.",
+    "After schema changes, run the project's migration tool to auto-generate the SQL migration rather than writing it manually.",
+    "Run all pre-merge checks (`make check`) before committing to discover hook requirements, then satisfy them before attempting the commit.",
+    "When a pre-commit hook rejects a commit with specific, actionable messages, address each message exactly as stated before retrying the commit."
+  ],
+  "ctl-rules-1": [
+    "Before committing in this repository, update `CHANGES.md` by adding an entry under the `## Unreleased` section describing the change, and bump `clients/python/VERSION` to the next minor version when a new field is added to the Python client.",
+    "When adding a new field to a model, follow the four-step sequence: (1) edit `schema/models.yaml`, (2) run `make generate` to regenerate `shopkit/models.py` and `clients/python/shopkit_client.py`, (3) run `make migration NAME=<change>` to create the SQL migration, (4) run `make check && make test` to verify consistency before staging."
+  ],
+  "ctl-rules-2": [
+    "Before committing in this repository, update `CHANGES.md` by adding an entry under the `## Unreleased` section describing the change, and bump `clients/python/VERSION` to the next minor version when a new field is added to the Python client.",
+    "When adding a new field to a model, follow the four-step sequence: (1) edit `schema/models.yaml`, (2) run `make generate` to regenerate `shopkit/models.py` and `clients/python/shopkit_client.py`, (3) run `make migration NAME=<change>` to create the SQL migration, (4) run `make check && make test` to verify consistency before staging."
+  ]
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "content": "Before committing in this repository, update `CHANGES.md` by adding an entry under the `## Unreleased` section describing the change, and bump `clients/python/VERSION` to the next minor version when a new field is added to the Python client.",
+    "trigger": "When `schema/models.yaml` is modified and/or `clients/python/shopkit_client.py` is regenerated (e.g., after adding a field to any model).",
+    "rationale": "The pre-commit hook explicitly checks for a `CHANGES.md` entry under `## Unreleased` when `schema/models.yaml` changes, and requires `clients/python/VERSION` to be bumped (minor) when `clients/python/shopkit_client.py` changes. Omitting either causes the commit to be rejected.",
+    "guidelines_prompt": "rules"
+  },
+  {
+    "id": "2",
+    "content": "When adding a new field to a model, follow the four-step sequence: (1) edit `schema/models.yaml`, (2) run `make generate` to regenerate `shopkit/models.py` and `clients/python/shopkit_client.py`, (3) run `make migration NAME=<change>` to create the SQL migration, (4) run `make check && make test` to verify consistency before staging.",
+    "trigger": "When adding, removing, or changing any field in any model in this repository.",
+    "rationale": "`schema/models.yaml` is the single source of truth; the Python model, the Python client, and SQL migrations are all derived from it. Running the generation and migration tools ensures all derived artifacts stay in sync, and `make check` confirms they match before committing.",
+    "guidelines_prompt": "rules"
+  }
+]

@@ -1,0 +1,12 @@
+  1    Bash  find $RUN/claude-guided-1 -type f | head -50 && echo "
+  2    Read  $RUN/claude-guided-1/schema/models.yaml
+  3    Read  $RUN/claude-guided-1/CHANGES.md
+  4    Read  $RUN/claude-guided-1/clients/python/VERSION
+  5    Edit  $RUN/claude-guided-1/schema/models.yaml
+  6    Bash  cd $RUN/claude-guided-1 && make generate 2>&1
+  7    Bash  cd $RUN/claude-guided-1 && make migration NAME=order_d
+  8    Bash  cd $RUN/claude-guided-1 && make check && make test 2>&
+  9    Edit  $RUN/claude-guided-1/CHANGES.md
+ 10    Write $RUN/claude-guided-1/clients/python/VERSION
+ 11    Bash  git -C $RUN/claude-guided-1 status
+ 12    Bash  git -C $RUN/claude-guided-1 add CHANGES.md clients/pyt

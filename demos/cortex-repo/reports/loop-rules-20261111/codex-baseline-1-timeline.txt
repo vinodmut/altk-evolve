@@ -1,0 +1,16 @@
+  1    exec  const r = await tools.exec_command({cmd:"pwd && rg --files -g '!*.pyc' | head -200 && git 
+  2    exec  const results = await Promise.all([   tools.exec_command({cmd:"sed -n '1,260p' schema/mode
+  3    exec  const r = await tools.exec_command({cmd:"sed -n '1,360p' tools/schema.py && sed -n '1,240p
+  4    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+  5    exec  const r = await tools.exec_command({cmd:"make generate && make migration NAME=order_discou
+  6    exec  const r = await tools.exec_command({cmd:"make check && make test && git status --short && 
+  7    exec  const r = await tools.exec_command({cmd:"git diff --stat && git diff -- clients/python/sho
+  8    exec  const r = await tools.exec_command({cmd:"git add schema/models.yaml shopkit/models.py clie
+        → pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'
+        → pre-commit: clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)
+        → pre-commit: commit rejected
+  9    exec  const r = await tools.exec_command({cmd:"sed -n '1,120p' CHANGES.md && printf 'VERSION=' &
+ 10    exec  const patch = "*** Begin Patch\n*** Update File: $RUN/
+ 11    exec  const r = await tools.exec_command({cmd:"git add CHANGES.md clients/python/VERSION && make
+        → commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'
+ 12    exec  const r = await tools.exec_command({cmd:"git commit -m \"feat(orders): add discount code\"
