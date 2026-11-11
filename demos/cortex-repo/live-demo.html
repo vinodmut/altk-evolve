@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live demo runbook: Evolve in Cortex</title>
+<link rel="stylesheet" href="walkthrough.css">
+<style>
+pre.out { margin: 10px 0; padding: 12px 14px; background: var(--code-bg); color: var(--code-ink); border-radius: 10px; overflow-x: auto; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
+pre.out .x { color: #f4a4a0; } pre.out .ok { color: #7ee2a8; } pre.out .dim { color: var(--code-dim); }
+.flowpick { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 4px; }
+.flowpick a { display: block; text-decoration: none; color: inherit; background: var(--panel); border-radius: 12px; padding: 14px 16px; border: 1px solid var(--line); }
+.flowpick a:hover { border-color: var(--accent); }
+.flowpick b { display: block; font-size: 16px; margin-bottom: 4px; }
+.cmd.wrap pre, .cmd.wrap pre code { white-space: pre-wrap; }
+.say { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; margin: 10px 0; color: var(--ink-2); font-style: italic; }
+@media (max-width: 900px) { .flowpick { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="hero-inner">
+  <span class="eyebrow">Live demo runbook</span>
+  <h1>Evolve in Cortex, live: learn from one agent, help another</h1>
+  <p>Two demos of the same repository with rules no prompt mentions. In the first, Claude Code makes a mistake, Evolve learns from it, you promote what it learned, and Codex benefits. In the second, Codex runs twice, without and with guidelines loaded from a file. Every step is one script.</p>
+  <div class="facts">
+    <div class="fact"><span>Flow 1</span><b>Claude Code → Codex · ~8 min</b></div>
+    <div class="fact"><span>Flow 2</span><b>Codex → Codex · ~4 min</b></div>
+    <div class="fact"><span>Rehearsed</span><b>Nov 11, 2026</b></div>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="Sections"><b>Sections</b><ol>
+  <li><a href="#before"><span class="num">0</span>Before the talk</a></li>
+  <li><a href="#codex-setup"><span class="num">0</span>Codex through Cortex</a></li>
+  <li><a href="#prompts"><span class="num">“</span>The prompts</a></li>
+  <li><a href="#flow1"><span class="num">1</span>Flow 1: Claude → Codex</a></li>
+  <li><a href="#flow2"><span class="num">2</span>Flow 2: Codex → Codex</a></li>
+  <li><a href="#evidence"><span class="num">✓</span>Show the evidence</a></li>
+  <li><a href="#fallbacks"><span class="num">!</span>Fallbacks</a></li>
+  <li><a href="#trouble"><span class="num">?</span>Troubleshooting</a></li>
+  <li class="extra"><a href="#scripts"><span class="num">≡</span>Script reference</a></li>
+</ol></nav>
+
+<main>
+
+<section class="card" id="pick">
+  <h2>Which flow</h2>
+  <div class="flowpick">
+    <a href="#flow1"><b>Flow 1 · Claude Code → Codex</b>The whole loop live: a Claude Code session is rejected by the repository's hooks, Evolve learns from it with no feedback, you promote the guidelines, and Codex does a different change without that mistake. Shows learning, the review gate and transfer across agents.</a>
+    <a href="#flow2"><b>Flow 2 · Codex → Codex</b>Learning skipped: the same Codex task twice, first with no guidelines, then with guidelines loaded from a file. Shorter and more predictable; shows only the effect.</a>
+  </div>
+  <p>Both use <code>shopkit</code>, whose git hooks reject a commit that changes the schema unless <code>CHANGES.md</code> has an entry under <code>## Unreleased</code>, <code>clients/python/VERSION</code> is bumped, and the subject is a Conventional Commit.</p>
+</section>
+
+<section class="card" id="before">
+  <div class="step-head"><span class="step-num">0</span><h2>Before the talk</h2><div class="meta"><span class="chip">once</span></div></div>
+  <p>This runbook assumes the setup from the <a href="walkthrough-manual.html">manual walkthrough</a>: <code>$WALK/env.sh</code>, Evolve's MCP server on <code>$EVOLVE_PORT</code>, a dev Cortex with the evolve plugin on <code>$CORTEX_PROXY</code>/<code>$CORTEX_API</code>, <code>$WALK/claude-dev.json</code>, and the shopkit virtualenv. Two additions:</p>
+  <ul>
+    <li><b>Evolve learns with the <code>rules</code> prompt.</b> Add <code>EVOLVE_GUIDELINES_PROMPT=rules</code> to the Evolve server's env file and restart it. It states the rule an error spells out ("add an entry under <code>## Unreleased</code> in <code>CHANGES.md</code>…") instead of recovery advice.</li>
+    <li><b>Codex goes through the dev Cortex</b>: <a href="#codex-setup">next section</a>.</li>
+  </ul>
+  <p>The scripts are in <code>demos/cortex-repo/live/</code> of the altk-evolve checkout. Every terminal sources <code>env.sh</code> first. If the Evolve server's env file isn't <code>$WALK/evolve.env</code>, say where it is:</p>
+  <div class="cmd" data-label="Every terminal"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
+export EVOLVE_ENV_FILE="$WALK/evolve.env"
+cd "$EVOLVE_SRC/demos/cortex-repo/live"</code></pre></div>
+  <p>Three terminals work well: <b>A</b> for the agents, <b>B</b> for the scripts, and optionally <b>C</b> for <code>agentop observe</code> on the dev Cortex (<a href="#evidence">evidence</a>). Make the agent terminal's font large.</p>
+  <div class="callout caution"><span class="icon">!</span><div><p><b>Rehearse once, end to end, on the machine and network you'll present from.</b> The models vary from run to run, and an interactive Codex session should be checked once to confirm it goes through the dev Cortex (<a href="#codex-check">check</a>).</p></div></div>
+</section>
+
+<section class="card" id="codex-setup">
+  <div class="step-head"><span class="step-num">0</span><h2>Codex through the dev Cortex</h2><div class="meta"><span class="chip">once · 5 min</span></div></div>
+  <p>Codex gets its own <code>CODEX_HOME</code>, whose <code>.env</code> points it at the dev Cortex, and its own <code>HOME</code>, so none of your personal skills or settings reach the demo. Its <code>.env</code> wins over the shell's proxy variables, so your everyday Codex is unaffected.</p>
+  <div class="cmd" data-label="Terminal B"><pre><code>mkdir -p "$WALK/codex-home" "$WALK/codex-user"
+cat &gt; "$WALK/codex-home/config.toml" &lt;&lt;EOF
+model_provider = "walk_litellm"
+model = "azure/gpt-5.6-luna"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[model_providers.walk_litellm]
+name = "LiteLLM via dev Cortex"
+base_url = "$LITELLM_URL/v1"
+wire_api = "responses"
+env_key = "WALK_LITELLM_KEY"
+supports_websockets = false
+
+[features]
+skill_search = false
+memories = false
+plugins = false
+hooks = false
+apps = false
+multi_agent = false
+
+[projects."$WALK/live/shopkit"]
+trust_level = "trusted"
+EOF
+umask 077; cat &gt; "$WALK/codex-home/.env" &lt;&lt;EOF
+WALK_LITELLM_KEY=$LITELLM_KEY
+HTTPS_PROXY=http://127.0.0.1:$CORTEX_PROXY
+HTTP_PROXY=http://127.0.0.1:$CORTEX_PROXY
+SSL_CERT_FILE=$WALK/cortex-home/.cortex/ca/bundle.crt
+EOF
+printf 'export PATH="%s/shopkit-venv/bin:$PATH"\n' "$WALK" &gt; "$WALK/codex-user/.zprofile"
+printf '[user]\n\tname = shopkit agent\n\temail = agent@shopkit.test\n[init]\n\tdefaultBranch = main\n' &gt; "$WALK/codex-user/.gitconfig"</code></pre></div>
+  <ul>
+    <li><b>Model:</b> any Responses-API model your key serves. The rehearsal used <code>azure/gpt-5.6-luna</code>, which reliably makes the mistake without guidelines.</li>
+    <li><b><code>danger-full-access</code></b>: Codex's default sandbox makes <code>.git</code> read-only, so it couldn't commit. The demo repository is a throwaway clone.</li>
+    <li><b>Session grouping:</b> Codex names its session in a <code>Session-Id</code> header. Add it to the dev Cortex's <code>session.id_headers</code> list, next to <code>X-Session-Id</code>, and restart the dev Cortex (this setting isn't hot-reloaded).</li>
+  </ul>
+  <p id="codex-check">Check it once:</p>
+  <div class="cmd" data-label="Terminal B"><pre><code>./reset.sh
+./codex.sh exec "Reply with exactly: READY" &lt; /dev/null
+curl -s --noproxy '*' "127.0.0.1:$CORTEX_API/v1/sessions?archived=true" | jq -r '[.sessions[] | select(.agent=="codex")] | max_by(.createdAt) | .id'</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>READY</code>, then a session ID: the dev Cortex recorded the Codex session. During the rehearsal, start an interactive <code>./codex.sh</code> too and check that its session also appears.</p></div></div>
+</section>
+
+<section class="card" id="prompts">
+  <h2>The prompts</h2>
+  <p>Paste these unchanged. The first paragraph is the task from the experiments; the second makes each agent end with a summary that lists its failures, so the audience sees what happened without reading the whole log. It is worded so it doesn't hint at the hooks.</p>
+  <div class="cmd wrap" data-label="Paste into Claude Code (Flow 1, source task)"><pre><code>In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.
+
+When you're done, summarize what you did as a numbered list of steps. Include every step that failed, with the error message and how you fixed it.</code></pre></div>
+  <div class="cmd wrap" data-label="Paste into Codex (both flows, target task)"><pre><code>In this repository, add an optional `discount_code` field (text) to orders. It should be stored and loaded like the other order fields and accepted by the Python client. Commit the change when it is ready to merge.
+
+When you're done, summarize what you did as a numbered list of steps. Include every step that failed, with the error message and how you fixed it.</code></pre></div>
+</section>
+
+<section class="card" id="flow1">
+  <div class="step-head"><span class="step-num">1</span><h2>Flow 1 · Claude Code → Codex</h2><div class="meta"><span class="chip">~8 min</span></div></div>
+
+  <h3>1.1 Prepare <span class="chip">before you start talking</span></h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh          # guidelines on, learning on, 30 s idle, empty namespaces
+./reset.sh            # fresh shopkit with one commit</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Served guidelines and candidates cleared.</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait.</p></div></div>
+
+  <h3>1.2 Claude Code does the source task <span class="chip">~2 min</span></h3>
+  <div class="cmd" data-label="Terminal A"><pre><code>./claude.sh</code></pre></div>
+  <p>Paste the <a href="#prompts">Claude Code prompt</a>. When it has printed its summary, type <code>/exit</code>.</p>
+  <div class="say">It does the change well. Now watch the commit: the repository's hooks reject it for two rules nobody told it about. It reads the error, fixes both, and commits again.</div>
+  <div class="callout expect"><span class="icon">✓</span><div><p>From the rehearsal (100 s):</p><pre class="out">7. <b>Ran `git commit`</b> — <span class="x">failed</span> with two pre-commit hook errors:
+   - `schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'`
+   - `clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)`
+8. Fixed by editing `CHANGES.md` …
+9. Fixed by editing `clients/python/VERSION` — bumped `1.3.0` → `1.4.0` …
+10. Re-ran `git commit` — <span class="ok">all 6 files committed successfully</span></pre></div></div>
+
+  <h3>1.3 Watch Evolve learn <span class="chip">~1 min</span></h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./candidates.sh wait</code></pre></div>
+  <div class="say">Nobody graded that session or gave feedback. Cortex saw it go quiet, sent it to Evolve, and Evolve is working out what to learn from the rejection.</div>
+  <div class="callout expect"><span class="icon">✓</span><div><p>A table of candidates, about 45 s after the session ended in the rehearsal. IDs keep counting across runs, so use the ones shown. To read one in full, with its trigger, rationale and source session: <code>./candidates.sh show &lt;id&gt;</code>. The rehearsal learned:</p><pre class="out">[3] Before committing changes to `schema/models.yaml` or `clients/python/shopkit_client.py`, add an entry
+    under `## Unreleased` in `CHANGES.md` and bump `clients/python/VERSION` (minor version for a new field).
+[4] In the shopkit repository, follow the full four-step pipeline when adding a field to a model: (1) edit
+    `schema/models.yaml`, (2) run `make generate`, (3) run `make migration NAME=&lt;name&gt;`, (4) run `make test`.
+[5] When adding an optional field to a model in shopkit, declare it with `{type: str}` …</pre></div></div>
+
+  <h3>1.4 Promote them <span class="chip">~30 s</span></h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./promote.sh 3 4 5        # the IDs from the table
+./guidelines.sh list</code></pre></div>
+  <div class="say">This is the review gate. What Evolve learns is only a candidate. Nothing reaches an agent until a person promotes it, so a web page an agent read can't become a standing instruction.</div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>Imported into 'cortex'</code> with one <code>ADD</code> per guideline, each keeping its source session as provenance.</p></div></div>
+
+  <h3>1.5 Codex does a different task <span class="chip">~1–2 min</span></h3>
+  <div class="cmd" data-label="Terminal B, then A"><pre><code>./reset.sh
+./codex.sh</code></pre></div>
+  <p>Paste the <a href="#prompts">Codex prompt</a>.</p>
+  <div class="say">Different vendor, different model, different change. It has never seen this repository, but its first request carries what Claude Code's session taught. Watch for CHANGES.md and VERSION before its first commit.</div>
+  <div class="callout expect"><span class="icon">✓</span><div><p>From the rehearsal (63 s):</p><pre class="out">2. <span class="ok">Updated `CHANGES.md` and bumped client version to `1.4.0`.</span>
+4. Ran `make generate`, migration generation, `make test` (3 passed), `make check` …
+5. <span class="x">First commit failed due to Conventional Commit requirement.</span> Fixed with `feat(orders): add discount code`.
+6. Committed as `f19d4cc`.</pre></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><b>Expect the commit-subject rejection, and use it.</b> Claude Code writes Conventional Commit subjects by habit, so its session never broke that rule and there was nothing to learn. <i>"It learned exactly what one agent hit. What it never saw, it can't know."</i> For contrast, show slide 13 or run <a href="#flow2">Flow 2's first run</a> beforehand. Without guidelines, Codex is also rejected for the changelog and version.</p></div></div>
+
+  <h3>1.6 After the demo</h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh 90           # back to a 90 s idle wait; also empties the namespaces</code></pre></div>
+</section>
+
+<section class="card" id="flow2">
+  <div class="step-head"><span class="step-num">2</span><h2>Flow 2 · Codex → Codex</h2><div class="meta"><span class="chip">~4 min</span></div></div>
+  <p>Learning is skipped: the second run uses <code>guidelines/rules-20261111.json</code>, the two guidelines the <code>rules</code> prompt learned from a Claude Code session on Nov 11.</p>
+
+  <h3>2.1 Codex without guidelines <span class="chip">~1–2 min</span></h3>
+  <div class="cmd" data-label="Terminal B, then A"><pre><code>./guidelines.sh clear     # Evolve serves nothing
+./reset.sh
+./codex.sh</code></pre></div>
+  <p>Paste the <a href="#prompts">Codex prompt</a>. Quit Codex (<code>/quit</code>) when it has printed its summary, so the next run is a new session.</p>
+  <div class="callout expect"><span class="icon">✓</span><div><p>From the rehearsal (73 s):</p><pre class="out">3. Updated changelog and bumped client version to `1.4.0`.
+5. <span class="x">Commit attempts failed twice:</span>
+   - Missing changelog/version updates; fixed both.
+   - Invalid commit message format; fixed with Conventional Commit format.
+6. Committed successfully: `c534c3b feat(orders): add optional discount code`.</pre></div></div>
+
+  <h3>2.2 Load the guidelines <span class="chip">~20 s</span></h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./guidelines.sh load      # guidelines/rules-20261111.json; replaces whatever is served</code></pre></div>
+  <div class="say">These two guidelines were learned from a single Claude Code session, with no feedback. The first is the rule the hook enforces, written as a step to take before committing.</div>
+
+  <h3>2.3 Codex again, same task, fresh repository <span class="chip">~1–2 min</span></h3>
+  <div class="cmd" data-label="Terminal B, then A"><pre><code>./reset.sh
+./codex.sh</code></pre></div>
+  <p>Paste the same prompt.</p>
+  <div class="callout expect"><span class="icon">✓</span><div><p>CHANGES.md and VERSION are updated before the first commit, and the changelog/version rejection doesn't happen. As in Flow 1, a commit-subject rejection may remain; that rule is in neither guideline.</p></div></div>
+  <p class="note">Recorded result, two pairs: changelog and version rejections 2/2 without guidelines, 0/2 with them; rejected commits 2, 2 → 1, 1 (<a href="reports/loop-rules-20261111/">evidence</a>).</p>
+</section>
+
+<section class="card" id="evidence">
+  <h2>Show the evidence</h2>
+  <p>To prove where the change came from, open the dev Cortex in agentop in terminal C:</p>
+  <div class="cmd" data-label="Terminal C"><pre><code>agentop observe -endpoint "http://127.0.0.1:$CORTEX_API"</code></pre></div>
+  <ul>
+    <li>Open the guided Codex session and its first request. The evolve plugin's entry shows <code>injected: true</code> and the guideline IDs. The request's first user message starts with the <code>&lt;evolve-guidelines&gt;</code> block.</li>
+    <li>The timeline shows each command with its output, including the hooks' messages under a rejected commit.</li>
+    <li>From the command line instead: <code>./guidelines.sh list</code> for what is served, <code>./candidates.sh list</code> for what was learned.</li>
+  </ul>
+</section>
+
+<section class="card" id="fallbacks">
+  <h2>Fallbacks</h2>
+  <table>
+    <tr><th>If</th><th>Then</th></tr>
+    <tr><td><code>./candidates.sh wait</code> takes too long or learns nothing useful</td><td><code>./guidelines.sh load</code> serves the recorded guidelines from the same kind of session; carry on with 1.5.</td></tr>
+    <tr><td>Interactive Codex doesn't reach the dev Cortex</td><td><code>./codex.sh exec "&lt;prompt&gt;" &lt; /dev/null</code> runs the same session non-interactively and streams every command.</td></tr>
+    <tr><td>Network or model trouble</td><td>Present the recorded run: slides 11–15 of the talk, and the timelines in <a href="reports/loop-rules-20261111/"><code>reports/loop-rules-20261111/</code></a>.</td></tr>
+    <tr><td>You'd rather turn guidelines off at the proxy than empty the namespace</td><td><code>./inject.sh off</code> / <code>./inject.sh on</code> switch the dev Cortex in about half a second, between sessions.</td></tr>
+  </table>
+</section>
+
+<section class="card" id="trouble">
+  <h2>Troubleshooting</h2>
+  <ul>
+    <li><b>No candidates.</b> The dev Cortex log should show <code>evolve: sent idle session to learn from</code> about 30 s after the session's last request. If it shows <code>sending session to learn from failed</code>, check the Evolve server's log for the model error. A config change, including <code>./inject.sh</code> or <code>./prepare.sh</code>, drops a session that hasn't been sent yet, so don't switch anything between 1.2 and 1.3.</li>
+    <li><b>Guidelines not injected.</b> <code>./inject.sh status</code> should say ON and <code>./guidelines.sh list</code> should list them. Guidelines are fetched once per session, so start a new Codex session after loading.</li>
+    <li><b>No hook rejections at all.</b> The hooks run Python from the shopkit virtualenv. Check <code>$WALK/codex-user/.zprofile</code> puts it on <code>PATH</code>, and that <code>./reset.sh</code> set <code>core.hooksPath</code>.</li>
+    <li><b>Codex runs but Cortex shows a <code>pending:codex@…</code> bucket</b> instead of a session: add <code>Session-Id</code> to <code>session.id_headers</code> and restart the dev Cortex.</li>
+  </ul>
+</section>
+
+<section class="card" id="scripts">
+  <h2>Script reference</h2>
+  <p>In <code>demos/cortex-repo/live/</code>. Source <code>env.sh</code> first. Paths can be overridden with <code>EVOLVE_ENV_FILE</code>, <code>CORTEX_CONFIG</code>, <code>CODEX_HOME_DIR</code>, <code>CODEX_USER_HOME</code> and <code>DEMO_REPO</code>.</p>
+  <table>
+    <tr><th>Script</th><th>Does</th></tr>
+    <tr><td><code>prepare.sh [idle]</code></td><td>Sets the evolve plugin to inject and learn with a short idle wait (default 30 s), and empties <code>cortex</code> and <code>cortex-candidates</code>.</td></tr>
+    <tr><td><code>reset.sh</code></td><td>A fresh shopkit at <code>$WALK/live/shopkit</code> with one commit and its hooks enabled.</td></tr>
+    <tr><td><code>claude.sh</code> / <code>codex.sh</code></td><td>Start the agent in the demo repository through the dev Cortex. Extra arguments are passed on (for example <code>exec "…"</code>).</td></tr>
+    <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | clear</code></td><td>What Evolve learned; <code>wait</code> polls until new candidates appear.</td></tr>
+    <tr><td><code>promote.sh &lt;id&gt;…</code></td><td>Copies candidates into the served namespace with their metadata (<code>evolve entities export</code> → <code>import --append</code>).</td></tr>
+    <tr><td><code>guidelines.sh list | clear | load [file]</code></td><td>What the dev Cortex serves; <code>load</code> replaces it from a file (default <code>guidelines/rules-20261111.json</code>).</td></tr>
+    <tr><td><code>inject.sh on | off | status</code></td><td>Switches injection in the dev Cortex through its config hot-reload.</td></tr>
+  </table>
+  <p class="note">Related: <a href="walkthrough-manual.html">manual walkthrough</a> · <a href="evolve-team-report.html">report for the Evolve team</a> · <a href="../evolve-cortex-talk.html">talk deck</a></p>
+</section>
+
+<p class="foot">Cortex + Evolve · live demo runbook · rehearsed Nov 11, 2026</p>
+</main>
+</div>
+<script src="walkthrough.js"></script>
+</body>
+</html>

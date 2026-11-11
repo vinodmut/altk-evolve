@@ -88,3 +88,6 @@ uv run evolve entities list cortex --type guideline
 `import` refuses a namespace that already has guidelines: `--replace` deletes them first,
 `--append` keeps them. The running server serves the new set without a restart.
 `evolve entities export cortex -o file.json` writes a namespace's guidelines in the same format.
+
+For a live demo, [live-demo.html](live-demo.html) is a runbook for two flows, Claude Code → Codex
+(the whole loop) and Codex → Codex (guidelines from a file), built on the scripts in `live/`.
