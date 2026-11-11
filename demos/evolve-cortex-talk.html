@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agents that learn from their mistakes: ALTK-Evolve and Cortex</title>
+<style>
+:root {
+  --bg: #0f1218; --slide: #14171f; --ink: #f4f5f8; --ink-2: #c3c7d2; --muted: #8b91a1; --line: #2a2f3b;
+  --is: #d95926; --could: #3987e5; --good: #4cc38a; --warn: #e9b35a; --panel: #1c2029;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+.deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.slide { position: absolute; inset: 0; display: none; padding: 6vh 7vw 9vh; background: var(--slide); flex-direction: column; justify-content: center; }
+.slide.on { display: flex; }
+.kicker { font-size: 1.6vh; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 2.2vh; }
+.kicker.is { color: var(--is); } .kicker.could { color: var(--could); } .kicker.turn { color: var(--warn); } .kicker.bliss { color: var(--good); }
+h1 { font-size: 6.4vh; line-height: 1.08; margin: 0 0 2.4vh; letter-spacing: -.01em; }
+h2 { font-size: 5vh; line-height: 1.12; margin: 0 0 3vh; letter-spacing: -.01em; max-width: 80vw; }
+p, li { font-size: 3vh; line-height: 1.45; color: var(--ink-2); }
+ul { margin: 0; padding-left: 2.2vw; } li { margin: 1.1vh 0; }
+b, strong { color: var(--ink); }
+.lede { font-size: 3.2vh; max-width: 70vw; }
+.big { font-size: 4.2vh; line-height: 1.3; color: var(--ink); max-width: 76vw; }
+.small { font-size: 2vh; color: var(--muted); }
+.grow { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw; align-items: start; }
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 1.4vh; padding: 2.4vh 1.6vw; }
+.card h3 { margin: 0 0 1.2vh; font-size: 2.6vh; }
+.card.is { border-top: 4px solid var(--is); } .card.could { border-top: 4px solid var(--could); }
+.card.good { border-top: 4px solid var(--good); } .card.warn { border-top: 4px solid var(--warn); } .card.muted { border-top: 4px solid var(--muted); }
+.card li, .card p { font-size: 2.6vh; }
+.tag { display: inline-block; font-size: 1.6vh; font-weight: 700; border-radius: 99px; padding: .3vh .8vw; margin-right: .6vw; }
+.tag.is { background: rgba(217,89,38,.16); color: var(--is); } .tag.could { background: rgba(57,135,229,.16); color: var(--could); }
+pre.tl { margin: 0; background: #0b0d12; border: 1px solid var(--line); border-radius: 1.2vh; padding: 2.4vh 1.6vw; font: 2.15vh/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color: #dfe3ea; overflow: hidden; white-space: pre; }
+pre.tl .x { color: #ff8f84; } pre.tl .r { color: #f6c177; } pre.tl .ok { color: #7ee2a8; } pre.tl .dim { color: #6f7686; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 1.6vh 1vw; border-bottom: 1px solid var(--line); font-size: 2.6vh; vertical-align: top; }
+th { color: var(--muted); font-size: 1.7vh; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+td { color: var(--ink-2); } td b { color: var(--ink); }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1vw; margin: 3vh 0; }
+.flow div { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 1.2vh; padding: 2vh 1vw; font-size: 2.1vh; color: var(--ink-2); }
+.flow div b { display: block; font-size: 2.5vh; margin-bottom: .6vh; }
+.flow div:not(:last-child)::after { content: "→"; position: absolute; right: -1vw; top: 50%; transform: translate(50%, -50%); color: var(--muted); font-size: 2.6vh; }
+.star { text-align: center; }
+.bars { display: flex; justify-content: center; align-items: flex-end; gap: 8vw; height: 50vh; margin: 2vh 0 1vh; }
+.bar { width: 14vw; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.bar .col { width: 100%; border-radius: 1vh 1vh 0 0; border-bottom: 2px solid var(--muted); }
+.bar .val { font-size: 9vh; font-weight: 800; margin-bottom: 1vh; line-height: 1; }
+.bar .lab { font-size: 2.2vh; color: var(--ink-2); margin-top: 1.4vh; text-align: center; line-height: 1.35; }
+.baseline { width: 40vw; height: 2px; background: var(--muted); margin: 0 auto; }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; margin: 2vh 0; }
+.kpi { background: var(--panel); border-radius: 1.4vh; padding: 2.4vh 1.6vw; border: 1px solid var(--line); }
+.kpi span { display: block; font-size: 1.8vh; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.kpi b { font-size: 5.4vh; letter-spacing: -.01em; }
+.kpi em { font-style: normal; color: var(--muted); font-size: 2.1vh; }
+.quote { font-size: 3.6vh; line-height: 1.35; border-left: 4px solid var(--good); padding-left: 1.6vw; color: var(--ink); max-width: 72vw; }
+.foot { position: absolute; left: 7vw; right: 7vw; bottom: 3.2vh; display: flex; justify-content: space-between; font-size: 1.6vh; color: var(--muted); }
+.progress { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--could); transition: width .2s; }
+.notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; background: #f4f5f8; color: #15171d; padding: 2vh 3vw; font-size: 2vh; line-height: 1.5; display: none; z-index: 10; border-top: 4px solid var(--warn); }
+.notes.on { display: block; }
+.notes b { color: #15171d; }
+.help { position: fixed; top: 1.6vh; right: 1.6vw; font-size: 1.5vh; color: var(--muted); z-index: 5; }
+.wip { display: inline-block; align-self: flex-start; margin-top: 3vh; font-size: 2vh; font-weight: 700; color: var(--warn); border: 1px solid var(--warn); border-radius: 99px; padding: .5vh 1.2vw; }
+@media print {
+  .slide { display: flex !important; position: relative; height: 100vh; page-break-after: always; }
+  .help, .progress, .notes { display: none !important; }
+}
+
+.arch { width: 100%; height: auto; display: block; }
+.arch .box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; }
+.arch .boxc { fill: rgba(57,135,229,.12); stroke: var(--could); stroke-width: 1.5; }
+.arch .boxe { fill: rgba(76,195,138,.14); stroke: var(--good); stroke-width: 1.5; }
+.arch text { fill: var(--ink); font: 15px ui-sans-serif, system-ui, sans-serif; }
+.arch .s { fill: var(--ink-2); font-size: 12.5px; }
+.arch .ln { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.arch .ln.bg { stroke: var(--good); stroke-dasharray: 6 4; }
+.figure { background: var(--panel); border: 1px solid var(--line); border-radius: 1.4vh; padding: 2vh 1.6vw; }
+.figure img { width: 100%; display: block; }
+.ours { border: 2px solid var(--good) !important; }
+.needs { font-size: 2.1vh !important; color: var(--muted) !important; margin-top: 1.4vh; }
+.kpis4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.6vw; margin: 1vh 0 2vh; }
+.kpis4 .kpi b { font-size: 4.6vh; }
+.kpis4 .kpi p { font-size: 2vh; margin: .8vh 0 0; }
+.rule { font: 2.2vh/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #f6c177; }
+ol.gl { margin: 0; padding-left: 2.4vw; } ol.gl li { font-size: 2.6vh; margin: 1.4vh 0; }
+.lab { font-size: 1.7vh; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1vh; }
+pre.tl.sm { font-size: 1.85vh; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 · Title -->
+<section class="slide" data-notes="Two parts: ALTK-Evolve, which learns guidelines from agent trajectories, and putting it inside Cortex, the proxy in front of our coding agents. It ends with a demo of something only that position allows: learn from one agent, help a different one.">
+  <div class="kicker could">ALTK-Evolve · Cortex</div>
+  <h1>Agents that learn from their mistakes</h1>
+  <p class="lede">Learned guidelines with ALTK-Evolve, and what changes when they live in the proxy in front of every coding agent.</p>
+  <span class="wip">Work in progress · Nov 2026</span>
+</section>
+
+<!-- 2 · The problem -->
+<section class="slide" data-notes="Every session starts from zero. Whatever the agent worked out yesterday, about this repository, this tool, this customer, is gone. And the same mistake is made again in the next session, by the next developer, by the next agent.">
+  <div class="kicker is">The problem</div>
+  <h2>Agents have amnesia</h2>
+  <div class="cols">
+    <div class="card is"><h3>Every session starts from zero</h3><p>What the agent worked out yesterday about this repository, these tools, this environment, is gone when the session ends.</p></div>
+    <div class="card is"><h3>They don't learn from mistakes</h3><p>The same error is made again in the next session, by the next developer, on the next agent. Each time it costs steps, tokens and review.</p></div>
+  </div>
+</section>
+
+<!-- 3 · Two kinds of mistakes -->
+<section class="slide" data-notes="Two real examples from our runs. Left: a tool-call error. Claude Code invented a /tmp path for files that were in its working directory; three reads failed before it ran pwd. Right: a reasoning mistake. The agent did the change correctly, but didn't think to look for the repository's release rules, so git hooks rejected the commit. Nothing in the prompt mentions those rules. Both happen again in the next session.">
+  <div class="kicker is">Two kinds of mistakes</div>
+  <h2>Both repeat in every new session</h2>
+  <div class="cols">
+    <div><p class="lab">Tool-call error · invoice extraction</p>
+<pre class="tl sm"> 1  Read <span class="x">/tmp/tmp.uJ6HdNlAXD/input/003071.pdf</span>
+ 2  Read <span class="x">/tmp/tmp.uJ6HdNlAXD/input/003082.pdf</span>
+ 3  Read <span class="x">/tmp/tmp.uJ6HdNlAXD/input/003093.pdf</span>
+    <span class="r">→ File does not exist. Note: your current working
+      directory is /results/tasks/baseline-3.</span>  ×3
+ 4  Bash pwd
+ 5  Read <span class="ok">/results/tasks/baseline-3/input/003071.pdf</span>
+    <span class="dim">…</span></pre>
+      <p class="small">An invented path; three failed calls before it checked where it was.</p></div>
+    <div><p class="lab">Reasoning mistake · repository conventions</p>
+<pre class="tl sm"><span class="dim">… edits schema, generates code, adds migration,
+    tests pass …</span>
+36  <span class="x">✗</span> git commit -m "feat: add optional nickname…"
+    <span class="r">→ pre-commit: schema/models.yaml changed without
+      an entry in CHANGES.md under '## Unreleased'</span>
+    <span class="r">→ pre-commit: bump clients/python/VERSION
+      (minor for a new field)</span>
+37  Read CHANGES.md
+38  Read clients/python/VERSION
+    <span class="dim">… fixes both, commits again …</span></pre>
+      <p class="small">A correct change that ignored the repository's rules. No prompt mentioned them.</p></div>
+  </div>
+</section>
+
+<!-- 4 · Possible approaches -->
+<section class="slide" data-notes="Three ways to make an agent stop repeating mistakes. Fine-tuning works but needs a dataset, reward models, a training pipeline and a model to deploy, and you can't fine-tune a closed model you don't own. Context engineering is cheap: paste earlier error traces into the context and hope; it bloats the context and the agent has to work out the lesson every time. Learned guidelines sit in between: distil each lesson once, into a short instruction, and give it only to the sessions it's relevant to. That's what Evolve does.">
+  <div class="kicker could">Possible approaches</div>
+  <h2>Three ways to stop repeating mistakes</h2>
+  <div class="cols3">
+    <div class="card muted"><h3>Fine-tune</h3><ul><li>Collect trajectories, fine-tune a model</li><li>Maybe with RL techniques</li></ul><p class="needs">Needs a dataset, reward models, fine-tuning and deploying the model. Not possible for models we don't own.</p></div>
+    <div class="card muted"><h3>Context engineering</h3><ul><li>Put previous error traces into the context</li><li>Hope the agent learns to avoid them</li></ul><p class="needs">Long, noisy context. The agent has to work out the lesson again in every session.</p></div>
+    <div class="card good ours"><h3>Learned guidelines</h3><ul><li>Learn the lessons from trajectories</li><li>Apply them to the context of later tasks</li></ul><p class="needs"><b style="color:var(--good)">The approach we took.</b> No weights change, works with any model, every lesson is readable and reviewable.</p></div>
+  </div>
+</section>
+
+<!-- 5 · ALTK-Evolve architecture -->
+<section class="slide" data-notes="Evolve is a feedback loop. Agent trajectories are logged; the processing layer extracts guidelines and other entities into a store; on a new task, the relevant ones are retrieved and handed back to the agent, through an MCP server. A person can inspect and curate the store.">
+  <div class="kicker could">ALTK-Evolve</div>
+  <h2>On-the-job learning, as a feedback loop</h2>
+  <div class="figure"><img src="../docs/assets/architecture-wide-dark.svg" alt="Evolve architecture: the agent's events are logged as trajectories, the processing layer extracts entities into a store, and relevant guidelines are retrieved and returned to the agent through an MCP server. A person can curate the store."></div>
+  <p class="small" style="margin-top:2vh">Trajectories in → guidelines, policies, rules and more extracted → relevant ones retrieved for each new task. Open source: <code>AgentToolkit/altk-evolve</code></p>
+</section>
+
+<!-- 6 · Delivered -->
+<section class="slide" data-notes="Evolve isn't a research prototype only. CONFIRM THIS LIST BEFORE PRESENTING: the cards show the integrations documented in the Evolve repository; replace or add the product deliveries you want to name.">
+  <div class="kicker could">ALTK-Evolve</div>
+  <h2>Delivered into multiple products</h2>
+  <div class="cols3">
+    <div class="card could"><h3>IBM Bob</h3><p>Always-on rules from learned guidelines.</p></div>
+    <div class="card could"><h3>Claude Code &amp; Codex</h3><p>Evolve Lite: learn and recall inside the agent.</p></div>
+    <div class="card could"><h3>Hermes</h3><p>Provider plugin, installed once per machine.</p></div>
+  </div>
+  <p class="small" style="margin-top:2.4vh">Also: an MCP server for any agent, a Python client and CLI, and the Cortex plugin in this talk.</p>
+</section>
+
+<!-- 7 · Result highlights -->
+<section class="slide" data-notes="Published results, each a separate benchmark experiment with its own protocol: the links are in the Evolve README. The headline is held-out AppWorld: a GPT-4.1 ReAct agent goes from 50 to 64.3 percent scenario completion on tasks it never trained on. Evolve also makes success more repeatable, helps open models, and lifts frontier and non-frontier models on tau-squared bench.">
+  <div class="kicker could">ALTK-Evolve · published results</div>
+  <h2>Better, and more repeatable, across models</h2>
+  <div class="kpis4">
+    <div class="kpi"><span>AppWorld held-out · GPT-4.1</span><b>50.0 → 64.3%</b><p>scenario completion on unseen tasks</p></div>
+    <div class="kpi"><span>Repeatable success · GPT-4.1</span><b>53 → 66%</b><p>AppWorld tasks passing all 5 attempts</p></div>
+    <div class="kpi"><span>Open model · gpt-oss-120b</span><b>39.9 → 56.0%</b><p>AppWorld task completion, curated retrieval</p></div>
+    <div class="kpi"><span>τ²-bench retail · Pass^4</span><b>55 → 70%</b><p>GPT-5.5; GPT-4.1: 57.5 → 67.5%</p></div>
+  </div>
+  <p class="small">Separate experiments with different metrics, models and memory configurations. Papers: arXiv 2603.10600, 2609.32091 (Middleware 2026).</p>
+</section>
+
+<!-- 8 · Evolve in Cortex -->
+<section class="slide" data-notes="Cortex is the proxy in front of our coding agents. We added a plugin that talks to a stock Evolve MCP server. On a session's first request it fetches guidelines for the task and injects them; in the background, once a session goes idle, it sends the session to Evolve to learn from. Learned guidelines land in a candidates namespace; only what a person promotes is ever injected. Nothing changes in the agents, and no one grades anything.">
+  <div class="kicker could">Evolve in Cortex</div>
+  <h2>One integration, every coding agent</h2>
+  <svg class="arch" viewBox="0 0 960 330" role="img" aria-label="Coding agent to Cortex pipeline to LLM provider. The evolve plugin fetches guidelines from the Evolve MCP server on a session's first request, and sends idle sessions to it to learn from. A reviewer promotes candidates.">
+    <defs>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="#8b91a1"/></marker>
+      <marker id="arg" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#4cc38a"/></marker>
+    </defs>
+    <rect class="box" x="10" y="30" width="170" height="70" rx="10"/><text x="95" y="60" text-anchor="middle">Coding agent</text><text class="s" x="95" y="80" text-anchor="middle">Claude Code, Codex, Bob…</text>
+    <rect class="boxc" x="240" y="14" width="440" height="110" rx="12"/><text x="460" y="36" text-anchor="middle">Cortex</text>
+    <rect class="box" x="258" y="50" width="120" height="56" rx="8"/><text x="318" y="74" text-anchor="middle">inference-</text><text x="318" y="92" text-anchor="middle">parser</text>
+    <rect class="box" x="392" y="50" width="120" height="56" rx="8"/><text x="452" y="74" text-anchor="middle">other</text><text x="452" y="92" text-anchor="middle">plugins</text>
+    <rect class="boxe" x="526" y="50" width="138" height="56" rx="8"/><text x="595" y="74" text-anchor="middle">evolve</text><text class="s" x="595" y="92" text-anchor="middle">plugin</text>
+    <rect class="box" x="760" y="30" width="190" height="70" rx="10"/><text x="855" y="60" text-anchor="middle">LLM provider</text><text class="s" x="855" y="80" text-anchor="middle">or gateway</text>
+    <path class="ln" d="M180,65 H238" marker-end="url(#ar)"/>
+    <path class="ln" d="M680,65 H758" marker-end="url(#ar)"/>
+    <text class="s" x="719" y="56" text-anchor="middle">+ guidelines</text>
+    <rect class="box" x="470" y="214" width="250" height="100" rx="10"/><text x="595" y="240" text-anchor="middle">ALTK-Evolve MCP server</text><text class="s" x="595" y="262" text-anchor="middle">stock tools · no Evolve changes</text>
+    <text class="s" x="595" y="282" text-anchor="middle">candidates → (person) → served</text>
+    <path class="ln" d="M548,110 V210" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <text x="536" y="150" text-anchor="end">① first request of a session</text>
+    <text class="s" x="536" y="170" text-anchor="end">task ↓ · relevant guidelines ↑</text>
+    <path class="ln bg" d="M642,110 V210" marker-end="url(#arg)"/>
+    <text x="656" y="150">② in the background, once idle</text>
+    <text class="s" x="656" y="170">the session ↓, to learn from</text>
+    <rect class="box" x="10" y="230" width="230" height="70" rx="10"/><text x="125" y="258" text-anchor="middle">Reviewer</text><text class="s" x="125" y="278" text-anchor="middle">promotes what's useful</text>
+    <path class="ln" d="M240,265 H466" marker-end="url(#ar)"/>
+  </svg>
+  <p class="small">Fails open: if Evolve is down, requests pass unchanged. Learning never delays a request. Guidelines are the same bytes every turn, so prompt caching keeps working.</p>
+</section>
+
+<!-- 9 · Design questions -->
+<section class="slide" data-notes="These are open, and some are Evolve's to answer. The biggest is scope: Evolve's prompt tells it to generalise, but the knowledge that helps a coding agent belongs to one repository. Then: whether a guideline should state the rule or how to recover; whether review stays manual or Cortex measures guidelines and promotes automatically; when to learn and when to retrieve; and redaction before anything is shared between people.">
+  <div class="kicker turn">Evolve in Cortex</div>
+  <h2>Design questions we're working through</h2>
+  <div class="cols">
+    <div class="card warn"><h3>What should a guideline say?</h3><ul><li><b>Scope:</b> general advice, or facts about <i>this</i> repository?</li><li><b>Rule or recovery:</b> "add a CHANGES.md entry" vs "read the hook's error"</li></ul></div>
+    <div class="card warn"><h3>Who decides it's good?</h3><ul><li><b>Review:</b> a person, or Cortex measuring sessions with and without it</li><li><b>Where:</b> in Evolve, in Cortex's UI, or both</li></ul></div>
+    <div class="card warn"><h3>When?</h3><ul><li><b>Learn:</b> on idle today; or at session end, a commit, a PR</li><li><b>Retrieve:</b> once per session, or when the task changes</li></ul></div>
+    <div class="card warn"><h3>Shared with whom?</h3><ul><li><b>Redaction</b> before session content reaches Evolve</li><li><b>Sharing</b> across people and teams</li></ul></div>
+  </div>
+</section>
+
+<!-- 10 · Demo scenario -->
+<section class="slide" data-notes="The demo uses a small repository with git hooks that enforce three rules nobody tells the agent. Claude Code does one change; Evolve learns from it. Then Codex, a different vendor's agent on a different model, does a different change in a fresh clone, once without guidelines and once with them.">
+  <div class="kicker could">Demo</div>
+  <h2>A repository with rules no prompt mentions</h2>
+  <div class="cols">
+    <div class="card muted"><h3>shopkit's git hooks reject a commit unless</h3>
+      <p class="rule">CHANGES.md has an entry under ## Unreleased</p>
+      <p class="rule">clients/python/VERSION is bumped (minor for a new field)</p>
+      <p class="rule">the subject is a Conventional Commit: feat(users): …</p></div>
+    <div>
+      <div class="flow" style="grid-template-columns:repeat(3,1fr);margin-top:0">
+        <div><b>Source task</b>Claude Code · Sonnet 4.6<br>add <code>nickname</code> to users</div>
+        <div><b>Evolve learns</b>from the session, no feedback; a person promotes</div>
+        <div><b>Target task</b>Codex · gpt-5.6-luna<br>add <code>discount_code</code> to orders</div>
+      </div>
+      <p class="small">Fresh clone for every run. Target task run twice: without guidelines, then with them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Source task -->
+<section class="slide" data-notes="Here's the source session, as Cortex recorded it. Claude Code does the change well: it edits the schema, generates code, writes a migration, tests pass. Then the commit is rejected by the hooks: no changelog entry, no version bump. It reads both files, fixes them and commits again. That rejection is all Evolve gets: no grade, no feedback.">
+  <div class="kicker could">Demo · source task in Claude Code</div>
+  <h2>A correct change, rejected by rules it didn't know</h2>
+<pre class="tl"> 28    Edit  schema/models.yaml
+ 29    Bash  make generate
+ 30    Write migrations/0003_user_nickname.sql
+ 33    Bash  make test
+ 35    Bash  git add schema/models.yaml shopkit/models.py clients/python/shopkit_client.py …
+ 36  <span class="x">✗</span> Bash  git commit -m "feat: add optional nickname field to User …"
+          <span class="r">→ pre-commit: schema/models.yaml changed without an entry in CHANGES.md under '## Unreleased'</span>
+          <span class="r">→ pre-commit: clients/python/shopkit_client.py changed;
+            bump clients/python/VERSION (minor for a new field)</span>
+          <span class="r">→ pre-commit: commit rejected</span>
+ 37    Read  CHANGES.md
+ 38    Read  clients/python/VERSION
+ 39    Edit  CHANGES.md
+ 40    Edit  clients/python/VERSION
+ 41    Bash  git add CHANGES.md clients/python/VERSION &amp;&amp; git commit …   <span class="ok">✓</span></pre>
+  <p class="small">41 tool calls, recorded by Cortex. Sent to Evolve after the session went idle.</p>
+</section>
+
+<!-- 12 · Learned guidelines -->
+<section class="slide" data-notes="What Evolve learned from that one session, with no feedback. Four guidelines, promoted by a person. Number three and four are the point: they turn the rejection into rules to follow before the first commit. Notice they're about the repository, not about Claude Code.">
+  <div class="kicker could">Demo · what Evolve learned</div>
+  <h2>Four guidelines, from one session, with no feedback</h2>
+  <ol class="gl">
+    <li>Before modifying any field or schema, identify whether the repository uses a code-generation pattern, and use the provided generation tooling rather than hand-editing generated files.</li>
+    <li>After updating a schema, create the corresponding database migration file following the repository's established naming and content conventions.</li>
+    <li><b>Read and satisfy all pre-commit hook requirements (changelog entries, version bumps, generated-code checks) before attempting to commit.</b></li>
+    <li><b>Proactively check whether a repository has a CHANGES.md and a client version file, and update both when adding a user-facing field, even before the first commit attempt.</b></li>
+  </ol>
+  <p class="small">About the repository, not the agent, so they can transfer.</p>
+</section>
+
+<!-- 13 · Target task in Codex -->
+<section class="slide" data-notes="This is the moment. Codex is a different vendor's agent on a different model, doing a different change. Without guidelines it walks into the same wall Claude Code did: rejected for the changelog and version, then rejected again for the commit subject. With the guidelines Claude Code's session produced, it reads CHANGES.md and VERSION up front, updates both, and commits first time. 13 tool calls down to 8, input tokens down 39 percent. One pair, so a signal.">
+  <div class="kicker bliss">Demo · target task in Codex</div>
+  <h2>Learned from Claude Code. Used by Codex.</h2>
+  <div class="cols">
+    <div><p class="lab">Codex without guidelines</p>
+<pre class="tl sm"><span class="dim">… edits schema, generates, migrates, tests …</span>
+<span class="x">✗</span> git commit …
+  <span class="r">→ changed without an entry in CHANGES.md</span>
+  <span class="r">→ bump clients/python/VERSION</span>
+<span class="dim">… fixes both …</span>
+<span class="x">✗</span> git commit -m "Add optional discount codes…"
+  <span class="r">→ subject must be a Conventional Commit</span>
+  git commit -m "feat(orders): add optional…"  <span class="ok">✓</span></pre></div>
+    <div><p class="lab">Codex with Claude Code's guidelines</p>
+<pre class="tl sm"><span class="dim">… before any edits …</span>
+  sed -n '1,240p' <span class="ok">clients/python/VERSION</span>
+  sed -n '1,240p' <span class="ok">CHANGES.md</span>
+<span class="dim">… edits schema, generates, migrates, tests …</span>
+  git add CHANGES.md clients/python/VERSION …
+  git commit -m "<span class="ok">feat: add order discount code</span>"  <span class="ok">✓</span>
+
+<span class="dim">  accepted on the first try</span></pre></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span>Rejected commits</span><b>2 → 0</b></div>
+    <div class="kpi"><span>Tool calls</span><b>13 → 8</b></div>
+    <div class="kpi"><span>Input tokens</span><b>182k → 110k</b> <em>−39%</em></div>
+  </div>
+</section>
+
+<!-- 14 · Repeatable? -->
+<section class="slide" data-notes="Is it repeatable? We reran the whole loop from scratch on Nov 10: fresh Evolve, one new Claude Code session to learn from, then two pairs each for Claude Code and Codex. The version-bump guideline removed that mistake in every guided run, for both agents. But this time Evolve learned the changelog rule only as 'read the hook's error message', and Claude Code still hit it. That is the scope question from earlier: specific rules transfer; generic advice mostly doesn't.">
+  <div class="kicker turn">Is it repeatable?</div>
+  <h2>A fresh rerun: the specific lesson held, the generic one didn't</h2>
+  <div class="cols">
+    <div class="card good"><h3>Learned as a concrete step</h3><p>"Check for a VERSION file and bump it (minor for a new field)"</p><p><b>Missed VERSION bump: 4/4 → 0/4</b><br>Claude Code and Codex, two pairs each</p></div>
+    <div class="card warn"><h3>Learned as recovery advice</h3><p>"Carefully read any pre-commit hook failure messages"</p><p><b>Missed CHANGES.md entry: 4/4 → 2/4</b><br>Codex fixed it; Claude Code didn't</p></div>
+  </div>
+  <p class="small" style="margin-top:2.4vh">Nov 10 · fresh Evolve, one source session, four interleaved pairs. Next: guidelines scoped to a repository, measured automatically in Cortex.</p>
+</section>
+
+<div class="progress" id="progress"></div>
+<div class="foot"><span>ALTK-Evolve · Cortex</span><span id="count"></span></div>
+</div>
+<div class="help">← → slides · N notes · F full screen</div>
+<div class="notes" id="notes"></div>
+
+<script>
+const slides = [...document.querySelectorAll(".slide")];
+const notes = document.getElementById("notes");
+let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+function show(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle("on", k === i));
+  document.getElementById("count").textContent = `${i + 1} / ${slides.length}`;
+  document.getElementById("progress").style.width = `${((i + 1) / slides.length) * 100}%`;
+  notes.textContent = slides[i].dataset.notes || "";
+  history.replaceState(null, "", `#${i + 1}`);
+}
+document.addEventListener("keydown", (e) => {
+  if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+  else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+  else if (e.key === "Home") show(0);
+  else if (e.key === "End") show(slides.length - 1);
+  else if (e.key.toLowerCase() === "n") notes.classList.toggle("on");
+  else if (e.key.toLowerCase() === "f") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+});
+document.getElementById("deck").addEventListener("click", (e) => { if (!e.target.closest("a")) show(e.clientX > innerWidth / 2 ? i + 1 : i - 1); });
+show(i);
+</script>
+</body>
+</html>
