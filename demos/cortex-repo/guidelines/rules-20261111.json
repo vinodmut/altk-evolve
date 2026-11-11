@@ -1,0 +1,47 @@
+{
+  "description": "Guidelines Evolve learned with guidelines_prompt=rules from one Claude Code session on shopkit (add an optional nickname field to users; commit rejected once for the changelog and client version). Served in the Nov 11, 2026 evaluation: Codex and Claude Code, adding discount_code to orders.",
+  "guidelines": [
+    {
+      "content": "Before committing in this repository, update `CHANGES.md` by adding an entry under the `## Unreleased` section describing the change, and bump `clients/python/VERSION` to the next minor version when a new field is added to the Python client.",
+      "metadata": {
+        "rationale": "The pre-commit hook explicitly checks for a `CHANGES.md` entry under `## Unreleased` when `schema/models.yaml` changes, and requires `clients/python/VERSION` to be bumped (minor) when `clients/python/shopkit_client.py` changes. Omitting either causes the commit to be rejected.",
+        "category": "strategy",
+        "trigger": "When `schema/models.yaml` is modified and/or `clients/python/shopkit_client.py` is regenerated (e.g., after adding a field to any model).",
+        "implementation_steps": [
+          "Open `CHANGES.md` and add a bullet under `## Unreleased` describing the schema change (e.g., `- Users have an optional \\`nickname\\` text field.`).",
+          "Open `clients/python/VERSION`, read the current version (e.g., `1.3.0`), and increment the minor segment by one (e.g., `1.4.0`) for a new field addition.",
+          "Stage both files with `git add CHANGES.md clients/python/VERSION` before running `git commit`."
+        ],
+        "task_description": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+        "agent_id": "claude-code",
+        "creation_mode": "auto-cortex",
+        "session_id": "cd440496-b958-4953-8ca0-577206f5fbc2",
+        "source_task_id": "cortex:cd440496-b958-4953-8ca0-577206f5fbc2:1794415429-1",
+        "generation_method": "standard",
+        "guidelines_prompt": "rules"
+      }
+    },
+    {
+      "content": "When adding a new field to a model, follow the four-step sequence: (1) edit `schema/models.yaml`, (2) run `make generate` to regenerate `shopkit/models.py` and `clients/python/shopkit_client.py`, (3) run `make migration NAME=<change>` to create the SQL migration, (4) run `make check && make test` to verify consistency before staging.",
+      "metadata": {
+        "rationale": "`schema/models.yaml` is the single source of truth; the Python model, the Python client, and SQL migrations are all derived from it. Running the generation and migration tools ensures all derived artifacts stay in sync, and `make check` confirms they match before committing.",
+        "category": "strategy",
+        "trigger": "When adding, removing, or changing any field in any model in this repository.",
+        "implementation_steps": [
+          "Edit `schema/models.yaml` to add the new field under the appropriate model (e.g., `nickname: {type: str}`).",
+          "Run `make generate` from the repository root to regenerate `shopkit/models.py` and `clients/python/shopkit_client.py`.",
+          "Run `make migration NAME=<descriptive_name>` (e.g., `make migration NAME=user_nickname`) to auto-generate the numbered SQL migration file in `migrations/`.",
+          "Run `make check && make test` to confirm generated code and migrations are consistent with the schema and all tests pass.",
+          "Update `CHANGES.md` and `clients/python/VERSION` as required by the pre-commit hook before committing."
+        ],
+        "task_description": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.",
+        "agent_id": "claude-code",
+        "creation_mode": "auto-cortex",
+        "session_id": "cd440496-b958-4953-8ca0-577206f5fbc2",
+        "source_task_id": "cortex:cd440496-b958-4953-8ca0-577206f5fbc2:1794415429-1",
+        "generation_method": "standard",
+        "guidelines_prompt": "rules"
+      }
+    }
+  ]
+}

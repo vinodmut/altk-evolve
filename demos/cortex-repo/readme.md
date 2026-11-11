@@ -71,3 +71,19 @@ first user message, which the [placement experiment](../cortex-invoices/placemen
 be the position the model acts on. Learning renders up to 150 steps of the session. Evolve's
 default keeps only the first 40 and last 10 steps of a Cortex session, and a coding session's
 first commit rejection falls in the dropped middle.
+
+## Skipping the learning step
+
+For a demo that starts after learning, seed the guidelines a session would have produced into
+the namespace the Cortex plugin serves. `guidelines/rules-20261111.json` holds the two
+guidelines Evolve learned with `guidelines_prompt=rules` from one Claude Code session, as
+served in the Nov 11 evaluation. Use the same Evolve settings as the running server:
+
+```bash
+set -a; . "$WALK/evolve.env"; set +a
+uv run python demos/cortex-repo/seed_guidelines.py demos/cortex-repo/guidelines/rules-20261111.json
+```
+
+It refuses a namespace that already has guidelines; `--replace` deletes them first, `--append`
+keeps them. `--namespace` picks another namespace (default `cortex`). The running server serves
+the new guidelines without a restart.
