@@ -45,7 +45,7 @@ td code { overflow-wrap: anywhere; }
     <div class="fact"><span>Evolve changes needed</span><b>None to run · 3 to learn well</b></div>
     <div class="fact"><span>Learned from</span><b>1 Claude Code session</b></div>
     <div class="fact"><span>Evaluated on</span><b>4 pairs · 2 agents</b></div>
-    <div class="fact"><span>With a rule-stating prompt</span><b>First-try commits 0/4 → 3/4</b></div>
+    <div class="fact"><span>With a rule-stating prompt</span><b>Changelog misses 2/4 → 0/4</b></div>
   </div>
 </div></header>
 
@@ -75,7 +75,7 @@ td code { overflow-wrap: anywhere; }
     <li><b>The loop works end to end with a stock Evolve server.</b> Cortex records a session, sends it to <code>process_trajectory</code> once idle, a person promotes candidates from <code>cortex-candidates</code> to <code>cortex</code>, and <code>get_guidelines_with_attribution</code> serves them to the next session. No Evolve API changes were needed.</li>
     <li><b>Learning from one Claude Code session helped both a new Claude Code session and a Codex session</b> (a different vendor's agent on a different model). Each guided session committed after at most one rejection. Codex baselines needed up to two.</li>
     <li><b>With the default prompt, a rule the session ran into was learned only as recovery advice.</b> Evolve learned "bump VERSION" as a concrete step, and every guided run got it right. It learned "add a CHANGES.md entry" only as "read the hook's error message", and both guided Claude Code sessions still hit that rejection.</li>
-    <li><b>A prompt that states rules fixed it</b> (<a href="#followup">follow-up, Nov 11</a>). A new opt-in <code>rules</code> prompt states each requirement an error message spells out as a step to take first. On the same trajectory it produced the rule where the default produced recovery advice. In a fresh run, guided sessions committed first time 3/4 (0/4 before), no guided session missed the changelog, and Claude Code's cost per task halved.</li>
+    <li><b>A prompt that states rules fixed it</b> (<a href="#followup">follow-up, Nov 11</a>). A new opt-in <code>rules</code> prompt states each requirement an error message spells out as a step to take first. On the same trajectory it produced the rule where the default produced recovery advice. In a fresh run, no guided session missed the changelog (2/4 before), both guided Claude Code sessions committed first time (0/2 before), and Claude Code's cost per task halved.</li>
     <li><b>The open question for Evolve is scope.</b> These guidelines name one repository's files. Nothing yet stops them being served in another repository.</li>
   </ul>
   <div class="callout why"><span class="icon">i</span><div><p>Sample sizes are small throughout: one training session and four interleaved pairs here, six pairs and 28 placement sessions earlier. Read the numbers as direction, not effect size.</p></div></div>
@@ -254,20 +254,20 @@ When a tool result, a check, a hook or an error message states a requirement (a 
   <p>Same procedure as <a href="#experiment">section 3</a>: fresh Evolve data, one Claude Code training session, both guidelines promoted, then four interleaved pairs on the <code>discount_code</code> task.</p>
   <table>
     <tr><th>Guided sessions</th><th class="n">Default prompt (Nov 10)</th><th class="n"><code>rules</code> prompt (Nov 11)</th><th class="n">Baselines (both days)</th></tr>
-    <tr><td>Committed on the first try</td><td class="n">0/4</td><td class="n"><b>3/4</b></td><td class="n">0/8</td></tr>
+    <tr><td>Committed on the first try</td><td class="n">0/4</td><td class="n"><b>2/4</b></td><td class="n">0/8</td></tr>
     <tr><td>Missed the CHANGES.md entry</td><td class="n">2/4</td><td class="n"><b>0/4</b></td><td class="n">8/8</td></tr>
     <tr><td>Missed the VERSION bump</td><td class="n">0/4</td><td class="n">0/4</td><td class="n">8/8</td></tr>
-    <tr><td>Rejected commits, total</td><td class="n">4</td><td class="n"><b>1</b></td><td class="n">5 and 6</td></tr>
+    <tr><td>Rejected commits, total</td><td class="n">4</td><td class="n"><b>2</b></td><td class="n">5 and 6</td></tr>
   </table>
   <table>
     <tr><th>Nov 11, per agent</th><th class="n">Guided</th><th class="n">Baseline</th><th class="n">Change</th></tr>
     <tr><td>Claude Code: tool calls, two runs</td><td class="n">12, 15</td><td class="n">24, 19</td><td class="n">−37%</td></tr>
     <tr><td>Claude Code: input tokens, total</td><td class="n">707k</td><td class="n">1,269k</td><td class="n">−44%</td></tr>
     <tr><td>Claude Code: cost, total</td><td class="n">$0.37</td><td class="n">$0.72</td><td class="n">−49%</td></tr>
-    <tr><td>Codex: rejected commits, two runs</td><td class="n">1, 0</td><td class="n">2, 2</td><td class="n"></td></tr>
+    <tr><td>Codex: rejected commits, two runs</td><td class="n">1, 1</td><td class="n">2, 2</td><td class="n"></td></tr>
     <tr><td>Codex: input tokens, total</td><td class="n">305k</td><td class="n">392k</td><td class="n">−22%</td></tr>
   </table>
-  <p>Both guided Claude Code sessions and one guided Codex session committed first time. The remaining rejection was Codex's commit subject, a rule the training session never broke, so there was nothing to learn. All eight sessions passed the grader and bumped the client to 1.4.0.</p>
+  <p>Both guided Claude Code sessions committed first time. Both guided Codex sessions avoided the changelog and version rejection but were rejected once for the commit subject, a rule the training session never broke, so there was nothing to learn. All eight sessions passed the grader and bumped the client to 1.4.0.</p>
   <p class="note">Two pairs per agent; baseline Claude Code 2 also started a subagent, which adds to its cost. Evidence: <a href="reports/loop-rules-20261111/"><code>reports/loop-rules-20261111/</code></a>, including the same-trajectory control.</p>
 </section>
 
@@ -320,7 +320,7 @@ When a tool result, a check, a hook or an error message states a requirement (a 
 
   <div class="q"><h3><span class="tag evolve">Evolve</span>2. Should a guideline state the rule, or how to recover?</h3>
     <p class="now">Evolve turned the hook's CHANGES.md message into "read hook failure messages carefully", and every guided Claude Code session was still rejected for it.</p>
-    <p>When an error message spells out the rule (<i>"changed without an entry in CHANGES.md under '## Unreleased'"</i>), the useful guideline is the rule itself, stated as a step before the action. <b>Tried on Nov 11</b> as the opt-in <code>rules</code> prompt (<a href="#followup">follow-up</a>): it did exactly this, and guided runs then committed first time. Should it become the default, for every client of Evolve or for coding sessions only?</p></div>
+    <p>When an error message spells out the rule (<i>"changed without an entry in CHANGES.md under '## Unreleased'"</i>), the useful guideline is the rule itself, stated as a step before the action. <b>Tried on Nov 11</b> as the opt-in <code>rules</code> prompt (<a href="#followup">follow-up</a>): it did exactly this, and both guided Claude Code runs then committed first time. Should it become the default, for every client of Evolve or for coding sessions only?</p></div>
 
   <div class="q"><h3><span class="tag evolve">Evolve</span>3. What should the default trajectory window be for long coding sessions?</h3>
     <p class="now">The default keeps 50 steps: the first 40 and the last 10. In an earlier run this dropped the step with the most useful rejection. The demos raise it to 150 through the plugin's processing profile.</p>

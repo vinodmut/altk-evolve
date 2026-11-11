@@ -10,5 +10,6 @@
  10    exec  const r = await tools.exec_command({cmd:"make check && make test","workdir":"~/
  11    exec  const r = await tools.exec_command({cmd:"git diff --check && git diff --stat && git diff &
  12    exec  const r = await tools.exec_command({cmd:"git add CHANGES.md clients/python/VERSION clients
+        → commit-msg: subject must be a Conventional Commit in lower case, e.g. 'feat(users): add nickname'
  13    exec  const r = await tools.exec_command({cmd:"git commit -m \"feat(orders): add discount code\"
  14    exec  const r = await tools.exec_command({cmd:"git status --short && git log -1 --oneline --deco
