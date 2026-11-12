@@ -49,7 +49,7 @@ details summary { cursor: pointer; margin: 6px 0 10px; }
 <section class="card" id="pick">
   <h2>Which flow</h2>
   <div class="flowpick">
-    <a href="#flow1"><b>Flow 1 · Claude Code → Codex</b>The whole loop live: a Claude Code session is rejected by the repository's hooks, Evolve learns from it with no feedback, you promote the guidelines, and Codex does a different change without that mistake. Shows learning, the review gate and transfer across agents.</a>
+    <a href="#flow1"><b>Flow 1 · Claude Code → Codex</b>The whole loop live: a Claude Code session is rejected by the repository's hooks, Evolve learns from it with no feedback, the guidelines go live, and Codex does a different change without that mistake. Shows learning and transfer across agents, and optionally the review gate.</a>
     <a href="#flow2"><b>Flow 2 · Codex → Codex</b>Learning skipped: the same Codex task twice, first with no guidelines, then with guidelines loaded from a file. Shorter and more predictable; shows only the effect.</a>
   </div>
   <p>Both use <code>shopkit</code>, whose git hooks reject a commit that changes the schema unless <code>CHANGES.md</code> has an entry under <code>## Unreleased</code>, <code>clients/python/VERSION</code> is bumped, and the subject is a Conventional Commit.</p>
@@ -180,22 +180,19 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 9. Fixed by editing `clients/python/VERSION` — bumped `1.3.0` → `1.4.0` …
 10. Re-ran `git commit` — <span class="ok">all 6 files committed successfully</span></pre></div></div>
 
-  <h3>1.3 Watch Evolve learn <span class="chip">~1 min</span></h3>
-  <div class="cmd" data-label="Terminal B"><pre><code>./candidates.sh wait</code></pre></div>
-  <div class="say">Nobody graded that session or gave feedback. Cortex saw it go quiet, sent it to Evolve, and Evolve is working out what to learn from the rejection.</div>
-  <div class="callout expect"><span class="icon">✓</span><div><p>A table of candidates, about 45 s after the session ended in the rehearsal. IDs keep counting across runs, so use the ones shown. To read one in full, with its trigger, rationale and source session: <code>./candidates.sh show &lt;id&gt;</code>. The rehearsal learned:</p><pre class="out">[3] Before committing changes to `schema/models.yaml` or `clients/python/shopkit_client.py`, add an entry
-    under `## Unreleased` in `CHANGES.md` and bump `clients/python/VERSION` (minor version for a new field).
-[4] In the shopkit repository, follow the full four-step pipeline when adding a field to a model: (1) edit
-    `schema/models.yaml`, (2) run `make generate`, (3) run `make migration NAME=&lt;name&gt;`, (4) run `make test`.
-[5] When adding an optional field to a model in shopkit, declare it with `{type: str}` …</pre></div></div>
+  <h3>1.3 Evolve learns, and the guidelines go live <span class="chip">~1 min</span></h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./candidates.sh wait-and-promote</code></pre></div>
+  <div class="say">Nobody graded that session or gave feedback. Cortex saw it go quiet and sent it to Evolve, which works out what to learn from the rejection. In this demo, whatever it learns goes straight to the next session; normally a person reviews it first.</div>
+  <div class="callout expect"><span class="icon">✓</span><div><p>Dots while it waits, then <code>Learned 3 guideline(s); promoting all of them from cortex-candidates to cortex:</code> and the served set. About 45 s after the session ended in the rehearsal. Only guidelines learned during the wait are promoted; older candidates stay where they are. The rehearsal learned:</p><pre class="out">Before committing changes to `schema/models.yaml` or `clients/python/shopkit_client.py`, add an entry
+under `## Unreleased` in `CHANGES.md` and bump `clients/python/VERSION` (minor version for a new field).
 
-  <h3>1.4 Promote them <span class="chip">~30 s</span></h3>
-  <div class="cmd" data-label="Terminal B"><pre><code>./promote.sh 3 4 5        # the IDs from the table
-./guidelines.sh list</code></pre></div>
-  <div class="say">This is the review gate. What Evolve learns is only a candidate. Nothing reaches an agent until a person promotes it, so a web page an agent read can't become a standing instruction.</div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><code>Imported into 'cortex'</code> with one <code>ADD</code> per guideline, each keeping its source session as provenance.</p></div></div>
+In the shopkit repository, follow the full four-step pipeline when adding a field to a model: (1) edit
+`schema/models.yaml`, (2) run `make generate`, (3) run `make migration NAME=&lt;name&gt;`, (4) run `make test`.
 
-  <h3>1.5 Codex does a different task <span class="chip">~1–2 min</span></h3>
+When adding an optional field to a model in shopkit, declare it with `{type: str}` …</pre><p>To read one in full, with its trigger, rationale and source session: <code>./guidelines.sh list</code>, then <code>evolve entities show cortex &lt;id&gt;</code>, or <code>./candidates.sh show &lt;id&gt;</code> for the candidate copy.</p></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><b>To show the review gate instead</b>, split the step in two: <code>./candidates.sh wait</code> lists what was learned, then <code>./promote.sh &lt;ids&gt;</code> promotes the ones you choose. <i>"What Evolve learns is only a candidate. Nothing reaches an agent until a person promotes it, so a web page an agent read can't become a standing instruction."</i></p></div></div>
+
+  <h3>1.4 Codex does a different task <span class="chip">~1–2 min</span></h3>
   <div class="cmd" data-label="Terminal A"><pre><code>./codex.sh</code></pre></div>
   <p>Paste the <a href="#prompts">Codex prompt</a>. Its repository is still fresh from 1.1; Claude Code's commit is in the other one.</p>
   <div class="say">Different vendor, different model, different change. It has never seen this repository, but its first request carries what Claude Code's session taught. Watch for CHANGES.md and VERSION before its first commit.</div>
@@ -205,12 +202,12 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 6. Committed as `f19d4cc`.</pre></div></div>
   <div class="callout why"><span class="icon">i</span><div><p><b>Expect the commit-subject rejection, and use it.</b> Claude Code writes Conventional Commit subjects by habit, so its session never broke that rule and there was nothing to learn. <i>"It learned exactly what one agent hit. What it never saw, it can't know."</i> For contrast, show slide 13 or run <a href="#flow2">Flow 2's first run</a> beforehand. Without guidelines, Codex is also rejected for the changelog and version.</p></div></div>
 
-  <h3>1.6 Show what happened <span class="chip">~1 min</span></h3>
+  <h3>1.5 Show what happened <span class="chip">~1 min</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./commits.sh          # both repositories' commits, and what each last commit changed
 ./injected.sh codex   # what Cortex added to Codex's first request</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><code>commits.sh</code>: Claude Code's <code>feat: add optional nickname field to users</code> and Codex's <code>feat(orders): add discount code</code>, each touching <code>CHANGES.md</code> and <code>clients/python/VERSION</code>. <code>injected.sh codex</code>: <code>"injected": true</code> with the promoted guideline IDs, whose <code>sources</code> name Claude Code's session, the invocation <code>modify · body_rewritten</code>, and the <code>&lt;evolve-guidelines&gt;</code> block exactly as the model received it. More in <a href="#evidence">Show the evidence</a>.</p></div></div>
 
-  <h3>1.7 After the demo</h3>
+  <h3>1.6 After the demo</h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh 90           # back to a 90 s idle wait; also empties the namespaces</code></pre></div>
 </section>
 
@@ -269,7 +266,7 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
   <h2>Fallbacks</h2>
   <table>
     <tr><th>If</th><th>Then</th></tr>
-    <tr><td><code>./candidates.sh wait</code> takes too long or learns nothing useful</td><td><code>./guidelines.sh load</code> serves the recorded guidelines from the same kind of session; carry on with 1.5.</td></tr>
+    <tr><td><code>./candidates.sh wait-and-promote</code> takes too long or learns nothing useful</td><td><code>./guidelines.sh load</code> serves the recorded guidelines from the same kind of session; carry on with 1.4.</td></tr>
     <tr><td>Interactive Codex doesn't reach the dev Cortex</td><td><code>./codex.sh exec "&lt;prompt&gt;" &lt; /dev/null</code> runs the same session non-interactively and streams every command.</td></tr>
     <tr><td>Network or model trouble</td><td>Present the recorded run: slides 11–15 of the talk, and the timelines in <a href="reports/loop-rules-20261111/"><code>reports/loop-rules-20261111/</code></a>.</td></tr>
     <tr><td>You'd rather turn guidelines off at the proxy than empty the namespace</td><td><code>./inject.sh off</code> / <code>./inject.sh on</code> switch the dev Cortex in about half a second, between sessions.</td></tr>
@@ -299,7 +296,7 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
     <tr><td><code>commits.sh [claude|codex]</code></td><td>Each demo repository's commits, and the files the last one changed.</td></tr>
     <tr><td><code>injected.sh [codex|claude] [session]</code></td><td>For the agent's latest session, or the one given: the evolve plugin's record, its invocation, and the guidelines block in the forwarded body.</td></tr>
     <tr><td><code>claude.sh</code> / <code>codex.sh</code></td><td>Start the agent in its demo repository through the dev Cortex. Extra arguments are passed on (for example <code>exec "…"</code>).</td></tr>
-    <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | clear</code></td><td>What Evolve learned; <code>wait</code> polls until new candidates appear.</td></tr>
+    <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | wait-and-promote [s] | clear</code></td><td>What Evolve learned. <code>wait</code> polls until new candidates appear; <code>wait-and-promote</code> then promotes all of them, skipping the review step.</td></tr>
     <tr><td><code>promote.sh &lt;id&gt;…</code></td><td>Copies candidates into the served namespace with their metadata (<code>evolve entities export</code> → <code>import --append</code>).</td></tr>
     <tr><td><code>guidelines.sh list | clear | load [file]</code></td><td>What the dev Cortex serves; <code>load</code> replaces it from a file (default <code>guidelines/rules-20261111.json</code>).</td></tr>
     <tr><td><code>inject.sh on | off | status</code></td><td>Switches injection in the dev Cortex through its config hot-reload.</td></tr>
