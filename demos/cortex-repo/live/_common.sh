@@ -32,6 +32,8 @@ indent = len(lines[cfg + 1]) - len(lines[cfg + 1].lstrip())
 end = cfg + 1
 while end < len(lines) and (not lines[end].strip() or len(lines[end]) - len(lines[end].lstrip()) >= indent):
     end += 1
+while end > cfg + 1 and not lines[end - 1].strip():  # insert before trailing blank lines
+    end -= 1
 for i in range(cfg + 1, end):
     if lines[i].strip().startswith(key + ":"):
         lines[i] = " " * indent + f"{key}: {value}"
@@ -50,3 +52,8 @@ wait_reload() {
   [ -z "$err" ] || { echo "Cortex rejected the config: $err"; return 1; }
 }
 plugin_config() { curl -s --noproxy '*' "127.0.0.1:$CORTEX_API/v1/pipeline" | jq -c '.outbound[] | select(.name=="evolve") | .config'; }
+
+# The two Evolve namespaces, as the dev Cortex's evolve plugin is configured: learned guidelines
+# land in LEARN_NS for review, and only SERVE_NS is injected into agents' requests.
+SERVE_NS=$(plugin_config 2>/dev/null | jq -r '.serve_namespace // "cortex"' 2>/dev/null); SERVE_NS="${SERVE_NS:-cortex}"
+LEARN_NS=$(plugin_config 2>/dev/null | jq -r '.learn_namespace // "cortex-candidates"' 2>/dev/null); LEARN_NS="${LEARN_NS:-cortex-candidates}"

@@ -150,10 +150,23 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 <section class="card" id="flow1">
   <div class="step-head"><span class="step-num">1</span><h2>Flow 1 · Claude Code → Codex</h2><div class="meta"><span class="chip">~8 min</span></div></div>
 
+  <p>The two Evolve namespaces are the plugin's to name, and the dev Cortex's config says which is which. It's worth showing once:</p>
+  <pre class="out">      - name: evolve
+        config:
+          endpoint: http://127.0.0.1:8211/sse
+          <span class="dim"># Guidelines Evolve learns land here, for review. Never injected.</span>
+          learn_namespace: cortex-candidates
+          <span class="dim"># Only guidelines promoted here are injected into agents' requests.</span>
+          serve_namespace: cortex
+          agents: [claude-code, codex]
+          placement: user
+          …</pre>
+  <p><code>./candidates.sh</code> works on the learn namespace and <code>./guidelines.sh</code> on the serve namespace; <code>./promote.sh</code> copies from one to the other. All of them read the names from this config.</p>
+
   <h3>1.1 Prepare <span class="chip">before you start talking</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh          # guidelines on, learning on, 30 s idle, empty namespaces
 ./reset.sh            # fresh shopkit repos for both agents, one commit each</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Served guidelines and candidates cleared.</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait. Each agent gets its own repository, <code>$WALK/live/claude-shopkit</code> and <code>$WALK/live/codex-shopkit</code>, so both runs' commits stay to look at.</p></div></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"learn_namespace":"cortex-candidates","serve_namespace":"cortex","inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Served guidelines and candidates cleared.</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait. Each agent gets its own repository, <code>$WALK/live/claude-shopkit</code> and <code>$WALK/live/codex-shopkit</code>, so both runs' commits stay to look at.</p></div></div>
 
   <h3>1.2 Claude Code does the source task <span class="chip">~2 min</span></h3>
   <div class="cmd" data-label="Terminal A"><pre><code>./claude.sh</code></pre></div>

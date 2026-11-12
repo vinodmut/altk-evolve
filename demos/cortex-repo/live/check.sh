@@ -20,7 +20,7 @@ cfg=$(plugin_config 2>/dev/null)
 if [ -z "$cfg" ]; then
   bad "Dev Cortex not answering on $CORTEX_API, or no evolve plugin" "start the dev Cortex (walkthrough-manual.html, step 4) or set CORTEX_API in env.sh"
 else
-  ok "Dev Cortex on $CORTEX_PROXY with the evolve plugin"
+  ok "Dev Cortex on $CORTEX_PROXY with the evolve plugin: learns into $LEARN_NS, serves $SERVE_NS"
   ep=$(print -r -- "$cfg" | jq -r .endpoint)
   [[ "$ep" == *":$EVOLVE_PORT/"* ]] && ok "Plugin talks to Evolve at $ep" || bad "Plugin endpoint is $ep" "point the evolve plugin's endpoint at http://127.0.0.1:$EVOLVE_PORT/sse"
   print -r -- "$cfg" | jq -e '.agents | index("codex")' >/dev/null && ok "Plugin acts on codex as well as claude-code" || bad "Plugin agents don't include codex" "set agents: [claude-code, codex] in the evolve plugin config"
@@ -42,5 +42,5 @@ else
 fi
 [ -f "$CODEX_USER_HOME/.zprofile" ] && ok "Codex HOME with the virtualenv on PATH" || bad "No $CODEX_USER_HOME/.zprofile" "set it up (live-demo.html, Codex through the dev Cortex)"
 
-s=$(ev entities list cortex --type guideline 2>/dev/null | grep -o 'Total: [0-9]*' | grep -o '[0-9]*'); print "  Evolve serves ${s:-0} guidelines; ./guidelines.sh list to see them."
+s=$(ev entities list "$SERVE_NS" --type guideline 2>/dev/null | grep -o 'Total: [0-9]*' | grep -o '[0-9]*'); print "  Evolve serves ${s:-0} guidelines; ./guidelines.sh list to see them."
 [ $fails -eq 0 ] && print -P "%F{green}Ready.%f" || { print -P "%F{red}$fails problem(s).%f"; exit 1; }
