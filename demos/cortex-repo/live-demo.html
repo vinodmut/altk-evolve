@@ -259,7 +259,7 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
     <li>Under <b><code>raw</code></b>: <code>forwarded: rewritten by a plugin: … → …</code>, and <code>forwardedBody</code>, the exact body the model received, with the block in the first user message. The parsed <code>messages</code> show what Codex sent, before the plugin added it.</li>
     <li>Every later request in the session is injected too. Within the plugin's cache window (<code>cache_ttl_seconds</code>, 60 s on the rehearsal setup) they reuse the fetched set and show <code>"cached": true</code>; after it, the plugin refetches the same guidelines.</li>
   </ul>
-  <p>For what was learned and what is served: <code>./candidates.sh list</code> and <code>./guidelines.sh list</code>.</p>
+  <p>For what was learned and what is served: <code>./candidates.sh list</code> and <code>./guidelines.sh list</code>, or everything with its metadata: <code>./entities.sh | jless</code>.</p>
 </section>
 
 <section class="card" id="fallbacks">
@@ -299,6 +299,7 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
     <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | wait-and-promote [s] | clear</code></td><td>What Evolve learned. <code>wait</code> polls until new candidates appear; <code>wait-and-promote</code> then promotes all of them, skipping the review step.</td></tr>
     <tr><td><code>promote.sh &lt;id&gt;…</code></td><td>Copies candidates into the served namespace with their metadata (<code>evolve entities export</code> → <code>import --append</code>).</td></tr>
     <tr><td><code>guidelines.sh list | clear | load [file]</code></td><td>What the dev Cortex serves; <code>load</code> replaces it from a file (default <code>guidelines/rules-20261111.json</code>).</td></tr>
+    <tr><td><code>entities.sh [served|learned|&lt;namespace&gt;]</code></td><td>Every entity, with all its metadata, as JSON on stdout; both namespaces by default. For browsing: <code>./entities.sh | jless</code>.</td></tr>
     <tr><td><code>inject.sh on | off | status</code></td><td>Switches injection in the dev Cortex through its config hot-reload.</td></tr>
   </table>
   <p class="note">Related: <a href="walkthrough-manual.html">manual walkthrough</a> · <a href="evolve-team-report.html">report for the Evolve team</a> · <a href="../evolve-cortex-talk.html">talk deck</a></p>
