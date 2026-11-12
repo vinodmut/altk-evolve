@@ -6,7 +6,10 @@ EVOLVE_ENV_FILE="${EVOLVE_ENV_FILE:-$WALK/evolve.env}"            # the running 
 CORTEX_CONFIG="${CORTEX_CONFIG:-$WALK/cortex-home/.cortex/config.yaml}"
 CODEX_HOME_DIR="${CODEX_HOME_DIR:-$WALK/codex-home}"               # Codex home routed to the dev Cortex
 CODEX_USER_HOME="${CODEX_USER_HOME:-$WALK/codex-user}"             # HOME for Codex: no personal skills
-DEMO_REPO="${DEMO_REPO:-$WALK/live/shopkit}"
+# One demo repository per agent, so each run's commits stay visible.
+DEMO_ROOT="${DEMO_ROOT:-$WALK/live}"
+CLAUDE_REPO="$DEMO_ROOT/claude-shopkit"
+CODEX_REPO="$DEMO_ROOT/codex-shopkit"
 LIVE_DIR="${0:A:h}"
 SHOPKIT="${LIVE_DIR:h}/shopkit"
 DEFAULT_GUIDELINES="${LIVE_DIR:h}/guidelines/rules-20261111.json"

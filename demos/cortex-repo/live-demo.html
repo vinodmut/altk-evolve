@@ -84,7 +84,7 @@ cd "$EVOLVE_SRC/demos/cortex-repo/live"</code></pre></div>
       <tr><td><code>CORTEX_PROXY</code>, <code>CORTEX_API</code>, <code>CORTEX_STATS</code></td><td><code>47700</code>, <code>47701</code>, <code>47702</code></td><td>the dev Cortex listens elsewhere</td></tr>
       <tr><td><code>EVOLVE_PORT</code></td><td><code>8201</code></td><td>Evolve listens elsewhere</td></tr>
       <tr><td><code>EVOLVE_ENV_FILE</code></td><td><code>$WALK/evolve.env</code></td><td>the Evolve server was started with another env file</td></tr>
-      <tr><td><code>DEMO_REPO</code></td><td><code>$WALK/live/shopkit</code></td><td>you want the demo repository elsewhere</td></tr>
+      <tr><td><code>DEMO_ROOT</code></td><td><code>$WALK/live</code></td><td>you want the demo repositories elsewhere</td></tr>
     </table>
     <h3>Codex through the dev Cortex</h3>
   <p>Codex gets its own <code>CODEX_HOME</code>, whose <code>.env</code> points it at the dev Cortex, and its own <code>HOME</code>, so none of your personal skills or settings reach the demo. Its <code>.env</code> wins over the shell's proxy variables, so your everyday Codex is unaffected.</p>
@@ -110,7 +110,7 @@ hooks = false
 apps = false
 multi_agent = false
 
-[projects."$WALK/live/shopkit"]
+[projects."$WALK/live/codex-shopkit"]
 trust_level = "trusted"
 EOF
 umask 077; cat &gt; "$WALK/codex-home/.env" &lt;&lt;EOF
@@ -152,8 +152,8 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 
   <h3>1.1 Prepare <span class="chip">before you start talking</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh          # guidelines on, learning on, 30 s idle, empty namespaces
-./reset.sh            # fresh shopkit with one commit</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Served guidelines and candidates cleared.</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait.</p></div></div>
+./reset.sh            # fresh shopkit repos for both agents, one commit each</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Served guidelines and candidates cleared.</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait. Each agent gets its own repository, <code>$WALK/live/claude-shopkit</code> and <code>$WALK/live/codex-shopkit</code>, so both runs' commits stay to look at.</p></div></div>
 
   <h3>1.2 Claude Code does the source task <span class="chip">~2 min</span></h3>
   <div class="cmd" data-label="Terminal A"><pre><code>./claude.sh</code></pre></div>
@@ -183,9 +183,8 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
   <div class="callout expect"><span class="icon">✓</span><div><p><code>Imported into 'cortex'</code> with one <code>ADD</code> per guideline, each keeping its source session as provenance.</p></div></div>
 
   <h3>1.5 Codex does a different task <span class="chip">~1–2 min</span></h3>
-  <div class="cmd" data-label="Terminal B, then A"><pre><code>./reset.sh
-./codex.sh</code></pre></div>
-  <p>Paste the <a href="#prompts">Codex prompt</a>.</p>
+  <div class="cmd" data-label="Terminal A"><pre><code>./codex.sh</code></pre></div>
+  <p>Paste the <a href="#prompts">Codex prompt</a>. Its repository is still fresh from 1.1; Claude Code's commit is in the other one.</p>
   <div class="say">Different vendor, different model, different change. It has never seen this repository, but its first request carries what Claude Code's session taught. Watch for CHANGES.md and VERSION before its first commit.</div>
   <div class="callout expect"><span class="icon">✓</span><div><p>From the rehearsal (63 s):</p><pre class="out">2. <span class="ok">Updated `CHANGES.md` and bumped client version to `1.4.0`.</span>
 4. Ran `make generate`, migration generation, `make test` (3 passed), `make check` …
@@ -193,7 +192,12 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 6. Committed as `f19d4cc`.</pre></div></div>
   <div class="callout why"><span class="icon">i</span><div><p><b>Expect the commit-subject rejection, and use it.</b> Claude Code writes Conventional Commit subjects by habit, so its session never broke that rule and there was nothing to learn. <i>"It learned exactly what one agent hit. What it never saw, it can't know."</i> For contrast, show slide 13 or run <a href="#flow2">Flow 2's first run</a> beforehand. Without guidelines, Codex is also rejected for the changelog and version.</p></div></div>
 
-  <h3>1.6 After the demo</h3>
+  <h3>1.6 Show what happened <span class="chip">~1 min</span></h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./commits.sh          # both repositories' commits, and what each last commit changed
+./injected.sh codex   # what Cortex added to Codex's first request</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>commits.sh</code>: Claude Code's <code>feat: add optional nickname field to users</code> and Codex's <code>feat(orders): add discount code</code>, each touching <code>CHANGES.md</code> and <code>clients/python/VERSION</code>. <code>injected.sh codex</code>: <code>"injected": true</code> with the promoted guideline IDs, whose <code>sources</code> name Claude Code's session, the invocation <code>modify · body_rewritten</code>, and the <code>&lt;evolve-guidelines&gt;</code> block exactly as the model received it. More in <a href="#evidence">Show the evidence</a>.</p></div></div>
+
+  <h3>1.7 After the demo</h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh 90           # back to a 90 s idle wait; also empties the namespaces</code></pre></div>
 </section>
 
@@ -203,7 +207,7 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 
   <h3>2.1 Codex without guidelines <span class="chip">~1–2 min</span></h3>
   <div class="cmd" data-label="Terminal B, then A"><pre><code>./guidelines.sh clear     # Evolve serves nothing
-./reset.sh
+./reset.sh codex
 ./codex.sh</code></pre></div>
   <p>Paste the <a href="#prompts">Codex prompt</a>. Quit Codex (<code>/quit</code>, or <span class="kbd">Ctrl</span>+<span class="kbd">C</span> twice) when it has printed its summary, so the next run is a new session.</p>
   <div class="callout expect"><span class="icon">✓</span><div><p>From the rehearsal (73 s):</p><pre class="out">3. Updated changelog and bumped client version to `1.4.0`.
@@ -217,22 +221,35 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
   <div class="say">These two guidelines were learned from a single Claude Code session, with no feedback. The first is the rule the hook enforces, written as a step to take before committing.</div>
 
   <h3>2.3 Codex again, same task, fresh repository <span class="chip">~1–2 min</span></h3>
-  <div class="cmd" data-label="Terminal B, then A"><pre><code>./reset.sh
+  <div class="cmd" data-label="Terminal B, then A"><pre><code>./commits.sh codex        # optional: show run 1's commit before it is replaced
+./reset.sh codex
 ./codex.sh</code></pre></div>
-  <p>Paste the same prompt.</p>
+  <p>Paste the same prompt. Afterwards, <code>./injected.sh codex</code> shows the guidelines Cortex added.</p>
   <div class="callout expect"><span class="icon">✓</span><div><p>CHANGES.md and VERSION are updated before the first commit, and the changelog/version rejection doesn't happen. As in Flow 1, a commit-subject rejection may remain; that rule is in neither guideline.</p></div></div>
   <p class="note">Recorded result, two pairs: changelog and version rejections 2/2 without guidelines, 0/2 with them; rejected commits 2, 2 → 1, 1 (<a href="reports/loop-rules-20261111/">evidence</a>).</p>
 </section>
 
 <section class="card" id="evidence">
   <h2>Show the evidence</h2>
-  <p>To prove where the change came from, open the dev Cortex in agentop in terminal C:</p>
+  <p>Cortex records what the evolve plugin did on every request. Two ways to show that Codex's guidelines came from Cortex:</p>
+  <h3>In the terminal</h3>
+  <div class="cmd" data-label="Terminal B"><pre><code>./injected.sh codex          # latest Codex session; ./injected.sh claude for Claude Code's</code></pre></div>
+  <p>It prints three things for the session's first request, the one the plugin injects into:</p>
+  <ol>
+    <li><b><code>plugins.evolve</code></b>, the plugin's record: <code>"injected": true</code>, the guideline <code>ids</code>, and <code>sources</code>, the session each guideline was learned from. In Flow 1 that's Claude Code's session.</li>
+    <li><b>The invocation</b>: <code>modify · body_rewritten</code> when the block was added. Claude Code's source session shows <code>skip · no_guidelines</code>, since nothing was served yet.</li>
+    <li><b>The block itself</b>, taken from the body Cortex forwarded to the model: the <code>&lt;evolve-guidelines&gt;</code> block at the start of the first user message.</li>
+  </ol>
+  <h3>In agentop</h3>
   <div class="cmd" data-label="Terminal C"><pre><code>agentop observe -endpoint "http://127.0.0.1:${CORTEX_API:-47701}"</code></pre></div>
+  <p>Open the Codex session, then its first request's detail:</p>
   <ul>
-    <li>Open the guided Codex session and its first request. The evolve plugin's entry shows <code>injected: true</code> and the guideline IDs. The request's first user message starts with the <code>&lt;evolve-guidelines&gt;</code> block.</li>
-    <li>The timeline shows each command with its output, including the hooks' messages under a rejected commit.</li>
-    <li>From the command line instead: <code>./guidelines.sh list</code> for what is served, <code>./candidates.sh list</code> for what was learned.</li>
+    <li>The request's title line ends in <b><code>modify evolve</code></b>: the plugin changed what was sent.</li>
+    <li>Under <b><code>plugins</code> › <code>evolve</code></b>: the same record, <code>injected</code>, <code>ids</code> and <code>sources</code>.</li>
+    <li>Under <b><code>raw</code></b>: <code>forwarded: rewritten by a plugin: … → …</code>, and <code>forwardedBody</code>, the exact body the model received, with the block in the first user message. The parsed <code>messages</code> show what Codex sent, before the plugin added it.</li>
+    <li>Every later request in the session is injected too. Within the plugin's cache window (<code>cache_ttl_seconds</code>, 60 s on the rehearsal setup) they reuse the fetched set and show <code>"cached": true</code>; after it, the plugin refetches the same guidelines.</li>
   </ul>
+  <p>For what was learned and what is served: <code>./candidates.sh list</code> and <code>./guidelines.sh list</code>.</p>
 </section>
 
 <section class="card" id="fallbacks">
@@ -260,13 +277,15 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 
 <section class="card" id="scripts">
   <h2>Script reference</h2>
-  <p>In <code>demos/cortex-repo/live/</code>. Source <code>env.sh</code> first. Paths can be overridden with <code>EVOLVE_ENV_FILE</code>, <code>CORTEX_CONFIG</code>, <code>CODEX_HOME_DIR</code>, <code>CODEX_USER_HOME</code> and <code>DEMO_REPO</code>.</p>
+  <p>In <code>demos/cortex-repo/live/</code>. Source <code>env.sh</code> first. Paths can be overridden with <code>EVOLVE_ENV_FILE</code>, <code>CORTEX_CONFIG</code>, <code>CODEX_HOME_DIR</code>, <code>CODEX_USER_HOME</code> and <code>DEMO_ROOT</code>.</p>
   <table>
     <tr><th>Script</th><th>Does</th></tr>
     <tr><td><code>check.sh</code></td><td>Checks the running setup: Evolve, the dev Cortex and its evolve plugin, Claude Code's and Codex's routing, the virtualenv. Says how to fix whatever isn't ready.</td></tr>
     <tr><td><code>prepare.sh [idle]</code></td><td>Sets the evolve plugin to inject and learn with a short idle wait (default 30 s), and empties <code>cortex</code> and <code>cortex-candidates</code>.</td></tr>
-    <tr><td><code>reset.sh</code></td><td>A fresh shopkit at <code>$WALK/live/shopkit</code> with one commit and its hooks enabled.</td></tr>
-    <tr><td><code>claude.sh</code> / <code>codex.sh</code></td><td>Start the agent in the demo repository through the dev Cortex. Extra arguments are passed on (for example <code>exec "…"</code>).</td></tr>
+    <tr><td><code>reset.sh [claude|codex]</code></td><td>A fresh shopkit with one commit and its hooks enabled, at <code>$WALK/live/claude-shopkit</code> and/or <code>$WALK/live/codex-shopkit</code> (both without an argument).</td></tr>
+    <tr><td><code>commits.sh [claude|codex]</code></td><td>Each demo repository's commits, and the files the last one changed.</td></tr>
+    <tr><td><code>injected.sh [codex|claude] [session]</code></td><td>For the agent's latest session, or the one given: the evolve plugin's record, its invocation, and the guidelines block in the forwarded body.</td></tr>
+    <tr><td><code>claude.sh</code> / <code>codex.sh</code></td><td>Start the agent in its demo repository through the dev Cortex. Extra arguments are passed on (for example <code>exec "…"</code>).</td></tr>
     <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | clear</code></td><td>What Evolve learned; <code>wait</code> polls until new candidates appear.</td></tr>
     <tr><td><code>promote.sh &lt;id&gt;…</code></td><td>Copies candidates into the served namespace with their metadata (<code>evolve entities export</code> → <code>import --append</code>).</td></tr>
     <tr><td><code>guidelines.sh list | clear | load [file]</code></td><td>What the dev Cortex serves; <code>load</code> replaces it from a file (default <code>guidelines/rules-20261111.json</code>).</td></tr>

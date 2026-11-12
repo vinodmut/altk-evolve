@@ -36,7 +36,7 @@ grep -q '"Session-Id"' "$CORTEX_CONFIG" 2>/dev/null && ok "Cortex groups Codex s
 if [ -f "$CODEX_HOME_DIR/config.toml" ] && [ -f "$CODEX_HOME_DIR/.env" ]; then
   grep -q "127.0.0.1:$CORTEX_PROXY" "$CODEX_HOME_DIR/.env" && ok "Codex routed to the dev Cortex (${CODEX_HOME_DIR/#$HOME/~})" \
     || bad "Codex's .env doesn't point at 127.0.0.1:$CORTEX_PROXY" "fix HTTPS_PROXY in $CODEX_HOME_DIR/.env, then restart Codex's background process (live-demo.html, Codex setup)"
-  grep -q "\"$DEMO_REPO\"" "$CODEX_HOME_DIR/config.toml" && ok "Codex trusts the demo repository" || warn "Codex doesn't list $DEMO_REPO as trusted" "add [projects.\"$DEMO_REPO\"] trust_level = \"trusted\" to its config.toml"
+  grep -q "\"$CODEX_REPO\"" "$CODEX_HOME_DIR/config.toml" && ok "Codex trusts its demo repository" || warn "Codex doesn't list $CODEX_REPO as trusted" "add [projects.\"$CODEX_REPO\"] trust_level = \"trusted\" to its config.toml"
 else
   bad "No Codex home at $CODEX_HOME_DIR" "set it up (live-demo.html, Codex through the dev Cortex)"
 fi
