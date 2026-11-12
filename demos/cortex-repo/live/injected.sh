@@ -24,3 +24,14 @@ curl -s --noproxy '*' "$api/v1/sessions/$S/events/$seq?raw=1" | jq -r '
   else (.raw.forwarded | fromjson? // .raw.forwarded) | [.. | strings | select(test("<evolve-guidelines"))][0]
        | if . == null then "   no block found" else capture("(?s)(?<b><evolve-guidelines.*?</evolve-guidelines>)").b end
   end'
+
+echo
+echo "The same evidence from the Cortex API directly:"
+cat <<EOF
+  # 1 and 2: the request event, with the evolve plugin's record and its invocation
+  curl -s --noproxy '*' "http://$api/v1/sessions/$S?limit=5000" \\
+    | jq '.events[] | select(.seq == $seq) | {evolve: .plugins.evolve, invocation: [.invocations.outbound[]? | select(.plugin == "evolve")]}'
+  # 3: the exact body Cortex forwarded to the model, and the guidelines block in it
+  curl -s --noproxy '*' "http://$api/v1/sessions/$S/events/$seq?raw=1" \\
+    | jq -r '.raw.forwarded | fromjson | [.. | strings | select(test("<evolve-guidelines"))][0]'
+EOF
