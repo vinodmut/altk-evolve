@@ -52,7 +52,7 @@ details summary { cursor: pointer; margin: 6px 0 10px; }
     <a href="#flow1"><b>Flow 1 · Claude Code → Codex</b>The whole loop live: a Claude Code session is rejected by the repository's hooks, Evolve learns from it with no feedback, the guidelines go live, and Codex does a different change without that mistake. Shows learning and transfer across agents, and optionally the review gate.</a>
     <a href="#flow2"><b>Flow 2 · Codex → Codex</b>Learning skipped: the same Codex task twice, first with no guidelines, then with guidelines loaded from a file. Shorter and more predictable; shows only the effect.</a>
   </div>
-  <p>Both use <code>shopkit</code>, whose git hooks reject a commit that changes the schema unless <code>CHANGES.md</code> has an entry under <code>## Unreleased</code>, <code>clients/python/VERSION</code> is bumped, and the subject is a Conventional Commit.</p>
+  <p>Both use <code>shopkit</code>, whose pre-commit hook rejects a commit that changes the schema unless <code>CHANGES.md</code> has an entry under <code>## Unreleased</code> and <code>clients/python/VERSION</code> is bumped. The full sample repository also requires a Conventional Commit subject; <code>reset.sh</code> leaves that hook out of the demo repositories, so each run turns on the two rules a session can learn (<code>KEEP_COMMIT_MSG_HOOK=1 ./reset.sh</code> keeps it).</p>
 </section>
 
 <section class="card" id="before">
@@ -196,11 +196,10 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
   <div class="cmd" data-label="Terminal A"><pre><code>./codex.sh</code></pre></div>
   <p>Paste the <a href="#prompts">Codex prompt</a>. Its repository is still fresh from 1.1; Claude Code's commit is in the other one.</p>
   <div class="say">Different vendor, different model, different change. It has never seen this repository, but its first request carries what Claude Code's session taught. Watch for CHANGES.md and VERSION before its first commit.</div>
-  <div class="callout expect"><span class="icon">✓</span><div><p>From the rehearsal (63 s):</p><pre class="out">2. <span class="ok">Updated `CHANGES.md` and bumped client version to `1.4.0`.</span>
+  <div class="callout expect"><span class="icon">✓</span><div><p>Codex updates <code>CHANGES.md</code> and <code>clients/python/VERSION</code> before its first commit, and the commit is accepted first time. Its summary lists no failed step. From the rehearsal (63 s):</p><pre class="out">2. <span class="ok">Updated `CHANGES.md` and bumped client version to `1.4.0`.</span>
 4. Ran `make generate`, migration generation, `make test` (3 passed), `make check` …
-5. <span class="x">First commit failed due to Conventional Commit requirement.</span> Fixed with `feat(orders): add discount code`.
-6. Committed as `f19d4cc`.</pre></div></div>
-  <div class="callout why"><span class="icon">i</span><div><p><b>Expect the commit-subject rejection, and use it.</b> Claude Code writes Conventional Commit subjects by habit, so its session never broke that rule and there was nothing to learn. <i>"It learned exactly what one agent hit. What it never saw, it can't know."</i> For contrast, show slide 13 or run <a href="#flow2">Flow 2's first run</a> beforehand. Without guidelines, Codex is also rejected for the changelog and version.</p></div></div>
+6. Committed as `f19d4cc`.</pre><p class="small">The rehearsal ran with the commit-subject hook still in place and was rejected once for it; that step can't happen now.</p></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><b>For contrast</b>, run <a href="#flow2">Flow 2's first run</a> beforehand, or show slide 13: without guidelines, Codex is rejected for the changelog and version.</p></div></div>
 
   <h3>1.5 Show what happened <span class="chip">~1 min</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./commits.sh          # both repositories' commits, and what each last commit changed
@@ -224,7 +223,7 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
 5. <span class="x">Commit attempts failed twice:</span>
    - Missing changelog/version updates; fixed both.
    - Invalid commit message format; fixed with Conventional Commit format.
-6. Committed successfully: `c534c3b feat(orders): add optional discount code`.</pre></div></div>
+6. Committed successfully: `c534c3b feat(orders): add optional discount code`.</pre><p class="small">Recorded with the commit-subject hook in place. Without it, expect only the first failure: the missing changelog entry and version bump.</p></div></div>
 
   <h3>2.2 Load the guidelines <span class="chip">~20 s</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./guidelines.sh load      # guidelines/rules-20261111.json; replaces whatever is served</code></pre></div>
@@ -235,8 +234,8 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
 ./reset.sh codex
 ./codex.sh</code></pre></div>
   <p>Paste the same prompt. Afterwards, <code>./injected.sh codex</code> shows the guidelines Cortex added.</p>
-  <div class="callout expect"><span class="icon">✓</span><div><p>CHANGES.md and VERSION are updated before the first commit, and the changelog/version rejection doesn't happen. As in Flow 1, a commit-subject rejection may remain; that rule is in neither guideline.</p></div></div>
-  <p class="note">Recorded result, two pairs: changelog and version rejections 2/2 without guidelines, 0/2 with them; rejected commits 2, 2 → 1, 1 (<a href="reports/loop-rules-20261111/">evidence</a>).</p>
+  <div class="callout expect"><span class="icon">✓</span><div><p>CHANGES.md and VERSION are updated before the first commit, and the commit is accepted first time.</p></div></div>
+  <p class="note">Recorded result, two pairs, with the commit-subject hook in place: changelog and version rejections 2/2 without guidelines, 0/2 with them; the only rejections left with guidelines were for the commit subject (<a href="reports/loop-rules-20261111/">evidence</a>).</p>
 </section>
 
 <section class="card" id="evidence">
