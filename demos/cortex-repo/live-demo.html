@@ -13,6 +13,7 @@ pre.out .x { color: #f4a4a0; } pre.out .ok { color: #7ee2a8; } pre.out .dim { co
 .flowpick a:hover { border-color: var(--accent); }
 .flowpick b { display: block; font-size: 16px; margin-bottom: 4px; }
 .cmd.wrap pre, .cmd.wrap pre code { white-space: pre-wrap; }
+details summary { cursor: pointer; margin: 6px 0 10px; }
 .say { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; margin: 10px 0; color: var(--ink-2); font-style: italic; }
 @media (max-width: 900px) { .flowpick { grid-template-columns: 1fr; } }
 </style>
@@ -33,7 +34,7 @@ pre.out .x { color: #f4a4a0; } pre.out .ok { color: #7ee2a8; } pre.out .dim { co
 <div class="layout">
 <nav class="toc" aria-label="Sections"><b>Sections</b><ol>
   <li><a href="#before"><span class="num">0</span>Before the talk</a></li>
-  <li><a href="#codex-setup"><span class="num">0</span>Codex through Cortex</a></li>
+  <li><a href="#codex-setup"><span class="num">0</span>From scratch</a></li>
   <li><a href="#prompts"><span class="num">“</span>The prompts</a></li>
   <li><a href="#flow1"><span class="num">1</span>Flow 1: Claude → Codex</a></li>
   <li><a href="#flow2"><span class="num">2</span>Flow 2: Codex → Codex</a></li>
@@ -55,31 +56,37 @@ pre.out .x { color: #f4a4a0; } pre.out .ok { color: #7ee2a8; } pre.out .dim { co
 </section>
 
 <section class="card" id="before">
-  <div class="step-head"><span class="step-num">0</span><h2>Before the talk</h2><div class="meta"><span class="chip">once</span></div></div>
-  <p>This runbook assumes the setup from the <a href="walkthrough-manual.html">manual walkthrough</a>: <code>$WALK/env.sh</code>, Evolve's MCP server (port 8201 there), a dev Cortex with the evolve plugin (47700 and 47701 there), <code>$WALK/claude-dev.json</code>, and the shopkit virtualenv. Two additions:</p>
-  <ul>
-    <li><b>Evolve learns with the <code>rules</code> prompt.</b> Add <code>EVOLVE_GUIDELINES_PROMPT=rules</code> to the Evolve server's env file and restart it. It states the rule an error spells out ("add an entry under <code>## Unreleased</code> in <code>CHANGES.md</code>…") instead of recovery advice.</li>
-    <li><b>Codex goes through the dev Cortex</b>: <a href="#codex-setup">next section</a>.</li>
-  </ul>
-  <p>The scripts are in <code>demos/cortex-repo/live/</code> of the altk-evolve checkout, <code>$EVOLVE_SRC</code>. Bring it up to date once, so it has them and the <code>rules</code> prompt:</p>
-  <div class="cmd" data-label="Once"><pre><code>git -C "$EVOLVE_SRC" pull --ff-only</code></pre></div>
-  <p>Every terminal sources your <code>env.sh</code> and works from the scripts' directory:</p>
-  <div class="cmd" data-label="Every terminal"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
+  <div class="step-head"><span class="step-num">0</span><h2>Before the talk</h2><div class="meta"><span class="chip">2 min</span></div></div>
+  <p>If the dev Cortex and the Evolve MCP server are already running, as on the machine this was rehearsed on, there is nothing to set up. In each terminal, source your <code>env.sh</code> and go to the scripts:</p>
+  <div class="cmd" data-label="Every terminal"><pre><code>. "$HOME/tmp/cortex-evolve-run/env.sh"
 cd "$EVOLVE_SRC/demos/cortex-repo/live"</code></pre></div>
-  <p>The scripts read these from <code>env.sh</code>, with the walkthrough's values as defaults:</p>
-  <table>
-    <tr><th>Variable</th><th>Default</th><th>Set it in <code>env.sh</code> when</th></tr>
-    <tr><td><code>CORTEX_PROXY</code>, <code>CORTEX_API</code>, <code>CORTEX_STATS</code></td><td><code>47700</code>, <code>47701</code>, <code>47702</code></td><td>the dev Cortex listens elsewhere</td></tr>
-    <tr><td><code>EVOLVE_ENV_FILE</code></td><td><code>$WALK/evolve.env</code></td><td>the Evolve server was started with another env file</td></tr>
-    <tr><td><code>DEMO_REPO</code></td><td><code>$WALK/live/shopkit</code></td><td>you want the demo repository elsewhere</td></tr>
-  </table>
-  <div class="callout why"><span class="icon">i</span><div><p><b>On the machine this was rehearsed on</b>, <code>env.sh</code> is <code>$HOME/tmp/cortex-evolve-run/env.sh</code>. It already sets the dev Cortex's ports (47710–47712), Evolve's (8211) and <code>EVOLVE_ENV_FILE="$WALK/loop3/evolve.env"</code>, the env file of the running Evolve server.</p></div></div>
+  <p>Then check that what's running is ready:</p>
+  <div class="cmd" data-label="Terminal B"><pre><code>./check.sh</code></pre></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p>A list of ✓ lines ending in <b>Ready.</b>: Evolve answering and learning with the <code>rules</code> prompt, the dev Cortex's evolve plugin pointing at it for both agents with guidelines in the first user message, Claude Code's and Codex's routing through the dev Cortex, and the shopkit virtualenv. Anything marked ✗ comes with what to do about it.</p></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><b>On the rehearsal machine</b>, <code>env.sh</code> already sets the dev Cortex's ports (47710–47712), Evolve's (8211) and <code>EVOLVE_ENV_FILE</code>, the running server's env file (<code>$WALK/loop3/evolve.env</code>). If <code>cd</code> fails because the <code>live/</code> scripts are missing, update the checkout once: <code>git -C "$EVOLVE_SRC" pull --ff-only</code>.</p></div></div>
   <p>Three terminals work well: <b>A</b> for the agents, <b>B</b> for the scripts, and optionally <b>C</b> for <code>agentop observe</code> on the dev Cortex (<a href="#evidence">evidence</a>). Make the agent terminal's font large.</p>
   <div class="callout caution"><span class="icon">!</span><div><p><b>Rehearse once, end to end, on the machine and network you'll present from.</b> The models vary from run to run, and answering Claude Code's folder-trust prompt once now keeps it off the stage (<a href="#flow1">1.2</a>).</p></div></div>
 </section>
 
 <section class="card" id="codex-setup">
-  <div class="step-head"><span class="step-num">0</span><h2>Codex through the dev Cortex</h2><div class="meta"><span class="chip">once · 5 min</span></div></div>
+  <h2>Only if starting from scratch</h2>
+  <p>Skip this when <code>./check.sh</code> says <b>Ready.</b></p>
+  <details>
+    <summary><b>Set up Cortex, Evolve, Claude Code and Codex for the demo</b></summary>
+    <p>Follow the <a href="walkthrough-manual.html">manual walkthrough</a> up to step 5 (the shopkit virtualenv, the Evolve MCP server, a dev Cortex with the evolve plugin, and <code>$WALK/claude-dev.json</code>). Its <code>env.sh</code> is <code>$HOME/tmp/cortex-evolve-manual/env.sh</code>. Then:</p>
+    <ul>
+      <li><b>Evolve learns with the <code>rules</code> prompt:</b> add <code>EVOLVE_GUIDELINES_PROMPT=rules</code> to the Evolve server's env file and restart it.</li>
+      <li><b>Codex goes through the dev Cortex:</b> below.</li>
+    </ul>
+    <p>The scripts read these from <code>env.sh</code>, with the walkthrough's values as defaults:</p>
+    <table>
+      <tr><th>Variable</th><th>Default</th><th>Set it in <code>env.sh</code> when</th></tr>
+      <tr><td><code>CORTEX_PROXY</code>, <code>CORTEX_API</code>, <code>CORTEX_STATS</code></td><td><code>47700</code>, <code>47701</code>, <code>47702</code></td><td>the dev Cortex listens elsewhere</td></tr>
+      <tr><td><code>EVOLVE_PORT</code></td><td><code>8201</code></td><td>Evolve listens elsewhere</td></tr>
+      <tr><td><code>EVOLVE_ENV_FILE</code></td><td><code>$WALK/evolve.env</code></td><td>the Evolve server was started with another env file</td></tr>
+      <tr><td><code>DEMO_REPO</code></td><td><code>$WALK/live/shopkit</code></td><td>you want the demo repository elsewhere</td></tr>
+    </table>
+    <h3>Codex through the dev Cortex</h3>
   <p>Codex gets its own <code>CODEX_HOME</code>, whose <code>.env</code> points it at the dev Cortex, and its own <code>HOME</code>, so none of your personal skills or settings reach the demo. Its <code>.env</code> wins over the shell's proxy variables, so your everyday Codex is unaffected.</p>
   <div class="cmd" data-label="Terminal B"><pre><code>mkdir -p "$WALK/codex-home" "$WALK/codex-user"
 cat &gt; "$WALK/codex-home/config.toml" &lt;&lt;EOF
@@ -126,6 +133,7 @@ curl -s --noproxy '*' "127.0.0.1:${CORTEX_API:-47701}/v1/sessions?archived=true"
   <div class="callout expect"><span class="icon">✓</span><div><p><code>READY</code>, then a session ID: the dev Cortex recorded the Codex session.</p></div></div>
   <p>Interactive <code>./codex.sh</code> hands each prompt to a background Codex process, one per <code>CODEX_HOME</code>, so the demo's is separate from your everyday Codex's. It reads <code>codex-home/.env</code> only when it starts. If you change that file, restart it:</p>
   <div class="cmd" data-label="Terminal B"><pre><code>env -u HTTPS_PROXY -u HTTP_PROXY HOME="$WALK/codex-user" CODEX_HOME="$WALK/codex-home" codex app-server daemon restart</code></pre></div>
+  </details>
 </section>
 
 <section class="card" id="prompts">
@@ -255,6 +263,7 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
   <p>In <code>demos/cortex-repo/live/</code>. Source <code>env.sh</code> first. Paths can be overridden with <code>EVOLVE_ENV_FILE</code>, <code>CORTEX_CONFIG</code>, <code>CODEX_HOME_DIR</code>, <code>CODEX_USER_HOME</code> and <code>DEMO_REPO</code>.</p>
   <table>
     <tr><th>Script</th><th>Does</th></tr>
+    <tr><td><code>check.sh</code></td><td>Checks the running setup: Evolve, the dev Cortex and its evolve plugin, Claude Code's and Codex's routing, the virtualenv. Says how to fix whatever isn't ready.</td></tr>
     <tr><td><code>prepare.sh [idle]</code></td><td>Sets the evolve plugin to inject and learn with a short idle wait (default 30 s), and empties <code>cortex</code> and <code>cortex-candidates</code>.</td></tr>
     <tr><td><code>reset.sh</code></td><td>A fresh shopkit at <code>$WALK/live/shopkit</code> with one commit and its hooks enabled.</td></tr>
     <tr><td><code>claude.sh</code> / <code>codex.sh</code></td><td>Start the agent in the demo repository through the dev Cortex. Extra arguments are passed on (for example <code>exec "…"</code>).</td></tr>
