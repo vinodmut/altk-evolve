@@ -56,15 +56,24 @@ pre.out .x { color: #f4a4a0; } pre.out .ok { color: #7ee2a8; } pre.out .dim { co
 
 <section class="card" id="before">
   <div class="step-head"><span class="step-num">0</span><h2>Before the talk</h2><div class="meta"><span class="chip">once</span></div></div>
-  <p>This runbook assumes the setup from the <a href="walkthrough-manual.html">manual walkthrough</a>: <code>$WALK/env.sh</code>, Evolve's MCP server on <code>$EVOLVE_PORT</code>, a dev Cortex with the evolve plugin on <code>$CORTEX_PROXY</code>/<code>$CORTEX_API</code>, <code>$WALK/claude-dev.json</code>, and the shopkit virtualenv. Two additions:</p>
+  <p>This runbook assumes the setup from the <a href="walkthrough-manual.html">manual walkthrough</a>: <code>$WALK/env.sh</code>, Evolve's MCP server (port 8201 there), a dev Cortex with the evolve plugin (47700 and 47701 there), <code>$WALK/claude-dev.json</code>, and the shopkit virtualenv. Two additions:</p>
   <ul>
     <li><b>Evolve learns with the <code>rules</code> prompt.</b> Add <code>EVOLVE_GUIDELINES_PROMPT=rules</code> to the Evolve server's env file and restart it. It states the rule an error spells out ("add an entry under <code>## Unreleased</code> in <code>CHANGES.md</code>…") instead of recovery advice.</li>
     <li><b>Codex goes through the dev Cortex</b>: <a href="#codex-setup">next section</a>.</li>
   </ul>
-  <p>The scripts are in <code>demos/cortex-repo/live/</code> of the altk-evolve checkout. Every terminal sources <code>env.sh</code> first. If the Evolve server's env file isn't <code>$WALK/evolve.env</code>, say where it is:</p>
+  <p>The scripts are in <code>demos/cortex-repo/live/</code> of the altk-evolve checkout, <code>$EVOLVE_SRC</code>. Bring it up to date once, so it has them and the <code>rules</code> prompt:</p>
+  <div class="cmd" data-label="Once"><pre><code>git -C "$EVOLVE_SRC" pull --ff-only</code></pre></div>
+  <p>Every terminal sources your <code>env.sh</code> and works from the scripts' directory:</p>
   <div class="cmd" data-label="Every terminal"><pre><code>. "$HOME/tmp/cortex-evolve-manual/env.sh"
-export EVOLVE_ENV_FILE="$WALK/evolve.env"
 cd "$EVOLVE_SRC/demos/cortex-repo/live"</code></pre></div>
+  <p>The scripts read these from <code>env.sh</code>, with the walkthrough's values as defaults:</p>
+  <table>
+    <tr><th>Variable</th><th>Default</th><th>Set it in <code>env.sh</code> when</th></tr>
+    <tr><td><code>CORTEX_PROXY</code>, <code>CORTEX_API</code>, <code>CORTEX_STATS</code></td><td><code>47700</code>, <code>47701</code>, <code>47702</code></td><td>the dev Cortex listens elsewhere</td></tr>
+    <tr><td><code>EVOLVE_ENV_FILE</code></td><td><code>$WALK/evolve.env</code></td><td>the Evolve server was started with another env file</td></tr>
+    <tr><td><code>DEMO_REPO</code></td><td><code>$WALK/live/shopkit</code></td><td>you want the demo repository elsewhere</td></tr>
+  </table>
+  <div class="callout why"><span class="icon">i</span><div><p><b>On the machine this was rehearsed on</b>, <code>env.sh</code> is <code>$HOME/tmp/cortex-evolve-run/env.sh</code>. It already sets the dev Cortex's ports (47710–47712), Evolve's (8211) and <code>EVOLVE_ENV_FILE="$WALK/loop3/evolve.env"</code>, the env file of the running Evolve server.</p></div></div>
   <p>Three terminals work well: <b>A</b> for the agents, <b>B</b> for the scripts, and optionally <b>C</b> for <code>agentop observe</code> on the dev Cortex (<a href="#evidence">evidence</a>). Make the agent terminal's font large.</p>
   <div class="callout caution"><span class="icon">!</span><div><p><b>Rehearse once, end to end, on the machine and network you'll present from.</b> The models vary from run to run, and answering Claude Code's folder-trust prompt once now keeps it off the stage (<a href="#flow1">1.2</a>).</p></div></div>
 </section>
@@ -99,8 +108,8 @@ trust_level = "trusted"
 EOF
 umask 077; cat &gt; "$WALK/codex-home/.env" &lt;&lt;EOF
 WALK_LITELLM_KEY=$LITELLM_KEY
-HTTPS_PROXY=http://127.0.0.1:$CORTEX_PROXY
-HTTP_PROXY=http://127.0.0.1:$CORTEX_PROXY
+HTTPS_PROXY=http://127.0.0.1:${CORTEX_PROXY:-47700}
+HTTP_PROXY=http://127.0.0.1:${CORTEX_PROXY:-47700}
 SSL_CERT_FILE=$WALK/cortex-home/.cortex/ca/bundle.crt
 EOF
 printf 'export PATH="%s/shopkit-venv/bin:$PATH"\n' "$WALK" &gt; "$WALK/codex-user/.zprofile"
@@ -113,7 +122,7 @@ printf '[user]\n\tname = shopkit agent\n\temail = agent@shopkit.test\n[init]\n\t
   <p id="codex-check">Check it once:</p>
   <div class="cmd" data-label="Terminal B"><pre><code>./reset.sh
 ./codex.sh exec "Reply with exactly: READY" &lt; /dev/null
-curl -s --noproxy '*' "127.0.0.1:$CORTEX_API/v1/sessions?archived=true" | jq -r '[.sessions[] | select(.agent=="codex")] | max_by(.createdAt) | .id'</code></pre></div>
+curl -s --noproxy '*' "127.0.0.1:${CORTEX_API:-47701}/v1/sessions?archived=true" | jq -r '[.sessions[] | select(.agent=="codex")] | max_by(.createdAt) | .id'</code></pre></div>
   <div class="callout expect"><span class="icon">✓</span><div><p><code>READY</code>, then a session ID: the dev Cortex recorded the Codex session.</p></div></div>
   <p>Interactive <code>./codex.sh</code> hands each prompt to a background Codex process, one per <code>CODEX_HOME</code>, so the demo's is separate from your everyday Codex's. It reads <code>codex-home/.env</code> only when it starts. If you change that file, restart it:</p>
   <div class="cmd" data-label="Terminal B"><pre><code>env -u HTTPS_PROXY -u HTTP_PROXY HOME="$WALK/codex-user" CODEX_HOME="$WALK/codex-home" codex app-server daemon restart</code></pre></div>
@@ -210,7 +219,7 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 <section class="card" id="evidence">
   <h2>Show the evidence</h2>
   <p>To prove where the change came from, open the dev Cortex in agentop in terminal C:</p>
-  <div class="cmd" data-label="Terminal C"><pre><code>agentop observe -endpoint "http://127.0.0.1:$CORTEX_API"</code></pre></div>
+  <div class="cmd" data-label="Terminal C"><pre><code>agentop observe -endpoint "http://127.0.0.1:${CORTEX_API:-47701}"</code></pre></div>
   <ul>
     <li>Open the guided Codex session and its first request. The evolve plugin's entry shows <code>injected: true</code> and the guideline IDs. The request's first user message starts with the <code>&lt;evolve-guidelines&gt;</code> block.</li>
     <li>The timeline shows each command with its output, including the hooks' messages under a rejected commit.</li>

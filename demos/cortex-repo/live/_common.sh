@@ -1,5 +1,7 @@
 # Shared settings for the live-demo scripts. Source your env.sh first; it sets WALK and the ports.
 : "${WALK:?Source your env.sh first (it sets WALK)}"
+# The manual walkthrough's ports, unless env.sh sets others.
+CORTEX_PROXY="${CORTEX_PROXY:-47700}"; CORTEX_API="${CORTEX_API:-47701}"; CORTEX_STATS="${CORTEX_STATS:-47702}"
 EVOLVE_ENV_FILE="${EVOLVE_ENV_FILE:-$WALK/evolve.env}"            # the running Evolve server's settings
 CORTEX_CONFIG="${CORTEX_CONFIG:-$WALK/cortex-home/.cortex/config.yaml}"
 CODEX_HOME_DIR="${CODEX_HOME_DIR:-$WALK/codex-home}"               # Codex home routed to the dev Cortex
