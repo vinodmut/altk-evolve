@@ -10,7 +10,8 @@ export_ns() {
   [ -n "$out" ] && print -r -- "$out" || { echo "No namespace '$1'." >&2; echo '[]'; }
 }
 case "${1:-both}" in
-  both)    jq -n --arg s "$SERVE_NS" --arg l "$LEARN_NS" --argjson sv "$(export_ns "$SERVE_NS")" --argjson lv "$(export_ns "$LEARN_NS")" '{($s): $sv, ($l): $lv}' ;;
+  both)    if [ -n "$SHARED_NS" ]; then jq -n --arg s "$SERVE_NS" --argjson sv "$(export_ns "$SERVE_NS")" '{($s): $sv}'
+           else jq -n --arg s "$SERVE_NS" --arg l "$LEARN_NS" --argjson sv "$(export_ns "$SERVE_NS")" --argjson lv "$(export_ns "$LEARN_NS")" '{($s): $sv, ($l): $lv}'; fi ;;
   served)  export_ns "$SERVE_NS" ;;
   learned) export_ns "$LEARN_NS" ;;
   -h|--help) sed -n '2,4p' "$0" | sed 's/^# //' ;;

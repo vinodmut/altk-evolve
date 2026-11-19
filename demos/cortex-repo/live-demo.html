@@ -23,7 +23,7 @@ details summary { cursor: pointer; margin: 6px 0 10px; }
 <header class="hero"><div class="hero-inner">
   <span class="eyebrow">Live demo runbook</span>
   <h1>Evolve in Cortex, live: learn from one agent, help another</h1>
-  <p>Two demos of the same repository with rules no prompt mentions. In the first, Claude Code makes a mistake, Evolve learns from it, you promote what it learned, and Codex benefits. In the second, Codex runs twice, without and with guidelines loaded from a file. Every step is one script.</p>
+  <p>Two demos of the same repository with rules no prompt mentions. In the first, Claude Code makes a mistake, Evolve learns from it, and Codex benefits. In the second, Codex runs twice, without and with guidelines loaded from a file. Every step is one script.</p>
   <div class="facts">
     <div class="fact"><span>Flow 1</span><b>Claude Code → Codex · ~8 min</b></div>
     <div class="fact"><span>Flow 2</span><b>Codex → Codex · ~4 min</b></div>
@@ -150,23 +150,23 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 <section class="card" id="flow1">
   <div class="step-head"><span class="step-num">1</span><h2>Flow 1 · Claude Code → Codex</h2><div class="meta"><span class="chip">~8 min</span></div></div>
 
-  <p>The two Evolve namespaces are the plugin's to name, and the dev Cortex's config says which is which. It's worth showing once:</p>
+  <p>The plugin learns into and serves one Evolve namespace, so what Evolve learns from one session is given to the next with no review step. The dev Cortex's config says so; it's worth showing once:</p>
   <pre class="out">      - name: evolve
         config:
           endpoint: http://127.0.0.1:8211/sse
-          <span class="dim"># Guidelines Evolve learns land here, for review. Never injected.</span>
-          learn_namespace: cortex-candidates
-          <span class="dim"># Only guidelines promoted here are injected into agents' requests.</span>
+          <span class="dim"># One namespace: guidelines Evolve learns are served to the next session, with no</span>
+          <span class="dim"># review step. (The review gate is learn_namespace: cortex-candidates, with promotion.)</span>
+          learn_namespace: cortex
           serve_namespace: cortex
           agents: [claude-code, codex]
           placement: user
           …</pre>
-  <p><code>./candidates.sh</code> works on the learn namespace and <code>./guidelines.sh</code> on the serve namespace; <code>./promote.sh</code> copies from one to the other. All of them read the names from this config.</p>
+  <p>The scripts read the names from this config. <code>./candidates.sh</code> works on the learn namespace and <code>./guidelines.sh</code> on the serve namespace; here both are <code>cortex</code>, and <code>./promote.sh</code> has nothing to do.</p>
 
   <h3>1.1 Prepare <span class="chip">before you start talking</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh          # guidelines on, learning on, 30 s idle, empty namespaces
 ./reset.sh            # fresh shopkit repos for both agents, one commit each</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"learn_namespace":"cortex-candidates","serve_namespace":"cortex","inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Served guidelines and candidates cleared.</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait. Each agent gets its own repository, <code>$WALK/live/claude-shopkit</code> and <code>$WALK/live/codex-shopkit</code>, so both runs' commits stay to look at.</p></div></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>Cortex evolve plugin: {"learn_namespace":"cortex","serve_namespace":"cortex","inject":true,"learn":true,"idle_after_seconds":30}</code> and <code>Guidelines in cortex cleared (learned into and served from the same namespace).</code> Cortex sends a session to Evolve once it has been quiet for 30 s, down from 90, so the demo doesn't wait. Each agent gets its own repository, <code>$WALK/live/claude-shopkit</code> and <code>$WALK/live/codex-shopkit</code>, so both runs' commits stay to look at.</p></div></div>
 
   <h3>1.2 Claude Code does the source task <span class="chip">~2 min</span></h3>
   <div class="cmd" data-label="Terminal A"><pre><code>./claude.sh</code></pre></div>
@@ -181,16 +181,17 @@ When you're done, summarize what you did as a numbered list of steps. Include ev
 10. Re-ran `git commit` — <span class="ok">all 6 files committed successfully</span></pre></div></div>
 
   <h3>1.3 Evolve learns, and the guidelines go live <span class="chip">~1 min</span></h3>
-  <div class="cmd" data-label="Terminal B"><pre><code>./candidates.sh wait-and-promote</code></pre></div>
+  <p>Quit Claude Code first (<code>/exit</code>): the session counts as idle 30 s after its last request.</p>
+  <div class="cmd" data-label="Terminal B"><pre><code>./candidates.sh wait</code></pre></div>
   <div class="say">Nobody graded that session or gave feedback. Cortex saw it go quiet and sent it to Evolve, which works out what to learn from the rejection. In this demo, whatever it learns goes straight to the next session; normally a person reviews it first.</div>
-  <div class="callout expect"><span class="icon">✓</span><div><p>Dots while it waits, then <code>Learned 3 guideline(s); promoting all of them from cortex-candidates to cortex:</code> and the served set. About 45 s after the session ended in the rehearsal. Only guidelines learned during the wait are promoted; older candidates stay where they are. The rehearsal learned:</p><pre class="out">Before committing changes to `schema/models.yaml` or `clients/python/shopkit_client.py`, add an entry
+  <div class="callout expect"><span class="icon">✓</span><div><p>Dots while it waits, then <code>Learned 3 guideline(s) into cortex. It is also the served namespace, so the next session is given them:</code> and the list. It returns once guidelines have appeared and no more arrive for a few seconds: about 45 s after the session ended in the rehearsal (30 s idle, then Evolve's model call). The same moment shows in the dev Cortex log as <code>evolve: sent idle session to learn from</code>, logged when Evolve has finished. The rehearsal learned:</p><pre class="out">Before committing changes to `schema/models.yaml` or `clients/python/shopkit_client.py`, add an entry
 under `## Unreleased` in `CHANGES.md` and bump `clients/python/VERSION` (minor version for a new field).
 
 In the shopkit repository, follow the full four-step pipeline when adding a field to a model: (1) edit
 `schema/models.yaml`, (2) run `make generate`, (3) run `make migration NAME=&lt;name&gt;`, (4) run `make test`.
 
-When adding an optional field to a model in shopkit, declare it with `{type: str}` …</pre><p>To read one in full, with its trigger, rationale and source session: <code>./guidelines.sh list</code>, then <code>evolve entities show cortex &lt;id&gt;</code>, or <code>./candidates.sh show &lt;id&gt;</code> for the candidate copy.</p></div></div>
-  <div class="callout why"><span class="icon">i</span><div><p><b>To show the review gate instead</b>, split the step in two: <code>./candidates.sh wait</code> lists what was learned, then <code>./promote.sh &lt;ids&gt;</code> promotes the ones you choose. <i>"What Evolve learns is only a candidate. Nothing reaches an agent until a person promotes it, so a web page an agent read can't become a standing instruction."</i></p></div></div>
+When adding an optional field to a model in shopkit, declare it with `{type: str}` …</pre><p>To read one in full, with its trigger, rationale and source session: <code>./guidelines.sh list</code>, then <code>evolve entities show cortex &lt;id&gt;</code>.</p></div></div>
+  <div class="callout why"><span class="icon">i</span><div><p><b>To show the review gate instead</b>, set <code>learn_namespace: cortex-candidates</code> in the plugin config (Cortex reloads it) and run <code>./prepare.sh</code>. Then <code>./candidates.sh wait</code> lists what was learned, for review, and <code>./promote.sh &lt;ids&gt;</code> serves the ones you choose. <i>"What Evolve learns is only a candidate. Nothing reaches an agent until a person promotes it, so a web page an agent read can't become a standing instruction."</i></p></div></div>
 
   <h3>1.4 Codex does a different task <span class="chip">~1–2 min</span></h3>
   <div class="cmd" data-label="Terminal A"><pre><code>./codex.sh</code></pre></div>
@@ -204,7 +205,7 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
   <h3>1.5 Show what happened <span class="chip">~1 min</span></h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./commits.sh          # both repositories' commits, and what each last commit changed
 ./injected.sh codex   # what Cortex added to Codex's first request</code></pre></div>
-  <div class="callout expect"><span class="icon">✓</span><div><p><code>commits.sh</code>: Claude Code's <code>feat: add optional nickname field to users</code> and Codex's <code>feat(orders): add discount code</code>, each touching <code>CHANGES.md</code> and <code>clients/python/VERSION</code>. <code>injected.sh codex</code>: <code>"injected": true</code> with the promoted guideline IDs, whose <code>sources</code> name Claude Code's session, the invocation <code>modify · body_rewritten</code>, and the <code>&lt;evolve-guidelines&gt;</code> block exactly as the model received it. More in <a href="#evidence">Show the evidence</a>.</p></div></div>
+  <div class="callout expect"><span class="icon">✓</span><div><p><code>commits.sh</code>: Claude Code's <code>feat: add optional nickname field to users</code> and Codex's <code>feat(orders): add discount code</code>, each touching <code>CHANGES.md</code> and <code>clients/python/VERSION</code>. <code>injected.sh codex</code>: <code>"injected": true</code> with the learned guideline IDs, whose <code>sources</code> name Claude Code's session, the invocation <code>modify · body_rewritten</code>, and the <code>&lt;evolve-guidelines&gt;</code> block exactly as the model received it. More in <a href="#evidence">Show the evidence</a>.</p></div></div>
 
   <h3>1.6 After the demo</h3>
   <div class="cmd" data-label="Terminal B"><pre><code>./prepare.sh 90           # back to a 90 s idle wait; also empties the namespaces</code></pre></div>
@@ -258,14 +259,14 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
     <li>Under <b><code>raw</code></b>: <code>forwarded: rewritten by a plugin: … → …</code>, and <code>forwardedBody</code>, the exact body the model received, with the block in the first user message. The parsed <code>messages</code> show what Codex sent, before the plugin added it.</li>
     <li>Every later request in the session is injected too. Within the plugin's cache window (<code>cache_ttl_seconds</code>, 60 s on the rehearsal setup) they reuse the fetched set and show <code>"cached": true</code>; after it, the plugin refetches the same guidelines.</li>
   </ul>
-  <p>For what was learned and what is served: <code>./candidates.sh list</code> and <code>./guidelines.sh list</code>, or everything with its metadata: <code>./entities.sh | jless</code>.</p>
+  <p>For what was learned and served: <code>./guidelines.sh list</code>, or everything with its metadata: <code>./entities.sh | jless</code>.</p>
 </section>
 
 <section class="card" id="fallbacks">
   <h2>Fallbacks</h2>
   <table>
     <tr><th>If</th><th>Then</th></tr>
-    <tr><td><code>./candidates.sh wait-and-promote</code> takes too long or learns nothing useful</td><td><code>./guidelines.sh load</code> serves the recorded guidelines from the same kind of session; carry on with 1.4.</td></tr>
+    <tr><td><code>./candidates.sh wait</code> takes too long or learns nothing useful</td><td><code>./guidelines.sh load</code> serves the recorded guidelines from the same kind of session; carry on with 1.4.</td></tr>
     <tr><td>Interactive Codex doesn't reach the dev Cortex</td><td><code>./codex.sh exec "&lt;prompt&gt;" &lt; /dev/null</code> runs the same session non-interactively and streams every command.</td></tr>
     <tr><td>Network or model trouble</td><td>Present the recorded run: slides 11–15 of the talk, and the timelines in <a href="reports/loop-rules-20261111/"><code>reports/loop-rules-20261111/</code></a>.</td></tr>
     <tr><td>You'd rather turn guidelines off at the proxy than empty the namespace</td><td><code>./inject.sh off</code> / <code>./inject.sh on</code> switch the dev Cortex in about half a second, between sessions.</td></tr>
@@ -290,13 +291,13 @@ When adding an optional field to a model in shopkit, declare it with `{type: str
   <table>
     <tr><th>Script</th><th>Does</th></tr>
     <tr><td><code>check.sh</code></td><td>Checks the running setup: Evolve, the dev Cortex and its evolve plugin, Claude Code's and Codex's routing, the virtualenv. Says how to fix whatever isn't ready.</td></tr>
-    <tr><td><code>prepare.sh [idle]</code></td><td>Sets the evolve plugin to inject and learn with a short idle wait (default 30 s), and empties <code>cortex</code> and <code>cortex-candidates</code>.</td></tr>
+    <tr><td><code>prepare.sh [idle]</code></td><td>Sets the evolve plugin to inject and learn with a short idle wait (default 30 s), and empties the learn and serve namespaces (just <code>cortex</code> when they are the same).</td></tr>
     <tr><td><code>reset.sh [claude|codex]</code></td><td>A fresh shopkit with one commit and its hooks enabled, at <code>$WALK/live/claude-shopkit</code> and/or <code>$WALK/live/codex-shopkit</code> (both without an argument).</td></tr>
     <tr><td><code>commits.sh [claude|codex]</code></td><td>Each demo repository's commits, and the files the last one changed.</td></tr>
     <tr><td><code>injected.sh [codex|claude] [session]</code></td><td>For the agent's latest session, or the one given: the evolve plugin's record, its invocation, and the guidelines block in the forwarded body.</td></tr>
     <tr><td><code>claude.sh</code> / <code>codex.sh</code></td><td>Start the agent in its demo repository through the dev Cortex. Extra arguments are passed on (for example <code>exec "…"</code>).</td></tr>
-    <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | wait-and-promote [s] | clear</code></td><td>What Evolve learned. <code>wait</code> polls until new candidates appear; <code>wait-and-promote</code> then promotes all of them, skipping the review step.</td></tr>
-    <tr><td><code>promote.sh &lt;id&gt;…</code></td><td>Copies candidates into the served namespace with their metadata (<code>evolve entities export</code> → <code>import --append</code>).</td></tr>
+    <tr><td><code>candidates.sh list | show &lt;id&gt; | wait [s] | wait-and-promote [s] | clear</code></td><td>What Evolve learned, in the learn namespace. <code>wait</code> polls until newly learned guidelines appear and lists them. With two namespaces, <code>wait-and-promote</code> then promotes all of them, skipping the review step; with one, it is the same as <code>wait</code>.</td></tr>
+    <tr><td><code>promote.sh &lt;id&gt;…</code></td><td>With two namespaces, copies candidates into the served namespace with their metadata (<code>evolve entities export</code> → <code>import --append</code>). With one, there is nothing to promote.</td></tr>
     <tr><td><code>guidelines.sh list | clear | load [file]</code></td><td>What the dev Cortex serves; <code>load</code> replaces it from a file (default <code>guidelines/rules-20261111.json</code>).</td></tr>
     <tr><td><code>entities.sh [served|learned|&lt;namespace&gt;]</code></td><td>Every entity, with all its metadata, as JSON on stdout; both namespaces by default. For browsing: <code>./entities.sh | jless</code>.</td></tr>
     <tr><td><code>observe.sh [--print]</code></td><td>Runs <code>agentop observe</code> against the dev Cortex, not your everyday one; <code>--print</code> shows the command instead. <code>AGENTOP</code> picks another agentop binary.</td></tr>

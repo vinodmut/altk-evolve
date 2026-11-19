@@ -3,6 +3,7 @@
 #   ./promote.sh <candidate-id> [<candidate-id> ...]
 source "${0:A:h}/_common.sh"
 [ $# -gt 0 ] || { echo "usage: $0 <candidate-id> [...]"; exit 2; }
+[ -z "$SHARED_NS" ] || { echo "Nothing to promote: the plugin learns into $LEARN_NS, which it also serves."; exit 0; }
 tmp=$(mktemp -t promote).json
 ev entities export "$LEARN_NS" \
   | jq --argjson ids "$(printf '%s\n' "$@" | jq -R . | jq -s .)" '{entities: [.entities[] | select(.id as $i | $ids | index($i))]}' > "$tmp" || exit 1

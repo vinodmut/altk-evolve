@@ -6,9 +6,10 @@ idle="${1:-30}"
 before=$(reloads)
 set_plugin_key inject true; set_plugin_key learn true; set_plugin_key idle_after_seconds "$idle"
 wait_reload "$before" || exit 1
-for ns in "$SERVE_NS" "$LEARN_NS"; do
+for ns in ${(u)=:-$SERVE_NS $LEARN_NS}; do
   ids=$(ev entities export "$ns" 2>/dev/null | jq -r '.entities[]?.id' 2>/dev/null)
   for id in ${(f)ids}; do ev entities delete "$ns" "$id" >/dev/null; done
 done
 echo "Cortex evolve plugin: $(plugin_config | jq -c '{learn_namespace, serve_namespace, inject, learn, idle_after_seconds}')"
-echo "Served guidelines and candidates cleared."
+[ -n "$SHARED_NS" ] && echo "Guidelines in $SERVE_NS cleared (learned into and served from the same namespace)." \
+  || echo "Served guidelines and candidates cleared."

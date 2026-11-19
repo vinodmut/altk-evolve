@@ -26,7 +26,11 @@ cfg=$(plugin_config 2>/dev/null)
 if [ -z "$cfg" ]; then
   bad "Dev Cortex not answering on $CORTEX_API, or no evolve plugin" "start the dev Cortex (walkthrough-manual.html, step 4) or set CORTEX_API in env.sh"
 else
-  ok "Dev Cortex on $CORTEX_PROXY with the evolve plugin: learns into $LEARN_NS, serves $SERVE_NS"
+  if [ -n "$SHARED_NS" ]; then
+    ok "Dev Cortex on $CORTEX_PROXY with the evolve plugin: learns into and serves $SERVE_NS (no review step)"
+  else
+    ok "Dev Cortex on $CORTEX_PROXY with the evolve plugin: learns into $LEARN_NS, serves $SERVE_NS"
+  fi
   ep=$(print -r -- "$cfg" | jq -r .endpoint)
   [[ "$ep" == *":$EVOLVE_PORT/"* ]] && ok "Plugin talks to Evolve at $ep" || bad "Plugin endpoint is $ep" "point the evolve plugin's endpoint at http://127.0.0.1:$EVOLVE_PORT/sse"
   print -r -- "$cfg" | jq -e '.agents | index("codex")' >/dev/null && ok "Plugin acts on codex as well as claude-code" || bad "Plugin agents don't include codex" "set agents: [claude-code, codex] in the evolve plugin config"

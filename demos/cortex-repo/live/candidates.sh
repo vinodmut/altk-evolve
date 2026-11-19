@@ -1,5 +1,6 @@
 #!/bin/zsh
-# What Evolve learned: the learn namespace (LEARN_NS, never served):
+# What Evolve learned: the learn namespace (LEARN_NS). Served only after promotion, unless it is
+# also the serve namespace, in which case what is learned is served straight away:
 #   ./candidates.sh list | show <id> | wait [seconds] | wait-and-promote [seconds] | clear
 source "${0:A:h}/_common.sh"
 ids() { ev entities export "$LEARN_NS" 2>/dev/null | jq -r '.entities[]?.id' 2>/dev/null; }
@@ -26,8 +27,16 @@ wait_new() {
 case "$1" in
   list) ev entities list "$LEARN_NS" --type guideline ;;
   show) ev entities show "$LEARN_NS" "$2" ;;
-  wait) wait_new "$2" >/dev/null && ev entities list "$LEARN_NS" --type guideline ;;
+  wait)
+    new=(${(f)"$(wait_new "$2")"}) || exit 1
+    if [ -n "$SHARED_NS" ]; then
+      echo "Learned ${#new} guideline(s) into $LEARN_NS. It is also the served namespace, so the next session is given them:"
+    else
+      echo "Learned ${#new} guideline(s) into $LEARN_NS, for review (./promote.sh <id> serves one):"
+    fi
+    ev entities list "$LEARN_NS" --type guideline ;;
   wait-and-promote)
+    [ -n "$SHARED_NS" ] && exec "$0" wait "$2"  # one namespace: nothing to promote
     # The review gate, skipped: everything the session taught is served to the next session.
     new=(${(f)"$(wait_new "$2")"}) || exit 1
     echo "Learned ${#new} guideline(s); promoting all of them from $LEARN_NS to $SERVE_NS:"

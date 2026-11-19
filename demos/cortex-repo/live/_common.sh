@@ -53,7 +53,9 @@ wait_reload() {
 }
 plugin_config() { curl -s --noproxy '*' "127.0.0.1:$CORTEX_API/v1/pipeline" | jq -c '.outbound[] | select(.name=="evolve") | .config'; }
 
-# The two Evolve namespaces, as the dev Cortex's evolve plugin is configured: learned guidelines
-# land in LEARN_NS for review, and only SERVE_NS is injected into agents' requests.
+# The Evolve namespaces, as the dev Cortex's evolve plugin is configured: learned guidelines land
+# in LEARN_NS, and SERVE_NS is injected into agents' requests. When they are the same namespace
+# (SHARED_NS=1) there is no review step: what Evolve learns is served to the next session.
 SERVE_NS=$(plugin_config 2>/dev/null | jq -r '.serve_namespace // "cortex"' 2>/dev/null); SERVE_NS="${SERVE_NS:-cortex}"
 LEARN_NS=$(plugin_config 2>/dev/null | jq -r '.learn_namespace // "cortex-candidates"' 2>/dev/null); LEARN_NS="${LEARN_NS:-cortex-candidates}"
+[ "$SERVE_NS" = "$LEARN_NS" ] && SHARED_NS=1 || SHARED_NS=
