@@ -504,7 +504,6 @@ def get_relevant_guidelines(
     namespace_id: str | None = None,
     user_id: str | None = None,
     session_id: str | None = None,
-    include_details: bool = False,
 ) -> str:
     """
     Get a dosage-aware set of guidelines for a task: an always-on core plus the top-k
@@ -521,13 +520,8 @@ def get_relevant_guidelines(
         namespace_id: Optional namespace override. Falls back to the configured default.
         user_id: Optional caller user ID. Logged for attribution; does not filter results.
         session_id: Optional session/thread ID. Logged for attribution; does not filter results.
-        include_details: Return JSON instead of text, for callers that render or audit the
-            guidelines themselves: {"text": <the same text>, "namespace_id": ...,
-            "guidelines": [{"id", "content", "tier" ("core" or "retrieved"), "revision",
-            "support", "trigger", "source_task_ids"}, ...]}, core first. If retrieval is
-            unavailable, {"error": ...}. Defaults to False: the text, as before.
     """
-    from altk_evolve.llm.guidelines.retrieval import format_selection, selection_details
+    from altk_evolve.llm.guidelines.retrieval import format_selection
 
     resolved_ns = _resolve_namespace(namespace_id)
     # Log only non-sensitive metadata at INFO; task is arbitrary user text (see save_trajectory).
@@ -550,13 +544,7 @@ def get_relevant_guidelines(
         selection = client.select_guidelines(resolved_ns, task, top_k=top_k, core_support=core_support)
     except ValueError as e:
         logger.error("Retrieval unavailable for get_relevant_guidelines: %s", e)
-        if include_details:
-            return _json_response({"error": f"Guideline retrieval unavailable: {e}", "namespace_id": resolved_ns})
         return f"Guideline retrieval unavailable: {e}"
-    if include_details:
-        return _json_response(
-            {"text": format_selection(selection), "namespace_id": resolved_ns, "guidelines": selection_details(selection)}
-        )
     return format_selection(selection)
 
 
