@@ -75,7 +75,7 @@ cd "$EVOLVE_SRC/demos/cortex-repo/live"</code></pre></div>
     <summary><b>Set up Cortex, Evolve, Claude Code and Codex for the demo</b></summary>
     <p>Follow the <a href="walkthrough-manual.html">manual walkthrough</a> up to step 5 (the shopkit virtualenv, the Evolve MCP server, a dev Cortex with the evolve plugin, and <code>$WALK/claude-dev.json</code>). Its <code>env.sh</code> is <code>$HOME/tmp/cortex-evolve-manual/env.sh</code>. Then:</p>
     <ul>
-      <li><b>Evolve learns with the <code>rules</code> prompt:</b> add <code>EVOLVE_GUIDELINES_PROMPT=rules</code> and <code>EVOLVE_GUIDELINES_PROMPTS_DIR=$EVOLVE_SRC/demos/cortex-repo/prompts</code> (as an absolute path) to the Evolve server's env file and restart it. The <code>rules</code> prompt isn't shipped with Evolve; it's <code>demos/cortex-repo/prompts/rules.jinja2</code>. <code>evolve prompts list</code> shows whether Evolve can see it.</li>
+      <li><b>Evolve learns with the <code>stated-requirements</code> prompt:</b> add <code>EVOLVE_GUIDELINES_PROMPT=stated-requirements</code> to the Evolve server's env file and restart it. The prompt ships with Evolve; <code>evolve prompts list</code> shows it.</li>
       <li><b>Codex goes through the dev Cortex:</b> below.</li>
     </ul>
     <p>The scripts read these from <code>env.sh</code>, with the walkthrough's values as defaults:</p>

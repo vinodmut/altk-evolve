@@ -12,16 +12,14 @@ curl -s --noproxy '*' -m3 -o /dev/null -w '%{http_code}' "127.0.0.1:$EVOLVE_PORT
 
 [ -f "$EVOLVE_ENV_FILE" ] && ok "Evolve settings: ${EVOLVE_ENV_FILE/#$HOME/~}" || bad "No Evolve env file at $EVOLVE_ENV_FILE" "set EVOLVE_ENV_FILE in env.sh to the file the server was started with"
 if [ -f "$EVOLVE_ENV_FILE" ]; then
-  # rules is not shipped with Evolve: it is demos/cortex-repo/prompts/rules.jinja2, found through
-  # EVOLVE_GUIDELINES_PROMPTS_DIR. Without it, Evolve refuses to learn with guidelines_prompt=rules.
-  prompts_dir=$(sed -n 's/^EVOLVE_GUIDELINES_PROMPTS_DIR=//p' "$EVOLVE_ENV_FILE" | tail -1 | tr -d '"')
-  if ! grep -q '^EVOLVE_GUIDELINES_PROMPT=rules' "$EVOLVE_ENV_FILE"; then
-    warn "Evolve uses the default prompt" "add EVOLVE_GUIDELINES_PROMPT=rules and EVOLVE_GUIDELINES_PROMPTS_DIR=$EVOLVE_SRC/demos/cortex-repo/prompts to $EVOLVE_ENV_FILE and restart Evolve, for rules like 'add an entry under ## Unreleased'"
-  elif [ -f "$prompts_dir/rules.jinja2" ]; then
-    ok "Evolve learns with the rules prompt (${prompts_dir/#$HOME/~}/rules.jinja2)"
-  else
-    bad "EVOLVE_GUIDELINES_PROMPT=rules, but no rules.jinja2 in EVOLVE_GUIDELINES_PROMPTS_DIR (${prompts_dir:-unset})" "set EVOLVE_GUIDELINES_PROMPTS_DIR=$EVOLVE_SRC/demos/cortex-repo/prompts in $EVOLVE_ENV_FILE and restart Evolve"
-  fi
+  # stated-requirements ships with Evolve (#479): it turns a hook's or check's stated requirement
+  # into a step to take first, like "add an entry under ## Unreleased in CHANGES.md".
+  prompt=$(sed -n 's/^EVOLVE_GUIDELINES_PROMPT=//p' "$EVOLVE_ENV_FILE" | tail -1 | tr -d '"')
+  case "$prompt" in
+    stated-requirements) ok "Evolve learns with the stated-requirements prompt" ;;
+    rules) bad "EVOLVE_GUIDELINES_PROMPT=rules: that prompt is now the shipped stated-requirements" "set EVOLVE_GUIDELINES_PROMPT=stated-requirements in $EVOLVE_ENV_FILE, drop EVOLVE_GUIDELINES_PROMPTS_DIR, and restart Evolve" ;;
+    *) warn "Evolve uses the ${prompt:-default} prompt" "set EVOLVE_GUIDELINES_PROMPT=stated-requirements in $EVOLVE_ENV_FILE and restart Evolve, for rules like 'add an entry under ## Unreleased'" ;;
+  esac
 fi
 
 cfg=$(plugin_config 2>/dev/null)
