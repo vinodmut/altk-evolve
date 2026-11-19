@@ -284,10 +284,13 @@ def add_entity(
 _IMPORT_DROPPED_METADATA = ("merged_from",)
 
 
-def _read_entities_file(path: Path, default_type: str) -> list[Entity]:
+def _read_entities_file(path: Path, default_type: str) -> tuple[list[Entity], int]:
     """Entities from an export file, a {"entities": [...]} or {"guidelines": [...]} object, or a
     bare list. An entry is the content as a string, or an object with content and optional
-    type and metadata."""
+    type and metadata. Also returns how many entries had metadata dropped.
+
+    The whole file is checked before anything is written, so a malformed entry leaves the
+    namespace untouched."""
     try:
         data = json.loads(path.read_text())
     except (OSError, json.JSONDecodeError) as e:
@@ -297,6 +300,7 @@ def _read_entities_file(path: Path, default_type: str) -> list[Entity]:
     if not isinstance(data, list):
         raise ValueError(f"{path}: expected a list of entities, or an object with an 'entities' or 'guidelines' list")
     entities = []
+    dropped = 0
     for index, row in enumerate(data, 1):
         if isinstance(row, str):
             row = {"content": row}
@@ -305,9 +309,11 @@ def _read_entities_file(path: Path, default_type: str) -> list[Entity]:
         metadata = row.get("metadata") or {}
         if not isinstance(metadata, dict):
             raise ValueError(f"{path}: entry {index} has metadata that is not a JSON object")
-        metadata = {k: v for k, v in metadata.items() if k not in _IMPORT_DROPPED_METADATA}
+        if any(k in metadata for k in _IMPORT_DROPPED_METADATA):
+            dropped += 1
+            metadata = {k: v for k, v in metadata.items() if k not in _IMPORT_DROPPED_METADATA}
         entities.append(Entity(content=row["content"], type=row.get("type") or default_type, metadata=metadata))
-    return entities
+    return entities, dropped
 
 
 @entities_app.command("import")
@@ -315,28 +321,28 @@ def import_entities(
     namespace: Annotated[str, typer.Argument(help="Namespace to load the entities into")],
     file: Annotated[Path, typer.Argument(help="JSON file: an export, or a list of entities or guideline strings")],
     entity_type: Annotated[str, typer.Option("--type", "-t", help="Type for entries that don't name one")] = "guideline",
-    replace: Annotated[bool, typer.Option("--replace", help="Delete the namespace's entities of the imported types first")] = False,
+    replace: Annotated[bool, typer.Option("--replace", help="Replace the namespace's entities of the imported types with these")] = False,
     append: Annotated[bool, typer.Option("--append", help="Keep the namespace's existing entities and add these")] = False,
-    conflict_resolution: Annotated[
-        bool, typer.Option("--conflict-resolution", help="Merge with existing entities using the LLM, as add does; off by default")
-    ] = False,
 ):
     """Load entities, such as a reviewed set of guidelines, from a JSON file.
 
-    Refuses a namespace that already has entities of the imported types unless --replace or
-    --append is given. Creates the namespace if it doesn't exist.
+    Entities are written as they are, without LLM conflict resolution: an import is usually a
+    set someone already reviewed. Refuses a namespace that already has entities of the imported
+    types unless --replace or --append is given. Creates the namespace if it doesn't exist.
     """
     if replace and append:
         err_console.print("[red]Use --replace or --append, not both.[/red]")
         raise typer.Exit(1)
     try:
-        entities = _read_entities_file(file, entity_type)
+        entities, dropped = _read_entities_file(file, entity_type)
     except ValueError as e:
         err_console.print(f"[red]{e}[/red]")
         raise typer.Exit(1)
     if not entities:
         console.print("[yellow]The file has no entities.[/yellow]")
         return
+    if dropped:
+        err_console.print(f"[yellow]Dropped 'merged_from' from {dropped} entries: consolidation manages it, as with entities add.[/yellow]")
 
     client = get_client()
     try:
@@ -350,11 +356,12 @@ def import_entities(
                 f"[red]'{namespace}' already has {len(existing)} {'/'.join(types)} entities; use --replace or --append.[/red]"
             )
             raise typer.Exit(1)
+        # Write first and delete after, so a failed write leaves the old entities in place.
+        results = client.update_entities(namespace, entities, enable_conflict_resolution=False)
         if replace:
             for entity in existing:
                 client.delete_entity_by_id(namespace, entity.id)
-            console.print(f"Deleted {len(existing)} entities from '{namespace}'")
-        results = client.update_entities(namespace, entities, enable_conflict_resolution=conflict_resolution)
+            console.print(f"Replaced {len(existing)} entities in '{namespace}'")
     except EvolveException as e:
         err_console.print(f"[red]Error importing entities: {e}[/red]")
         raise typer.Exit(1)
@@ -394,9 +401,13 @@ def export_entities(
     text = json.dumps(document, indent=2, ensure_ascii=False, default=str) + "\n"
     if output is None:
         sys.stdout.write(text)
-    else:
+        return
+    try:
         output.write_text(text)
-        err_console.print(f"Wrote {len(entities)} entities to {output}")
+    except OSError as e:
+        err_console.print(f"[red]Can't write {output}: {e}[/red]")
+        raise typer.Exit(1)
+    err_console.print(f"Wrote {len(entities)} entities to {output}")
 
 
 @entities_app.command("delete")

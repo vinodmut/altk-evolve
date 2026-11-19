@@ -10,6 +10,7 @@ from altk_evolve.cli.cli import app
 from altk_evolve.config.evolve import EvolveConfig
 from altk_evolve.config.filesystem import FilesystemSettings
 from altk_evolve.frontend.client.evolve_client import EvolveClient
+from altk_evolve.schema.exceptions import EvolveException
 
 pytestmark = pytest.mark.unit
 
@@ -74,14 +75,38 @@ def test_import_replace_and_append(client, tmp_path):
     assert {g.content for g in guidelines(client)} == {RULE, WORKFLOW}
 
 
+def test_replace_keeps_the_old_entities_when_the_write_fails(client, tmp_path, monkeypatch):
+    runner.invoke(app, ["entities", "import", "cortex", str(write(tmp_path, [RULE], "a.json"))])
+
+    def fail(*args, **kwargs):
+        raise EvolveException("backend down")
+
+    monkeypatch.setattr(client, "update_entities", fail)
+    result = runner.invoke(app, ["entities", "import", "cortex", str(write(tmp_path, [WORKFLOW], "b.json")), "--replace"])
+
+    assert result.exit_code == 1
+    assert [g.content for g in guidelines(client)] == [RULE]
+
+
+def test_import_writes_entities_as_they_are_without_conflict_resolution(client, tmp_path, monkeypatch):
+    calls = []
+    update = client.update_entities
+    monkeypatch.setattr(client, "update_entities", lambda *a, **kw: calls.append(kw) or update(*a, **kw))
+
+    runner.invoke(app, ["entities", "import", "cortex", str(write(tmp_path, [RULE]))])
+
+    assert calls == [{"enable_conflict_resolution": False}]
+
+
 def test_import_drops_metadata_a_caller_cannot_set(client, tmp_path):
     path = write(tmp_path, [{"content": RULE, "metadata": {"merged_from": [{"id": "9"}], "trigger": "t"}}])
 
-    runner.invoke(app, ["entities", "import", "cortex", str(path)])
+    result = runner.invoke(app, ["entities", "import", "cortex", str(path)])
 
     [stored] = guidelines(client)
     assert "merged_from" not in stored.metadata
     assert stored.metadata["trigger"] == "t"
+    assert "Dropped 'merged_from' from 1 entries" in result.output
 
 
 @pytest.mark.parametrize(
@@ -108,6 +133,24 @@ def test_export_then_import_round_trips(client, tmp_path):
     assert runner.invoke(app, ["entities", "import", "copy", str(exported)]).exit_code == 0
     [copied] = guidelines(client, "copy")
     assert (copied.content, copied.metadata["trigger"]) == (RULE, "t")
+
+
+def test_export_to_standard_output_is_only_json(client, tmp_path):
+    runner.invoke(app, ["entities", "import", "cortex", str(write(tmp_path, [RULE, WORKFLOW]))])
+
+    result = runner.invoke(app, ["entities", "export", "cortex"])
+
+    assert result.exit_code == 0
+    assert {e["content"] for e in json.loads(result.output)["entities"]} == {RULE, WORKFLOW}
+
+
+def test_export_to_an_unwritable_file_fails(client, tmp_path):
+    runner.invoke(app, ["entities", "import", "cortex", str(write(tmp_path, [RULE]))])
+
+    result = runner.invoke(app, ["entities", "export", "cortex", "-o", str(tmp_path / "missing" / "out.json")])
+
+    assert result.exit_code == 1
+    assert "Can't write" in result.output
 
 
 def test_export_of_a_missing_namespace_fails(client):
