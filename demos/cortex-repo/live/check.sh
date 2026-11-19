@@ -12,13 +12,13 @@ curl -s --noproxy '*' -m3 -o /dev/null -w '%{http_code}' "127.0.0.1:$EVOLVE_PORT
 
 [ -f "$EVOLVE_ENV_FILE" ] && ok "Evolve settings: ${EVOLVE_ENV_FILE/#$HOME/~}" || bad "No Evolve env file at $EVOLVE_ENV_FILE" "set EVOLVE_ENV_FILE in env.sh to the file the server was started with"
 if [ -f "$EVOLVE_ENV_FILE" ]; then
-  # stated-requirements ships with Evolve (#479): it turns a hook's or check's stated requirement
+  # environment-grounded ships with Evolve (#479): it turns a hook's or check's stated requirement
   # into a step to take first, like "add an entry under ## Unreleased in CHANGES.md".
   prompt=$(sed -n 's/^EVOLVE_GUIDELINES_PROMPT=//p' "$EVOLVE_ENV_FILE" | tail -1 | tr -d '"')
   case "$prompt" in
-    stated-requirements) ok "Evolve learns with the stated-requirements prompt" ;;
-    rules) bad "EVOLVE_GUIDELINES_PROMPT=rules: that prompt is now the shipped stated-requirements" "set EVOLVE_GUIDELINES_PROMPT=stated-requirements in $EVOLVE_ENV_FILE, drop EVOLVE_GUIDELINES_PROMPTS_DIR, and restart Evolve" ;;
-    *) warn "Evolve uses the ${prompt:-default} prompt" "set EVOLVE_GUIDELINES_PROMPT=stated-requirements in $EVOLVE_ENV_FILE and restart Evolve, for rules like 'add an entry under ## Unreleased'" ;;
+    environment-grounded) ok "Evolve learns with the environment-grounded prompt" ;;
+    rules|stated-requirements) bad "EVOLVE_GUIDELINES_PROMPT=$prompt: that prompt is now the shipped environment-grounded" "set EVOLVE_GUIDELINES_PROMPT=environment-grounded in $EVOLVE_ENV_FILE, drop any EVOLVE_GUIDELINES_PROMPTS_DIR, and restart Evolve" ;;
+    *) warn "Evolve uses the ${prompt:-default} prompt" "set EVOLVE_GUIDELINES_PROMPT=environment-grounded in $EVOLVE_ENV_FILE and restart Evolve, for rules like 'add an entry under ## Unreleased'" ;;
   esac
 fi
 
