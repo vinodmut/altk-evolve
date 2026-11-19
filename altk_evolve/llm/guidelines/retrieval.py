@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 
@@ -153,6 +153,36 @@ def select_guidelines(
 
     retrieved = [candidates[i] for i, _ in kept]
     return GuidelineSelection(core=core, retrieved=retrieved)
+
+
+def selection_details(selection: GuidelineSelection) -> list[dict[str, Any]]:
+    """The selected guidelines as records, core first, for callers that render or audit them.
+
+    Each has the guideline's ``id`` and ``content``; its ``tier`` ("core" or "retrieved"); its
+    ``revision`` (``metadata.memory_revision``); the ``support`` selection used (distinct source
+    tasks); its ``trigger``, or None; and ``source_task_ids``, the distinct tasks its supporting
+    sources name, in order. Other metadata is left out: it is large, internal, or (like
+    ``merged_from``) not for callers. ``list_entities`` returns all of it.
+    """
+    return [_details(entity, "core") for entity in selection.core] + [_details(entity, "retrieved") for entity in selection.retrieved]
+
+
+def _details(entity: RecordedEntity, tier: str) -> dict[str, Any]:
+    metadata = entity.metadata or {}
+    task_ids: list[str] = []
+    for source in sources(entity):
+        task = source.get("task_id")
+        if source.get("status") == "supporting" and isinstance(task, (str, int)) and task and str(task) not in task_ids:
+            task_ids.append(str(task))
+    return {
+        "id": entity.id,
+        "content": entity.content,
+        "tier": tier,
+        "revision": metadata.get("memory_revision"),
+        "support": _support(entity),
+        "trigger": metadata.get("trigger"),
+        "source_task_ids": task_ids,
+    }
 
 
 def format_selection(selection: GuidelineSelection) -> str:

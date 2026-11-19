@@ -418,3 +418,118 @@ class TestAttributedGuidelines:
         assert out["entity_ids"] == ["core", "specific"]
         assert "Always name the owner" in out["text"]
         assert "Lead with the decision" in out["text"]
+
+
+@pytest.mark.unit
+class TestRelevantGuidelinesDetails:
+    """get_relevant_guidelines(include_details=True) returns structured guidelines; the default is unchanged."""
+
+    @staticmethod
+    def _selection():
+        core = _make_entity("core", "Always name the owner", support=3, source_tasks=["t1", "t2", "t3"])
+        core.metadata.update({"memory_revision": 4, "trigger": "When writing an update"})
+        retrieved = _make_entity("specific", "Lead with the decision", source_tasks=["t9", "t9"])
+        retrieved.metadata["sources"].append({"conversation_id": "c", "task_id": "t8", "status": "superseded"})
+        return GuidelineSelection(core=[core], retrieved=[retrieved])
+
+    def _call(self, **kwargs):
+        import altk_evolve.frontend.mcp.mcp_server as mcp
+
+        client = MagicMock()
+        client.select_guidelines.return_value = self._selection()
+        with patch.object(mcp, "_resolve_namespace", return_value="ns"), patch.object(mcp, "get_client", return_value=client):
+            return mcp.get_relevant_guidelines("prepare an update", **kwargs)
+
+    def test_the_default_is_the_text_it_always_returned(self):
+        assert self._call() == format_selection(self._selection())
+
+    def test_details_add_structured_guidelines_to_the_same_text(self):
+        import json
+
+        out = json.loads(self._call(include_details=True))
+
+        assert out["text"] == self._call()
+        assert out["namespace_id"] == "ns"
+        assert out["guidelines"] == [
+            {
+                "id": "core",
+                "content": "Always name the owner",
+                "tier": "core",
+                "revision": 4,
+                "support": 3,
+                "trigger": "When writing an update",
+                "source_task_ids": ["t1", "t2", "t3"],
+            },
+            {
+                "id": "specific",
+                "content": "Lead with the decision",
+                "tier": "retrieved",
+                "revision": None,
+                "support": 1,
+                "trigger": None,
+                # Distinct, supporting sources only: t9 once, the superseded t8 left out.
+                "source_task_ids": ["t9"],
+            },
+        ]
+
+    def test_details_leave_out_internal_metadata(self):
+        import json
+
+        selection = self._selection()
+        selection.core[0].metadata["merged_from"] = [{"id": "old"}]
+        selection.core[0].metadata["processing"] = {"profile": "p"}
+        import altk_evolve.frontend.mcp.mcp_server as mcp
+
+        client = MagicMock()
+        client.select_guidelines.return_value = selection
+        with patch.object(mcp, "_resolve_namespace", return_value="ns"), patch.object(mcp, "get_client", return_value=client):
+            out = json.loads(mcp.get_relevant_guidelines("prepare an update", include_details=True))
+
+        assert set(out["guidelines"][0]) == {"id", "content", "tier", "revision", "support", "trigger", "source_task_ids"}
+
+    def test_a_guideline_from_before_sources_existed_reports_its_source_task(self):
+        from altk_evolve.llm.guidelines.retrieval import selection_details
+
+        legacy = _make_entity("old", "Check the logs first")
+        legacy.metadata["source_task_id"] = "cortex:abc:1-4"
+
+        [details] = selection_details(GuidelineSelection(core=[], retrieved=[legacy]))
+
+        assert details["source_task_ids"] == ["cortex:abc:1-4"]
+
+    def test_unavailable_retrieval_is_text_by_default_and_json_with_details(self):
+        import json
+
+        import altk_evolve.frontend.mcp.mcp_server as mcp
+
+        client = MagicMock()
+        client.select_guidelines.side_effect = ValueError("no embedding model")
+        with patch.object(mcp, "_resolve_namespace", return_value="ns"), patch.object(mcp, "get_client", return_value=client):
+            text = mcp.get_relevant_guidelines("prepare an update")
+            details = json.loads(mcp.get_relevant_guidelines("prepare an update", include_details=True))
+
+        assert text == "Guideline retrieval unavailable: no embedding model"
+        assert details == {"error": "Guideline retrieval unavailable: no embedding model", "namespace_id": "ns"}
+
+    def test_the_tool_schema_keeps_details_optional(self):
+        import asyncio
+
+        import altk_evolve.frontend.mcp.mcp_server as mcp
+
+        tool = asyncio.run(mcp.mcp.get_tool("get_relevant_guidelines"))
+
+        assert tool.parameters["required"] == ["task"]
+        assert tool.parameters["properties"]["include_details"]["default"] is False
+
+    def test_get_guidelines_still_returns_text_in_retrieval_mode(self):
+        import altk_evolve.config.evolve as cfg
+        import altk_evolve.frontend.mcp.mcp_server as mcp
+
+        client = MagicMock()
+        client.select_guidelines.return_value = self._selection()
+        with (
+            patch.object(cfg.evolve_config, "injection_mode", "retrieval"),
+            patch.object(mcp, "_resolve_namespace", return_value="ns"),
+            patch.object(mcp, "get_client", return_value=client),
+        ):
+            assert mcp.get_guidelines("prepare an update") == format_selection(self._selection())
