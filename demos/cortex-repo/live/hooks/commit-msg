@@ -1,0 +1,52 @@
+#!/bin/sh
+# Data classification: each field a commit adds to schema/models.yaml must be classified in the
+# commit message, for the data-handling register. One trailer per new field:
+#   Data-Classification: <table>.<field>=<public|internal|personal>
+# Installed by the live demo's reset.sh in place of shopkit's commit-subject hook.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+git diff --cached --name-only | grep -qx 'schema/models.yaml' || exit 0
+# A repository's first commit adds the whole schema; the rule is for fields added to it later.
+git rev-parse --verify -q HEAD >/dev/null || exit 0
+exec python3 - "$1" <<'EOF'
+import re, subprocess, sys
+
+import yaml
+
+CLASSES = ("public", "internal", "personal")
+
+
+def fields(spec):
+    """Every <table>.<field> in schema/models.yaml at spec (":" is the staged version)."""
+    shown = subprocess.run(["git", "show", f"{spec}schema/models.yaml"], capture_output=True, text=True)
+    if shown.returncode != 0:
+        return set()
+    models = (yaml.safe_load(shown.stdout) or {}).get("models") or {}
+    return {f"{m['table']}.{f}" for m in models.values() for f in (m.get("fields") or {})}
+
+
+added = sorted(fields(":") - fields("HEAD:"))
+if not added:
+    sys.exit(0)
+trailers = subprocess.run(["git", "interpret-trailers", "--parse", sys.argv[1]], capture_output=True, text=True).stdout
+given = {}
+for line in trailers.splitlines():
+    key, _, value = line.partition(":")
+    if key.strip().lower() == "data-classification":
+        field, _, cls = value.strip().partition("=")
+        given[field.strip()] = cls.strip()
+missing = [f for f in added if f not in given]
+invalid = [f for f in added if f in given and given[f] not in CLASSES]
+if not missing and not invalid:
+    sys.exit(0)
+say = lambda s: print(f"commit-msg: {s}")
+say(f"schema/models.yaml adds {', '.join(added)}. Each new field must be classified for the data-handling register,")
+say("with a trailer at the end of the commit message, one line per field:")
+for f in added:
+    say(f"    Data-Classification: {f}=<{'|'.join(CLASSES)}>")
+say("personal: about a person (names, contact details, preferences); internal: business data not shown")
+say("to customers; public: anything customers can see.")
+for f in invalid:
+    say(f"{f}={given[f]} is not one of {', '.join(CLASSES)}.")
+say("commit rejected")
+sys.exit(1)
+EOF

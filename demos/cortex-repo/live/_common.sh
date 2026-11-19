@@ -12,7 +12,7 @@ CLAUDE_REPO="$DEMO_ROOT/claude-shopkit"
 CODEX_REPO="$DEMO_ROOT/codex-shopkit"
 LIVE_DIR="${0:A:h}"
 SHOPKIT="${LIVE_DIR:h}/shopkit"
-DEFAULT_GUIDELINES="${LIVE_DIR:h}/guidelines/rules-20261111.json"
+DEFAULT_GUIDELINES="${LIVE_DIR:h}/guidelines/data-classification-20261119.json"
 
 # The Evolve CLI with the server's settings, outside any proxy.
 ev() {

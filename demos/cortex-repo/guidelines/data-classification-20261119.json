@@ -1,0 +1,325 @@
+{
+  "description": "Guidelines Evolve learned with the environment-grounded prompt (aws/claude-sonnet-5) from one Claude Code session on shopkit with the live demo hooks: add an optional nickname field to users; rejected by pre-commit for the client VERSION bump, then twice by commit-msg for the Data-Classification trailer (missing, then separated from the other trailers by a blank line). Served in the Nov 19, 2026 rehearsal, where Codex then committed first time.",
+  "namespace": "cortex",
+  "entities": [
+    {
+      "id": "50",
+      "type": "guideline",
+      "content": "In this repo, when `clients/python/shopkit_client.py` changes (e.g. because a schema field was added), bump `clients/python/VERSION` with a minor version increase before committing.",
+      "metadata": {
+        "agent_id": "claude-code",
+        "creation_mode": "auto-cortex",
+        "session_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+        "source_task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+        "task_description": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.\n\nWhen you're done, summarize what you did as a numbered list of steps. Include every step that failed, with the error message and how you fixed it.",
+        "support": 1,
+        "rationale": "A pre-commit hook explicitly rejected the commit with the message 'clients/python/shopkit_client.py changed; bump clients/python/VERSION (minor for a new field)', so this is a stated, enforced requirement.",
+        "category": "strategy",
+        "trigger": "A commit modifies clients/python/shopkit_client.py (e.g. after running tools/generate.py for a schema field change)",
+        "implementation_steps": [
+          "After editing schema/models.yaml and running `python3 tools/generate.py`, check if clients/python/shopkit_client.py changed",
+          "If it changed, read clients/python/VERSION and bump the minor version segment",
+          "Write the new version back to clients/python/VERSION before attempting to commit"
+        ],
+        "generation_method": "standard",
+        "processing": {
+          "operation_id": "b575ed9d-879a-4c0f-aae9-ce54d09ed3fe",
+          "profile_id": "cortex",
+          "revision": 2,
+          "digest": "d6752d4485cb12bfd993ea39fa0836439c208c358cc8be9ba0bf68cf5e2cdfe8",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "litellm_proxy/aws/claude-sonnet-5",
+              "custom_llm_provider": null
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": null,
+                  "extra_analysis_sentence": null,
+                  "extra_instructions": [],
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "litellm_proxy/aws/claude-sonnet-5",
+                  "guidelines_prompt": "environment-grounded",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "batch_id": "1795122774-1",
+            "revision": "1",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-19T21:40:10.428521+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      }
+    },
+    {
+      "id": "51",
+      "type": "guideline",
+      "content": "When a commit adds a new field to schema/models.yaml, include a `Data-Classification: <table>.<field>=<public|internal|personal>` trailer line in the commit message for every new field, and place it immediately adjacent (no blank line) to any other trailers like `Co-Authored-By`.",
+      "metadata": {
+        "agent_id": "claude-code",
+        "creation_mode": "auto-cortex",
+        "session_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+        "source_task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+        "task_description": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.\n\nWhen you're done, summarize what you did as a numbered list of steps. Include every step that failed, with the error message and how you fixed it.",
+        "support": 1,
+        "rationale": "The commit-msg hook rejected the commit twice: first for missing the Data-Classification trailer entirely, then again (with the same error) because a blank line separated it from the Co-Authored-By trailer, which caused git's trailer parser to only recognize the final contiguous block.",
+        "category": "strategy",
+        "trigger": "A commit's diff adds new field(s) to schema/models.yaml",
+        "implementation_steps": [
+          "Identify every new field added to schema/models.yaml in the commit (format <table>.<field>)",
+          "Classify each field as public, internal, or personal based on whether it is customer-visible, internal business data, or personal data about a person",
+          "Add 'Data-Classification: <table>.<field>=<classification>' as the last line(s) of the commit message",
+          "Ensure there is no blank line between the Data-Classification line(s) and any other trailer lines (e.g. Co-Authored-By) so they form one contiguous trailer block"
+        ],
+        "generation_method": "standard",
+        "processing": {
+          "operation_id": "b575ed9d-879a-4c0f-aae9-ce54d09ed3fe",
+          "profile_id": "cortex",
+          "revision": 2,
+          "digest": "d6752d4485cb12bfd993ea39fa0836439c208c358cc8be9ba0bf68cf5e2cdfe8",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "litellm_proxy/aws/claude-sonnet-5",
+              "custom_llm_provider": null
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": null,
+                  "extra_analysis_sentence": null,
+                  "extra_instructions": [],
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "litellm_proxy/aws/claude-sonnet-5",
+                  "guidelines_prompt": "environment-grounded",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "batch_id": "1795122774-1",
+            "revision": "1",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-19T21:40:10.428521+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      }
+    },
+    {
+      "id": "52",
+      "type": "guideline",
+      "content": "Before writing a commit message for a schema change, inspect the active git hooks (.git/hooks/commit-msg, .git/hooks/pre-commit, or `git config --get core.hooksPath`) to learn exact required trailer formats and validation logic, rather than guessing at the required format from the first error message alone.",
+      "metadata": {
+        "agent_id": "claude-code",
+        "creation_mode": "auto-cortex",
+        "session_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+        "source_task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+        "task_description": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.\n\nWhen you're done, summarize what you did as a numbered list of steps. Include every step that failed, with the error message and how you fixed it.",
+        "support": 1,
+        "rationale": "Reading the actual commit-msg hook script (cat .git/hooks/commit-msg) revealed the precise parsing logic (it uses contiguous trailer blocks), which explained why a seemingly correct retry with the trailer present still failed, and allowed a targeted fix instead of further trial and error.",
+        "category": "recovery",
+        "trigger": "A git commit is rejected by a local hook with a requirement that is not fully satisfied by a straightforward fix on the next attempt",
+        "implementation_steps": [
+          "Run `cat .git/hooks/<hook-name>` or check `git config --get core.hooksPath` to find the hook's source",
+          "Read the hook logic to understand exact parsing/validation rules (e.g. trailer block contiguity, exact field name format)",
+          "Adjust the commit message or files precisely according to that logic before retrying the commit"
+        ],
+        "generation_method": "standard",
+        "processing": {
+          "operation_id": "b575ed9d-879a-4c0f-aae9-ce54d09ed3fe",
+          "profile_id": "cortex",
+          "revision": 2,
+          "digest": "d6752d4485cb12bfd993ea39fa0836439c208c358cc8be9ba0bf68cf5e2cdfe8",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "litellm_proxy/aws/claude-sonnet-5",
+              "custom_llm_provider": null
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": null,
+                  "extra_analysis_sentence": null,
+                  "extra_instructions": [],
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "litellm_proxy/aws/claude-sonnet-5",
+                  "guidelines_prompt": "environment-grounded",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "batch_id": "1795122774-1",
+            "revision": "1",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-19T21:40:10.428521+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      }
+    },
+    {
+      "id": "53",
+      "type": "guideline",
+      "content": "In this repo's generated-code pipeline (schema/models.yaml -> tools/generate.py -> shopkit/models.py and clients/python/shopkit_client.py), after any schema edit run `python3 tools/generate.py`, then `python3 tools/migrate.py new <name>` to create the migration, then `python3 tools/check.py` and `./scripts/test` to validate consistency before committing.",
+      "metadata": {
+        "agent_id": "claude-code",
+        "creation_mode": "auto-cortex",
+        "session_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+        "source_task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+        "task_description": "In this repository, add an optional `nickname` field (text) to users. It should be stored and loaded like the other user fields and accepted by the Python client. Commit the change when it is ready to merge.\n\nWhen you're done, summarize what you did as a numbered list of steps. Include every step that failed, with the error message and how you fixed it.",
+        "support": 1,
+        "rationale": "This exact sequence was followed successfully in the trajectory and caught no errors, confirming it is the correct and complete workflow for schema changes in this repo (as also documented by tools/check.py's own checks).",
+        "category": "strategy",
+        "trigger": "A field/model change is made to schema/models.yaml",
+        "implementation_steps": [
+          "Edit schema/models.yaml to add/modify the field",
+          "Run `python3 tools/generate.py` to regenerate shopkit/models.py and clients/python/shopkit_client.py",
+          "Run `python3 tools/migrate.py new <name>` to create the corresponding migration SQL file",
+          "Run `python3 tools/check.py` to verify generated code and migrations match the schema",
+          "Run `./scripts/test` to confirm existing tests still pass before committing"
+        ],
+        "generation_method": "standard",
+        "processing": {
+          "operation_id": "b575ed9d-879a-4c0f-aae9-ce54d09ed3fe",
+          "profile_id": "cortex",
+          "revision": 2,
+          "digest": "d6752d4485cb12bfd993ea39fa0836439c208c358cc8be9ba0bf68cf5e2cdfe8",
+          "manifest": {
+            "conflict_resolution": {
+              "conflict_resolution_model": "litellm_proxy/aws/claude-sonnet-5",
+              "custom_llm_provider": null
+            },
+            "processors": [
+              {
+                "api_version": 1,
+                "config": {
+                  "analysis_config": null,
+                  "consistency_method": "fast",
+                  "custom_llm_provider": null,
+                  "extra_analysis_sentence": null,
+                  "extra_instructions": [],
+                  "guidelines_mode": "standard",
+                  "guidelines_model": "litellm_proxy/aws/claude-sonnet-5",
+                  "guidelines_prompt": "environment-grounded",
+                  "segmentation_enabled": false,
+                  "trajectory_max_step_chars": 2000,
+                  "trajectory_max_steps": 50,
+                  "trajectory_tail_steps": 0
+                },
+                "id": "guidelines",
+                "plugin": "evolve.guidelines",
+                "version": "1"
+              }
+            ],
+            "schema_version": 1
+          },
+          "source_batch": {
+            "source": "cortex",
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "batch_id": "1795122774-1",
+            "revision": "1",
+            "scope": "cortex",
+            "aliases": [],
+            "alias_revisions": {}
+          },
+          "processor_id": "guidelines"
+        },
+        "sources": [
+          {
+            "conversation_id": "8571896f-3e91-4bfa-abeb-68a6fce50b67",
+            "task_id": "cortex:8571896f-3e91-4bfa-abeb-68a6fce50b67:1795122774-1",
+            "user_id": null,
+            "agent_id": "claude-code",
+            "status": "supporting",
+            "associated_at": "2026-11-19T21:40:10.428521+00:00"
+          }
+        ],
+        "provenance_incomplete": false,
+        "memory_revision": 1
+      }
+    }
+  ]
+}
