@@ -105,11 +105,13 @@ class Guideline(BaseModel):
 class _ModelFacingSchema(BaseModel):
     """A response model whose JSON schema, as sent to an LLM, carries no numeric bounds.
 
-    Structured output sends ``model_json_schema()`` to the provider, and some routes refuse
-    numeric-range keywords outright: Bedrock's Claude rejects the whole request with "For
-    'integer' type, property 'minimum' is not supported". The bounds here (``support``,
-    segment steps) are integrity checks, not instructions the model needs, so the schema
-    sent to the model omits them and ``model_validate`` still enforces every one locally.
+    Structured output sends ``model_json_schema()`` to the provider (litellm forwards it
+    unchanged), and some providers refuse numeric-range keywords outright: Claude's
+    structured outputs reject the whole request with "For 'integer' type, property 'minimum'
+    is not supported" (seen through Bedrock). The bounds here (``support``, segment steps)
+    are integrity checks, not instructions the model needs, so the schema sent to the model
+    omits them and ``model_validate`` still enforces every one locally. Anthropic's SDK
+    helpers make the same transformation. See #476.
     """
 
     @classmethod
