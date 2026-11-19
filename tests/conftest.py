@@ -76,8 +76,9 @@ def default_trajectory_window(monkeypatch):
     monkeypatch.setattr(evolve_config, "trajectory_max_steps", 50)
     monkeypatch.setattr(evolve_config, "trajectory_max_step_chars", 2000)
     monkeypatch.setattr(evolve_config, "trajectory_tail_steps", 0)
-    # Likewise EVOLVE_GUIDELINES_PROMPT: an exported prompt choice would change every prompt.
+    # Likewise EVOLVE_GUIDELINES_PROMPT and _PROMPTS_DIR: an exported choice would change every prompt.
     monkeypatch.setattr(evolve_config, "guidelines_prompt", "default")
+    monkeypatch.setattr(evolve_config, "guidelines_prompts_dir", None)
 
 
 def pytest_addoption(parser):

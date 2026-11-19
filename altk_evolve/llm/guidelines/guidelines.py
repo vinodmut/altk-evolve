@@ -9,6 +9,7 @@ import json
 import logging
 import re
 from json import JSONDecodeError
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
@@ -37,19 +38,16 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Parsed templates, keyed by file and its modification time, so an edited custom prompt is
-# picked up on the next trajectory without restarting.
-_TEMPLATES: dict[tuple[Path, int], Template] = {}
+
+@lru_cache(maxsize=64)
+def _load_template(path: Path) -> Template:
+    # Read once per process: an edited prompt takes effect on restart.
+    return Template(path.read_text())
 
 
 def _guidelines_template(name: str) -> Template:
-    """The template for a ``guidelines_prompt`` setting: a built-in name or a file path."""
-    path = resolve_guidelines_prompt(name)
-    key = (path, path.stat().st_mtime_ns)
-    template = _TEMPLATES.get(key)
-    if template is None:
-        template = _TEMPLATES[key] = Template(path.read_text())
-    return template
+    """The template for a ``guidelines_prompt`` name; see ``altk_evolve.config.guideline_prompts``."""
+    return _load_template(resolve_guidelines_prompt(name))
 
 
 # Bounds on the evaluator's report rendered into the prompt.

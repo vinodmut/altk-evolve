@@ -20,7 +20,7 @@ class GuidelineRuntime(BaseModel):
     trajectory_max_steps: int = Field(default=50, ge=1)
     trajectory_max_step_chars: int = Field(default=2000, ge=1)
     trajectory_tail_steps: int = Field(default=0, ge=0)
-    # Built-in prompt name or path to a Jinja2 file; see config/guideline_prompts.py.
+    # Prompt name, shipped or from EVOLVE_GUIDELINES_PROMPTS_DIR; see config/guideline_prompts.py.
     guidelines_prompt: str = "default"
     analysis_config: dict[str, Any] | None = None
     # Caller-supplied extensions to the consistency-pipeline generator prompts (both
