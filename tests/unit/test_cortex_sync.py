@@ -143,7 +143,7 @@ def evolve(tmp_path, monkeypatch):
     monkeypatch.setattr(guidelines_settings, "guidelines_mode", "standard")
     seen = []
 
-    def generate(messages, *, context_messages=None, options, outcome=None, tools=None, execution_metadata=None):
+    def generate(messages, *, context_messages=None, options, outcome=None, rules=None, tools=None, execution_metadata=None):
         seen.append((messages, context_messages))
         return [
             GuidelineGenerationResult(

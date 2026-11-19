@@ -1,6 +1,7 @@
 from altk_evolve.llm.guidelines.context import (
     render_action_with_result,
     render_input_evidence,
+    render_rules,
     render_supporting_context,
     tool_results_by_call_id,
 )
@@ -51,10 +52,6 @@ def _guidelines_template(name: str) -> Template:
     return template
 
 
-# With an outcome, a failure yields 1-3 corrective guidelines and a success at most 2
-# non-obvious ones. The prompt states these limits and the parser enforces them.
-_MAX_FAILURE_GUIDELINES = 3
-_MAX_SUCCESS_GUIDELINES = 2
 # Bounds on the evaluator's report rendered into the prompt.
 _MAX_FAILED_CHECKS = 10
 _MAX_CHECK_CHARS = 500
@@ -414,6 +411,7 @@ def _generate_guidelines_for_segment(
     options: GuidelineRuntime,
     supporting_context: str = "",
     input_evidence: str = "",
+    rules: str | None = None,
     outcome: "TrajectoryOutcome | None" = None,
     segmented: bool = False,
 ) -> GuidelineGenerationResult:
@@ -424,10 +422,8 @@ def _generate_guidelines_for_segment(
     trajectory, so a failure prompt allows an empty result for a slice that did not
     contribute to the failure.
     """
-    max_guidelines = None
     outcome_context: dict = {}
     if outcome is not None:
-        max_guidelines = _MAX_SUCCESS_GUIDELINES if outcome.success else _MAX_FAILURE_GUIDELINES
         detail = outcome.detail
         if detail and len(detail) > _MAX_DETAIL_CHARS:
             detail = detail[:_MAX_DETAIL_CHARS] + "\n... [truncated]"
@@ -439,13 +435,13 @@ def _generate_guidelines_for_segment(
             ],
             "omitted_checks": max(0, len(outcome.failed_checks) - _MAX_FAILED_CHECKS),
             "detail": detail,
-            "max_guidelines": max_guidelines,
             "segmented": segmented,
         }
     prompt = _guidelines_template(options.guidelines_prompt).render(
         task_instruction=task_description,
         supporting_context=supporting_context,
         input_evidence=input_evidence,
+        rules_section=render_rules(rules),
         num_steps=num_steps,
         trajectory_summary=trajectory_slice,
         constrained_decoding_supported=constrained_decoding_supported,
@@ -484,9 +480,6 @@ def _generate_guidelines_for_segment(
         logger.warning(f"LLM returned empty response for guideline generation. Model: {options.guidelines_model}")
         return GuidelineGenerationResult(guidelines=[], task_description=task_description)
     guidelines = parse_guideline_response(clean_response, "standard") or []
-    if max_guidelines is not None and len(guidelines) > max_guidelines:
-        logger.info(f"Keeping the first {max_guidelines} of {len(guidelines)} guidelines the outcome prompt allows.")
-        guidelines = guidelines[:max_guidelines]
     return GuidelineGenerationResult(guidelines=guidelines, task_description=task_description)
 
 
@@ -495,6 +488,7 @@ def generate_guidelines(
     *,
     options: GuidelineRuntime | None = None,
     context_messages: list[dict] | None = None,
+    rules: str | None = None,
     outcome: "TrajectoryOutcome | None" = None,
     tools: list[dict] | None = None,
     execution_metadata: dict | None = None,
@@ -520,6 +514,11 @@ def generate_guidelines(
     The default is disabled because the contradictory-guideline failure is the more
     damaging of the two in measured end-to-end runs. See docs/guides/configuration.md for
     the evidence and for when to turn it back on.
+
+    ``rules`` is optional text holding rules, policies, or constraints the agent had to
+    follow (for example a domain policy). When given, it is rendered in its own prompt
+    section, whole and untruncated, and every guideline must stay consistent with it;
+    without it the prompt is unchanged.
 
     Returns a list with one GuidelineGenerationResult per subtask (or one for the full
     trajectory when segmentation is disabled, the rendered trajectory has fewer than
@@ -568,6 +567,7 @@ def generate_guidelines(
                 options=options,
                 supporting_context=render_supporting_context(context_messages),
                 input_evidence=input_evidence,
+                rules=rules,
                 outcome=outcome,
                 segmented=True,
             )
@@ -585,6 +585,7 @@ def generate_guidelines(
             options=options,
             supporting_context=render_supporting_context(context_messages),
             input_evidence=input_evidence,
+            rules=rules,
             outcome=outcome,
         )
     ]

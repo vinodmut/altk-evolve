@@ -223,7 +223,7 @@ def test_default_plan_captures_trajectory_window_from_settings(monkeypatch):
     monkeypatch.setattr(guidelines_settings, "guidelines_mode", "standard")
     calls = []
 
-    def generate(messages, *, context_messages=None, options, outcome=None):
+    def generate(messages, *, context_messages=None, options, outcome=None, rules=None):
         calls.append(options)
         return [GuidelineGenerationResult(task_description="task", guidelines=[])]
 
@@ -264,13 +264,36 @@ def test_profile_stored_before_the_trajectory_window_resolves_as_it_ran(monkeypa
     assert manager.get("legacy", 1)["manifest"] == legacy  # the stored record is not rewritten
     calls = []
 
-    def generate(messages, *, context_messages=None, options, outcome=None):
+    def generate(messages, *, context_messages=None, options, outcome=None, rules=None):
         calls.append(options)
         return [GuidelineGenerationResult(task_description="task", guidelines=[])]
 
     monkeypatch.setattr("altk_evolve.llm.guidelines.guidelines.generate_guidelines", generate)
     manager.process({"messages": [{"role": "user", "content": "task"}]}, plan=plan)
     assert tuple(getattr(calls[0], key) for key in _TRAJECTORY_KEYS) == (50, 2000, 0)
+
+
+def test_profile_stored_before_the_prompt_extension_fields_resolves_as_it_ran():
+    """A revision published before `extra_analysis_sentence` and `extra_instructions`
+    existed lacks them. Resolving it fills in the no-op values it actually ran with
+    (None and ()), not whatever a current GuidelineRuntime might default to."""
+    from altk_evolve.processing.builtin import GuidelineProcessor
+
+    manager = make_manager(processor_type=GuidelineProcessor)
+    legacy = manager.validate(
+        {"processors": [{"id": "g", "plugin": "evolve.guidelines", "config": {"guidelines_mode": "standard"}}]}
+    ).manifest()
+    for key in ("extra_analysis_sentence", "extra_instructions"):
+        del legacy["processors"][0]["config"][key]
+    manager.repository.put("legacy_prompt_ext", legacy, expected_revision=0)
+
+    plan = manager.resolve("legacy_prompt_ext", revision=1)
+    config = plan.manifest()["processors"][0]["config"]
+    assert config["extra_analysis_sentence"] is None
+    # The serialized manifest renders the tuple-typed field as a list.
+    assert config["extra_instructions"] == []
+    # The stored record is not rewritten by the back-fill.
+    assert manager.get("legacy_prompt_ext", 1)["manifest"] == legacy
 
 
 def test_back_fill_does_not_hide_other_drift():
@@ -706,7 +729,7 @@ def test_builtin_factory_selects_generation_steps(mode, method, monkeypatch):
     calls = []
 
     def generator(name):
-        def run(data, *, options, context_messages=None, outcome=None):
+        def run(data, *, options, context_messages=None, outcome=None, rules=None):
             calls.append((name, data, options.guidelines_model))
             return [
                 GuidelineGenerationResult(
@@ -750,7 +773,7 @@ def test_builtin_admin_update_changes_next_trajectory_not_running_steps(monkeypa
     started, resume = Event(), Event()
     calls = []
 
-    def standard(messages, *, options, context_messages=None, outcome=None):
+    def standard(messages, *, options, context_messages=None, outcome=None, rules=None):
         calls.append(("standard", options.guidelines_model))
         started.set()
         assert resume.wait(10)

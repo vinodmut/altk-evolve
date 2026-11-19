@@ -41,6 +41,13 @@ class GuidelineConfig(GuidelineRuntime):
         "trajectory_max_step_chars": 2000,
         "trajectory_tail_steps": 0,
         "guidelines_prompt": "default",
+        # Added together: both default to no-op so a revision stored before these
+        # fields existed replays identically with these values filled in.
+        "extra_analysis_sentence": None,
+        # Stored as list even though the model type is `tuple[str, ...]`: the serialized
+        # manifest coerces tuples to lists, so the back-fill must write what a validated
+        # manifest would produce — else the identity check at the end of resolve() fails.
+        "extra_instructions": [],
     }
 
     @model_validator(mode="after")
@@ -139,6 +146,7 @@ class GuidelineProcessor:
                     context_messages=trajectory.context_messages,
                     options=runtime(trajectory),
                     outcome=trajectory.outcome,
+                    rules=trajectory.rules,
                     **kwargs,
                 )
 
