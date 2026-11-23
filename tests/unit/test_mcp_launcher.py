@@ -22,7 +22,9 @@ def test_pyproject_exports_mcp_launcher_script() -> None:
     pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
     parsed = tomllib.loads(pyproject_path.read_text())
 
-    assert parsed["project"]["scripts"]["evolve-mcp"] == "altk_evolve.frontend.mcp.__main__:main"
+    # Through altk_evolve.launch, which applies --local and EVOLVE_PROXY before the server imports.
+    assert parsed["project"]["scripts"]["evolve-mcp"] == "altk_evolve.launch:mcp_main"
+    assert parsed["project"]["scripts"]["evolve"] == "altk_evolve.launch:cli_main"
 
 
 @pytest.fixture

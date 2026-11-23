@@ -11,9 +11,17 @@ from pydantic import ValidationError, field_validator
 from pydantic.fields import FieldInfo
 from pydantic_settings import BaseSettings, DotEnvSettingsSource, EnvSettingsSource, PydanticBaseSettingsSource, SettingsConfigDict
 
-from altk_evolve.frontend.mcp.mcp_server import app, get_client, mcp
-from altk_evolve.frontend.mcp.http_transport import create_resilient_sse_app
-from altk_evolve.retention.scheduler import retention_runtime
+if __name__ == "__main__":
+    # `python -m altk_evolve.frontend.mcp`. The evolve-mcp command does this in altk_evolve.launch,
+    # before importing this module: Evolve's settings objects are built when the imports below run,
+    # so --local, --home and EVOLVE_PROXY have to be applied first.
+    from altk_evolve.local import prepare_server
+
+    prepare_server(sys.argv[1:])
+
+from altk_evolve.frontend.mcp.mcp_server import app, get_client, mcp  # noqa: E402
+from altk_evolve.frontend.mcp.http_transport import create_resilient_sse_app  # noqa: E402
+from altk_evolve.retention.scheduler import retention_runtime  # noqa: E402
 
 logger = logging.getLogger("evolve-mcp")
 
@@ -63,6 +71,20 @@ def _build_parser() -> argparse.ArgumentParser:
             f"With stdio transport, also serve the web UI and REST API on http://{DASHBOARD_HOST}:{DASHBOARD_PORT} "
             "(default: on; EVOLVE_DASHBOARD=false turns it off). The API has no authentication."
         ),
+    )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help=(
+            "Run for one user on this machine, from a home directory: settings from <home>/config.env, "
+            "data and database under <home>, retrieval injection, telemetry off. Settings already in the "
+            "environment win."
+        ),
+    )
+    parser.add_argument(
+        "--home",
+        metavar="DIR",
+        help="The home directory for --local (default: $EVOLVE_HOME, else ~/.evolve). Implies --local.",
     )
     return parser
 
@@ -187,11 +209,14 @@ def run_sse_server(host: str, port: int) -> None:
     )
 
 
-def main():
+def main(argv: list[str] | None = None):
     """
-    Main entry point for the server.
+    Main entry point for the server. ``argv`` defaults to the command line.
+
+    ``--local`` and ``--home`` are applied before this module is imported (by altk_evolve.launch, or
+    at the top of this module under ``python -m``); here they are only parsed.
     """
-    args = _build_parser().parse_args()
+    args = _build_parser().parse_args(argv)
 
     try:
         with retention_runtime(get_client()):

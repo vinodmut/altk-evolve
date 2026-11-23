@@ -58,6 +58,34 @@ def get_client() -> EvolveClient:
 register_retention_commands(retention_app, lambda: get_client())
 
 
+@app.callback()
+def _global_options(
+    local: Annotated[
+        bool,
+        typer.Option(
+            "--local",
+            help="Use one home directory: settings from <home>/config.env, data and database under <home>. "
+            "Give it before the command, as `evolve --local entities list ...`.",
+        ),
+    ] = False,
+    home: Annotated[
+        Optional[str],
+        typer.Option(
+            "--home", metavar="DIR", help="The home directory for --local (default: $EVOLVE_HOME, else ~/.evolve). Implies --local."
+        ),
+    ] = None,
+) -> None:
+    # Applied by the `evolve` command (altk_evolve.launch) before this module was imported, since
+    # Evolve's settings objects are built at import. Here they only show in --help, unless this app
+    # was run some other way, when they can't take effect.
+    import os
+
+    from altk_evolve.local import HOME_ENV
+
+    if (local or home) and not os.environ.get(HOME_ENV):
+        err_console.print("[yellow]--local and --home take effect only through the `evolve` command.[/yellow]")
+
+
 # =============================================================================
 # Namespace Commands
 # =============================================================================
