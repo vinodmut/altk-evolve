@@ -126,6 +126,29 @@ def test_without_a_hooks_file_the_usual_lookup_stays(home):
 ALL_PROXIES = {key: "http://127.0.0.1:47600" for key in local.PROXY_VARS}
 
 
+def test_evolve_proxy_is_consumed_so_no_client_reads_it_as_a_proxy(restore_environ):
+    """urllib, requests and botocore read every *_proxy variable as a proxy for the scheme its
+    prefix names: left in place, EVOLVE_PROXY=none read as {'evolve': 'none'}."""
+    import urllib.request
+
+    for key in local.PROXY_VARS:
+        os.environ.pop(key, None)
+    os.environ.update({"HTTPS_PROXY": "http://127.0.0.1:47600", local.PROXY_ENV: "none"})
+    local.apply_proxy()
+    assert local.PROXY_ENV not in os.environ
+    assert urllib.request.getproxies() == {}
+
+
+def test_a_chosen_loopback_proxy_is_not_pointed_out_after_it_is_consumed(home, restore_environ, capsys):
+    for key in [k for k in os.environ if k.startswith("EVOLVE_") or k in local.PROXY_VARS]:
+        del os.environ[key]
+    os.environ["OPENAI_API_KEY"] = "sk"  # pragma: allowlist secret
+    write_settings(home, "HTTPS_PROXY=http://127.0.0.1:47600\nEVOLVE_PROXY=inherit\n")
+    local.prepare_server(["--local", "--home", str(home)])
+    err = capsys.readouterr().err
+    assert "proxy: http://127.0.0.1:47600" in err and "go through the local proxy" not in err
+
+
 def test_proxy_none_removes_every_spelling():
     env = {**ALL_PROXIES, local.PROXY_ENV: "none", "NO_PROXY": "example.com"}
     assert local.apply_proxy(env) is None

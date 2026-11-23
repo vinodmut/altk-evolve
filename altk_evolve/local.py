@@ -125,6 +125,10 @@ def apply_proxy(environ: MutableMapping[str, str] | None = None) -> str | None:
     connection Evolve makes goes direct; a URL makes it Evolve's proxy. It applies to all of
     Evolve's outbound connections (its LLM calls, and also, say, downloading its embedding model),
     because clients read the proxy from the environment.
+
+    ``EVOLVE_PROXY`` itself is then removed from ``environ``. urllib, requests and botocore read
+    every variable ending in ``_proxy`` as the proxy for the scheme its prefix names, so left in
+    place it would read to them as a proxy for ``evolve://`` URLs.
     """
     environ = os.environ if environ is None else environ
     choice = environ.get(PROXY_ENV, "").strip()
@@ -139,6 +143,7 @@ def apply_proxy(environ: MutableMapping[str, str] | None = None) -> str | None:
     elif choice.lower() == "none":
         for key in PROXY_VARS:
             environ.pop(key, None)
+    environ.pop(PROXY_ENV, None)
     return effective_proxy(environ)
 
 
@@ -182,12 +187,15 @@ def missing_credentials(model: str, environ: MutableMapping[str, str] | None = N
     return wanted
 
 
-def startup_warnings(environ: MutableMapping[str, str] | None = None) -> list[str]:
-    """Warnings worth printing whenever a server starts, local or not."""
+def startup_warnings(environ: MutableMapping[str, str] | None = None, proxy_chosen: bool | None = None) -> list[str]:
+    """Warnings worth printing whenever a server starts, local or not. ``proxy_chosen`` says
+    whether EVOLVE_PROXY was set, which apply_proxy consumes; without it, ``environ`` is asked."""
     environ = os.environ if environ is None else environ
+    if proxy_chosen is None:
+        proxy_chosen = bool(environ.get(PROXY_ENV, "").strip())
     warnings = []
     proxy = effective_proxy(environ)
-    if proxy and is_loopback(proxy) and not environ.get(PROXY_ENV, "").strip():
+    if proxy and is_loopback(proxy) and not proxy_chosen:
         warnings.append(
             f"Evolve's outbound connections, its LLM calls included, go through the local proxy {proxy}. "
             f"If that is Cortex or another proxy recording agent traffic, set {PROXY_ENV}=none; "
@@ -199,7 +207,7 @@ def startup_warnings(environ: MutableMapping[str, str] | None = None) -> list[st
     return warnings
 
 
-def report(setup: LocalSetup | None, environ: MutableMapping[str, str] | None = None) -> list[str]:
+def report(setup: LocalSetup | None, environ: MutableMapping[str, str] | None = None, proxy_chosen: bool | None = None) -> list[str]:
     """The lines the server prints at startup. Values of credentials are never printed."""
     environ = os.environ if environ is None else environ
     lines = []
@@ -219,7 +227,7 @@ def report(setup: LocalSetup | None, environ: MutableMapping[str, str] | None = 
         ]
     lines.append(f"  model: {guidelines_model(environ)}")
     lines.append(f"  proxy: {effective_proxy(environ) or 'none (direct)'}")
-    lines += [f"warning: {w}" for w in ((setup.warnings if setup else []) + startup_warnings(environ))]
+    lines += [f"warning: {w}" for w in ((setup.warnings if setup else []) + startup_warnings(environ, proxy_chosen))]
     return lines
 
 
@@ -254,14 +262,17 @@ def _server_local_options(argv: list[str]) -> tuple[bool, str | None]:
     return known.local or known.home is not None, known.home
 
 
-def _apply(local: bool, home: str | None) -> LocalSetup | None:
+def _apply(local: bool, home: str | None) -> tuple[LocalSetup | None, bool]:
+    """Apply --local, then EVOLVE_PROXY, which may come from the settings file; return the setup,
+    and whether EVOLVE_PROXY was set, since applying it removes it."""
     setup = apply_local(home) if local else None
+    chosen = bool(os.environ.get(PROXY_ENV, "").strip())
     try:
         apply_proxy()
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         raise SystemExit(2) from None
-    return setup
+    return setup, chosen
 
 
 def prepare_server(argv: list[str]) -> LocalSetup | None:
@@ -269,8 +280,8 @@ def prepare_server(argv: list[str]) -> LocalSetup | None:
     print to stderr (stdout is the MCP channel over stdio) the report with ``--local``, or only the
     warnings without it."""
     local, home = _server_local_options(argv)
-    setup = _apply(local, home)
-    lines = report(setup) if setup is not None else [f"warning: {w}" for w in startup_warnings()]
+    setup, chosen = _apply(local, home)
+    lines = report(setup, proxy_chosen=chosen) if setup is not None else [f"warning: {w}" for w in startup_warnings(proxy_chosen=chosen)]
     for line in lines:
         print(line, file=sys.stderr)
     return setup
@@ -281,9 +292,11 @@ def prepare_cli(argv: list[str]) -> LocalSetup | None:
     command. ``evolve serve`` reports as a server does; other commands print only the settings
     file's warnings."""
     local, home = parse_local_options(argv)
-    setup = _apply(local, home)
+    setup, chosen = _apply(local, home)
     if _command(argv) == "serve":
-        lines = report(setup) if setup is not None else [f"warning: {w}" for w in startup_warnings()]
+        lines = (
+            report(setup, proxy_chosen=chosen) if setup is not None else [f"warning: {w}" for w in startup_warnings(proxy_chosen=chosen)]
+        )
     else:
         lines = [f"warning: {w}" for w in (setup.warnings if setup else [])]
     for line in lines:

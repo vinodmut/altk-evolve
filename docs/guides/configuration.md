@@ -72,7 +72,9 @@ without `--local`:
 | a URL, e.g. `http://proxy.example:3128` | Use that proxy |
 
 When the environment's proxy is a loopback address and `EVOLVE_PROXY` isn't set, the server says
-so at startup; set `EVOLVE_PROXY=none` or `inherit` to choose.
+so at startup; set `EVOLVE_PROXY=none` or `inherit` to choose. Once applied, `EVOLVE_PROXY` is
+removed from Evolve's environment: clients such as urllib and botocore read any variable ending in
+`_proxy` as the proxy for the scheme its prefix names.
 
 ## Environment Variables
 
