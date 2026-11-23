@@ -35,6 +35,45 @@ Model selection precedence:
 
 If `EVOLVE_*_MODEL` are unset, set `EVOLVE_MODEL_NAME` to control all Evolve LLM calls.
 
+## Running locally (`--local`)
+
+`evolve-mcp --local` and `evolve --local` run Evolve for one user on this machine, from one home
+directory: `--home DIR`, else `$EVOLVE_HOME`, else `~/.evolve`. Without `--local`, nothing changes.
+
+| | With `--local` |
+|---|---|
+| Settings | `<home>/config.env`, loaded into the environment at startup. It can hold the model and the provider's credentials (`LITELLM_PROXY_API_KEY`, `OPENAI_API_KEY`, ...) as well as `EVOLVE_*` settings, which a `.env` file in the working directory can't: `EVOLVE_MODEL_NAME` and LiteLLM's credentials are read from the environment itself. Keep it private (`chmod 600`): Evolve warns if others can read it. |
+| Data | The filesystem backend, with `EVOLVE_DATA_DIR=<home>/data` and `EVOLVE_SQLITE_PATH=<home>/evolve.sqlite.db`, so the store is the same whichever directory Evolve starts in. Without `--local` both are relative to the working directory. |
+| Retrieval | `EVOLVE_INJECTION_MODE=retrieval`: guidelines are chosen by relevance to the task. |
+| Telemetry | `EVOLVE_OTEL_ENABLED=false`. |
+| Hooks | `<home>/evolve.hooks.yaml` when there is one; otherwise the usual lookup. |
+
+A variable already set in the environment wins over `config.env`, and `config.env` wins over
+these defaults. At startup the server prints its home directory, settings file, data, database,
+injection mode, model and proxy to stderr (never a credential's value), with warnings for a
+settings file others can read, a local proxy, and missing model credentials. Give `--local` to
+`evolve` before the command: `evolve --local entities list <namespace>`.
+
+`evolve serve` runs the same server as `evolve-mcp`, with the same options; `evolve-mcp` stays the
+command MCP clients launch.
+
+### Proxy (`EVOLVE_PROXY`)
+
+Evolve's outbound connections (its LLM calls, and others such as downloading its embedding model)
+use the proxy in `HTTPS_PROXY`, `HTTP_PROXY` and `ALL_PROXY`, like most programs. An agent routed
+through a local proxy passes those variables to everything it starts, an MCP server included, so
+Evolve's own calls can end up recorded with the agent's traffic. `EVOLVE_PROXY` chooses, with or
+without `--local`:
+
+| Value | Evolve's connections |
+|---|---|
+| `inherit` (default) | Use whatever proxy the environment sets |
+| `none` | Go direct: the proxy variables are removed, in both cases, before anything reads them |
+| a URL, e.g. `http://proxy.example:3128` | Use that proxy |
+
+When the environment's proxy is a loopback address and `EVOLVE_PROXY` isn't set, the server says
+so at startup; set `EVOLVE_PROXY=none` or `inherit` to choose.
+
 ## Environment Variables
 
 All configuration variables are prefixed with `EVOLVE_`.

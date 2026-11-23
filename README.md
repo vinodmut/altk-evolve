@@ -171,6 +171,21 @@ Or for SSE transport:
 uv run evolve-mcp --transport sse --port 8201
 ```
 
+### Running a local server (`--local`)
+
+To run Evolve for yourself on this machine, keep its settings and data in one home directory (`~/.evolve` by default). Put the model and its credentials in `~/.evolve/config.env`:
+```bash
+EVOLVE_MODEL_NAME=litellm_proxy/aws/claude-sonnet-5
+LITELLM_PROXY_API_BASE=https://<your gateway>
+LITELLM_PROXY_API_KEY=<key>
+```
+Then, from any directory:
+```bash
+evolve-mcp --local --transport sse     # or: evolve --local serve --transport sse
+evolve --local entities list evolve    # the CLI sees the same data
+```
+`--local` keeps the data and database under the home directory whatever the working directory, uses retrieval injection, and prints the settings in effect at startup. See [Running locally](docs/guides/configuration.md#running-locally---local).
+
 Verify it's running:
 ```bash
 npx @modelcontextprotocol/inspector@latest http://127.0.0.1:8201/sse --cli --method tools/list
