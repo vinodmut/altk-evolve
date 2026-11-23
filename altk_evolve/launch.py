@@ -19,7 +19,7 @@ def mcp_main() -> None:
 
 
 def cli_main() -> None:
-    """``evolve``: the CLI."""
+    """``evolve``: the CLI, ``evolve serve`` included."""
     from altk_evolve.local import prepare_cli
 
     prepare_cli(sys.argv[1:])

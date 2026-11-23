@@ -278,9 +278,27 @@ def prepare_server(argv: list[str]) -> LocalSetup | None:
 
 def prepare_cli(argv: list[str]) -> LocalSetup | None:
     """For the ``evolve`` CLI: apply ``--local``, ``--home`` and ``EVOLVE_PROXY`` given before the
-    command, and print only the settings file's warnings: a command isn't a server starting."""
+    command. ``evolve serve`` reports as a server does; other commands print only the settings
+    file's warnings."""
     local, home = parse_local_options(argv)
     setup = _apply(local, home)
-    for warning in setup.warnings if setup else []:
-        print(f"warning: {warning}", file=sys.stderr)
+    if _command(argv) == "serve":
+        lines = report(setup) if setup is not None else [f"warning: {w}" for w in startup_warnings()]
+    else:
+        lines = [f"warning: {w}" for w in (setup.warnings if setup else [])]
+    for line in lines:
+        print(line, file=sys.stderr)
     return setup
+
+
+def _command(argv: list[str]) -> str | None:
+    """The first positional argument, the command; ``--home`` takes a value."""
+    skip = False
+    for arg in argv:
+        if skip:
+            skip = False
+        elif arg == "--home":
+            skip = True
+        elif not arg.startswith("-"):
+            return arg
+    return None

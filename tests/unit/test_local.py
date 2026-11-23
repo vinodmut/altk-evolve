@@ -257,7 +257,18 @@ def test_evolve_mcp_reports_on_stderr_before_the_server_loads(home, tmp_path):
     assert "Evolve home" not in out.stdout and "--local" in out.stdout
 
 
-# --- evolve's options ------------------------------------------------------------------------
+# --- evolve serve, and evolve's options -----------------------------------------------------------
+
+
+def test_evolve_serve_runs_the_same_server(monkeypatch):
+    from altk_evolve.cli.cli import app
+    from altk_evolve.frontend.mcp import __main__ as server
+
+    calls: list[list[str]] = []
+    monkeypatch.setattr(server, "main", lambda argv=None: calls.append(argv))
+    result = CliRunner().invoke(app, ["serve", "--transport", "sse", "--port", "9300", "--no-dashboard"])
+    assert result.exit_code == 0, result.output
+    assert calls == [["--transport", "sse", "--host", "127.0.0.1", "--port", "9300", "--no-dashboard"]]
 
 
 def test_evolves_local_option_says_when_it_cannot_take_effect(monkeypatch):
@@ -269,10 +280,12 @@ def test_evolves_local_option_says_when_it_cannot_take_effect(monkeypatch):
     assert "take effect only through the `evolve` command" in result.output
 
 
-def test_evolve_prints_only_the_settings_files_warnings(home, restore_environ, capsys):
+def test_only_evolve_serve_prints_the_server_report(home, restore_environ, capsys):
     for key in [k for k in os.environ if k.startswith("EVOLVE_")]:
         del os.environ[key]
     write_settings(home, "EVOLVE_MODEL_NAME=litellm_proxy/m\n", mode=0o644)
     local.prepare_cli(["--home", str(home), "entities", "list"])
     listing = capsys.readouterr().err
     assert "can be read by other users" in listing and "Evolve home" not in listing
+    local.prepare_cli(["--home", str(home), "serve"])
+    assert f"Evolve home: {home}" in capsys.readouterr().err

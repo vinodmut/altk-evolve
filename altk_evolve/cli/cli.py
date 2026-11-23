@@ -87,6 +87,34 @@ def _global_options(
 
 
 # =============================================================================
+# Server
+# =============================================================================
+
+
+@app.command("serve")
+def serve(
+    transport: Annotated[str, typer.Option(help="MCP transport: stdio or sse.")] = "stdio",
+    host: Annotated[str, typer.Option(help="Host for the SSE transport.")] = "127.0.0.1",
+    port: Annotated[int, typer.Option(help="Port for the SSE transport.")] = 8201,
+    dashboard: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--dashboard/--no-dashboard",
+            help="With stdio, also serve the web UI and REST API on 127.0.0.1:8000 (default: on; EVOLVE_DASHBOARD=false turns it off). "
+            "The API has no authentication.",
+        ),
+    ] = None,
+) -> None:
+    """Run the Evolve MCP server: the same server as `evolve-mcp`, which stays for MCP client configs."""
+    from altk_evolve.frontend.mcp.__main__ import main as mcp_main
+
+    argv = ["--transport", transport, "--host", host, "--port", str(port)]
+    if dashboard is not None:
+        argv.append("--dashboard" if dashboard else "--no-dashboard")
+    mcp_main(argv)
+
+
+# =============================================================================
 # Namespace Commands
 # =============================================================================
 
